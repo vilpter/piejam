@@ -39,8 +39,8 @@ public:
         return m_value;
     }
 
-    constexpr auto
-    operator==(period_count const&) const noexcept -> bool = default;
+    constexpr auto operator==(period_count const&) const noexcept
+            -> bool = default;
 
 private:
     unsigned m_value{};
@@ -49,9 +49,7 @@ private:
 inline constexpr std::array preferred_period_counts{
         period_count(2u),
         period_count(3u),
-        period_count(4u),
-        period_count(5u),
-        period_count(6u)};
+};
 
 using period_counts_t = boost::container::
         static_vector<period_count, preferred_period_counts.size()>;
