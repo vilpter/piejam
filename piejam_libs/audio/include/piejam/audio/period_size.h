@@ -38,8 +38,8 @@ public:
         return m_value;
     }
 
-    constexpr auto
-    operator==(period_size const&) const noexcept -> bool = default;
+    constexpr auto operator==(period_size const&) const noexcept
+            -> bool = default;
 
 private:
     unsigned m_value{};
@@ -48,11 +48,17 @@ private:
 inline constexpr period_size max_period_size{1024u};
 inline constexpr std::array preferred_period_sizes{
         period_size(16u),
+        period_size(24u),
         period_size(32u),
+        period_size(48u),
         period_size(64u),
+        period_size(96u),
         period_size(128u),
+        period_size(192u),
         period_size(256u),
+        period_size(384u),
         period_size(512u),
+        period_size(768u),
         max_period_size};
 
 using period_sizes_t = boost::container::
