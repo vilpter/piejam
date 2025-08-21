@@ -68,8 +68,8 @@ struct SpectrumGenerator::Impl
         }
     }
 
-    static constexpr auto
-    envelope(float const prev, float const in) noexcept -> float
+    static constexpr auto envelope(float const prev, float const in) noexcept
+            -> float
     {
         BOOST_ASSERT(in >= 0.f);
         return in > prev ? in : in + 0.85f * (prev - in);
@@ -77,6 +77,9 @@ struct SpectrumGenerator::Impl
 
     auto process(std::span<float const> samples) -> SpectrumDataPoints
     {
+        BOOST_ASSERT(samples.size() == m_window.size());
+        BOOST_ASSERT(samples.size() == m_dft.input_buffer().size());
+
         std::transform(
                 samples.begin(),
                 samples.end(),
@@ -88,11 +91,19 @@ struct SpectrumGenerator::Impl
 
         BOOST_ASSERT(spectrum.size() == m_dft.output_size());
         BOOST_ASSERT(m_dataPoints.size() == m_dft.output_size());
-        for (std::size_t const i : range::iota(m_dft.output_size()))
+
+        auto const dft_size = static_cast<float>(m_dft.size());
+
+        m_dataPoints[0].level = envelope(
+                m_dataPoints[0].level,
+                std::abs(spectrum[0]) / dft_size);
+        m_dataPoints[0].level_dB = math::to_dB(m_dataPoints[0].level);
+
+        for (std::size_t i = 1, e = m_dft.output_size(); i < e; ++i)
         {
             m_dataPoints[i].level = envelope(
                     m_dataPoints[i].level,
-                    std::abs(spectrum[i]) * (2.f / m_dft.size()));
+                    std::abs(spectrum[i]) * (2.f / dft_size));
             m_dataPoints[i].level_dB = math::to_dB(m_dataPoints[i].level);
         }
 
