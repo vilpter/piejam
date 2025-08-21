@@ -26,5 +26,11 @@ target_compile_options(piejam_ladspa PRIVATE -Wall -Wextra -Werror -pedantic-err
 target_include_directories(piejam_ladspa
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(piejam_ladspa
-    PUBLIC piejam_audio
-    PRIVATE fmt spdlog::spdlog piejam_range)
+    PUBLIC
+    piejam_audio
+    mvec # for Caps LADSPA on Aarch64
+
+    PRIVATE
+    fmt
+    spdlog::spdlog
+    piejam_range)
