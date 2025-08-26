@@ -6,6 +6,7 @@ add_library(piejam_thread STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/affinity.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/cache_line_size.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/configuration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/cpu_clock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/fwd.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/name.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/priority.h
@@ -13,6 +14,7 @@ add_library(piejam_thread STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/worker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/affinity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/configuration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/cpu_clock.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/name.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/priority.cpp
 )

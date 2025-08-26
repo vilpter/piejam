@@ -6,7 +6,7 @@
 
 #include <piejam/audio/fwd.h>
 
-#include <chrono>
+#include <piejam/thread/cpu_clock.h>
 
 namespace piejam::audio
 {
@@ -19,7 +19,7 @@ public:
     auto stop() -> float;
 
 private:
-    using clock_t = std::chrono::steady_clock;
+    using clock_t = thread::cpu_clock;
     std::chrono::duration<float, clock_t::period> const m_max_processing_time;
     clock_t::time_point const m_processing_start;
 };
