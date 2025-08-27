@@ -106,13 +106,13 @@ set_intersection(Vector const& in, Vector const& out)
 
 auto
 sample_rates(
-        box<audio::sound_card_hw_params> const& input_hw_params,
-        box<audio::sound_card_hw_params> const& output_hw_params)
+        audio::sound_card_hw_params const& input_hw_params,
+        audio::sound_card_hw_params const& output_hw_params)
         -> audio::sample_rates_t
 {
     return set_intersection(
-            input_hw_params->sample_rates,
-            output_hw_params->sample_rates);
+            input_hw_params.sample_rates,
+            output_hw_params.sample_rates);
 }
 
 auto
@@ -125,13 +125,13 @@ sample_rates_from_state(state const& state) -> audio::sample_rates_t
 
 auto
 period_sizes(
-        box<audio::sound_card_hw_params> const& input_hw_params,
-        box<audio::sound_card_hw_params> const& output_hw_params)
+        audio::sound_card_hw_params const& input_hw_params,
+        audio::sound_card_hw_params const& output_hw_params)
         -> audio::period_sizes_t
 {
     return set_intersection(
-            input_hw_params->period_sizes,
-            output_hw_params->period_sizes);
+            input_hw_params.period_sizes,
+            output_hw_params.period_sizes);
 }
 
 auto
@@ -144,13 +144,13 @@ period_sizes_from_state(state const& state) -> audio::period_sizes_t
 
 auto
 period_counts(
-        box<audio::sound_card_hw_params> const& input_hw_params,
-        box<audio::sound_card_hw_params> const& output_hw_params)
+        audio::sound_card_hw_params const& input_hw_params,
+        audio::sound_card_hw_params const& output_hw_params)
         -> audio::period_counts_t
 {
     return set_intersection(
-            input_hw_params->period_counts,
-            output_hw_params->period_counts);
+            input_hw_params.period_counts,
+            output_hw_params.period_counts);
 }
 
 auto

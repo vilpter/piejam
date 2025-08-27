@@ -26,9 +26,6 @@ class AudioDeviceSettings final : public Subscribable<SubscribableModel>
             outputSoundCards)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, sampleRates)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, periodSizes)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::StringList*,
-            periodCounts)
     M_PIEJAM_GUI_PROPERTY(double, bufferLatency, setBufferLatency)
 
 public:

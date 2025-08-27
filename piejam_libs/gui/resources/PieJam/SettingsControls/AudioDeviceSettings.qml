@@ -85,58 +85,64 @@ SubscribableItem {
             onOptionSelected: root.model.selectSampleRate(index)
         }
 
-        ComboBoxSetting {
-            Layout.fillWidth: true
-
-            model: root.model.periodSizes.elements
-            currentIndex: root.model.periodSizes.focused
-
-            nameLabelText: qsTr("period size:")
-            unselectedText: qsTr("Select period size...")
-
-            onOptionSelected: root.model.selectPeriodSize(index)
-        }
-
-        ComboBoxSetting {
-            Layout.fillWidth: true
-
-            model: root.model.periodCounts.elements
-            currentIndex: root.model.periodCounts.focused
-
-            nameLabelText: qsTr("period count:")
-            unselectedText: qsTr("Select period count...")
-
-            onOptionSelected: root.model.selectPeriodCount(index)
-        }
-
         Frame {
             Layout.fillWidth: true
-            Layout.preferredHeight: 64
+            Layout.preferredHeight: 96
 
-            RowLayout {
+            ColumnLayout {
                 anchors.fill: parent
 
-                Label {
-                    Layout.preferredWidth: 128
-                    Layout.fillHeight: true
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.maximumHeight: 32
 
-                    verticalAlignment: Text.AlignVCenter
-                    textFormat: Text.PlainText
-                    font.pixelSize: 18
+                    Label {
+                        Layout.preferredWidth: 128
+                        Layout.fillHeight: true
 
-                    text: qsTr("buffer latency:")
+                        verticalAlignment: Text.AlignVCenter
+                        textFormat: Text.PlainText
+                        font.pixelSize: 18
+
+                        text: qsTr("buffer size:")
+                    }
+
+                    Slider {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        from: 0
+                        to: root.model.periodSizes.elements.length
+                        stepSize: 1
+                        value: root.model.periodSizes.focused
+
+                        onMoved: root.model.selectPeriodSize(value)
+                    }
                 }
 
-                Label {
+                RowLayout {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    Layout.maximumHeight: 32
 
-                    verticalAlignment: Text.AlignVCenter
-                    font.italic: true
-                    textFormat: Text.PlainText
-                    font.pixelSize: 18
+                    Item {
+                        Layout.preferredWidth: 128
+                        Layout.fillHeight: true
+                    }
 
-                    text: root.model.bufferLatency.toFixed(2) + qsTr(" ms")
+                    Label {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        verticalAlignment: Text.AlignVCenter
+                        font.italic: true
+                        textFormat: Text.PlainText
+                        font.pixelSize: 18
+
+                        text: (root.model.periodSizes.focused === -1 ? "0" : root.model.periodSizes.elements[root.model.periodSizes.focused]) +
+                              qsTr(" Samples / ") +
+                              root.model.bufferLatency.toFixed(2) +
+                              qsTr(" ms")
+                    }
                 }
             }
         }

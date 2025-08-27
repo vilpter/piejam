@@ -47,7 +47,6 @@ struct AudioDeviceSettings::Impl
     StringList output_sound_cards;
     StringList sample_rates;
     StringList period_sizes;
-    StringList period_counts;
 };
 
 AudioDeviceSettings::AudioDeviceSettings(
@@ -82,12 +81,6 @@ auto
 AudioDeviceSettings::periodSizes() const noexcept -> periodSizes_property_t
 {
     return &m_impl->period_sizes;
-}
-
-auto
-AudioDeviceSettings::periodCounts() const noexcept -> periodCounts_property_t
-{
-    return &m_impl->period_counts;
 }
 
 void
@@ -138,20 +131,6 @@ AudioDeviceSettings::onSubscribe()
                                         &audio::period_size::value),
                         QString_from_number));
                 periodSizes()->setFocused(static_cast<int>(index));
-            });
-
-    observe(selectors::select_period_count,
-            [this](selectors::period_count_choice const& period_count) {
-                auto const index = algorithm::index_of(
-                        period_count.available,
-                        period_count.current);
-
-                periodCounts()->setElements(to_QStringList(
-                        period_count.available |
-                                std::views::transform(
-                                        &audio::period_count::value),
-                        QString_from_number));
-                periodCounts()->setFocused(static_cast<int>(index));
             });
 
     observe(selectors::select_buffer_latency,

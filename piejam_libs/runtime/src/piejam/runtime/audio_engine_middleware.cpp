@@ -190,18 +190,17 @@ make_update_devices_action(
             current_devices.out.get(),
             output_index);
 
-    auto next_value =
-            [](box<audio::sound_card_hw_params> const& input_hw_params,
-               box<audio::sound_card_hw_params> const& output_hw_params,
-               auto&& sel,
-               auto current) {
-                auto const values = std::invoke(
-                        std::forward<decltype(sel)>(sel),
-                        input_hw_params,
-                        output_hw_params);
-                auto const it = algorithm::find_or_get_first(values, current);
-                return it != values.end() ? *it : decltype(*it){};
-            };
+    auto next_value = [](audio::sound_card_hw_params const& input_hw_params,
+                         audio::sound_card_hw_params const& output_hw_params,
+                         auto&& sel,
+                         auto current) {
+        auto const values = std::invoke(
+                std::forward<decltype(sel)>(sel),
+                input_hw_params,
+                output_hw_params);
+        auto const it = algorithm::find_or_get_first(values, current);
+        return it != values.end() ? *it : decltype(*it){};
+    };
 
     next_action.sample_rate = next_value(
             next_action.input.hw_params,

@@ -54,10 +54,6 @@ using period_size_choice =
         choice_model<audio::period_sizes_t, audio::period_size>;
 extern selector<box<period_size_choice>> const select_period_size;
 
-using period_count_choice =
-        choice_model<audio::period_counts_t, audio::period_count>;
-extern selector<box<period_count_choice>> const select_period_count;
-
 extern selector<float> const select_buffer_latency;
 
 using sound_card_choice = choice_model<std::vector<std::string>, std::size_t>;

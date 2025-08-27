@@ -44,7 +44,7 @@ open_pcm(
         sw_params.sleep_min = 0;
         sw_params.avail_min = process_config.period_size.value();
         sw_params.xfer_align = 1;
-        sw_params.start_threshold = buffer_size;
+        sw_params.start_threshold = process_config.period_size.value();
         sw_params.stop_threshold = buffer_size;
         sw_params.silence_threshold = 0;
         sw_params.boundary = buffer_size;

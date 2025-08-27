@@ -45,21 +45,18 @@ private:
     unsigned m_value{};
 };
 
+inline constexpr period_size min_period_size{48u};
 inline constexpr period_size max_period_size{1024u};
-inline constexpr std::array preferred_period_sizes{
-        period_size(16u),
-        period_size(24u),
-        period_size(32u),
-        period_size(48u),
-        period_size(64u),
-        period_size(96u),
-        period_size(128u),
-        period_size(192u),
-        period_size(256u),
-        period_size(384u),
-        period_size(512u),
-        period_size(768u),
-        max_period_size};
+inline constexpr unsigned period_size_step{16u};
+inline constexpr std::array preferred_period_sizes =
+        []<std::size_t... I>(std::index_sequence<I...>) {
+            return std::array{period_size(
+                    static_cast<unsigned>(I) * period_size_step +
+                    min_period_size.value())...};
+        }(std::make_index_sequence<
+                (max_period_size.value() - min_period_size.value()) /
+                        period_size_step +
+                1u>());
 
 using period_sizes_t = boost::container::
         static_vector<period_size, preferred_period_sizes.size()>;

@@ -49,6 +49,9 @@ private:
 inline constexpr std::array preferred_period_counts{
         period_count(2u),
         period_count(3u),
+        period_count(4u),
+        period_count(5u),
+        period_count(6u),
 };
 
 using period_counts_t = boost::container::

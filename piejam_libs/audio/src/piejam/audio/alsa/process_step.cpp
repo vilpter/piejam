@@ -445,9 +445,7 @@ process_step::operator()() -> std::error_condition
         {
             m_writer->clear();
 
-            for (unsigned i = 0;
-                 i < m_io_config.buffer_config.period_count.value();
-                 ++i)
+            for (unsigned i = 0; i < 2; ++i)
             {
                 if (auto err = m_writer->transfer())
                 {

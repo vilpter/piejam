@@ -103,29 +103,8 @@ selector<box<period_size_choice>> const select_period_size([](state const& st) {
             st.period_size);
 });
 
-selector<box<period_count_choice>> const
-        select_period_count([](state const& st) {
-            static auto get_period_count = memo(
-                    [](box<audio::sound_card_hw_params> const& input_hw_params,
-                       box<audio::sound_card_hw_params> const& output_hw_params,
-                       audio::period_count const current) {
-                        return box<period_count_choice>{
-                                std::in_place,
-                                runtime::period_counts(
-                                        input_hw_params,
-                                        output_hw_params),
-                                current};
-                    });
-
-            return get_period_count(
-                    st.selected_io_sound_card.in.hw_params,
-                    st.selected_io_sound_card.out.hw_params,
-                    st.period_count);
-        });
-
 selector<float> const select_buffer_latency([](state const& st) {
-    return st.sample_rate.value() != 0 ? (st.period_size.value() *
-                                          st.period_count.value() * 1000.f) /
+    return st.sample_rate.value() != 0 ? (st.period_size.value() * 1000.f) /
                                                  st.sample_rate.as_float()
                                        : 0.f;
 });
