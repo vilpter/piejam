@@ -15,45 +15,46 @@ template <std::size_t I>
 struct element_compare
 {
     template <class Compare, class Value>
-    static constexpr auto compare(Value&& v) -> decltype(auto)
+    constexpr auto compare(Value&& v) const -> decltype(auto)
     {
-        return [v](auto&& tup) {
+        return [v = std::forward<Value>(v)](auto&& tup) {
+            using std::get;
             return Compare{}(v, get<I>(std::forward<decltype(tup)>(tup)));
         };
     }
 
     template <class Value>
-    static constexpr auto equal_to(Value&& v) -> decltype(auto)
+    constexpr auto equal_to(Value&& v) const -> decltype(auto)
     {
         return compare<std::equal_to<>>(std::forward<Value>(v));
     }
 
     template <class Value>
-    static constexpr auto not_equal_to(Value&& v) -> decltype(auto)
+    constexpr auto not_equal_to(Value&& v) const -> decltype(auto)
     {
         return compare<std::not_equal_to<>>(std::forward<Value>(v));
     }
 
     template <class Value>
-    static constexpr auto less(Value&& v) -> decltype(auto)
+    constexpr auto less(Value&& v) const -> decltype(auto)
     {
         return compare<std::less<>>(std::forward<Value>(v));
     }
 
     template <class Value>
-    static constexpr auto less_equal(Value&& v) -> decltype(auto)
+    constexpr auto less_equal(Value&& v) const -> decltype(auto)
     {
         return compare<std::less_equal<>>(std::forward<Value>(v));
     }
 
     template <class Value>
-    static constexpr auto greater(Value&& v) -> decltype(auto)
+    constexpr auto greater(Value&& v) const -> decltype(auto)
     {
         return compare<std::greater<>>(std::forward<Value>(v));
     }
 
     template <class Value>
-    static constexpr auto greater_equal(Value&& v) -> decltype(auto)
+    constexpr auto greater_equal(Value&& v) const -> decltype(auto)
     {
         return compare<std::greater_equal<>>(std::forward<Value>(v));
     }
