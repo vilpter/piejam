@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <piejam/audio/alloc_debug.h>
+
 #include <piejam/thread/configuration.h>
 
 #include <concepts>
@@ -30,6 +32,7 @@ public:
     rt_task_executor(thread::configuration conf = {})
         : m_thread([this, conf = std::move(conf)](std::stop_token stoken) {
             conf.apply();
+            prohibit_dynamic_memory_allocation();
 
             while (true)
             {
