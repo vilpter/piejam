@@ -24,6 +24,28 @@ calc_phi(T const freq_c, T const inv_sr) noexcept -> T
 }
 
 template <std::floating_point T>
+struct Q_limits
+{
+    // Low-pass / High-pass
+    static constexpr T lp_hp_min = std::sqrt(T{0.5});
+    static constexpr T lp_hp_max = T{10};
+
+    // Band-pass
+    static constexpr T bp_min(T cutoff, T inv_sr) noexcept
+    {
+        return cutoff * T{4} * inv_sr;
+    }
+    static constexpr T bp_max = T{25};
+
+    // Band-reject / Notch
+    static constexpr T br_min(T cutoff, T inv_sr) noexcept
+    {
+        return cutoff * T{4} * inv_sr;
+    }
+    static constexpr T br_max = T{4};
+};
+
+template <std::floating_point T>
 constexpr auto
 calc_Q(T const res, T const min_Q, T const max_Q) noexcept -> T
 {
@@ -34,28 +56,27 @@ template <std::floating_point T>
 constexpr auto
 calc_Q_lp_hp(T const res) noexcept -> T
 {
-    return calc_Q(res, std::sqrt(T{.5f}), T{10});
-}
-
-template <std::floating_point T>
-constexpr auto
-calc_min_Q_bp_br(T const cutoff, T const inv_sr) noexcept -> T
-{
-    return cutoff * T{4} * inv_sr;
+    return calc_Q(res, Q_limits<T>::lp_hp_min, Q_limits<T>::lp_hp_max);
 }
 
 template <std::floating_point T>
 constexpr auto
 calc_Q_bp(T const cutoff, T const res, T const inv_sr) noexcept -> T
 {
-    return calc_Q(res, calc_min_Q_bp_br(cutoff, inv_sr), T{25});
+    return calc_Q(
+            res,
+            Q_limits<T>::bp_min(cutoff, inv_sr),
+            Q_limits<T>::bp_max);
 }
 
 template <std::floating_point T>
 constexpr auto
 calc_Q_br(T const cutoff, T const res, T const inv_sr) noexcept -> T
 {
-    return calc_Q(res, calc_min_Q_bp_br(cutoff, inv_sr), T{4});
+    return calc_Q(
+            res,
+            Q_limits<T>::br_min(cutoff, inv_sr),
+            Q_limits<T>::br_max);
 }
 
 template <std::floating_point T>
@@ -91,12 +112,12 @@ make_lp_coefficients(T const cutoff, T const res, T const inv_sr) noexcept
     T const Q = calc_Q_lp_hp(res);
     T const b2 = calc_b2_lp_hp(phi, Q);
     T const b1 = calc_b1(phi, b2);
-    T const a0 = .25f * (1.f + b1 + b2);
+    T const a0 = T{.25} * (1.f + b1 + b2);
     return coefficients<T>{
             .b2 = b2,
             .b1 = b1,
             .a0 = a0,
-            .a1 = 2.f * a0,
+            .a1 = T{2} * a0,
             .a2 = a0};
 }
 
@@ -109,8 +130,8 @@ make_bp_coefficients(T const cutoff, T const res, T const inv_sr) noexcept
     T const Q = calc_Q_bp(cutoff, res, inv_sr);
     T const b2 = calc_b2_bp_br(phi, Q);
     T const b1 = calc_b1(phi, b2);
-    T const a0 = .5f * (1.f - b2);
-    return coefficients<T>{.b2 = b2, .b1 = b1, .a0 = a0, .a1 = 0.f, .a2 = -a0};
+    T const a0 = T{.5} * (T{1} - b2);
+    return coefficients<T>{.b2 = b2, .b1 = b1, .a0 = a0, .a1 = T{}, .a2 = -a0};
 }
 
 template <std::floating_point T>
@@ -122,12 +143,12 @@ make_hp_coefficients(T const cutoff, T const res, T const inv_sr) noexcept
     T const Q = calc_Q_lp_hp(res);
     T const b2 = calc_b2_lp_hp(phi, Q);
     T const b1 = calc_b1(phi, b2);
-    T const a0 = .25f * (1.f - b1 + b2);
+    T const a0 = T{.25} * (T{1} - b1 + b2);
     return coefficients<T>{
             .b2 = b2,
             .b1 = b1,
             .a0 = a0,
-            .a1 = -2.f * a0,
+            .a1 = T{-2} * a0,
             .a2 = a0};
 }
 
@@ -140,7 +161,7 @@ make_br_coefficients(T const cutoff, T const res, T const inv_sr) noexcept
     T const Q = calc_Q_br(cutoff, res, inv_sr);
     T const b2 = calc_b2_bp_br(phi, Q);
     T const b1 = calc_b1(phi, b2);
-    T const a0 = .5f * (1.f + b2);
+    T const a0 = T{.5} * (T{1} + b2);
     return coefficients<T>{.b2 = b2, .b1 = b1, .a0 = a0, .a1 = b1, .a2 = a0};
 }
 
