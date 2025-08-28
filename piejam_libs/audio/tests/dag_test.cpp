@@ -6,7 +6,7 @@
 
 #include <piejam/audio/engine/dag_executor.h>
 #include <piejam/audio/engine/thread_context.h>
-#include <piejam/thread/worker.h>
+#include <piejam/thread/rt_task_executor.h>
 
 #include <gtest/gtest.h>
 
@@ -85,7 +85,7 @@ TEST(dag, split_and_merge_graph_mt)
 
     std::unique_ptr<audio::engine::dag_executor> executor;
     {
-        std::vector<thread::worker> workers(2);
+        std::vector<thread::rt_task_executor> workers(2);
         executor = sut.make_runnable(workers);
         for (std::size_t n = 0; n < 10; ++n)
         {

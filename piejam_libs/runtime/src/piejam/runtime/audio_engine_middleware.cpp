@@ -47,7 +47,7 @@
 #include <piejam/midi/event.h>
 #include <piejam/midi/input_event_handler.h>
 #include <piejam/set_if.h>
-#include <piejam/thread/worker.h>
+#include <piejam/thread/rt_task_executor.h>
 #include <piejam/tuple_element_compare.h>
 
 #include <spdlog/spdlog.h>

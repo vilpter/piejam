@@ -7,8 +7,8 @@ if(NOT PIEJAM_TESTS)
 endif()
 
 add_executable(piejam_thread_test
+    ${CMAKE_CURRENT_SOURCE_DIR}/rt_task_executor_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/spsc_slot_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/worker_test.cpp
 )
 target_link_libraries(piejam_thread_test gtest_driver gmock piejam_thread)
 target_compile_options(piejam_thread_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)

@@ -22,12 +22,12 @@ namespace piejam::thread
 //!     break real-time safety.
 //!   - Tasks must not throw exceptions. Any uncaught exception may
 //!     terminate the program.
-class worker
+class rt_task_executor
 {
 public:
     using task_t = std::function<void()>;
 
-    worker(thread::configuration conf = {})
+    rt_task_executor(thread::configuration conf = {})
         : m_thread([this, conf = std::move(conf)](std::stop_token stoken) {
             conf.apply();
 
@@ -48,10 +48,10 @@ public:
     {
     }
 
-    worker(worker const&) = delete;
-    worker(worker&&) = delete;
+    rt_task_executor(rt_task_executor const&) = delete;
+    rt_task_executor(rt_task_executor&&) = delete;
 
-    ~worker()
+    ~rt_task_executor()
     {
         // Acquire finished to ensure no task is in progress (blocks until any
         // running task completes).
@@ -66,8 +66,8 @@ public:
         // is destroyed after this destructor finishes.
     }
 
-    auto operator=(worker const&) -> worker& = delete;
-    auto operator=(worker&&) -> worker& = delete;
+    auto operator=(rt_task_executor const&) -> rt_task_executor& = delete;
+    auto operator=(rt_task_executor&&) -> rt_task_executor& = delete;
 
     //! Schedule a callable to run on the worker. This blocks until the worker
     //! is ready to accept a new task.
