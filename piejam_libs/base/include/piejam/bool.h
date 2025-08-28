@@ -8,9 +8,10 @@ namespace piejam
 {
 
 constexpr auto
-toggle_bool(bool& x) -> bool
+toggle_bool_in_place(bool& x) noexcept -> bool
 {
-    return x = !x;
+    x = !x;
+    return x;
 }
 
 } // namespace piejam

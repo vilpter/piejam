@@ -13,7 +13,7 @@ namespace piejam::runtime::actions
 void
 toggle_focused_fx_module_bypass::reduce(state& st) const
 {
-    toggle_bool(st.fx_modules.lock()[st.gui_state.focused_fx_mod_id].bypassed);
+    toggle_bool_in_place(st.fx_modules.lock()[st.gui_state.focused_fx_mod_id].bypassed);
 }
 
 void
