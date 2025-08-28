@@ -29,7 +29,7 @@ public:
     [[nodiscard]]
     auto is_running() const noexcept -> bool
     {
-        return m_thread.joinable();
+        return m_running.load(std::memory_order_acquire);
     }
 
     [[nodiscard]]
@@ -48,6 +48,8 @@ public:
         m_thread = std::jthread(
                 [this, conf, fprocess = std::forward<Process>(process)](
                         std::stop_token stop_token) mutable {
+                    m_running.store(true, std::memory_order_release);
+
                     conf.apply();
                     prohibit_dynamic_memory_allocation();
 
@@ -61,6 +63,8 @@ public:
                             break;
                         }
                     }
+
+                    m_running.store(false, std::memory_order_release);
                 });
     }
 
@@ -72,6 +76,7 @@ public:
 private:
     std::error_condition m_error;
     std::jthread m_thread;
+    std::atomic_bool m_running{false};
 };
 
 } // namespace piejam::audio
