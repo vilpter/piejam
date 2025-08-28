@@ -28,7 +28,6 @@ target_include_directories(piejam_ladspa
 target_link_libraries(piejam_ladspa
     PUBLIC
     piejam_audio
-    mvec # for Caps LADSPA on Aarch64
 
     PRIVATE
     fmt
