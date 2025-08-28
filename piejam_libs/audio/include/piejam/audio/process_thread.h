@@ -5,6 +5,7 @@
 #pragma once
 
 #include <piejam/audio/alloc_debug.h>
+#include <piejam/audio/fp_env_ftz.h>
 
 #include <piejam/thread/configuration.h>
 #include <piejam/type_traits.h>
@@ -52,6 +53,7 @@ public:
 
                     conf.apply();
                     prohibit_dynamic_memory_allocation();
+                    enable_flush_to_zero();
 
                     static_assert(!std::is_reference_v<decltype(fprocess)>);
 

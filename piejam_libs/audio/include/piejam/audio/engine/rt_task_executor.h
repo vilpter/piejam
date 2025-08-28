@@ -5,6 +5,7 @@
 #pragma once
 
 #include <piejam/audio/alloc_debug.h>
+#include <piejam/audio/fp_env_ftz.h>
 
 #include <piejam/thread/configuration.h>
 
@@ -33,6 +34,7 @@ public:
         : m_thread([this, conf = std::move(conf)](std::stop_token stoken) {
             conf.apply();
             prohibit_dynamic_memory_allocation();
+            enable_flush_to_zero();
 
             while (true)
             {
