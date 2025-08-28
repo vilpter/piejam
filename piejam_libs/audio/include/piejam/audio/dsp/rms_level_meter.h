@@ -45,7 +45,7 @@ public:
                                           rms_measure_time)
                                           .count() *
                                   sr.as_float<T>()),
-                          mipp::N<T>()),
+                          static_cast<std::size_t>(mipp::N<T>())),
                   0.f)
     {
     }
