@@ -11,7 +11,7 @@
 namespace piejam
 {
 
-template <std::signed_integral T>
+template <std::integral T>
 constexpr auto
 switch_cast(T x) noexcept
 {
