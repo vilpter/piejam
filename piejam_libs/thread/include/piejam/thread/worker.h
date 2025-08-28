@@ -14,7 +14,14 @@
 namespace piejam::thread
 {
 
-//! Single task worker thread.
+//! Single task worker thread for real-time tasks.
+//!
+//! Constraints:
+//!   - Only stateless callables or std::ref(...) are allowed as tasks.
+//!     Passing capturing lambdas or heavy functors may allocate and
+//!     break real-time safety.
+//!   - Tasks must not throw exceptions. Any uncaught exception may
+//!     terminate the program.
 class worker
 {
 public:
@@ -46,22 +53,38 @@ public:
 
     ~worker()
     {
+        // Acquire finished to ensure no task is in progress (blocks until any
+        // running task completes).
         m_sem_finished.acquire();
+
+        // Request cooperative stop and wake thread so it can observe stop and
+        // exit.
         m_thread.request_stop();
         m_sem_work.release();
+
+        // jthread destructor will join the thread automatically when m_thread
+        // is destroyed after this destructor finishes.
     }
 
     auto operator=(worker const&) -> worker& = delete;
     auto operator=(worker&&) -> worker& = delete;
 
+    //! Schedule a callable to run on the worker. This blocks until the worker
+    //! is ready to accept a new task.
     template <std::invocable<> F>
     void wakeup(F&& task) noexcept
     {
+        // Acquire finished semaphore to ensure exclusive access (wait until
+        // previous work done).
         m_sem_finished.acquire();
+
         m_task = std::forward<F>(task);
+
+        // Notify worker thread that work is available.
         m_sem_work.release();
     }
 
+    //! Block until the worker has finished its current task (if any).
     void wait() noexcept
     {
         m_sem_finished.acquire();
