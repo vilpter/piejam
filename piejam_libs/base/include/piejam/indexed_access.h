@@ -13,29 +13,26 @@ namespace piejam
 
 template <class Container, class T>
 auto
-insert_at(Container&& c, std::size_t index, T&& value)
+insert_at(Container& c, std::size_t index, T&& value)
 {
     using std::begin;
     using std::size;
 
     BOOST_ASSERT(index <= size(c));
 
-    return std::forward<Container>(c).insert(
-            std::next(begin(std::forward<Container>(c)), index),
-            std::forward<T>(value));
+    return c.insert(std::next(begin(c), index), std::forward<T>(value));
 }
 
 template <class Container>
 auto
-erase_at(Container&& c, std::size_t index)
+erase_at(Container& c, std::size_t index)
 {
     using std::begin;
     using std::size;
 
     BOOST_ASSERT(index < size(c));
 
-    return std::forward<Container>(c).erase(
-            std::next(begin(std::forward<Container>(c)), index));
+    return c.erase(std::next(begin(c), index));
 }
 
 } // namespace piejam
