@@ -7,6 +7,7 @@
 #include <piejam/algorithm/for_each_visit.h>
 
 #include <algorithm>
+#include <functional>
 #include <ranges>
 #include <type_traits>
 #include <variant>
@@ -20,8 +21,8 @@ struct edit_script_deletion
     std::size_t pos{};
 
     [[nodiscard]]
-    constexpr auto
-    operator==(edit_script_deletion const&) const noexcept -> bool = default;
+    constexpr auto operator==(edit_script_deletion const&) const noexcept
+            -> bool = default;
 };
 
 template <class T>
@@ -31,8 +32,8 @@ struct edit_script_insertion
     T value{};
 
     [[nodiscard]]
-    constexpr auto
-    operator==(edit_script_insertion const&) const noexcept -> bool = default;
+    constexpr auto operator==(edit_script_insertion const&) const noexcept
+            -> bool = default;
 };
 
 template <class T>
@@ -164,46 +165,30 @@ edit_script(Src const& src, Dst const& dst)
     return result;
 }
 
-namespace detail
-{
-
-template <class T>
-[[nodiscard]]
-auto
-prepare_edit_script_ops_for_linear_execution(edit_script_ops<T> ops)
-        -> edit_script_ops<T>
-{
-    struct
-    {
-        std::size_t deletion_offset{};
-
-        auto operator()(edit_script_deletion& del)
-        {
-            del.pos -= deletion_offset++;
-        }
-
-        auto operator()(edit_script_insertion<T>&)
-        {
-            --deletion_offset;
-        }
-    } visitor;
-
-    for_each_visit(ops, visitor);
-
-    return ops;
-}
-
-} // namespace detail
-
 template <class T, class Visitor>
 [[nodiscard]]
 auto
 apply_edit_script(edit_script_ops<T> ops, Visitor&& v)
 {
-    for_each_visit(
-            detail::prepare_edit_script_ops_for_linear_execution(
-                    std::move(ops)),
-            std::forward<Visitor>(v));
+    struct adjust_and_invoke
+    {
+        Visitor& visitor;
+        std::size_t deletion_offset{};
+
+        void operator()(edit_script_deletion& op)
+        {
+            op.pos -= deletion_offset++;
+            std::invoke(visitor, op);
+        }
+
+        void operator()(edit_script_insertion<T>& op)
+        {
+            --deletion_offset;
+            std::invoke(visitor, op);
+        }
+    };
+
+    for_each_visit(ops, adjust_and_invoke{v});
 }
 
 } // namespace piejam::algorithm
