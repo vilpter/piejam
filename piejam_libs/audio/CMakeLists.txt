@@ -50,6 +50,7 @@ add_library(piejam_audio STATIC
     include/piejam/audio/engine/processor_job.h
     include/piejam/audio/engine/processor_test_environment.h
     include/piejam/audio/engine/processor_util.h
+    include/piejam/audio/engine/rt_task_executor.h
     include/piejam/audio/engine/single_event_input_processor.h
     include/piejam/audio/engine/smoother_processor.h
     include/piejam/audio/engine/stream_processor.h

@@ -8,6 +8,5 @@ namespace piejam::thread
 {
 
 struct configuration;
-class rt_task_executor;
 
 } // namespace piejam::thread

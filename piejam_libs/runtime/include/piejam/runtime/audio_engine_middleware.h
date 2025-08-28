@@ -54,7 +54,7 @@ private:
     void rebuild(state const&);
 
     thread::configuration m_audio_thread_config;
-    std::vector<thread::rt_task_executor> m_workers;
+    std::vector<audio::engine::rt_task_executor> m_workers;
 
     audio::sound_card_manager& m_sound_card_manager;
     ladspa::processor_factory& m_ladspa_processor_factory;

@@ -27,7 +27,7 @@ class audio_engine
 {
 public:
     audio_engine(
-            std::span<thread::rt_task_executor> workers,
+            std::span<audio::engine::rt_task_executor> workers,
             audio::sample_rate,
             unsigned num_device_input_channels,
             unsigned num_device_output_channels);

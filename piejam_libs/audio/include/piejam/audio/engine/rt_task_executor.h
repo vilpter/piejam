@@ -11,7 +11,7 @@
 #include <semaphore>
 #include <thread>
 
-namespace piejam::thread
+namespace piejam::audio::engine
 {
 
 //! Single task worker thread for real-time tasks.
@@ -99,4 +99,4 @@ private:
     std::jthread m_thread;
 };
 
-} // namespace piejam::thread
+} // namespace piejam::audio::engine

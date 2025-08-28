@@ -7,9 +7,9 @@
 #include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/audio/engine/dag_executor.h>
 #include <piejam/audio/engine/event_buffer_memory.h>
+#include <piejam/audio/engine/rt_task_executor.h>
 #include <piejam/audio/engine/thread_context.h>
 #include <piejam/range/indices.h>
-#include <piejam/thread/rt_task_executor.h>
 
 #include <boost/assert.hpp>
 #include <boost/lockfree/stack.hpp>
@@ -55,8 +55,8 @@ protected:
     nodes_t m_nodes;
 
 private:
-    static auto
-    make_nodes(dag::tasks_t const& tasks, dag::graph_t const& graph) -> nodes_t
+    static auto make_nodes(dag::tasks_t const& tasks, dag::graph_t const& graph)
+            -> nodes_t
     {
         nodes_t nodes;
         for (auto const& [id, task] : tasks)
@@ -158,7 +158,7 @@ public:
             dag::tasks_t const& tasks,
             dag::graph_t const& graph,
             std::size_t const event_memory_size,
-            std::span<thread::rt_task_executor> const worker_threads)
+            std::span<rt_task_executor> const worker_threads)
         : dag_executor_base(tasks, graph)
         , m_worker_threads(worker_threads)
         , m_initial_tasks(collect_initial_tasks(m_nodes))
@@ -327,7 +327,7 @@ private:
         return workers;
     }
 
-    std::span<thread::rt_task_executor> m_worker_threads;
+    std::span<rt_task_executor> m_worker_threads;
     std::atomic_size_t m_nodes_to_process{};
     std::vector<node*> const m_initial_tasks;
     jobs_t m_run_queue;
@@ -399,7 +399,7 @@ dag::add_child(task_id_t const parent, task_id_t const child)
 
 auto
 dag::make_runnable(
-        std::span<thread::rt_task_executor> const worker_threads,
+        std::span<rt_task_executor> const worker_threads,
         std::size_t const event_memory_size) -> std::unique_ptr<dag_executor>
 {
     if (worker_threads.empty())

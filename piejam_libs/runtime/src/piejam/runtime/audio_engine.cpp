@@ -36,6 +36,7 @@
 #include <piejam/audio/engine/mix_processor.h>
 #include <piejam/audio/engine/output_processor.h>
 #include <piejam/audio/engine/process.h>
+#include <piejam/audio/engine/rt_task_executor.h>
 #include <piejam/audio/engine/stream_processor.h>
 #include <piejam/audio/engine/value_io_processor.h>
 #include <piejam/audio/sample_rate.h>
@@ -44,7 +45,6 @@
 #include <piejam/range/indices.h>
 #include <piejam/range/iota.h>
 #include <piejam/thread/configuration.h>
-#include <piejam/thread/rt_task_executor.h>
 
 #include <fmt/format.h>
 
@@ -654,15 +654,17 @@ make_io_processors(std::size_t const num_channels)
 struct audio_engine::impl
 {
     impl(audio::sample_rate const sr,
-         std::span<thread::rt_task_executor> const workers,
+         std::span<audio::engine::rt_task_executor> const workers,
          std::size_t num_device_input_channels,
          std::size_t num_device_output_channels)
         : sample_rate(sr)
         , worker_threads(workers)
-        , input_procs(make_io_processors<audio::engine::input_processor>(
-                  num_device_input_channels))
-        , output_procs(make_io_processors<audio::engine::output_processor>(
-                  num_device_output_channels))
+        , input_procs(
+                  make_io_processors<audio::engine::input_processor>(
+                          num_device_input_channels))
+        , output_procs(
+                  make_io_processors<audio::engine::output_processor>(
+                          num_device_output_channels))
         , output_clip_procs(
                   std::vector<processor_ptr>(num_device_output_channels))
     {
@@ -671,7 +673,7 @@ struct audio_engine::impl
     audio::sample_rate sample_rate;
 
     audio::engine::process process;
-    std::span<thread::rt_task_executor> worker_threads;
+    std::span<audio::engine::rt_task_executor> worker_threads;
 
     std::vector<audio::engine::input_processor> input_procs;
     std::vector<audio::engine::output_processor> output_procs;
@@ -690,7 +692,7 @@ struct audio_engine::impl
 };
 
 audio_engine::audio_engine(
-        std::span<thread::rt_task_executor> const workers,
+        std::span<audio::engine::rt_task_executor> const workers,
         audio::sample_rate const sample_rate,
         unsigned const num_device_input_channels,
         unsigned const num_device_output_channels)

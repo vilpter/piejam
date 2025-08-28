@@ -33,6 +33,7 @@
 #include <piejam/algorithm/index_of.h>
 #include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/audio/engine/processor.h>
+#include <piejam/audio/engine/rt_task_executor.h>
 #include <piejam/audio/io_process.h>
 #include <piejam/audio/io_process_config.h>
 #include <piejam/audio/multichannel_buffer.h>
@@ -47,7 +48,6 @@
 #include <piejam/midi/event.h>
 #include <piejam/midi/input_event_handler.h>
 #include <piejam/set_if.h>
-#include <piejam/thread/rt_task_executor.h>
 #include <piejam/tuple_element_compare.h>
 
 #include <spdlog/spdlog.h>
