@@ -18,7 +18,7 @@
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/slice_algorithms.h>
 #include <piejam/fx_modules/filter/filter_module.h>
-#include <piejam/integral_constant.h>
+#include <piejam/make_constant.h>
 #include <piejam/math.h>
 #include <piejam/runtime/components/stream.h>
 #include <piejam/runtime/fx/module.h>
@@ -48,38 +48,24 @@ struct event_value
     coeffs_t coeffs;
 };
 
-using lp2_tag = make_integral_constant<type::lp2>;
-using lp4_tag = make_integral_constant<type::lp4>;
-using bp2_tag = make_integral_constant<type::bp2>;
-using bp4_tag = make_integral_constant<type::bp4>;
-using hp2_tag = make_integral_constant<type::hp2>;
-using hp4_tag = make_integral_constant<type::hp4>;
-using br_tag = make_integral_constant<type::br>;
+using lp2_tag = make_constant<type::lp2>;
+using lp4_tag = make_constant<type::lp4>;
+using bp2_tag = make_constant<type::bp2>;
+using bp4_tag = make_constant<type::bp4>;
+using hp2_tag = make_constant<type::hp2>;
+using hp4_tag = make_constant<type::hp4>;
+using br_tag = make_constant<type::br>;
 
 namespace biqflt = audio::dsp::biquad_filter;
 
 using tag_make_coefficients_map = boost::mp11::mp_list<
-        std::pair<
-                lp2_tag,
-                make_integral_constant<&biqflt::make_lp_coefficients<float>>>,
-        std::pair<
-                lp4_tag,
-                make_integral_constant<&biqflt::make_lp_coefficients<float>>>,
-        std::pair<
-                bp2_tag,
-                make_integral_constant<&biqflt::make_bp_coefficients<float>>>,
-        std::pair<
-                bp4_tag,
-                make_integral_constant<&biqflt::make_bp_coefficients<float>>>,
-        std::pair<
-                hp2_tag,
-                make_integral_constant<&biqflt::make_hp_coefficients<float>>>,
-        std::pair<
-                hp4_tag,
-                make_integral_constant<&biqflt::make_hp_coefficients<float>>>,
-        std::pair<
-                br_tag,
-                make_integral_constant<&biqflt::make_br_coefficients<float>>>>;
+        std::pair<lp2_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
+        std::pair<lp4_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
+        std::pair<bp2_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
+        std::pair<bp4_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
+        std::pair<hp2_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
+        std::pair<hp4_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
+        std::pair<br_tag, make_constant<&biqflt::make_br_coefficients<float>>>>;
 
 template <class Tag>
 constexpr auto
