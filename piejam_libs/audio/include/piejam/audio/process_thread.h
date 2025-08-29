@@ -5,7 +5,7 @@
 #pragma once
 
 #include <piejam/audio/alloc_debug.h>
-#include <piejam/audio/fp_env_ftz.h>
+#include <piejam/audio/fp_env.h>
 
 #include <piejam/thread/configuration.h>
 #include <piejam/type_traits.h>
