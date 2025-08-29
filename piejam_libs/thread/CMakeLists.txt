@@ -8,7 +8,7 @@ add_library(piejam_thread STATIC
     include/piejam/thread/cache_line_size.h
     include/piejam/thread/configuration.h
     include/piejam/thread/cpu_clock.h
-    include/piejam/thread/fp_env.h
+    include/piejam/thread/cpu_util.h
     include/piejam/thread/fwd.h
     include/piejam/thread/name.h
     include/piejam/thread/priority.h
@@ -17,7 +17,7 @@ add_library(piejam_thread STATIC
     src/piejam/thread/alloc_debug.cpp
     src/piejam/thread/configuration.cpp
     src/piejam/thread/cpu_clock.cpp
-    src/piejam/thread/fp_env.cpp
+    src/piejam/thread/cpu_util.cpp
     src/piejam/thread/name.cpp
     src/piejam/thread/priority.cpp
 )

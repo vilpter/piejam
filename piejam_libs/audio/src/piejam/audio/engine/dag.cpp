@@ -10,6 +10,8 @@
 #include <piejam/audio/engine/rt_task_executor.h>
 #include <piejam/audio/engine/thread_context.h>
 #include <piejam/range/indices.h>
+#include <piejam/thread/cache_line_size.h>
+#include <piejam/thread/cpu_util.h>
 
 #include <boost/assert.hpp>
 #include <boost/lockfree/stack.hpp>
@@ -164,12 +166,14 @@ public:
         , m_initial_tasks(collect_initial_tasks(m_nodes))
         , m_main_worker(
                   event_memory_size,
+                  m_running_counter,
                   m_nodes_to_process,
                   m_buffer_size,
                   m_run_queue)
         , m_workers(make_workers(
                   worker_threads.size(),
                   event_memory_size,
+                  m_running_counter,
                   m_nodes_to_process,
                   m_buffer_size,
                   m_run_queue))
@@ -203,6 +207,14 @@ public:
         m_main_worker();
 
         BOOST_ASSERT(m_nodes_to_process.load(std::memory_order_relaxed) == 0);
+
+        // busy wait until all workers finished
+        while (m_running_counter.load(std::memory_order_acquire) > 0)
+        {
+            std::atomic_signal_fence(std::memory_order_seq_cst);
+
+            this_thread::cpu_spin_yield();
+        }
     }
 
 private:
@@ -226,10 +238,12 @@ private:
     {
         dag_worker(
                 std::size_t const event_memory_size,
+                std::atomic_size_t& running_counter,
                 std::atomic_size_t& nodes_to_process,
                 std::atomic_size_t& buffer_size,
                 jobs_t& run_queue)
             : m_event_memory(event_memory_size)
+            , m_running(running_counter)
             , m_nodes_to_process(nodes_to_process)
             , m_buffer_size(buffer_size)
             , m_run_queue(run_queue)
@@ -238,6 +252,8 @@ private:
 
         void operator()()
         {
+            m_running.fetch_add(1, std::memory_order_release);
+
             m_thread_context.buffer_size =
                     m_buffer_size.load(std::memory_order_relaxed);
 
@@ -254,6 +270,8 @@ private:
             }
 
             m_event_memory.release();
+
+            BOOST_VERIFY(0 < m_running.fetch_sub(1, std::memory_order_release));
         }
 
     private:
@@ -292,6 +310,7 @@ private:
         audio::engine::event_buffer_memory m_event_memory;
         audio::engine::thread_context m_thread_context{
                 &m_event_memory.memory_resource()};
+        std::atomic_size_t& m_running;
         std::atomic_size_t& m_nodes_to_process;
         std::atomic_size_t& m_buffer_size;
         jobs_t& m_run_queue;
@@ -304,6 +323,7 @@ private:
     static auto make_workers(
             std::size_t const num_workers,
             std::size_t const event_memory_size,
+            std::atomic_size_t& running_counter,
             std::atomic_size_t& nodes_to_process,
             std::atomic_size_t& buffer_size,
             jobs_t& run_queue) -> workers_t
@@ -315,6 +335,7 @@ private:
         {
             workers.emplace_back(
                     event_memory_size,
+                    running_counter,
                     nodes_to_process,
                     buffer_size,
                     run_queue);
@@ -323,12 +344,13 @@ private:
         return workers;
     }
 
+    alignas(thread::cache_line_size) std::atomic_size_t m_running_counter{};
+    alignas(thread::cache_line_size) std::atomic_size_t m_nodes_to_process{};
     std::span<rt_task_executor> m_worker_threads;
-    std::atomic_size_t m_nodes_to_process{};
     std::vector<node*> const m_initial_tasks;
     jobs_t m_run_queue;
-    dag_worker m_main_worker;
     std::atomic_size_t m_buffer_size{};
+    dag_worker m_main_worker;
     workers_t m_workers;
 };
 

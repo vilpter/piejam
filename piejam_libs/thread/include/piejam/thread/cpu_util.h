@@ -9,4 +9,6 @@ namespace piejam::this_thread
 
 void enable_flush_to_zero() noexcept;
 
+void cpu_spin_yield() noexcept;
+
 } // namespace piejam::this_thread

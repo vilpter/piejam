@@ -6,7 +6,7 @@
 
 #include <piejam/thread/affinity.h>
 #include <piejam/thread/alloc_debug.h>
-#include <piejam/thread/fp_env.h>
+#include <piejam/thread/cpu_util.h>
 #include <piejam/thread/name.h>
 #include <piejam/thread/priority.h>
 

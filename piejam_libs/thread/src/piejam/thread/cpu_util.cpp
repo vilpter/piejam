@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/thread/fp_env.h>
+#include <piejam/thread/cpu_util.h>
 
 #if defined(__x86_64__)
 #include <xmmintrin.h> // for _MM_SET_FLUSH_ZERO_MODE
@@ -33,6 +33,24 @@ enable_flush_to_zero() noexcept
     asm volatile("vmsr fpscr, %0" : : "r"(fpscr));
 #else
 #warning "flush-to-zero not implemented on this platform"
+#endif
+}
+
+void
+cpu_spin_yield() noexcept
+{
+#if defined(__x86_64__)
+    _mm_pause(); // SSE pause
+#elif defined(__aarch64__)
+    asm volatile("yield" ::: "memory");
+#elif defined(__arm__)
+#ifdef __ARM_ACLE
+    __yield();
+#else
+    asm volatile("yield");
+#endif
+#else
+#warning "cpu_spin_yield not implemented on this platform"
 #endif
 }
 
