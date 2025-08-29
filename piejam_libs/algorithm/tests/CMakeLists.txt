@@ -17,8 +17,7 @@ add_executable(piejam_algorithm_test
     shift_push_back_test.cpp
     transform_to_vector_test.cpp
 )
-target_link_libraries(piejam_algorithm_test gtest_driver piejam_algorithm)
-target_compile_options(piejam_algorithm_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_algorithm_test gtest_driver piejam_compiler_warnings piejam_algorithm)
 
 add_test(NAME piejam_algorithm_test COMMAND piejam_algorithm_test)
 

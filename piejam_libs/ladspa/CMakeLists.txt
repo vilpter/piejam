@@ -22,7 +22,6 @@ add_library(piejam_ladspa STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/ladspa/scan.cpp
 )
 
-target_compile_options(piejam_ladspa PRIVATE -Wall -Wextra -Werror -pedantic-errors)
 target_include_directories(piejam_ladspa
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(piejam_ladspa
@@ -30,6 +29,7 @@ target_link_libraries(piejam_ladspa
     piejam_audio
 
     PRIVATE
+    piejam_compiler_warnings
     fmt
     spdlog::spdlog
     piejam_range)

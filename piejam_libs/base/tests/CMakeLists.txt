@@ -18,8 +18,7 @@ add_executable(piejam_base_test
     tuple_test.cpp
     type_traits_test.cpp
 )
-target_link_libraries(piejam_base_test gtest_driver piejam_base)
-target_compile_options(piejam_base_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_base_test gtest_driver piejam_compiler_warnings piejam_base)
 
 add_test(NAME piejam_base_test COMMAND piejam_base_test)
 

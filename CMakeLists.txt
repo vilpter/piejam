@@ -12,6 +12,54 @@ set(CMAKE_CXX_STANDARD 20)
 option(PIEJAM_BENCHMARKS "Build benchmarks" OFF)
 option(PIEJAM_TESTS "Build tests" OFF)
 
+add_library(piejam_compiler_warnings INTERFACE)
+
+# GNU/Clang warnings
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    target_compile_options(piejam_compiler_warnings INTERFACE
+        -Wall
+        -Wextra
+        -Werror
+        -pedantic-errors
+
+        # -Walloca
+        # -Wcast-align
+        # -Wcast-qual
+        # -Wcomma-subscript
+        # -Wctor-dtor-privacy
+        # -Wdeprecated-copy-dtor
+        # -Wdouble-promotion
+        # -Wduplicated-branches
+        # -Wduplicated-cond
+        # -Wenum-conversion
+        # # -Wextra-semi
+        # -Wfloat-equal
+        # -Wformat-overflow=2
+        # -Wformat-signedness
+        # -Wformat=2
+        # # -Wframe-larger-than=${DEBUG_MIN_FRAME_SIZE}
+        # # -Wjump-misses-init
+        # -Wlogical-op
+        # -Wmismatched-tags
+        # # -Wmissing-braces
+        # -Wmultichar
+        # # -Wnoexcept
+        # -Wnon-virtual-dtor
+        # # -Woverloaded-virtual
+        # -Wpointer-arith
+        # -Wrange-loop-construct
+        # -Wrestrict
+        # # -Wshadow
+        # -Wstrict-null-sentinel
+        # -Wsuggest-attribute=format
+        # -Wsuggest-attribute=malloc
+        # -Wuninitialized
+        # -Wvla
+        # -Wvolatile
+        # -Wwrite-strings
+    )
+endif()
+
 if(PIEJAM_TESTS)
     enable_testing()
     find_package(GTest REQUIRED)

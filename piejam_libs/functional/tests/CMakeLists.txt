@@ -12,8 +12,7 @@ add_executable(piejam_functional_test
     ${CMAKE_CURRENT_SOURCE_DIR}/memo_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/operators_test.cpp
 )
-target_link_libraries(piejam_functional_test gtest_driver piejam_functional)
-target_compile_options(piejam_functional_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_functional_test gtest_driver piejam_compiler_warnings piejam_functional)
 
 add_test(NAME piejam_functional_test COMMAND piejam_functional_test)
 

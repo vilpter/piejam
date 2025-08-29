@@ -27,8 +27,7 @@ add_executable(piejam_runtime_test
     ${CMAKE_CURRENT_SOURCE_DIR}/state_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/stream_processor_factory_test.cpp
 )
-target_link_libraries(piejam_runtime_test gtest_driver gmock piejam_runtime)
-target_compile_options(piejam_runtime_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_runtime_test gtest_driver gmock piejam_compiler_warnings piejam_runtime)
 
 add_test(NAME piejam_runtime_test COMMAND piejam_runtime_test)
 

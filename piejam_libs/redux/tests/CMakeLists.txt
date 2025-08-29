@@ -15,8 +15,7 @@ add_executable(piejam_redux_test
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_delegate_middleware_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/thunk_middleware_test.cpp
 )
-target_link_libraries(piejam_redux_test gtest_driver piejam_redux)
-target_compile_options(piejam_redux_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_redux_test gtest_driver piejam_compiler_warnings piejam_redux)
 
 add_test(NAME piejam_redux_test COMMAND piejam_redux_test)
 

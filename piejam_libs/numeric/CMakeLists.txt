@@ -20,7 +20,6 @@ add_library(piejam_numeric STATIC
 )
 
 target_include_directories(piejam_numeric PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_compile_options(piejam_numeric PRIVATE -Wall -Wextra -Werror -pedantic-errors)
-target_link_libraries(piejam_numeric PUBLIC MIPP PRIVATE FFTW::Float)
+target_link_libraries(piejam_numeric PUBLIC MIPP PRIVATE piejam_compiler_warnings FFTW::Float)
 
 add_subdirectory(tests)

@@ -9,8 +9,7 @@ endif()
 add_executable(piejam_gui_test
     ${CMAKE_CURRENT_SOURCE_DIR}/DbScaleData_test.cpp
 )
-target_link_libraries(piejam_gui_test gtest_driver gmock piejam_gui)
-target_compile_options(piejam_gui_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_gui_test gtest_driver gmock piejam_compiler_warnings piejam_gui)
 
 add_test(NAME piejam_gui_test COMMAND piejam_gui_test)
 

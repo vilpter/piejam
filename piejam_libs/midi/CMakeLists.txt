@@ -15,7 +15,6 @@ add_library(piejam_midi STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/midi/device_manager.cpp
 )
 
-target_compile_options(piejam_midi PRIVATE -Wall -Wextra -Werror -pedantic-errors)
 target_include_directories(piejam_midi
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(piejam_midi
@@ -23,6 +22,7 @@ target_link_libraries(piejam_midi
     piejam_base
 
     PRIVATE
+    piejam_compiler_warnings
     piejam_algorithm
     piejam_system
     fmt

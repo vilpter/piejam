@@ -26,13 +26,9 @@ target_include_directories(piejam_thread PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/incl
 target_compile_options(piejam_thread
     PRIVATE
     $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>,$<STREQUAL:${CMAKE_SYSTEM_PROCESSOR},x86_64>>:-msse>
-    -Wall
-    -Wextra
-    -Werror
-    -pedantic-errors
 )
 
-target_link_libraries(piejam_thread PRIVATE pthread)
+target_link_libraries(piejam_thread PRIVATE piejam_compiler_warnings pthread)
 
 add_subdirectory(benchmarks)
 add_subdirectory(tests)

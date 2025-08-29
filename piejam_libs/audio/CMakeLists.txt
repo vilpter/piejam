@@ -112,13 +112,6 @@ add_library(piejam_audio STATIC
     src/piejam/audio/sound_card_manager.cpp
 )
 
-target_compile_options(piejam_audio
-    PRIVATE
-    -Wall
-    -Wextra
-    -Werror
-    -pedantic-errors
-)
 target_include_directories(piejam_audio
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(piejam_audio
@@ -131,6 +124,7 @@ target_link_libraries(piejam_audio
         piejam_system
         piejam_thread
     PRIVATE
+        piejam_compiler_warnings
         fmt
         spdlog::spdlog
 )

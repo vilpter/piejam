@@ -181,7 +181,7 @@ add_library(piejam_runtime STATIC
 
 find_package(nlohmann_json REQUIRED)
 
-target_compile_options(piejam_runtime PRIVATE -Wall -Wextra -Werror -pedantic-errors $<$<CONFIG:Release>:-Wno-maybe-uninitialized>)
+target_compile_options(piejam_runtime PRIVATE $<$<CONFIG:Release>:-Wno-maybe-uninitialized>)
 target_include_directories(piejam_runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(piejam_runtime
     PUBLIC
@@ -192,6 +192,7 @@ target_link_libraries(piejam_runtime
     piejam_redux
 
     PRIVATE
+    piejam_compiler_warnings
     piejam_algorithm
     piejam_functional
     piejam_numeric

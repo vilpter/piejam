@@ -48,8 +48,7 @@ add_executable(piejam_audio_test
     stream_ring_buffer_test.cpp
     value_io_processor_test.cpp
 )
-target_link_libraries(piejam_audio_test gtest_driver gmock piejam_audio piejam_range)
-target_compile_options(piejam_audio_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_audio_test gtest_driver gmock piejam_compiler_warnings piejam_audio piejam_range)
 
 add_test(NAME piejam_audio_test COMMAND piejam_audio_test)
 

@@ -11,8 +11,7 @@ add_executable(piejam_numeric_test
     intops_test.cpp
     mipp_iterator_test.cpp
 )
-target_link_libraries(piejam_numeric_test gtest_driver piejam_numeric)
-target_compile_options(piejam_numeric_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_link_libraries(piejam_numeric_test gtest_driver piejam_compiler_warnings piejam_numeric)
 
 add_test(NAME piejam_numeric_test COMMAND piejam_numeric_test)
 

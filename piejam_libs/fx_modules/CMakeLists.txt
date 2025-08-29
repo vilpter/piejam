@@ -84,11 +84,14 @@ add_library(piejam_fx_modules STATIC
 )
 
 target_include_directories(piejam_fx_modules PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_compile_options(piejam_fx_modules PRIVATE -Wall -Wextra -Werror -pedantic-errors)
 
 target_link_libraries(piejam_fx_modules
+    PUBLIC
     piejam_runtime
     piejam_gui
+
+    PRIVATE
+    piejam_compiler_warnings
 )
 
 unset(RESOURCE_FILES)

@@ -149,6 +149,7 @@ add_library(piejam_gui STATIC
 
 target_include_directories(piejam_gui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(piejam_gui
+    PUBLIC
     Qt5::Quick
     Qt5::QuickControls2
     Qt5::Svg
@@ -161,8 +162,10 @@ target_link_libraries(piejam_gui
     piejam_log
     piejam_numeric
     piejam_runtime
+
+    PRIVATE
+    piejam_compiler_warnings
 )
-target_compile_options(piejam_gui PRIVATE -Wall -Wextra -Werror -pedantic-errors)
 
 add_subdirectory(tests)
 
