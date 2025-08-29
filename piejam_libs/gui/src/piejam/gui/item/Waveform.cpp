@@ -103,7 +103,8 @@ public:
         if (oldMaterial == nullptr || c != oldMaterial->color() ||
             state.isOpacityDirty())
         {
-            float opacity = state.opacity() * c.alphaF();
+            auto const opacity =
+                    static_cast<qreal>(state.opacity()) * c.alphaF();
             QVector4D v(
                     c.redF() * opacity,
                     c.greenF() * opacity,
@@ -375,7 +376,7 @@ void
 Waveform::updateTransformMatrix(QSGTransformNode& node)
 {
     QMatrix4x4 m;
-    m.scale(1, size().height() / -2.f);
+    m.scale(1, static_cast<float>(size().height()) / -2.f);
     m.translate(0, -1);
     node.setMatrix(m);
 

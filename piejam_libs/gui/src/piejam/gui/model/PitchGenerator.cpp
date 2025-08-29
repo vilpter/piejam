@@ -29,7 +29,7 @@ PitchGenerator::process() -> float
 {
     if (m_captured_samples >= captureSize)
     {
-        if (audio::dsp::simd::rms<float>(m_signal) < 0.001) // -60 dB
+        if (audio::dsp::simd::rms<float>(m_signal) < 0.001f) // -60 dB
         {
             m_last_frequency = 0.f;
         }

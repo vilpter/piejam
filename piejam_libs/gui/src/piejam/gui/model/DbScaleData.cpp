@@ -87,7 +87,7 @@ DbScaleData::dBAt(float const position) const
 {
     BOOST_ASSERT(!m_ticks.empty());
 
-    if (position == 0. || position < m_ticks.front().normalized)
+    if (position == 0.f || position < m_ticks.front().normalized)
     {
         return -s_inf;
     }

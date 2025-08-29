@@ -20,7 +20,7 @@ namespace piejam::audio::engine
 {
 
 class processor;
-class thread_context;
+struct thread_context;
 
 class processor_job final
 {

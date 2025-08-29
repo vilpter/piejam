@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <piejam/pimpl.h>
 #include <piejam/system/device.h>
 
 #include <string>
@@ -54,7 +55,8 @@ private:
     midi_client_id_t m_client_id{};
     midi_port_t m_in_port{};
 
-    std::vector<std::byte> m_input_buffer;
+    struct input_events;
+    pimpl<input_events> m_input_events;
 };
 
 struct midi_device

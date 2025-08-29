@@ -132,11 +132,16 @@ scan_input_devices(system::device& seq) -> std::vector<midi_device>
 
 } // namespace
 
+struct midi_io::input_events
+{
+    std::array<snd_seq_event, 128> buffer;
+};
+
 midi_io::midi_io()
     : m_seq(open_seq())
     , m_client_id(get_client_id(m_seq))
     , m_in_port(make_input_port(m_seq, m_client_id))
-    , m_input_buffer(sizeof(snd_seq_event) * 128)
+    , m_input_events(make_pimpl<input_events>())
 {
     if (auto err = m_seq.set_nonblock())
     {
@@ -147,14 +152,14 @@ midi_io::midi_io()
 void
 midi_io::process_input(event_handler& handler)
 {
-    auto read_result = m_seq.read(m_input_buffer);
+    auto read_result = m_seq.read(std::span{m_input_events->buffer});
     if (!read_result)
     {
         return;
     }
 
     std::span<snd_seq_event const> events(
-            reinterpret_cast<snd_seq_event const*>(m_input_buffer.data()),
+            m_input_events->buffer.data(),
             read_result.value() / sizeof(snd_seq_event));
 
     for (snd_seq_event const& ev : events)

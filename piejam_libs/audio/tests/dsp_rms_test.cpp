@@ -27,7 +27,7 @@ struct rms_test : public testing::TestWithParam<float>
 TEST_P(rms_test, raw_loop)
 {
     EXPECT_NEAR(
-            GetParam() / std::numbers::sqrt2,
+            GetParam() / std::numbers::sqrt2_v<float>,
             rms(std::span{std::as_const(signal)}),
             0.0003);
 }
@@ -35,7 +35,7 @@ TEST_P(rms_test, raw_loop)
 TEST_P(rms_test, simd)
 {
     EXPECT_NEAR(
-            GetParam() / std::numbers::sqrt2,
+            GetParam() / std::numbers::sqrt2_v<float>,
             simd::rms(std::span{std::as_const(signal)}),
             0.0003);
 }

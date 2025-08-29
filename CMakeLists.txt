@@ -22,41 +22,34 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
         -Werror
         -pedantic-errors
 
-        # -Walloca
-        # -Wcast-align
-        # -Wcast-qual
-        # -Wcomma-subscript
-        # -Wctor-dtor-privacy
-        # -Wdeprecated-copy-dtor
-        # -Wdouble-promotion
-        # -Wduplicated-branches
-        # -Wduplicated-cond
-        # -Wenum-conversion
-        # # -Wextra-semi
-        # -Wfloat-equal
-        # -Wformat-overflow=2
-        # -Wformat-signedness
-        # -Wformat=2
-        # # -Wframe-larger-than=${DEBUG_MIN_FRAME_SIZE}
-        # # -Wjump-misses-init
-        # -Wlogical-op
-        # -Wmismatched-tags
-        # # -Wmissing-braces
-        # -Wmultichar
-        # # -Wnoexcept
-        # -Wnon-virtual-dtor
-        # # -Woverloaded-virtual
-        # -Wpointer-arith
-        # -Wrange-loop-construct
-        # -Wrestrict
-        # # -Wshadow
-        # -Wstrict-null-sentinel
-        # -Wsuggest-attribute=format
-        # -Wsuggest-attribute=malloc
-        # -Wuninitialized
-        # -Wvla
-        # -Wvolatile
-        # -Wwrite-strings
+        -Walloca
+        -Wcast-align
+        -Wcast-qual
+        -Wcomma-subscript
+        -Wctor-dtor-privacy
+        -Wdeprecated-copy-dtor
+        -Wdouble-promotion
+        -Wduplicated-branches
+        -Wduplicated-cond
+        -Wenum-conversion
+        -Wformat-overflow=2
+        -Wformat-signedness
+        -Wformat=2
+        -Wlogical-op
+        -Wmismatched-tags
+        -Wmultichar
+        # -Wnoexcept
+        -Wnon-virtual-dtor
+        -Wpointer-arith
+        -Wrange-loop-construct
+        -Wrestrict
+        -Wstrict-null-sentinel
+        -Wsuggest-attribute=format
+        -Wsuggest-attribute=malloc
+        -Wuninitialized
+        -Wvla
+        -Wvolatile
+        -Wwrite-strings
     )
 endif()
 

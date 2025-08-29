@@ -16,7 +16,6 @@
 #include <boost/polymorphic_cast.hpp>
 
 #include <numeric>
-#include <ranges>
 
 namespace piejam::gui::item
 {
@@ -35,7 +34,7 @@ struct Scope::Impl
                 modY = 1.f;
             }
 
-            m.scale(1, static_cast<float>(height / (-2. * modY)));
+            m.scale(1, static_cast<float>(height) / (-2.f * modY));
             m.translate(0, -modY);
             node.setMatrix(m);
 

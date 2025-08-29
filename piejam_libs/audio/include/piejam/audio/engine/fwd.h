@@ -34,6 +34,6 @@ class process;
 struct process_context;
 class processor_job;
 class rt_task_executor;
-class thread_context;
+struct thread_context;
 
 } // namespace piejam::audio::engine

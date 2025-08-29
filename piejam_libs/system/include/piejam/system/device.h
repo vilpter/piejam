@@ -47,6 +47,17 @@ public:
     auto read(std::span<std::byte> buffer) noexcept
             -> outcome::std_result<std::size_t>;
 
+    template <class T, std::size_t Extent>
+    [[nodiscard]]
+    auto read(std::span<T, Extent> buffer) noexcept
+            -> outcome::std_result<std::size_t>
+    {
+        return read(
+                std::span<std::byte>{
+                        reinterpret_cast<std::byte*>(buffer.data()),
+                        buffer.size_bytes()});
+    }
+
     [[nodiscard]]
     auto set_nonblock(bool set = true) -> std::error_code;
 
