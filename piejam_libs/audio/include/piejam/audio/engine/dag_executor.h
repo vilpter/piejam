@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <cstddef>
 
 namespace piejam::audio::engine
@@ -14,7 +15,8 @@ class dag_executor
 public:
     virtual ~dag_executor() = default;
 
-    virtual void operator()(std::size_t buffer_size) = 0;
+    virtual auto operator()(std::size_t buffer_size)
+            -> std::chrono::nanoseconds = 0;
 };
 
 } // namespace piejam::audio::engine

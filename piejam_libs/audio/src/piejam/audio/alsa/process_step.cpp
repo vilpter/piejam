@@ -8,7 +8,6 @@
 #include "pcm_writer.h"
 
 #include <piejam/algorithm/transform_to_vector.h>
-#include <piejam/audio/cpu_load_meter.h>
 #include <piejam/audio/io_process_config.h>
 #include <piejam/audio/pcm_convert.h>
 #include <piejam/audio/pcm_format.h>
@@ -122,14 +121,16 @@ struct interleaved_reader final : pcm_reader
         , m_num_channels(num_channels)
         , m_period_size(period_size)
         , m_read_buffer(num_channels * period_size.value())
-        , m_converter(algorithm::transform_to_vector(
-                  range::iota(num_channels),
-                  [this](std::size_t const channel) {
-                      return pcm_input_buffer_converter(
-                              [this, channel](std::span<float> const buffer) {
-                                  convert(channel, buffer);
-                              });
-                  }))
+        , m_converter(
+                  algorithm::transform_to_vector(
+                          range::iota(num_channels),
+                          [this](std::size_t const channel) {
+                              return pcm_input_buffer_converter(
+                                      [this,
+                                       channel](std::span<float> const buffer) {
+                                          convert(channel, buffer);
+                                      });
+                          }))
     {
         BOOST_ASSERT(m_fd);
     }
@@ -264,19 +265,22 @@ struct interleaved_writer final : pcm_writer
         , m_num_channels(num_channels)
         , m_period_size(period_size)
         , m_write_buffer(num_channels * period_size.value())
-        , m_converter(algorithm::transform_to_vector(
-                  range::iota(num_channels),
-                  [this](std::size_t const channel) {
-                      return pcm_output_buffer_converter(
-                              [this,
-                               channel](float constant, std::size_t size) {
-                                  convert(constant, size, channel);
-                              },
-                              [this,
-                               channel](std::span<float const> source_buffer) {
-                                  convert(source_buffer, channel);
-                              });
-                  }))
+        , m_converter(
+                  algorithm::transform_to_vector(
+                          range::iota(num_channels),
+                          [this](std::size_t const channel) {
+                              return pcm_output_buffer_converter(
+                                      [this, channel](
+                                              float constant,
+                                              std::size_t size) {
+                                          convert(constant, size, channel);
+                                      },
+                                      [this, channel](
+                                              std::span<float const>
+                                                      source_buffer) {
+                                          convert(source_buffer, channel);
+                                      });
+                          }))
     {
         BOOST_ASSERT(m_fd);
     }
@@ -470,14 +474,16 @@ process_step::operator()() -> std::error_condition
 
     if (!err)
     {
-        cpu_load_meter cpu_load_meter(
-                m_io_config.buffer_config.period_size.value(),
-                m_io_config.buffer_config.sample_rate);
+        std::size_t const period_size =
+                m_io_config.buffer_config.period_size.value();
 
-        m_process_function(m_io_config.buffer_config.period_size.value());
+        auto const cpu_load_duration = m_process_function(period_size);
+        auto const max_processing_time{
+                m_io_config.buffer_config.sample_rate.to_nanoseconds(
+                        period_size)};
 
         m_cpu_load.store(
-                m_cpu_load_mean_acc(cpu_load_meter.stop()),
+                m_cpu_load_mean_acc(cpu_load_duration / max_processing_time),
                 std::memory_order_relaxed);
 
         err = m_writer->transfer();

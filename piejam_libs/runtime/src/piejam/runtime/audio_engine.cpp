@@ -886,10 +886,11 @@ audio_engine::init_process(
     }
 }
 
-void
+auto
 audio_engine::process(std::size_t const buffer_size) noexcept
+        -> std::chrono::nanoseconds
 {
-    m_impl->process(buffer_size);
+    return m_impl->process(buffer_size);
 }
 
 } // namespace piejam::runtime

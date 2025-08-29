@@ -7,6 +7,7 @@
 #include <piejam/audio/engine/graph.h>
 
 #include <atomic>
+#include <chrono>
 #include <future>
 #include <memory>
 
@@ -22,7 +23,8 @@ public:
     [[nodiscard]]
     auto swap_executor(std::unique_ptr<dag_executor>) -> bool;
 
-    void operator()(std::size_t buffer_size) noexcept;
+    auto operator()(std::size_t buffer_size) noexcept
+            -> std::chrono::nanoseconds;
 
 private:
     std::unique_ptr<dag_executor> m_executor;

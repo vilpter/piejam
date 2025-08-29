@@ -17,8 +17,9 @@ namespace
 class dummy_dag_executor final : public dag_executor
 {
 public:
-    void operator()(std::size_t) override
+    auto operator()(std::size_t) -> std::chrono::nanoseconds override
     {
+        return {};
     }
 };
 
@@ -62,8 +63,9 @@ process::swap_executor(std::unique_ptr<dag_executor> next_dag_executor) -> bool
     return false;
 }
 
-void
+auto
 process::operator()(std::size_t const buffer_size) noexcept
+        -> std::chrono::nanoseconds
 {
     if (auto next_dag_executor = std::unique_ptr<dag_executor>(
                 m_next_executor.exchange(nullptr, std::memory_order_acq_rel)))
@@ -72,7 +74,7 @@ process::operator()(std::size_t const buffer_size) noexcept
         m_prev_executor.set_value(std::move(next_dag_executor));
     }
 
-    (*m_executor)(buffer_size);
+    return (*m_executor)(buffer_size);
 }
 
 } // namespace piejam::audio::engine

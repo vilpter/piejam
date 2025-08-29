@@ -16,6 +16,7 @@
 #include <piejam/pimpl.h>
 #include <piejam/thread/fwd.h>
 
+#include <chrono>
 #include <memory>
 #include <optional>
 #include <span>
@@ -57,7 +58,7 @@ public:
             std::span<audio::pcm_input_buffer_converter const>,
             std::span<audio::pcm_output_buffer_converter const>);
 
-    void process(std::size_t buffer_size) noexcept;
+    auto process(std::size_t buffer_size) noexcept -> std::chrono::nanoseconds;
 
 private:
     struct impl;

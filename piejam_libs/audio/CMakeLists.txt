@@ -7,7 +7,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/components/identity.h
     include/piejam/audio/components/pan_balance.h
     include/piejam/audio/components/remap_channels.h
-    include/piejam/audio/cpu_load_meter.h
     include/piejam/audio/dsp/biquad.h
     include/piejam/audio/dsp/biquad_filter.h
     include/piejam/audio/dsp/envelope_follower.h
@@ -93,7 +92,6 @@ add_library(piejam_audio STATIC
     src/piejam/audio/components/amplifier.cpp
     src/piejam/audio/components/identity.cpp
     src/piejam/audio/components/pan_balance.cpp
-    src/piejam/audio/cpu_load_meter.cpp
     src/piejam/audio/engine/clip_processor.cpp
     src/piejam/audio/engine/dag.cpp
     src/piejam/audio/engine/export_graph_as_dot.cpp

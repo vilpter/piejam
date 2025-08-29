@@ -21,8 +21,9 @@ namespace
 
 struct test_dummy_dag_executor : public dag_executor
 {
-    void operator()(std::size_t) override
+    auto operator()(std::size_t) -> std::chrono::nanoseconds override
     {
+        return {};
     }
 };
 

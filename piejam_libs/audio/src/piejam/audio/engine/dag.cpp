@@ -11,6 +11,7 @@
 #include <piejam/audio/engine/thread_context.h>
 #include <piejam/range/indices.h>
 #include <piejam/thread/cache_line_size.h>
+#include <piejam/thread/cpu_clock.h>
 #include <piejam/thread/cpu_util.h>
 
 #include <boost/assert.hpp>
@@ -18,6 +19,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <numeric>
 #include <ranges>
 #include <span>
 #include <vector>
@@ -68,12 +70,12 @@ private:
 
         for (auto const& [parent_id, children] : graph)
         {
-            BOOST_ASSERT(nodes.count(parent_id));
+            BOOST_ASSERT(nodes.contains(parent_id));
             std::ranges::transform(
                     children,
                     std::back_inserter(nodes[parent_id].children),
                     [&nodes](dag::task_id_t const child_id) {
-                        BOOST_ASSERT(nodes.count(child_id));
+                        BOOST_ASSERT(nodes.contains(child_id));
                         return std::ref(nodes[child_id]);
                     });
 
@@ -100,8 +102,11 @@ public:
         m_run_queue.reserve(m_nodes.size());
     }
 
-    void operator()(std::size_t const buffer_size) override
+    auto operator()(std::size_t const buffer_size)
+            -> std::chrono::nanoseconds override
     {
+        auto const start = thread::cpu_clock::now();
+
         for (auto& [id, nd] : m_nodes)
         {
             init_node_for_process(nd);
@@ -138,12 +143,14 @@ public:
         }
 
         m_event_memory.release();
+
+        return thread::cpu_clock::now() - start;
     }
 
 private:
     audio::engine::event_buffer_memory m_event_memory;
     audio::engine::thread_context m_thread_context{
-            &m_event_memory.memory_resource()};
+            .event_memory = &m_event_memory.memory_resource()};
     std::vector<node*> m_run_queue;
 };
 
@@ -180,7 +187,8 @@ public:
     {
     }
 
-    void operator()(std::size_t const buffer_size) override
+    auto operator()(std::size_t const buffer_size)
+            -> std::chrono::nanoseconds override
     {
         m_buffer_size.store(buffer_size, std::memory_order_relaxed);
 
@@ -215,6 +223,17 @@ public:
 
             this_thread::cpu_spin_yield();
         }
+
+        return std::chrono::nanoseconds{
+                std::accumulate(
+                        m_workers.begin(),
+                        m_workers.end(),
+                        m_main_worker.cpu_load(),
+                        [](auto const acc, auto const& w) {
+                            return acc + w.cpu_load();
+                        })
+                        .count() /
+                m_num_all_workers};
     }
 
 private:
@@ -250,9 +269,17 @@ private:
         {
         }
 
+        [[nodiscard]]
+        auto cpu_load() const noexcept -> std::chrono::nanoseconds
+        {
+            return m_cpu_load;
+        }
+
         void operator()()
         {
             m_running.fetch_add(1, std::memory_order_release);
+
+            auto const cpu_load_start = thread::cpu_clock::now();
 
             m_thread_context.buffer_size =
                     m_buffer_size.load(std::memory_order_relaxed);
@@ -270,6 +297,8 @@ private:
             }
 
             m_event_memory.release();
+
+            m_cpu_load = thread::cpu_clock::now() - cpu_load_start;
 
             BOOST_VERIFY(0 < m_running.fetch_sub(1, std::memory_order_release));
         }
@@ -307,9 +336,10 @@ private:
             return next;
         }
 
+        std::chrono::nanoseconds m_cpu_load{};
         audio::engine::event_buffer_memory m_event_memory;
         audio::engine::thread_context m_thread_context{
-                &m_event_memory.memory_resource()};
+                .event_memory = &m_event_memory.memory_resource()};
         std::atomic_size_t& m_running;
         std::atomic_size_t& m_nodes_to_process;
         std::atomic_size_t& m_buffer_size;
@@ -352,6 +382,7 @@ private:
     std::atomic_size_t m_buffer_size{};
     dag_worker m_main_worker;
     workers_t m_workers;
+    std::size_t m_num_all_workers{1 + m_workers.size()};
 };
 
 auto
