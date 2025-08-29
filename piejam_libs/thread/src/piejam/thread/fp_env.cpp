@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/audio/fp_env.h>
+#include <piejam/thread/fp_env.h>
 
 #if defined(__x86_64__)
 #include <xmmintrin.h> // for _MM_SET_FLUSH_ZERO_MODE
@@ -12,7 +12,7 @@
 #include <cstdint>
 #endif
 
-namespace piejam::audio
+namespace piejam::this_thread
 {
 
 void
@@ -36,4 +36,4 @@ enable_flush_to_zero() noexcept
 #endif
 }
 
-} // namespace piejam::audio
+} // namespace piejam::this_thread

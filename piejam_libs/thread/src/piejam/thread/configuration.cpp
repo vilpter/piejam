@@ -5,6 +5,8 @@
 #include <piejam/thread/configuration.h>
 
 #include <piejam/thread/affinity.h>
+#include <piejam/thread/alloc_debug.h>
+#include <piejam/thread/fp_env.h>
 #include <piejam/thread/name.h>
 #include <piejam/thread/priority.h>
 
@@ -22,6 +24,8 @@ configuration::apply() const
     if (realtime_priority)
     {
         this_thread::set_realtime_priority(*realtime_priority);
+        this_thread::prohibit_dynamic_memory_allocation();
+        this_thread::enable_flush_to_zero();
     }
 
     if (name)

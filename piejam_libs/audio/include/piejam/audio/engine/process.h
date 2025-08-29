@@ -20,7 +20,7 @@ public:
     ~process();
 
     [[nodiscard]]
-    bool swap_executor(std::unique_ptr<dag_executor>);
+    auto swap_executor(std::unique_ptr<dag_executor>) -> bool;
 
     void operator()(std::size_t buffer_size) noexcept;
 

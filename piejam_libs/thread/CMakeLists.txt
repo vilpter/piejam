@@ -3,23 +3,34 @@
 # SPDX-License-Identifier: CC0-1.0
 
 add_library(piejam_thread STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/affinity.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/cache_line_size.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/configuration.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/cpu_clock.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/fwd.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/name.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/priority.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/thread/spsc_slot.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/affinity.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/configuration.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/cpu_clock.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/name.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/piejam/thread/priority.cpp
+    include/piejam/thread/affinity.h
+    include/piejam/thread/alloc_debug.h
+    include/piejam/thread/cache_line_size.h
+    include/piejam/thread/configuration.h
+    include/piejam/thread/cpu_clock.h
+    include/piejam/thread/fp_env.h
+    include/piejam/thread/fwd.h
+    include/piejam/thread/name.h
+    include/piejam/thread/priority.h
+    include/piejam/thread/spsc_slot.h
+    src/piejam/thread/affinity.cpp
+    src/piejam/thread/alloc_debug.cpp
+    src/piejam/thread/configuration.cpp
+    src/piejam/thread/cpu_clock.cpp
+    src/piejam/thread/fp_env.cpp
+    src/piejam/thread/name.cpp
+    src/piejam/thread/priority.cpp
 )
 
 target_include_directories(piejam_thread PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_compile_options(piejam_thread PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+target_compile_options(piejam_thread
+    PRIVATE
+    $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>,$<STREQUAL:${CMAKE_SYSTEM_PROCESSOR},x86_64>>:-msse>
+    -Wall
+    -Wextra
+    -Werror
+    -pedantic-errors
+)
 
 target_link_libraries(piejam_thread PRIVATE pthread)
 

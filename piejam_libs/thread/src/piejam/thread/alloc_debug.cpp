@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/audio/alloc_debug.h>
+#include <piejam/thread/alloc_debug.h>
 
 #include <cstddef>
 #include <cstdlib>
@@ -70,7 +70,7 @@ operator delete(void* ptr, std::align_val_t /*al*/) noexcept
 
 #endif
 
-namespace piejam::audio
+namespace piejam::this_thread
 {
 
 void
@@ -81,4 +81,4 @@ prohibit_dynamic_memory_allocation()
 #endif
 }
 
-} // namespace piejam::audio
+} // namespace piejam::this_thread

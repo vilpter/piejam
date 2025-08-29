@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: CC0-1.0
 
 add_library(piejam_audio STATIC
-    include/piejam/audio/alloc_debug.h
     include/piejam/audio/components/amplifier.h
     include/piejam/audio/components/identity.h
     include/piejam/audio/components/pan_balance.h
@@ -58,7 +57,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/engine/thread_context.h
     include/piejam/audio/engine/value_io_processor.h
     include/piejam/audio/engine/verify_process_context.h
-    include/piejam/audio/fp_env.h
     include/piejam/audio/fwd.h
     include/piejam/audio/io_process.h
     include/piejam/audio/io_process_config.h
@@ -82,7 +80,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/sound_card_hw_params.h
     include/piejam/audio/sound_card_manager.h
     include/piejam/audio/types.h
-    src/piejam/audio/alloc_debug.cpp
     src/piejam/audio/alsa/get_io_sound_cards.cpp
     src/piejam/audio/alsa/get_io_sound_cards.h
     src/piejam/audio/alsa/get_set_hw_params.cpp
@@ -113,14 +110,12 @@ add_library(piejam_audio STATIC
     src/piejam/audio/engine/processor_job.cpp
     src/piejam/audio/engine/smoother_processor.cpp
     src/piejam/audio/engine/stream_processor.cpp
-    src/piejam/audio/fp_env.cpp
     src/piejam/audio/io_process.cpp
     src/piejam/audio/sound_card_manager.cpp
 )
 
 target_compile_options(piejam_audio
     PRIVATE
-    $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>,$<STREQUAL:${CMAKE_SYSTEM_PROCESSOR},x86_64>>:-msse>
     -Wall
     -Wextra
     -Werror

@@ -4,9 +4,9 @@
 
 #pragma once
 
-namespace piejam::audio
+namespace piejam::this_thread
 {
 
-void enable_flush_to_zero() noexcept;
+void prohibit_dynamic_memory_allocation();
 
-} // namespace piejam::audio
+} // namespace piejam::this_thread
