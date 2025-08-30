@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <piejam/math/pow_n.h>
 #include <piejam/numeric/mipp_iterator.h>
-#include <piejam/numeric/pow_n.h>
 
 #include <mipp.h>
 
@@ -31,7 +31,7 @@ rms(std::span<T const> const in) -> T
                     in.end(),
                     T{},
                     std::plus<>{},
-                    numeric::pow_n<2>) /
+                    math::pow_n<2>) /
             in.size());
 }
 
@@ -49,7 +49,7 @@ rms(std::span<T const> const in) -> T
             rng.end(),
             mipp::Reg<T>(T{}),
             std::plus<>{},
-            numeric::pow_n<2>);
+            math::pow_n<2>);
 
     return std::sqrt(mipp::sum(sums) / in.size());
 }

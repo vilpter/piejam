@@ -5,7 +5,7 @@
 #pragma once
 
 #include <piejam/audio/pair.h>
-#include <piejam/numeric/pow_n.h>
+#include <piejam/math/pow_n.h>
 
 #include <cmath>
 #include <numbers>
@@ -71,12 +71,12 @@ stereo_balance(T balance_pos) -> pair<T>
 {
     if (balance_pos < T{0})
     {
-        return {T{1}, numeric::pow_n<3>(T{1} + balance_pos)};
+        return {T{1}, math::pow_n<3>(T{1} + balance_pos)};
     }
 
     if (balance_pos > 0.f)
     {
-        return {numeric::pow_n<3>(T{1} - balance_pos), T{1}};
+        return {math::pow_n<3>(T{1} - balance_pos), T{1}};
     }
 
     return pair{T{1}};

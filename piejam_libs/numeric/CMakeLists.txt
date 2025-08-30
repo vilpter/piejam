@@ -12,7 +12,6 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/intx.h
     include/piejam/numeric/mipp.h
     include/piejam/numeric/mipp_iterator.h
-    include/piejam/numeric/pow_n.h
     include/piejam/numeric/rolling_mean.h
     include/piejam/numeric/type_traits.h
     include/piejam/numeric/window.h

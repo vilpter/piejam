@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace piejam::numeric
+namespace piejam::math
 {
 
 template <std::size_t N>
@@ -16,4 +16,4 @@ constexpr auto pow_n = []<class T>(T const t) {
     }(t, std::make_index_sequence<N>{});
 };
 
-} // namespace piejam::numeric
+} // namespace piejam::math

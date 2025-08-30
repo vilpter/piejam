@@ -8,8 +8,8 @@
 
 #include <piejam/functional/operators.h>
 #include <piejam/math.h>
+#include <piejam/math/pow_n.h>
 #include <piejam/numeric/mipp_iterator.h>
-#include <piejam/numeric/pow_n.h>
 
 #include <mipp.h>
 
@@ -88,7 +88,7 @@ private:
                 samples_first,
                 samples_last,
                 sqrsum_first,
-                numeric::pow_n<2>);
+                math::pow_n<2>);
 
         auto add =
                 std::reduce(sqrsum_first, sqrsum_last, V(T{0}), std::plus<V>{});
@@ -141,7 +141,7 @@ private:
                     std::next(samples.begin(), samples_size - history_size),
                     samples.end(),
                     m_sqr_history.begin(),
-                    numeric::pow_n<2>);
+                    math::pow_n<2>);
 
             recompute_squared_sum();
         }
@@ -201,7 +201,7 @@ private:
                             samples_data + samples_size - history_size},
                     numeric::mipp_iterator{samples_data + samples_size},
                     numeric::mipp_iterator{m_sqr_history.data()},
-                    numeric::pow_n<2>);
+                    math::pow_n<2>);
 
             recompute_squared_sum();
         }
@@ -227,11 +227,12 @@ private:
     {
         auto mipprng =
                 numeric::mipp_range(std::span{std::as_const(m_sqr_history)});
-        m_sqr_sum = mipp::sum(std::reduce(
-                mipprng.begin(),
-                mipprng.end(),
-                mipp::Reg<T>(T{0}),
-                std::plus<mipp::Reg<T>>{}));
+        m_sqr_sum = mipp::sum(
+                std::reduce(
+                        mipprng.begin(),
+                        mipprng.end(),
+                        mipp::Reg<T>(T{0}),
+                        std::plus<mipp::Reg<T>>{}));
     }
 
     auto ring_buffer_split(std::size_t num_samples)
