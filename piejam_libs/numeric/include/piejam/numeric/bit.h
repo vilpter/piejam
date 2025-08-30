@@ -18,8 +18,9 @@ template <integral T>
 constexpr auto
 toggle(T const v, std::size_t const bit) noexcept -> T
 {
+    using U = make_unsigned_t<T>;
     BOOST_ASSERT(bit < sizeof(T) * CHAR_BIT);
-    return v ^ (T{1} << bit);
+    return static_cast<T>(static_cast<U>(v) ^ (U{1} << bit));
 }
 
 template <std::size_t Bit, integral T>
@@ -27,8 +28,9 @@ template <std::size_t Bit, integral T>
 constexpr auto
 toggle(T const v) noexcept -> T
 {
+    using U = make_unsigned_t<T>;
     static_assert(Bit < sizeof(T) * CHAR_BIT);
-    return v ^ (T{1} << Bit);
+    return static_cast<T>(static_cast<U>(v) ^ (U{1} << Bit));
 }
 
 } // namespace piejam::numeric::bit

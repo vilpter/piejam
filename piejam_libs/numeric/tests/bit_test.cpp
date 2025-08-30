@@ -39,18 +39,16 @@ TYPED_TEST(bit_toggle, toggle)
     // clang-format off
     [this]<std::size_t... Bs>(std::index_sequence<Bs...>) {(
         [this]<std::size_t B>(std::integral_constant<std::size_t, B>) {
-            if constexpr (B < sizeof(type) * CHAR_BIT)
-            {
-                auto const zero = type{0};
-                auto const toggled = type{static_cast<type>(1ul << B)};
-                EXPECT_EQ(toggled, toggle(zero, B));
-                EXPECT_EQ(zero, toggle(toggled, B));
-                EXPECT_EQ(toggled, toggle<B>(zero));
-                EXPECT_EQ(zero, toggle<B>(toggled));
-            }
-        }(std::integral_constant<std::size_t, Bs>{}),
-        ...);
-    }(std::make_index_sequence<64>{});
+            static_assert(B < sizeof(type) * CHAR_BIT);
+
+            auto const zero = type{0};
+            auto const toggled = type{static_cast<type>(1ul << B)};
+            EXPECT_EQ(toggled, toggle(zero, B));
+            EXPECT_EQ(zero, toggle(toggled, B));
+            EXPECT_EQ(toggled, toggle<B>(zero));
+            EXPECT_EQ(zero, toggle<B>(toggled));
+        }(std::integral_constant<std::size_t, Bs>{}), ...);
+    }(std::make_index_sequence<sizeof(type) * CHAR_BIT>{});
     // clang-format on
 }
 
