@@ -4,16 +4,44 @@
 
 #pragma once
 
-#include <utility>
+#include <cstddef>
 
 namespace piejam::math
 {
 
+namespace detail
+{
+
 template <std::size_t N>
-constexpr auto pow_n = []<class T>(T const t) {
-    return []<std::size_t... I>(T const t, std::index_sequence<I...>) {
-        return (((void)I, t) * ...);
-    }(t, std::make_index_sequence<N>{});
+struct pow_n_fn
+{
+    template <class T>
+    constexpr auto operator()(T const t) const noexcept
+    {
+        if constexpr (N == 0)
+        {
+            return T{1};
+        }
+        else if constexpr (N == 1)
+        {
+            return t;
+        }
+        else if constexpr (N % 2 == 0)
+        {
+            auto half = pow_n_fn<N / 2>{}(t);
+            return half * half;
+        }
+        else
+        {
+            auto half = pow_n_fn<N / 2>{}(t);
+            return half * half * t;
+        }
+    }
 };
+
+} // namespace detail
+
+template <std::size_t N>
+inline constexpr auto pow_n = detail::pow_n_fn<N>{};
 
 } // namespace piejam::math
