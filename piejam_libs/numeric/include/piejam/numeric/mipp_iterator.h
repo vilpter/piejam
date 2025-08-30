@@ -136,8 +136,8 @@ struct mipp_iterator
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator-(mipp_iterator const& rhs) const noexcept -> std::ptrdiff_t
+    constexpr auto operator-(mipp_iterator const& rhs) const noexcept
+            -> std::ptrdiff_t
     {
         BOOST_ASSERT((m_p - rhs.m_p) % N == 0);
         return (m_p - rhs.m_p) / N;
@@ -217,7 +217,7 @@ mipp_range_split(std::span<T> const in)
     constexpr auto N = mipp::N<T>();
 
     auto const pre_data = in.data();
-    auto const pre_size = std::bit_cast<std::uintptr_t>(pre_data) % N;
+    auto const pre_size = reinterpret_cast<std::uintptr_t>(pre_data) % N;
     auto const size_without_pre = in.size() - std::min(in.size(), pre_size);
     auto const main_data = pre_data + pre_size;
     auto const main_size = (size_without_pre / N) * N;
