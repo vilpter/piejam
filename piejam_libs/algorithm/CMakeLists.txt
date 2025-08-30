@@ -5,19 +5,20 @@
 add_library(piejam_algorithm INTERFACE)
 
 target_sources(piejam_algorithm INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/all_of_adjacent.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/concepts.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/contains.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/edit_script.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/escape_html.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/find_or_get_first.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/for_each_adjacent.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/for_each_visit.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/index_of.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/npos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/shift_push_back.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/string_join.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/algorithm/transform_to_vector.h
+    include/piejam/algorithm/all_of_adjacent.h
+    include/piejam/algorithm/concepts.h
+    include/piejam/algorithm/contains.h
+    include/piejam/algorithm/edit_script.h
+    include/piejam/algorithm/escape_html.h
+    include/piejam/algorithm/find_or_get_first.h
+    include/piejam/algorithm/for_each_adjacent.h
+    include/piejam/algorithm/for_each_visit.h
+    include/piejam/algorithm/index_of.h
+    include/piejam/algorithm/npos.h
+    include/piejam/algorithm/shift_push_back.h
+    include/piejam/algorithm/string_join.h
+    include/piejam/algorithm/transform_to_vector.h
+    include/piejam/algorithm/transform_accumulate.h
 )
 
 target_include_directories(piejam_algorithm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)

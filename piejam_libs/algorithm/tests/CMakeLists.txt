@@ -15,6 +15,7 @@ add_executable(piejam_algorithm_test
     for_each_adjacent_test.cpp
     index_of_test.cpp
     shift_push_back_test.cpp
+    transform_accumulate_test.cpp
     transform_to_vector_test.cpp
 )
 target_link_libraries(piejam_algorithm_test gtest_driver piejam_compiler_warnings piejam_algorithm)
