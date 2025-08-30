@@ -33,21 +33,23 @@ public:
 
     explicit rms_level_meter(
             sample_rate sr,
-            std::chrono::milliseconds rms_measure_time =
+            std::chrono::duration<T> rms_measure_time =
                     default_rms_measure_time,
             T min_level = default_min_level)
         : m_min_level{min_level}
         , m_sqr_history(
                   math::round_down_to_multiple(
                           static_cast<std::size_t>(
-                                  std::chrono::duration_cast<
-                                          std::chrono::duration<T>>(
-                                          rms_measure_time)
-                                          .count() *
-                                  sr.as_float<T>()),
+                                  rms_measure_time.count() * sr.as_float<T>()),
                           static_cast<std::size_t>(mipp::N<T>())),
                   0.f)
     {
+    }
+
+    [[nodiscard]]
+    auto history_size() const noexcept -> std::size_t
+    {
+        return m_sqr_history.size();
     }
 
     void process(std::span<T const> samples)
@@ -74,24 +76,26 @@ public:
     }
 
 private:
-    template <class V, class SqrSumIterator, class SamplesIterator>
+    template <class V, class SamplesIterator, class SqrIterator>
     static auto process_part(
-            SqrSumIterator sqrsum_first,
-            SqrSumIterator sqrsum_last,
             SamplesIterator samples_first,
-            SamplesIterator samples_last)
+            SamplesIterator samples_last,
+            SqrIterator sqr_first)
     {
-        auto sub =
-                std::reduce(sqrsum_first, sqrsum_last, V(T{0}), std::plus<V>{});
+        V sub(T{0});
+        V add(T{0});
 
-        std::ranges::transform(
+        std::transform(
                 samples_first,
                 samples_last,
-                sqrsum_first,
-                math::pow_n<2>);
-
-        auto add =
-                std::reduce(sqrsum_first, sqrsum_last, V(T{0}), std::plus<V>{});
+                sqr_first,
+                sqr_first,
+                [&](auto sample, auto old_sqr) {
+                    sub += old_sqr;
+                    auto new_sqr = sample * sample;
+                    add += new_sqr;
+                    return new_sqr;
+                });
 
         return std::tuple{sub, add};
     }
@@ -113,22 +117,16 @@ private:
             auto mid_it = std::next(samples.begin(), lo.size());
 
             {
-                auto [sub, add] = process_part<T>(
-                        lo.begin(),
-                        lo.end(),
-                        samples.begin(),
-                        mid_it);
+                auto [sub, add] =
+                        process_part<T>(samples.begin(), mid_it, lo.begin());
 
                 adapt_sqr_sum(sub, add);
             }
 
             if (hi.size() > 0)
             {
-                auto [sub, add] = process_part<T>(
-                        hi.begin(),
-                        hi.end(),
-                        mid_it,
-                        samples.end());
+                auto [sub, add] =
+                        process_part<T>(mid_it, samples.end(), hi.begin());
 
                 adapt_sqr_sum(sub, add);
             }
@@ -173,10 +171,9 @@ private:
 
             {
                 auto [sub, add] = process_part<mipp::Reg<T>>(
-                        lo_mipp.begin(),
-                        lo_mipp.end(),
                         numeric::mipp_iterator{samples_data},
-                        mid_it);
+                        mid_it,
+                        lo_mipp.begin());
 
                 adapt_sqr_sum(mipp::sum(sub), mipp::sum(add));
             }
@@ -184,10 +181,9 @@ private:
             if (hi.size() > 0)
             {
                 auto [sub, add] = process_part<mipp::Reg<T>>(
-                        hi_mipp.begin(),
-                        hi_mipp.end(),
                         mid_it,
-                        numeric::mipp_iterator{samples_data + samples_size});
+                        numeric::mipp_iterator{samples_data + samples_size},
+                        hi_mipp.begin());
 
                 adapt_sqr_sum(mipp::sum(sub), mipp::sum(add));
             }
