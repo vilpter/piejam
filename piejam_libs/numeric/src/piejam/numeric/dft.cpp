@@ -8,7 +8,6 @@
 
 #include <boost/assert.hpp>
 
-#include <algorithm>
 #include <vector>
 
 namespace piejam::numeric

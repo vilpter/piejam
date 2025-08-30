@@ -59,6 +59,7 @@ struct SpectrumGenerator::Impl
 {
     explicit Impl(audio::sample_rate sample_rate, DFTResolution dftResolution)
         : m_dft{dftForResolution(dftResolution)}
+        , m_dataPoints(m_dft.output_size())
     {
         float const binSize =
                 sample_rate.as_float() / static_cast<float>(m_dft.size());
@@ -93,6 +94,7 @@ struct SpectrumGenerator::Impl
         BOOST_ASSERT(m_dataPoints.size() == m_dft.output_size());
 
         auto const dft_size = static_cast<float>(m_dft.size());
+        auto const two_div_dft_size = 2.f / dft_size;
 
         m_dataPoints[0].level = envelope(
                 m_dataPoints[0].level,
@@ -103,7 +105,7 @@ struct SpectrumGenerator::Impl
         {
             m_dataPoints[i].level = envelope(
                     m_dataPoints[i].level,
-                    std::abs(spectrum[i]) * (2.f / dft_size));
+                    std::abs(spectrum[i]) * two_div_dft_size);
             m_dataPoints[i].level_dB = math::to_dB(m_dataPoints[i].level);
         }
 
@@ -114,8 +116,7 @@ struct SpectrumGenerator::Impl
     std::vector<float> m_window{algorithm::transform_to_vector(
             range::iota(m_dft.size()),
             std::bind_front(&numeric::window::hann, m_dft.size()))};
-    std::vector<SpectrumDataPoint> m_dataPoints{
-            std::vector<SpectrumDataPoint>(m_dft.output_size())};
+    std::vector<SpectrumDataPoint> m_dataPoints;
 };
 
 SpectrumGenerator::SpectrumGenerator(
