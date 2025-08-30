@@ -106,21 +106,21 @@ template <>
 struct pcm_sample_type_map<pcm_format::s24_3le>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::s24_3le, numeric::int24_t, true>;
+            pcm_sample_descriptor<pcm_format::s24_3le, numeric::int24_io_t, true>;
 };
 
 template <>
 struct pcm_sample_type_map<pcm_format::s24_3be>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::s24_3be, numeric::int24_t, false>;
+            pcm_sample_descriptor<pcm_format::s24_3be, numeric::int24_io_t, false>;
 };
 
 template <>
 struct pcm_sample_type_map<pcm_format::u24_3le>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::u24_3le, numeric::uint24_t, true>;
+            pcm_sample_descriptor<pcm_format::u24_3le, numeric::uint24_io_t, true>;
 };
 
 template <>
@@ -128,7 +128,7 @@ struct pcm_sample_type_map<pcm_format::u24_3be>
 {
     using type = pcm_sample_descriptor<
             pcm_format::u24_3be,
-            numeric::uint24_t,
+            numeric::uint24_io_t,
             false>;
 };
 

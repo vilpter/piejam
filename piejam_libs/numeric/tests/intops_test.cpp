@@ -21,7 +21,7 @@ struct sign_map_test : ::testing::Test
 };
 
 using signed_ints = ::testing::
-        Types<std::int8_t, std::int16_t, int24_t, std::int32_t, std::int64_t>;
+        Types<std::int8_t, std::int16_t, int24_io_t, std::int32_t, std::int64_t>;
 TYPED_TEST_SUITE(sign_map_test, signed_ints);
 
 TYPED_TEST(sign_map_test, signed_to_unsigned_min)

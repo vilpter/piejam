@@ -11,7 +11,7 @@ namespace piejam::numeric
 {
 
 template <std::integral, std::size_t>
-struct intx_t;
+struct intx_io_t;
 
 template <class T>
 struct make_signed : std::make_signed<T>
@@ -19,9 +19,9 @@ struct make_signed : std::make_signed<T>
 };
 
 template <std::integral Integer, std::size_t Bits>
-struct make_signed<intx_t<Integer, Bits>>
+struct make_signed<intx_io_t<Integer, Bits>>
 {
-    using type = intx_t<std::make_signed_t<Integer>, Bits>;
+    using type = intx_io_t<std::make_signed_t<Integer>, Bits>;
 };
 
 template <class T>
@@ -33,9 +33,9 @@ struct make_unsigned : std::make_unsigned<T>
 };
 
 template <std::integral Integer, std::size_t Bits>
-struct make_unsigned<intx_t<Integer, Bits>>
+struct make_unsigned<intx_io_t<Integer, Bits>>
 {
-    using type = intx_t<std::make_unsigned_t<Integer>, Bits>;
+    using type = intx_io_t<std::make_unsigned_t<Integer>, Bits>;
 };
 
 template <class T>
@@ -47,7 +47,7 @@ struct is_signed : std::is_signed<T>
 };
 
 template <std::integral Integer, std::size_t Bits>
-struct is_signed<intx_t<Integer, Bits>> : std::is_signed<Integer>
+struct is_signed<intx_io_t<Integer, Bits>> : std::is_signed<Integer>
 {
 };
 
@@ -60,7 +60,7 @@ struct is_integral : std::is_integral<T>
 };
 
 template <std::integral Integer, std::size_t Bits>
-struct is_integral<intx_t<Integer, Bits>> : std::is_integral<Integer>
+struct is_integral<intx_io_t<Integer, Bits>> : std::is_integral<Integer>
 {
 };
 

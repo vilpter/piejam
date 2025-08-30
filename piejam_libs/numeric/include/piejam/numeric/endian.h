@@ -14,9 +14,9 @@ namespace piejam::numeric::endian
 template <class T>
 [[nodiscard]]
 constexpr auto
-reverse_bytes(intx_t<T, 24> x) noexcept -> intx_t<T, 24>
+reverse_bytes(intx_io_t<T, 24> x) noexcept -> intx_io_t<T, 24>
 {
-    return intx_t<T, 24>{
+    return intx_io_t<T, 24>{
             ((x.value & 0xff0000) >> 16) | //
             (x.value & 0xff00) |           //
             ((x.value & 0xff) << 16)};
@@ -33,7 +33,7 @@ little_to_native(T x) -> T
 template <class T>
 [[nodiscard]]
 constexpr auto
-little_to_native(intx_t<T, 24> x) -> intx_t<T, 24>
+little_to_native(intx_io_t<T, 24> x) -> intx_io_t<T, 24>
 {
 #if BOOST_ENDIAN_LITTLE_BYTE
     return x;
@@ -53,7 +53,7 @@ big_to_native(T x) -> T
 template <class T>
 [[nodiscard]]
 constexpr auto
-big_to_native(intx_t<T, 24> x) -> intx_t<T, 24>
+big_to_native(intx_io_t<T, 24> x) -> intx_io_t<T, 24>
 {
 #if BOOST_ENDIAN_BIG_BYTE
     return x;
@@ -73,7 +73,7 @@ native_to_little(T x) -> T
 template <class T>
 [[nodiscard]]
 constexpr auto
-native_to_little(intx_t<T, 24> x) -> intx_t<T, 24>
+native_to_little(intx_io_t<T, 24> x) -> intx_io_t<T, 24>
 {
 #if BOOST_ENDIAN_LITTLE_BYTE
     return x;
@@ -93,7 +93,7 @@ native_to_big(T x) -> T
 template <class T>
 [[nodiscard]]
 constexpr auto
-native_to_big(intx_t<T, 24> x) -> intx_t<T, 24>
+native_to_big(intx_io_t<T, 24> x) -> intx_io_t<T, 24>
 {
 #if BOOST_ENDIAN_BIG_BYTE
     return x;
