@@ -19,7 +19,7 @@ namespace piejam::audio::dsp
 template <std::floating_point T = float>
 class peak_level_meter
 {
-    static constexpr std::chrono::milliseconds default_peak_decay_time{400};
+    static constexpr std::chrono::milliseconds default_peak_decay_time{200};
     static constexpr T default_min_level = 0.001f; // -60 dB
 
 public:
@@ -27,15 +27,11 @@ public:
 
     explicit peak_level_meter(
             sample_rate sr,
-            std::chrono::milliseconds peak_decay_time = default_peak_decay_time,
+            std::chrono::duration<T> peak_decay_time = default_peak_decay_time,
             T min_level = default_min_level)
         : m_min_level{min_level}
-        , m_g_release{std::pow(
-                  9.f,
-                  (-1.f / (std::chrono::duration_cast<std::chrono::duration<T>>(
-                                   peak_decay_time)
-                                   .count() *
-                           sr.as_float<T>())))}
+        , m_g_release{std::exp(
+                  T{-1} / (peak_decay_time.count() * sr.as_float<T>()))}
     {
     }
 
