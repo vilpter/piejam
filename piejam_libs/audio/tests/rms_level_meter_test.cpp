@@ -9,6 +9,8 @@
 namespace piejam::audio::dsp::test
 {
 
+using namespace std::chrono_literals;
+
 class rms_level_meter_test : public ::testing::Test
 {
 protected:
@@ -32,8 +34,7 @@ TEST_F(rms_level_meter_test, reset)
 
 TEST_F(rms_level_meter_test, constant_input)
 {
-    std::chrono::milliseconds measure_time{100}; // 100 ms
-    rms_level_meter<float> meter(sr, measure_time);
+    rms_level_meter<float> meter(sr, 100ms);
 
     // Fill the entire buffer with 0.5
     std::size_t history_size = meter.history_size();
@@ -46,8 +47,7 @@ TEST_F(rms_level_meter_test, constant_input)
 
 TEST_F(rms_level_meter_test, varying_input)
 {
-    std::chrono::milliseconds measure_time{100}; // 100 ms
-    rms_level_meter<float> meter(sr, measure_time);
+    rms_level_meter<float> meter(sr, 100ms);
 
     // Fill the buffer with alternating 0 and 1
     std::size_t history_size = meter.history_size();
@@ -63,10 +63,25 @@ TEST_F(rms_level_meter_test, varying_input)
     EXPECT_NEAR(meter.level(), expected, 1e-6);
 }
 
+TEST_F(rms_level_meter_test, unaligned_input)
+{
+    using namespace std::chrono_literals;
+
+    rms_level_meter<float> meter(sr, 1ms);
+
+    std::array<float, 8> samples;
+    samples.fill(0.5f);
+
+    meter.process(std::span(std::next(samples.begin()), samples.end()));
+
+    float expected = 0.19094f;
+    EXPECT_NEAR(meter.level(), expected, 1e-6);
+}
+
 // Test flush-to-zero for very low levels
 TEST_F(rms_level_meter_test, flush_to_zero)
 {
-    rms_level_meter<float> meter(sr, std::chrono::milliseconds{50}, 0.01f);
+    rms_level_meter<float> meter(sr, 50ms, 0.01f);
     std::vector<float> samples{0.005f, 0.003f};
     meter.process(samples);
 
@@ -77,9 +92,8 @@ TEST_F(rms_level_meter_test, flush_to_zero)
 TEST_F(rms_level_meter_test, history_wrap)
 {
     std::size_t history_samples = 128; // small buffer for testing
-    rms_level_meter<float> meter(
-            sr,
-            std::chrono::milliseconds{2}); // ~100 samples at 48kHz
+    rms_level_meter<float> meter(sr,
+                                 2ms); // ~100 samples at 48kHz
     std::vector<float> samples(
             history_samples * 2,
             0.1f); // push more than buffer
@@ -91,8 +105,7 @@ TEST_F(rms_level_meter_test, history_wrap)
 
 TEST_F(rms_level_meter_test, multiple_pushes)
 {
-    std::chrono::milliseconds measure_time{100};
-    rms_level_meter<float> meter(sr, measure_time);
+    rms_level_meter<float> meter(sr, 100ms);
 
     // Fill the entire buffer with 0.5
     std::size_t history_size = meter.history_size();

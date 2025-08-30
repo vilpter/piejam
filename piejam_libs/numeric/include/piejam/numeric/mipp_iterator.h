@@ -216,13 +216,18 @@ mipp_range_split(std::span<T> const in)
 {
     constexpr auto N = mipp::N<T>();
 
+    auto const addr = reinterpret_cast<std::uintptr_t>(in.data());
+    auto const misalignment = (addr / sizeof(T)) % N;
+
+    auto const pre_size = std::min(in.size(), (N - misalignment) % N);
     auto const pre_data = in.data();
-    auto const pre_size = reinterpret_cast<std::uintptr_t>(pre_data) % N;
-    auto const size_without_pre = in.size() - std::min(in.size(), pre_size);
-    auto const main_data = pre_data + pre_size;
+
+    auto const size_without_pre = in.size() - pre_size;
     auto const main_size = (size_without_pre / N) * N;
+    auto const main_data = pre_data + pre_size;
+
+    auto const post_size = size_without_pre - main_size;
     auto const post_data = main_data + main_size;
-    auto const post_size = size_without_pre % N;
 
     return std::tuple{
             std::span{pre_data, pre_size},
