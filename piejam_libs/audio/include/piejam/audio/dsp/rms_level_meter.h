@@ -6,6 +6,7 @@
 
 #include <piejam/audio/sample_rate.h>
 
+#include <piejam/algorithm/transform_accumulate.h>
 #include <piejam/functional/operators.h>
 #include <piejam/math.h>
 #include <piejam/math/pow_n.h>
@@ -17,7 +18,6 @@
 #include <chrono>
 #include <cmath>
 #include <concepts>
-#include <numeric>
 
 namespace piejam::audio::dsp
 {
@@ -135,13 +135,13 @@ private:
         }
         else
         {
-            std::ranges::transform(
+            m_sqr_sum = algorithm::transform_accumulate(
                     std::next(samples.begin(), samples_size - history_size),
                     samples.end(),
                     m_sqr_history.begin(),
-                    math::pow_n<2>);
-
-            recompute_squared_sum();
+                    T{},
+                    math::pow_n<2>,
+                    std::plus<>{});
         }
     }
 
@@ -192,14 +192,15 @@ private:
         }
         else
         {
-            std::ranges::transform(
-                    numeric::mipp_iterator{
-                            samples_data + samples_size - history_size},
-                    numeric::mipp_iterator{samples_data + samples_size},
-                    numeric::mipp_iterator{m_sqr_history.data()},
-                    math::pow_n<2>);
-
-            recompute_squared_sum();
+            m_sqr_sum = mipp::sum(
+                    algorithm::transform_accumulate(
+                            numeric::mipp_iterator{
+                                    samples_data + samples_size - history_size},
+                            numeric::mipp_iterator{samples_data + samples_size},
+                            numeric::mipp_iterator{m_sqr_history.data()},
+                            mipp::Reg<T>(T{}),
+                            math::pow_n<2>,
+                            std::plus<>{}));
         }
     }
 
@@ -217,18 +218,6 @@ private:
         {
             m_position -= history_size;
         }
-    }
-
-    void recompute_squared_sum()
-    {
-        auto mipprng =
-                numeric::mipp_range(std::span{std::as_const(m_sqr_history)});
-        m_sqr_sum = mipp::sum(
-                std::reduce(
-                        mipprng.begin(),
-                        mipprng.end(),
-                        mipp::Reg<T>(T{0}),
-                        std::plus<mipp::Reg<T>>{}));
     }
 
     auto ring_buffer_split(std::size_t num_samples)
