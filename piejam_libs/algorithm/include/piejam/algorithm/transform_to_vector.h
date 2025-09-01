@@ -4,8 +4,9 @@
 
 #pragma once
 
+#include <piejam/algorithm/to_vector.h>
+
 #include <ranges>
-#include <vector>
 
 namespace piejam::algorithm
 {
@@ -13,10 +14,12 @@ namespace piejam::algorithm
 template <std::ranges::input_range Range, class F>
 [[nodiscard]]
 auto
-transform_to_vector(Range const& rng, F&& f)
+transform_to_vector(Range&& rng, F&& f)
 {
-    auto transformed = std::views::transform(rng, std::forward<F>(f));
-    return std::vector(transformed.begin(), transformed.end());
+    return to_vector(
+            std::views::transform(
+                    std::forward<Range>(rng),
+                    std::forward<F>(f)));
 }
 
 } // namespace piejam::algorithm
