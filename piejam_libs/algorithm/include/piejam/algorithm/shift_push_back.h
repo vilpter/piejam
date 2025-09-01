@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <piejam/algorithm/copy_or_move.h>
+
 #include <algorithm>
 #include <iterator>
 #include <ranges>
@@ -22,27 +24,15 @@ shift_push_back(Target& target, Source&& source)
     auto target_begin = std::ranges::begin(target);
     auto target_end = std::ranges::end(target);
 
-    // Shift existing elements to the left to make room at the end
     std::shift_left(target_begin, target_end, count);
 
-    auto source_begin =
-            std::ranges::next(std::ranges::begin(source), source_size - count);
+    auto source_begin = std::ranges::begin(source);
     auto source_end = std::ranges::end(source);
-    auto target_output = std::ranges::next(target_begin, target_size - count);
 
-    using target_value_t = std::ranges::range_value_t<Target>;
-    if constexpr (
-            std::is_move_constructible_v<target_value_t> &&
-            !std::is_copy_constructible_v<target_value_t>)
-    {
-        // move elements if the type is move-only
-        std::ranges::move(source_begin, source_end, target_output);
-    }
-    else
-    {
-        // copy elements for copyable types
-        std::ranges::copy(source_begin, source_end, target_output);
-    }
+    copy_or_move(
+            std::ranges::next(source_begin, source_size - count),
+            source_end,
+            std::ranges::next(target_begin, target_size - count));
 }
 
 } // namespace piejam::algorithm

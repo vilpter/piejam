@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <piejam/algorithm/copy_or_move.h>
+
 #include <algorithm>
 #include <ranges>
 #include <vector>
@@ -27,21 +29,7 @@ struct to_vector_fn
             result.reserve(std::ranges::size(rng));
         }
 
-               // move elements if necessary (supports move-only types)
-        if constexpr (
-                std::is_move_constructible_v<value_t> &&
-                !std::is_copy_constructible_v<value_t>)
-        {
-            std::ranges::move(
-                    std::forward<Range>(rng),
-                    std::back_inserter(result));
-        }
-        else
-        {
-            std::ranges::copy(
-                    std::forward<Range>(rng),
-                    std::back_inserter(result));
-        }
+        copy_or_move(std::forward<Range>(rng), std::back_inserter(result));
 
         return result;
     }
