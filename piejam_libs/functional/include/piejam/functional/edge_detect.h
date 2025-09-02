@@ -6,27 +6,31 @@
 
 #include <piejam/functional/in_interval.h>
 
+#include <boost/hof/returns.hpp>
+
 namespace piejam
 {
 
 struct
 {
-    template <class T>
-    constexpr auto
-    operator()(T const& v, T const& l, T const& r) const noexcept -> bool
-    {
-        return in_right_open(v, l, r);
-    }
+    template <class T, class P, class C>
+    [[nodiscard]]
+    constexpr auto operator()(T&& threshold, P&& prev, C&& curr) const
+            BOOST_HOF_RETURNS(in_right_open(
+                    std::forward<T>(threshold),
+                    std::forward<P>(prev),
+                    std::forward<C>(curr)))
 } const rising_edge;
 
 struct
 {
-    template <class T>
-    constexpr auto
-    operator()(T const& v, T const& l, T const& r) const noexcept -> bool
-    {
-        return in_left_open(v, r, l);
-    }
+    template <class T, class P, class C>
+    [[nodiscard]]
+    constexpr auto operator()(T&& threshold, P&& prev, C&& curr) const
+            BOOST_HOF_RETURNS(in_left_open(
+                    std::forward<T>(threshold),
+                    std::forward<C>(curr),
+                    std::forward<P>(prev)))
 } const falling_edge;
 
 } // namespace piejam

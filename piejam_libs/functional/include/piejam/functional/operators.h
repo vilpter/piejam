@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <boost/hof/returns.hpp>
+
+#include <concepts>
 #include <functional>
 
 namespace piejam
@@ -18,16 +21,15 @@ struct op
     template <class X>
     constexpr auto operator()(X&& x) const noexcept
     {
-        return [x = std::forward<X>(x)]<class Y>(Y&& y) noexcept {
-            return Operator{}(std::forward<Y>(y), x);
-        };
+        return [x = std::forward<X>(x)]<class Y>
+            requires std::invocable<Operator, Y, X>
+        (Y&& y) BOOST_HOF_RETURNS(Operator{}(std::forward<Y>(y), x));
     }
 
     template <class X, class Y>
-    constexpr auto operator()(X&& x, Y&& y) const noexcept
-    {
-        return Operator{}(std::forward<X>(x), std::forward<Y>(y));
-    }
+        requires std::invocable<Operator, X, Y>
+    constexpr auto operator()(X&& x, Y&& y) const
+            BOOST_HOF_RETURNS(Operator{}(std::forward<X>(x), std::forward<Y>(y)))
 };
 
 } // namespace detail

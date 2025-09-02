@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <boost/hof/returns.hpp>
+
 #include <functional>
 
 namespace piejam
@@ -15,17 +17,19 @@ namespace detail
 template <class LeftCompare, class RightCompare>
 struct interval_check
 {
-    template <class T>
-    constexpr auto
-    operator()(T const v, T const lo, T const hi) const noexcept -> bool
-    {
-        return LeftCompare{}(lo, v) && RightCompare{}(v, hi);
-    }
+    template <class T, class L, class H>
+    [[nodiscard]]
+    constexpr auto operator()(T&& v, L&& lo, H&& hi) const BOOST_HOF_RETURNS(
+            LeftCompare{}(std::forward<L>(lo), v) &&
+            RightCompare{}(v, std::forward<H>(hi)))
 
     template <class T>
-    constexpr auto operator()(T const v) const noexcept
+    [[nodiscard]]
+    constexpr auto operator()(T&& v) const noexcept(std::is_nothrow_constructible_v<std::decay_t<T>, T>)
     {
-        return [this, v](T const lo, T const hi) { return (*this)(v, lo, hi); };
+        return [v = std::forward<T>(v)]<class L, class H>(L&& lo, H&& hi) BOOST_HOF_RETURNS(
+            interval_check<LeftCompare, RightCompare>{}(v, std::forward<L>(lo), std::forward<H>(hi))
+        );
     }
 };
 
