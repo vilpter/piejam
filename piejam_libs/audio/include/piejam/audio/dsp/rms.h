@@ -43,6 +43,7 @@ template <std::floating_point T>
 auto
 rms(std::span<T const> const in) -> T
 {
+    BOOST_ASSERT(in.size() > 0);
     auto const rng = numeric::mipp_range(in);
     auto sums = std::transform_reduce(
             rng.begin(),
