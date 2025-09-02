@@ -6,8 +6,6 @@
 
 #include <piejam/audio/engine/fwd.h>
 
-#include <cstddef>
-
 namespace piejam::audio::engine
 {
 
