@@ -57,9 +57,8 @@ public:
                     if (*last != current)
                     {
                         handler(current);
+                        *last = std::move(current);
                     }
-
-                    *last = current;
                 }),
                 token);
     }
