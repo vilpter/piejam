@@ -9,7 +9,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/components/remap_channels.h
     include/piejam/audio/dsp/biquad.h
     include/piejam/audio/dsp/biquad_filter.h
-    include/piejam/audio/dsp/envelope_follower.h
     include/piejam/audio/dsp/generate_sine.h
     include/piejam/audio/dsp/pan.h
     include/piejam/audio/dsp/peak_level_meter.h
