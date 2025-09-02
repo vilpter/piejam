@@ -33,43 +33,43 @@ struct slice_add
 
     constexpr auto operator()(
             typename slice<T>::constant_t const l_c,
-            typename slice<T>::constant_t const r_c) const -> slice<T>
+            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
         return l_c + r_c;
     }
 
     constexpr auto operator()(
             typename slice<T>::span_t const l_buf,
-            typename slice<T>::constant_t const r_c) const -> slice<T>
+            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
-        if (r_c != T{})
+        switch (switch_cast(r_c))
         {
-            BOOST_ASSERT(l_buf.size() == m_out.size());
+            case switch_cast(T{0}):
+                return l_buf;
 
-            std::transform(
-                    numeric::mipp_begin(l_buf),
-                    numeric::mipp_end(l_buf),
-                    numeric::mipp_begin(m_out),
-                    bhof::capture(mipp::Reg<T>(r_c))(std::plus<>{}));
+            default:
+                BOOST_ASSERT(l_buf.size() == m_out.size());
 
-            return m_out;
-        }
-        else
-        {
-            return l_buf;
+                std::transform(
+                        numeric::mipp_begin(l_buf),
+                        numeric::mipp_end(l_buf),
+                        numeric::mipp_begin(m_out),
+                        bhof::capture(mipp::Reg<T>(r_c))(std::plus<>{}));
+
+                return m_out;
         }
     }
 
     constexpr auto operator()(
             typename slice<T>::constant_t const l_c,
-            typename slice<T>::span_t const r_buf) const -> slice<T>
+            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         return (*this)(r_buf, l_c);
     }
 
     constexpr auto operator()(
             typename slice<T>::span_t const l_buf,
-            typename slice<T>::span_t const r_buf) const -> slice<T>
+            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         BOOST_ASSERT(l_buf.size() == r_buf.size());
         BOOST_ASSERT(l_buf.size() == m_out.size());
@@ -98,14 +98,14 @@ struct slice_multiply
 
     constexpr auto operator()(
             typename slice<T>::constant_t const l_c,
-            typename slice<T>::constant_t const r_c) const -> slice<T>
+            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
         return l_c * r_c;
     }
 
     constexpr auto operator()(
             typename slice<T>::span_t const l_buf,
-            typename slice<T>::constant_t const r_c) const -> slice<T>
+            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
         switch (switch_cast(r_c))
         {
@@ -140,14 +140,14 @@ struct slice_multiply
 
     constexpr auto operator()(
             typename slice<T>::constant_t const l_c,
-            typename slice<T>::span_t const r_buf) const -> slice<T>
+            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         return (*this)(r_buf, l_c);
     }
 
     constexpr auto operator()(
             typename slice<T>::span_t const l_buf,
-            typename slice<T>::span_t const r_buf) const -> slice<T>
+            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         BOOST_ASSERT(l_buf.size() == r_buf.size());
         BOOST_ASSERT(l_buf.size() == m_out.size());
@@ -182,13 +182,13 @@ struct slice_clamp
     }
 
     constexpr auto
-    operator()(typename slice<T>::constant_t const c) const -> slice<T>
+    operator()(typename slice<T>::constant_t const c) const noexcept -> slice<T>
     {
         return math::clamp(c, m_min, m_max);
     }
 
     constexpr auto
-    operator()(typename slice<T>::span_t const buf) const -> slice<T>
+    operator()(typename slice<T>::span_t const buf) const noexcept -> slice<T>
     {
         BOOST_ASSERT(mipp::isAligned(buf.data()));
         std::transform(
@@ -268,9 +268,8 @@ private:
 
 template <class T>
 constexpr auto
-add(slice<T> const& l,
-    slice<T> const& r,
-    std::span<T> const out) noexcept -> slice<T>
+add(slice<T> const& l, slice<T> const& r, std::span<T> const out) noexcept
+        -> slice<T>
 {
     return visit(detail::slice_add<T>(out), l, r);
 }
