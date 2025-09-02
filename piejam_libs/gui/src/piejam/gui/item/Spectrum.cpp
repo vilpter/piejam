@@ -7,7 +7,7 @@
 #include <piejam/gui/model/SpectrumSlot.h>
 
 #include <piejam/functional/in_interval.h>
-#include <piejam/math.h>
+#include <piejam/math/clamp.h>
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>

@@ -65,25 +65,6 @@ from_dB(T dB, T min_dB = negative_inf<T>) noexcept -> T
     return dB <= min_dB ? T{} : std::pow(T{10}, dB / T{20});
 }
 
-template <class T>
-    requires(std::is_arithmetic_v<T>)
-[[nodiscard]]
-constexpr auto
-clamp(T v, T lo, T hi) noexcept -> T
-{
-    if (v < lo)
-    {
-        v = lo;
-    }
-
-    if (v > hi)
-    {
-        v = hi;
-    }
-
-    return v;
-}
-
 template <class T, std::predicate<T> P>
 [[nodiscard]]
 constexpr auto flush_to_zero_if(T value, P&& p) BOOST_HOF_RETURNS(

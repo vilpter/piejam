@@ -6,7 +6,7 @@
 
 #include <piejam/audio/pcm_sample_type.h>
 
-#include <piejam/math.h>
+#include <piejam/math/clamp.h>
 #include <piejam/numeric/endian.h>
 #include <piejam/numeric/intops.h>
 #include <piejam/numeric/intx.h>

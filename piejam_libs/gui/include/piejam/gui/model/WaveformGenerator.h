@@ -7,7 +7,7 @@
 #include <piejam/gui/model/Waveform.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/math.h>
+#include <piejam/math/clamp.h>
 
 namespace piejam::gui::model
 {

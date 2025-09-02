@@ -6,7 +6,7 @@
 
 #include <piejam/audio/slice.h>
 
-#include <piejam/math.h>
+#include <piejam/math/clamp.h>
 #include <piejam/numeric/mipp_iterator.h>
 #include <piejam/switch_cast.h>
 
