@@ -5,11 +5,11 @@
 #pragma once
 
 #include <piejam/audio/pcm_sample_type.h>
+
+#include <piejam/math.h>
 #include <piejam/numeric/endian.h>
 #include <piejam/numeric/intops.h>
 #include <piejam/numeric/intx.h>
-
-#include <algorithm>
 
 namespace piejam::audio::pcm_convert
 {
@@ -33,7 +33,7 @@ endian_to_format(pcm_sample_t<F> x) noexcept -> pcm_sample_t<F>
 }
 
 template <pcm_format F>
-auto
+constexpr auto
 from(pcm_sample_t<F> const x) noexcept -> float
 {
     using desc_t = pcm_sample_descriptor_t<F>;
@@ -44,7 +44,7 @@ from(pcm_sample_t<F> const x) noexcept -> float
 }
 
 template <pcm_format F>
-auto
+constexpr auto
 to(float const x) noexcept -> pcm_sample_t<F>
 {
     using desc_t = pcm_sample_descriptor_t<F>;
@@ -52,7 +52,7 @@ to(float const x) noexcept -> pcm_sample_t<F>
     using signed_t = typename desc_t::signed_value_type;
     return endian_to_format<F>(
             numeric::intops::sign_map<pcm_sample_t<F>>(static_cast<signed_t>(
-                    std::clamp<float_t>(x, desc_t::fmin, desc_t::fmax) *
+                    math::clamp<float_t>(x, desc_t::fmin, desc_t::fmax) *
                     desc_t::fscale)));
 }
 

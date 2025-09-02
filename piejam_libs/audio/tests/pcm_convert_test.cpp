@@ -31,7 +31,7 @@ using pcm_convert_types = ::testing::Types<
         pcm_sample_descriptor_t<pcm_format::u24_3le>,
         pcm_sample_descriptor_t<pcm_format::u24_3be>>;
 
-TYPED_TEST_CASE(pcm_convert_test, pcm_convert_types);
+TYPED_TEST_SUITE(pcm_convert_test, pcm_convert_types);
 
 TYPED_TEST(pcm_convert_test, from_middle)
 {
