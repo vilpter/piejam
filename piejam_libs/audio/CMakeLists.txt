@@ -91,6 +91,7 @@ add_library(piejam_audio STATIC
     src/piejam/audio/components/amplifier.cpp
     src/piejam/audio/components/identity.cpp
     src/piejam/audio/components/pan_balance.cpp
+    src/piejam/audio/dsp/pitch_yin.cpp
     src/piejam/audio/engine/clip_processor.cpp
     src/piejam/audio/engine/dag.cpp
     src/piejam/audio/engine/export_graph_as_dot.cpp
