@@ -21,8 +21,9 @@ template <class F>
 class memo
 {
 public:
-    explicit memo(F f) noexcept(std::is_nothrow_move_constructible_v<F>)
-        : m_f(std::move(f))
+    template <class G>
+    explicit memo(G&& f) noexcept(std::is_nothrow_constructible_v<F, G>)
+        : m_f(std::forward<G>(f))
     {
     }
 
@@ -33,10 +34,9 @@ public:
         if (!m_last ||
             m_last->args != std::forward_as_tuple(std::forward<Args>(args)...))
         {
+            auto args_copy = std::tuple<std::decay_t<Args>...>(args...);
             auto result = std::invoke(m_f, std::forward<Args>(args)...);
-            m_last.emplace(
-                    std::tuple<Args...>(std::forward<Args>(args)...),
-                    std::move(result));
+            m_last.emplace(std::move(args_copy), std::move(result));
         }
 
         return m_last->result;
@@ -67,6 +67,6 @@ private:
 };
 
 template <class F>
-memo(F) -> memo<F>;
+memo(F&&) -> memo<std::decay_t<F>>;
 
 } // namespace piejam
