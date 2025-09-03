@@ -6,7 +6,6 @@
 
 #include <piejam/algorithm/copy_or_move.h>
 
-#include <algorithm>
 #include <ranges>
 #include <vector>
 
