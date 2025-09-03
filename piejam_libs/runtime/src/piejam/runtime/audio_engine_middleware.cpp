@@ -616,6 +616,11 @@ audio_engine_middleware::start_engine(state const& st)
                     return engine->process(buffer_size);
                 });
 
+        while (!m_io_process->is_running())
+        {
+            std::this_thread::yield();
+        }
+
         rebuild(st);
     }
 }
