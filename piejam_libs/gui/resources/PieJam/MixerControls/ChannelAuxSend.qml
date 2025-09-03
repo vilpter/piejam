@@ -25,6 +25,7 @@ SubscribableItem {
 
         ColumnLayout {
             anchors.fill: parent
+            spacing: 0
 
             HeaderLabel {
                 Layout.fillWidth: true
@@ -47,6 +48,7 @@ SubscribableItem {
 
                 ColumnLayout {
                     anchors.fill: parent
+                    spacing: 0
 
                     VolumeFader {
                         Layout.fillWidth: true
@@ -68,6 +70,7 @@ SubscribableItem {
 
                     Button {
                         Layout.fillWidth: true
+                        Layout.preferredHeight: 40
 
                         visible: root.model && root.model.volume
 

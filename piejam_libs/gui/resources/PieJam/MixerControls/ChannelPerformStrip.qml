@@ -38,7 +38,7 @@ SubscribableItem {
 
             ParameterSymmetricBipolarSlider {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
+                Layout.preferredHeight: 48
 
                 model: root.model ? root.model.panBalance : null
             }

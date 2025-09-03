@@ -25,6 +25,7 @@ Item {
         ColumnLayout {
 
             anchors.fill: parent
+            spacing: 0
 
             TextField {
                 id: nameText
