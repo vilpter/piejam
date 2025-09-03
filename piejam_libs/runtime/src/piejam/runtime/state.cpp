@@ -495,14 +495,12 @@ add_external_audio_device(
 
     parameter_factory params_factory{st.params};
 
-    auto mixer_channels = st.mixer_state.channels.lock();
-
-    for (auto& [_, mixer_channel] : mixer_channels)
+    if (io_dir == io_direction::output)
     {
-        if (io_dir == io_direction::output)
-        {
-            auto aux_sends = mixer_channel.aux_sends.lock();
+        auto mixer_channels = st.mixer_state.channels.lock();
 
+        for (auto& [_, mixer_channel] : mixer_channels)
+        {
             make_aux_send(*mixer_channel.aux_sends.lock(), id, params_factory);
         }
     }
