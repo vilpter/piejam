@@ -50,38 +50,6 @@ SubscribableItem {
                 onColorSelected: root.model.changeColor(newSelectedColor)
             }
 
-            RowLayout {
-                id: moveButtonsRow
-
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                Layout.maximumHeight: 48
-
-                spacing: 8
-
-                Button {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    enabled: root.model && root.model.canMoveLeft
-
-                    text: qsTr("<")
-
-                    onClicked: root.model.moveLeft()
-                }
-
-                Button {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    enabled: root.model && root.model.canMoveRight
-
-                    text: qsTr(">")
-
-                    onClicked: root.model.moveRight()
-                }
-            }
-
             Label {
                 Layout.fillWidth: true
 
@@ -113,6 +81,37 @@ SubscribableItem {
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+            }
+
+            RowLayout {
+                id: moveButtonsRow
+
+                Layout.fillWidth: true
+
+                visible: root.deletable
+                enabled: root.deletable
+
+                spacing: 8
+
+                Button {
+                    Layout.fillWidth: true
+
+                    enabled: root.model && root.model.canMoveLeft
+
+                    text: qsTr("<")
+
+                    onClicked: root.model.moveLeft()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+
+                    enabled: root.model && root.model.canMoveRight
+
+                    text: qsTr(">")
+
+                    onClicked: root.model.moveRight()
+                }
             }
 
             Button {
