@@ -24,7 +24,10 @@ namespace
 
 auto
 default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
+        -> std::string
 {
+    using namespace std::string_literals;
+
     switch (io_dir)
     {
         case io_direction::input:
@@ -34,9 +37,19 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
                     bus_type == audio::bus_type::mono ? "M" : "S");
 
         case io_direction::output:
-            return fmt::format(
-                    "Speaker {}",
-                    st.external_audio_state.outputs->size() + 1);
+            switch (st.external_audio_state.outputs->size())
+            {
+                case 0:
+                    return "Speaker"s;
+
+                case 1:
+                    return "Cue"s;
+
+                default:
+                    return fmt::format(
+                            "Aux {}",
+                            st.external_audio_state.outputs->size() - 1);
+            }
     }
 }
 
