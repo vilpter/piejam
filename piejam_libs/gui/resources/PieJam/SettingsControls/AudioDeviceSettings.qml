@@ -17,7 +17,7 @@ SubscribableItem {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 4
+        anchors.margins: 8
 
         RowLayout {
             Layout.fillWidth: true
