@@ -56,8 +56,12 @@ SubscribableItem {
 
                     color: root.muted ? Material.secondaryTextColor : Material.primaryTextColor
 
-                    text: modelData.dB
+                    text: withPlus(modelData.dB)
                     horizontalAlignment: Text.AlignRight
+
+                    function withPlus(num) {
+                        return num > 0 ? "+" + num : num
+                    }
                 }
             }
         }
