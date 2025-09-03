@@ -6,6 +6,7 @@
 
 #include <piejam/on_scope_exit.h>
 
+#include <boost/assert.hpp>
 #include <boost/callable_traits/args.hpp>
 
 #include <memory>
@@ -48,14 +49,12 @@ public:
     class write_lock
     {
     public:
-        explicit write_lock(std::shared_ptr<T const>& boxed_value)
-            : m_boxed_value{boxed_value}
-        {
-        }
-
         ~write_lock()
         {
-            m_boxed_value = m_value;
+            m_box.m_value = m_value;
+            BOOST_ASSERT_MSG(
+                    std::exchange(m_box.m_locked, false),
+                    "box should be locked for writing");
         }
 
         write_lock(write_lock const&) = delete;
@@ -75,8 +74,18 @@ public:
         }
 
     private:
-        std::shared_ptr<T const>& m_boxed_value;
-        std::shared_ptr<T> m_value{std::make_shared<T>(*m_boxed_value)};
+        explicit write_lock(box<T>& b)
+            : m_box{b}
+        {
+            BOOST_ASSERT_MSG(
+                    !std::exchange(m_box.m_locked, true),
+                    "box is already locked for writing");
+        }
+
+        friend class box<T>;
+
+        box<T>& m_box;
+        std::shared_ptr<T> m_value{std::make_shared<T>(*m_box.m_value)};
     };
 
     box() = default;
@@ -99,6 +108,8 @@ public:
         : m_value{other.m_value}
     {
     }
+
+    ~box() = default;
 
     auto operator=(box const&) -> box& = default;
 
@@ -137,7 +148,7 @@ public:
 
     auto lock() -> write_lock
     {
-        return write_lock{m_value};
+        return write_lock{*this};
     }
 
     auto operator==(box const& other) const noexcept -> bool
@@ -159,6 +170,10 @@ private:
     }
 
     std::shared_ptr<T const> m_value{get_default()};
+
+#ifndef NDEBUG
+    bool m_locked{false};
+#endif
 };
 
 template <class T>
