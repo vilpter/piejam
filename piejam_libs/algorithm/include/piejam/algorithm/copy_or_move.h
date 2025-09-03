@@ -24,11 +24,11 @@ copy_or_move(Input&& input, OutputIt out)
             std::is_move_constructible_v<value_t> &&
             !std::is_copy_constructible_v<value_t>)
     {
-        return std::ranges::move(std::forward<Input>(input), out);
+        return std::ranges::move(std::forward<Input>(input), std::move(out));
     }
     else
     {
-        return std::ranges::copy(std::forward<Input>(input), out);
+        return std::ranges::copy(std::forward<Input>(input), std::move(out));
     }
 }
 
@@ -39,18 +39,9 @@ template <
 constexpr auto
 copy_or_move(InputIt first, Sent last, OutputIt out)
 {
-    using value_t = std::iter_value_t<InputIt>;
-
-    if constexpr (
-            std::is_move_constructible_v<value_t> &&
-            !std::is_copy_constructible_v<value_t>)
-    {
-        return std::ranges::move(first, last, out);
-    }
-    else
-    {
-        return std::ranges::copy(first, last, out);
-    }
+    return copy_or_move(
+            std::ranges::subrange(std::move(first), std::move(last)),
+            std::move(out));
 }
 
 } // namespace piejam::algorithm
