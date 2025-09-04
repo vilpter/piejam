@@ -9,6 +9,9 @@
 namespace piejam::numeric
 {
 
+namespace detail
+{
+
 struct clamp_fn
 {
     template <class T>
@@ -38,6 +41,8 @@ struct clamp_fn
     }
 };
 
-inline constexpr clamp_fn clamp{};
+} // namespace detail
+
+inline constexpr detail::clamp_fn clamp{};
 
 } // namespace piejam::numeric

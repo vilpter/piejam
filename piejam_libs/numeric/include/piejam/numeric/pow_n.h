@@ -42,6 +42,6 @@ struct pow_n_fn
 } // namespace detail
 
 template <std::size_t N>
-inline constexpr auto pow_n = detail::pow_n_fn<N>{};
+inline constexpr detail::pow_n_fn<N> pow_n{};
 
 } // namespace piejam::numeric

@@ -6,6 +6,7 @@
 
 #include <piejam/numeric/mipp_iterator.h>
 #include <piejam/numeric/pow_n.h>
+#include <piejam/numeric/simd/fsqradd.h>
 
 #include <mipp.h>
 
@@ -71,7 +72,7 @@ sqr_difference_sum(
             ++it_tau;
             mipp::Reg<T> reg_hi = numeric::mipp_lrot_n(*it_tau, offset);
 
-            sums = numeric::mipp_fsqradd(
+            sums = numeric::simd::fsqradd(
                     reg_i - mipp::select(mask, reg_lo, reg_hi),
                     sums);
 

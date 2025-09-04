@@ -102,12 +102,4 @@ mipp_lrot_n(mipp::Reg<T> reg, std::size_t n)
     // clang-format on
 }
 
-template <mipp_number T>
-[[nodiscard]]
-constexpr auto
-mipp_fsqradd(mipp::Reg<T> reg, mipp::Reg<T> add)
-{
-    return mipp::fmadd(reg, reg, add);
-}
-
 } // namespace piejam::numeric

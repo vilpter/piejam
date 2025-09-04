@@ -15,10 +15,11 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/mipp_iterator.h
     include/piejam/numeric/pow_n.h
     include/piejam/numeric/rolling_mean.h
+    include/piejam/numeric/simd/clamp.h
+    include/piejam/numeric/simd/fsqradd.h
     include/piejam/numeric/type_traits.h
     include/piejam/numeric/window.h
     src/piejam/numeric/dft.cpp
-    include/piejam/numeric/simd/clamp.h
 )
 
 target_include_directories(piejam_numeric PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

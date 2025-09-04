@@ -9,6 +9,9 @@
 namespace piejam::numeric::simd
 {
 
+namespace detail
+{
+
 struct clamp_fn
 {
     template <mipp_number T>
@@ -35,6 +38,8 @@ struct clamp_fn
     }
 };
 
-inline constexpr clamp_fn clamp{};
+} // namespace detail
+
+inline constexpr detail::clamp_fn clamp{};
 
 } // namespace piejam::numeric::simd
