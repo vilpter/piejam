@@ -53,11 +53,51 @@ public:
 
     void process(std::span<T const> samples)
     {
-        auto [pre, main, post] = numeric::mipp_range_split(samples);
+        auto samples_data = samples.data();
+        BOOST_ASSERT(mipp::isAligned(samples_data));
 
-        process_span(pre);
-        process_main_span(main);
-        process_span(post);
+        std::size_t samples_size = samples.size();
+        BOOST_ASSERT(samples_size % mipp::N<T>() == 0);
+
+        std::size_t history_size = m_sqr_history.size();
+        BOOST_ASSERT(m_position % mipp::N<T>() == 0);
+
+        if (samples_size < history_size)
+        {
+            auto [lo, hi] = ring_buffer_split(samples_size);
+
+            auto lo_mipp = numeric::mipp_range(lo);
+            auto hi_mipp = numeric::mipp_range(hi);
+            auto mid_it = numeric::mipp_iterator{samples_data + lo.size()};
+
+            process_part<mipp::Reg<T>>(
+                    numeric::mipp_iterator{samples_data},
+                    mid_it,
+                    lo_mipp.begin());
+
+            if (hi.size() > 0)
+            {
+                process_part<mipp::Reg<T>>(
+                        mid_it,
+                        numeric::mipp_iterator{samples_data + samples_size},
+                        hi_mipp.begin());
+            }
+
+            advance_position(samples_size);
+        }
+        else
+        {
+            m_sqr_sum = mipp::sum(
+                    algorithm::transform_accumulate(
+                            numeric::mipp_iterator{
+                                    samples_data + samples_size - history_size},
+                            numeric::mipp_iterator{samples_data + samples_size},
+                            numeric::mipp_iterator{m_sqr_history.data()},
+                            mipp::Reg<T>(T{}),
+                            math::pow_n<2>,
+                            std::plus<>{}));
+            m_position = 0;
+        }
     }
 
     [[nodiscard]]
@@ -76,7 +116,7 @@ public:
 
 private:
     template <class V, class SamplesIterator, class SqrIterator>
-    static auto process_part(
+    void process_part(
             SamplesIterator samples_first,
             SamplesIterator samples_last,
             SqrIterator sqr_first)
@@ -96,111 +136,7 @@ private:
                     return new_sqr;
                 });
 
-        return std::tuple{sub, add};
-    }
-
-    void process_span(std::span<T const> samples)
-    {
-        std::size_t const samples_size = samples.size();
-
-        if (samples_size == 0)
-        {
-            return;
-        }
-
-        std::size_t const history_size = m_sqr_history.size();
-
-        if (samples_size < history_size)
-        {
-            auto [lo, hi] = ring_buffer_split(samples_size);
-            auto mid_it = std::next(samples.begin(), lo.size());
-
-            {
-                auto [sub, add] =
-                        process_part<T>(samples.begin(), mid_it, lo.begin());
-
-                adapt_sqr_sum(sub, add);
-            }
-
-            if (hi.size() > 0)
-            {
-                auto [sub, add] =
-                        process_part<T>(mid_it, samples.end(), hi.begin());
-
-                adapt_sqr_sum(sub, add);
-            }
-
-            advance_position(samples_size);
-        }
-        else
-        {
-            m_sqr_sum = algorithm::transform_accumulate(
-                    std::next(samples.begin(), samples_size - history_size),
-                    samples.end(),
-                    m_sqr_history.begin(),
-                    T{},
-                    math::pow_n<2>,
-                    std::plus<>{});
-        }
-    }
-
-    void process_main_span(std::span<T const> samples)
-    {
-        std::size_t samples_size = samples.size();
-
-        if (m_position % mipp::N<T>() != 0) [[unlikely]]
-        {
-            process_span(samples);
-            return;
-        }
-
-        auto samples_data = samples.data();
-        std::size_t history_size = m_sqr_history.size();
-
-        BOOST_ASSERT(samples_size % mipp::N<T>() == 0);
-        BOOST_ASSERT(mipp::isAligned(samples_data));
-
-        if (samples_size < history_size)
-        {
-            auto [lo, hi] = ring_buffer_split(samples_size);
-
-            auto lo_mipp = numeric::mipp_range(lo);
-            auto hi_mipp = numeric::mipp_range(hi);
-            auto mid_it = numeric::mipp_iterator{samples_data + lo.size()};
-
-            {
-                auto [sub, add] = process_part<mipp::Reg<T>>(
-                        numeric::mipp_iterator{samples_data},
-                        mid_it,
-                        lo_mipp.begin());
-
-                adapt_sqr_sum(mipp::sum(sub), mipp::sum(add));
-            }
-
-            if (hi.size() > 0)
-            {
-                auto [sub, add] = process_part<mipp::Reg<T>>(
-                        mid_it,
-                        numeric::mipp_iterator{samples_data + samples_size},
-                        hi_mipp.begin());
-
-                adapt_sqr_sum(mipp::sum(sub), mipp::sum(add));
-            }
-
-            advance_position(samples_size);
-        }
-        else
-        {
-            m_sqr_sum = mipp::sum(
-                    algorithm::transform_accumulate(
-                            numeric::mipp_iterator{
-                                    samples_data + samples_size - history_size},
-                            numeric::mipp_iterator{samples_data + samples_size},
-                            numeric::mipp_iterator{m_sqr_history.data()},
-                            mipp::Reg<T>(T{}),
-                            math::pow_n<2>,
-                            std::plus<>{}));
-        }
+        adapt_sqr_sum(mipp::sum(sub), mipp::sum(add));
     }
 
     void adapt_sqr_sum(T sub, T add)
