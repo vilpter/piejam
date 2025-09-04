@@ -7,7 +7,7 @@
 #include <piejam/gui/model/Waveform.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/math/clamp.h>
+#include <piejam/numeric/clamp.h>
 
 namespace piejam::gui::model
 {
@@ -25,7 +25,9 @@ public:
     {
         Waveform result;
 
-        constexpr auto clip = [](float x) { return math::clamp(x, -1.f, 1.f); };
+        constexpr auto clip = [](float x) {
+            return numeric::clamp(x, -1.f, 1.f);
+        };
 
         for (auto const sample : samples)
         {

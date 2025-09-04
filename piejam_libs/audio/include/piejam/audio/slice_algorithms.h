@@ -6,8 +6,9 @@
 
 #include <piejam/audio/slice.h>
 
-#include <piejam/math/clamp.h>
+#include <piejam/numeric/clamp.h>
 #include <piejam/numeric/mipp_iterator.h>
+#include <piejam/numeric/simd/clamp.h>
 #include <piejam/switch_cast.h>
 
 #include <boost/assert.hpp>
@@ -184,7 +185,7 @@ struct slice_clamp
     constexpr auto
     operator()(typename slice<T>::constant_t const c) const noexcept -> slice<T>
     {
-        return math::clamp(c, m_min, m_max);
+        return numeric::clamp(c, m_min, m_max);
     }
 
     constexpr auto
@@ -195,10 +196,7 @@ struct slice_clamp
                 numeric::mipp_begin(buf),
                 numeric::mipp_end(buf),
                 numeric::mipp_begin(m_out),
-                [min = mipp::Reg<T>(m_min),
-                 max = mipp::Reg<T>(m_max)](mipp::Reg<T> const x) {
-                    return mipp::max(min, mipp::min(max, x));
-                });
+                numeric::simd::clamp(m_min, m_max));
         return m_out;
     }
 

@@ -6,7 +6,7 @@
 
 #include <piejam/audio/pcm_sample_type.h>
 
-#include <piejam/math/clamp.h>
+#include <piejam/numeric/clamp.h>
 #include <piejam/numeric/endian.h>
 #include <piejam/numeric/intops.h>
 #include <piejam/numeric/intx.h>
@@ -52,7 +52,10 @@ to(float const x) noexcept -> pcm_sample_t<F>
     using signed_t = typename desc_t::signed_value_type;
     return endian_to_format<F>(
             numeric::intops::sign_map<pcm_sample_t<F>>(static_cast<signed_t>(
-                    math::clamp<float_t>(x, desc_t::fmin, desc_t::fmax) *
+                    numeric::clamp(
+                            static_cast<float_t>(x),
+                            desc_t::fmin,
+                            desc_t::fmax) *
                     desc_t::fscale)));
 }
 

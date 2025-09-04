@@ -8,6 +8,7 @@ endif()
 
 add_executable(piejam_numeric_test
     bit_test.cpp
+    clamp_test.cpp
     intops_test.cpp
     intx_test.cpp
     mipp_iterator_test.cpp

@@ -7,7 +7,7 @@
 #include <piejam/gui/model/SpectrumSlot.h>
 
 #include <piejam/functional/in_interval.h>
-#include <piejam/math/clamp.h>
+#include <piejam/numeric/clamp.h>
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
@@ -42,7 +42,7 @@ struct FrequencyScale final
         constexpr auto maxLog10 = std::log10(maxFrequency);
         constexpr auto diffLog10 = maxLog10 - minLog10;
 
-        return ((std::log10(math::clamp(f, minFrequency, maxFrequency)) -
+        return ((std::log10(numeric::clamp(f, minFrequency, maxFrequency)) -
                  minLog10) /
                 diffLog10) *
                size;
@@ -63,7 +63,7 @@ struct LevelScale final
     constexpr auto levelToPosition(float const level) noexcept -> float
     {
         constexpr auto diff = maxLevel - minLevel;
-        return ((math::clamp(level, minLevel, maxLevel) - minLevel) / diff) *
+        return ((numeric::clamp(level, minLevel, maxLevel) - minLevel) / diff) *
                size;
     }
 };

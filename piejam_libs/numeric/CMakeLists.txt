@@ -4,6 +4,7 @@
 
 add_library(piejam_numeric STATIC
     include/piejam/numeric/bit.h
+    include/piejam/numeric/clamp.h
     include/piejam/numeric/concepts.h
     include/piejam/numeric/dft.h
     include/piejam/numeric/endian.h
@@ -17,6 +18,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/type_traits.h
     include/piejam/numeric/window.h
     src/piejam/numeric/dft.cpp
+    include/piejam/numeric/simd/clamp.h
 )
 
 target_include_directories(piejam_numeric PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
