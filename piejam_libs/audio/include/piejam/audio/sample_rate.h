@@ -8,6 +8,7 @@
 
 #include <array>
 #include <chrono>
+#include <cstdint>
 
 namespace piejam::audio
 {
@@ -15,6 +16,8 @@ namespace piejam::audio
 class sample_rate
 {
 public:
+    using storage_type = std::uint32_t;
+
     constexpr sample_rate() noexcept = default;
     explicit constexpr sample_rate(unsigned const value) noexcept
         : m_value(value)
@@ -33,48 +36,44 @@ public:
     }
 
     [[nodiscard]]
-    constexpr auto value() const noexcept -> unsigned
+    constexpr auto value() const noexcept -> storage_type
     {
         return m_value;
     }
 
+    template <class T>
+        requires(
+                std::is_floating_point_v<T> ||
+                (std::is_integral_v<T> && sizeof(T) >= sizeof(std::uint32_t)))
     [[nodiscard]]
-    constexpr auto as_int() const noexcept -> int
-    {
-        return static_cast<int>(m_value);
-    }
-
-    template <std::floating_point T = float>
-    [[nodiscard]]
-    constexpr auto as_float() const noexcept -> T
+    constexpr auto as() const noexcept -> T
     {
         return static_cast<T>(m_value);
     }
 
-    template <class Rep = float>
-    constexpr auto to_nanoseconds(std::size_t const samples) const noexcept
-            -> std::chrono::duration<Rep, std::nano>
+    template <class Period = std::ratio<1>, std::floating_point Rep = double>
+    constexpr auto
+    duration_for_samples(std::size_t const samples) const noexcept
+            -> std::chrono::duration<Rep, Period>
     {
-        return std::chrono::duration<Rep, std::nano>(
-                (static_cast<Rep>(samples) / static_cast<Rep>(m_value)) *
-                static_cast<Rep>(std::nano::den));
+        return std::chrono::duration<Rep>(
+                (static_cast<Rep>(samples) / static_cast<Rep>(m_value)));
     }
 
     template <class Rep, class Period>
-    constexpr auto
-    to_samples(std::chrono::duration<Rep, Period> const& dur) const noexcept
+    constexpr auto samples_for_duration(
+            std::chrono::duration<Rep, Period> const& dur) const noexcept
             -> std::size_t
     {
         return static_cast<std::size_t>(
-                m_value *
-                (dur / std::chrono::duration<double, std::ratio<1>>(1)));
+                m_value * std::chrono::duration<double>(dur).count());
     }
 
     constexpr auto operator==(sample_rate const&) const noexcept
             -> bool = default;
 
 private:
-    unsigned m_value{};
+    storage_type m_value{};
 };
 
 inline constexpr std::array preferred_sample_rates{

@@ -32,8 +32,6 @@
 #include <boost/hof/match.hpp>
 #include <boost/mp11/map.hpp>
 
-#include <cmath>
-
 namespace piejam::fx_modules::filter
 {
 
@@ -87,7 +85,7 @@ make_coefficent_converter_processor(audio::sample_rate const sample_rate)
     static constexpr std::array s_input_names{"type"sv, "cutoff"sv, "res"sv};
     static constexpr std::array s_output_names{"coeffs"sv};
     return audio::engine::make_event_converter_processor(
-            [inv_sr = 1.f / sample_rate.as_float()](
+            [inv_sr = 1.f / sample_rate.as<float>()](
                     int const type,
                     float const cutoff,
                     float const res) {
@@ -342,7 +340,8 @@ public:
                   args.fx_mod.streams->at(to_underlying(
                           fx_modules::filter::stream_key::in_out)),
                   args.stream_procs,
-                  args.sample_rate.to_samples(std::chrono::milliseconds(120))))
+                  args.sample_rate.samples_for_duration(
+                          std::chrono::milliseconds(120))))
     {
     }
 

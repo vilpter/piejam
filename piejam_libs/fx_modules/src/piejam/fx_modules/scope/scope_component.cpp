@@ -26,7 +26,8 @@ make_component(runtime::internal_fx_component_factory_args const& args)
             args.fx_mod.streams->at(to_underlying(stream_key::input)),
             args.stream_procs,
             num_channels(args.fx_mod.bus_type),
-            args.sample_rate.to_samples(std::chrono::milliseconds(120)),
+            args.sample_rate.samples_for_duration(
+                    std::chrono::milliseconds(120)),
             "scope");
 }
 

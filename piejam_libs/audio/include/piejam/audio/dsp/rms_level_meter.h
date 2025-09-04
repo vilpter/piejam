@@ -39,8 +39,7 @@ public:
         : m_min_level{min_level}
         , m_sqr_history(
                   math::round_down_to_multiple(
-                          static_cast<std::size_t>(
-                                  rms_measure_time.count() * sr.as_float<T>()),
+                          sr.samples_for_duration(rms_measure_time),
                           static_cast<std::size_t>(mipp::N<T>())),
                   0.f)
     {

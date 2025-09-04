@@ -29,10 +29,10 @@ template <
         std::invocable<state const&> GetId,
         class Data>
     requires(std::is_same_v<
-                    std::invoke_result_t<GetDataMap, state const&>,
-                    entity_data_map<
-                            std::invoke_result_t<GetId, state const&>,
-                            Data> const&>)
+             std::invoke_result_t<GetDataMap, state const&>,
+             entity_data_map<
+                     std::invoke_result_t<GetId, state const&>,
+                     Data> const&>)
 auto
 make_entity_data_map_selector(
         GetDataMap&& get_data_map,
@@ -104,9 +104,12 @@ selector<box<period_size_choice>> const select_period_size([](state const& st) {
 });
 
 selector<float> const select_buffer_latency([](state const& st) {
-    return st.sample_rate.value() != 0 ? (st.period_size.value() * 1000.f) /
-                                                 st.sample_rate.as_float()
-                                       : 0.f;
+    return st.sample_rate.value() != 0
+                   ? st.sample_rate
+                             .duration_for_samples<std::milli, float>(
+                                     st.period_size.value())
+                             .count()
+                   : 0.f;
 });
 
 static auto get_sound_card =
@@ -438,9 +441,10 @@ make_mixer_device_routes_selector(
                     if (auto const* const device = devices.find(device_id);
                         device && device->bus_type == bus_type)
                     {
-                        result.emplace_back(mixer_device_route{
-                                .device_id = device_id,
-                                .name = device->name});
+                        result.emplace_back(
+                                mixer_device_route{
+                                        .device_id = device_id,
+                                        .name = device->name});
                     }
                 }
                 return box(std::move(result));
@@ -508,13 +512,14 @@ make_mixer_channel_routes_selector(
                             io_socket,
                             channels,
                             channel_id);
-                    return box(algorithm::transform_to_vector(
-                            valid_sources,
-                            [&](auto const& id) {
-                                return mixer_channel_route{
-                                        .channel_id = id,
-                                        .name = channels[id].name};
-                            }));
+                    return box(
+                            algorithm::transform_to_vector(
+                                    valid_sources,
+                                    [&](auto const& id) {
+                                        return mixer_channel_route{
+                                                .channel_id = id,
+                                                .name = channels[id].name};
+                                    }));
                 });
 
         return [get = std::move(get_mixer_channel_routes)](state const& st) {

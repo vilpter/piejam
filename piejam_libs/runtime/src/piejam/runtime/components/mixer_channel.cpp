@@ -78,7 +78,8 @@ public:
         , m_out_stream{stream_procs.make_processor(
                   mixer_channel.out_stream,
                   2,
-                  sample_rate.to_samples(std::chrono::milliseconds{40}),
+                  sample_rate.samples_for_duration(
+                          std::chrono::milliseconds{120}),
                   channel_name)}
     {
     }

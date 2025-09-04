@@ -65,7 +65,7 @@ struct audio_engine_render_test : public ::testing::Test
     {
         std::ranges::generate(audio_in_left, [this]() -> float {
             return std::sin(
-                    (sine_wave_pos++ / sample_rate.as_float()) * M_PI_2);
+                    (sine_wave_pos++ / sample_rate.as<float>()) * M_PI_2);
         });
     }
 

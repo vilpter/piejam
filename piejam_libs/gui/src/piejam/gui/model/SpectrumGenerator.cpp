@@ -62,7 +62,7 @@ struct SpectrumGenerator::Impl
         , m_dataPoints(m_dft.output_size())
     {
         float const binSize =
-                sample_rate.as_float() / static_cast<float>(m_dft.size());
+                sample_rate.as<float>() / static_cast<float>(m_dft.size());
         for (std::size_t const i : range::iota(m_dft.output_size()))
         {
             m_dataPoints[i].frequency_Hz = static_cast<float>(i) * binSize;

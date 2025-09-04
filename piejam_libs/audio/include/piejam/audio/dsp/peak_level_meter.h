@@ -30,8 +30,7 @@ public:
             std::chrono::duration<T> peak_decay_time = default_peak_decay_time,
             T min_level = default_min_level)
         : m_min_level{min_level}
-        , m_g_release{std::exp(
-                  T{-1} / (peak_decay_time.count() * sr.as_float<T>()))}
+        , m_g_release{std::exp(T{-1} / (peak_decay_time.count() * sr.as<T>()))}
     {
     }
 

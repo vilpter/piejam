@@ -23,7 +23,7 @@ struct pitch_yin_test : public testing::TestWithParam<float>
         : signal(buffer_size)
     {
         float const freq = GetParam();
-        generate_sine(std::span{signal}, sr.as_float(), freq);
+        generate_sine(std::span{signal}, sr.as<float>(), freq);
     }
 
     mipp::vector<float> signal;

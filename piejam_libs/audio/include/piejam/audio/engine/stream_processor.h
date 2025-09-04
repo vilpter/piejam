@@ -7,8 +7,6 @@
 #include <piejam/audio/engine/named_processor.h>
 #include <piejam/audio/engine/stream_ring_buffer.h>
 
-#include <mipp.h>
-
 #include <memory>
 #include <string_view>
 

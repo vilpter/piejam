@@ -106,7 +106,7 @@ pitch_yin(std::span<T const> const in, sample_rate const sr) -> T
             T const denom = T{2} * (prev_cmn - T{2} * curr_cmn + next_cmn);
             BOOST_ASSERT(std::abs(denom) > std::numeric_limits<T>::epsilon());
             T const betterTau = (tau - 1) + (prev_cmn - next_cmn) / denom;
-            return sr.as_float<T>() / betterTau;
+            return sr.as<T>() / betterTau;
         }
 
         prev_cmn = curr_cmn;

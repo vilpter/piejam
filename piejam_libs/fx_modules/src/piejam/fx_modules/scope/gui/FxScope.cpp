@@ -93,7 +93,7 @@ struct FxScope::Impl
 
     auto holdTimeInFrames() const noexcept -> std::size_t
     {
-        return sample_rate.to_samples(
+        return sample_rate.samples_for_duration(
                 std::chrono::milliseconds{static_cast<int>(holdTime->value())});
     }
 
@@ -462,7 +462,7 @@ FxScope::onSubscribe()
     auto sample_rate =
             observe_once(runtime::selectors::select_sample_rate)->current;
     m_impl->updateSampleRate(sample_rate);
-    setSampleRate(sample_rate.as_float());
+    setSampleRate(sample_rate.as<double>());
 }
 
 } // namespace piejam::fx_modules::scope::gui

@@ -11,8 +11,6 @@
 #include <benchmark/benchmark.h>
 
 #include <array>
-#include <cstdlib>
-#include <ctime>
 #include <span>
 
 constexpr std::array freqs{22.34f, 76.53f, 222.33f, 345.67f, 450.99f, 1230.45f};
@@ -25,7 +23,7 @@ BM_pitch_yin(benchmark::State& state)
     mipp::vector<float> in_buf(8192);
     piejam::audio::dsp::generate_sine(
             std::span{in_buf},
-            sr.as_float(),
+            sr.as<float>(),
             freqs[state.range(0)]);
     benchmark::ClobberMemory();
 

@@ -116,14 +116,14 @@ recorder_middleware::process_recorder_action(
         if (SndfileHandle::formatCheck(
                     format,
                     static_cast<int>(num_channels),
-                    st.sample_rate.as_int()))
+                    st.sample_rate.as<int>()))
         {
             SndfileHandle sndfile(
                     filename.string(),
                     SFM_WRITE,
                     format,
                     static_cast<int>(num_channels),
-                    st.sample_rate.as_int());
+                    st.sample_rate.as<int>());
 
             if (sndfile)
             {

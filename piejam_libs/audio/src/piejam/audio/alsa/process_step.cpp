@@ -420,7 +420,7 @@ process_step::process_step(
               m_io_config.out_config,
               m_io_config.buffer_config.period_size))
     , m_cpu_load_mean_acc(
-              io_config.buffer_config.sample_rate.to_samples(
+              io_config.buffer_config.sample_rate.samples_for_duration(
                       std::chrono::seconds{1}) /
               io_config.buffer_config.period_size.value()) // 1sec window
 {
@@ -479,8 +479,8 @@ process_step::operator()() -> std::error_condition
 
         auto const cpu_load_duration = m_process_function(period_size);
         auto const max_processing_time{
-                m_io_config.buffer_config.sample_rate.to_nanoseconds(
-                        period_size)};
+                m_io_config.buffer_config.sample_rate
+                        .duration_for_samples<std::nano>(period_size)};
 
         m_cpu_load.store(
                 m_cpu_load_mean_acc(cpu_load_duration / max_processing_time),
