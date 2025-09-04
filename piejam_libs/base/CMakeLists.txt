@@ -22,7 +22,6 @@ target_sources(piejam_base INTERFACE
     include/piejam/make_constant.h
     include/piejam/math.h
     include/piejam/math/clamp.h
-    include/piejam/math/pow_n.h
     include/piejam/npos.h
     include/piejam/on_scope_exit.h
     include/piejam/pimpl.h

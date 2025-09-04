@@ -9,8 +9,8 @@
 #include <piejam/algorithm/transform_accumulate.h>
 #include <piejam/functional/operators.h>
 #include <piejam/math.h>
-#include <piejam/math/pow_n.h>
 #include <piejam/numeric/mipp_iterator.h>
+#include <piejam/numeric/pow_n.h>
 
 #include <mipp.h>
 
@@ -94,7 +94,7 @@ public:
                             numeric::mipp_iterator{samples_data + samples_size},
                             numeric::mipp_iterator{m_sqr_history.data()},
                             mipp::Reg<T>(T{}),
-                            math::pow_n<2>,
+                            numeric::pow_n<2>,
                             std::plus<>{}));
             m_position = 0;
         }

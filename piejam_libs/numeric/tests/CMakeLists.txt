@@ -11,6 +11,7 @@ add_executable(piejam_numeric_test
     intops_test.cpp
     intx_test.cpp
     mipp_iterator_test.cpp
+    pow_n_test.cpp
 )
 target_link_libraries(piejam_numeric_test gtest_driver piejam_compiler_warnings piejam_numeric)
 

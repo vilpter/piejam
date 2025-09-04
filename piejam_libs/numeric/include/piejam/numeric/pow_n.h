@@ -6,7 +6,7 @@
 
 #include <cstddef>
 
-namespace piejam::math
+namespace piejam::numeric
 {
 
 namespace detail
@@ -44,4 +44,4 @@ struct pow_n_fn
 template <std::size_t N>
 inline constexpr auto pow_n = detail::pow_n_fn<N>{};
 
-} // namespace piejam::math
+} // namespace piejam::numeric

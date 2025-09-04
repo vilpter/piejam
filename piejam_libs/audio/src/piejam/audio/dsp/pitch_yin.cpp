@@ -4,8 +4,8 @@
 
 #include <piejam/audio/dsp/pitch_yin.h>
 
-#include <piejam/math/pow_n.h>
 #include <piejam/numeric/mipp_iterator.h>
+#include <piejam/numeric/pow_n.h>
 
 #include <mipp.h>
 
@@ -51,7 +51,9 @@ sqr_difference_sum(
                         numeric::mipp_iterator{data + tau},
                         mipp::Reg<T>(T{}),
                         std::plus<>{},
-                        boost::hof::compose(math::pow_n<2>, std::minus<>{})));
+                        boost::hof::compose(
+                                numeric::pow_n<2>,
+                                std::minus<>{})));
     }
     else
     {
