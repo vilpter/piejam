@@ -4,12 +4,13 @@
 
 #include <piejam/audio/dsp/pitch_yin.h>
 
-#include <piejam/algorithm/index_generate_to.h>
-#include <piejam/numeric/igen/sine.h>
+#include <piejam/numeric/generators/sine.h>
 
 #include <mipp.h>
 
 #include <gtest/gtest.h>
+
+#include <algorithm>
 
 namespace piejam::audio::dsp::test
 {
@@ -24,9 +25,9 @@ struct pitch_yin_test : public testing::TestWithParam<float>
         : signal(buffer_size)
     {
         float const freq = GetParam();
-        algorithm::index_generate_to(
+        std::ranges::generate(
                 signal,
-                numeric::igen::sine<float>{freq, sr.as<float>()});
+                numeric::generators::sine<float>{freq, sr.as<float>()});
     }
 
     mipp::vector<float> signal;

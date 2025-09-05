@@ -9,6 +9,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/dft.h
     include/piejam/numeric/endian.h
     include/piejam/numeric/fwd.h
+    include/piejam/numeric/generators/sine.h
     include/piejam/numeric/igen/sine.h
     include/piejam/numeric/intops.h
     include/piejam/numeric/intx.h

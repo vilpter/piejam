@@ -4,8 +4,7 @@
 
 #include <piejam/audio/dsp/pitch_yin.h>
 
-#include <piejam/algorithm/index_generate_to.h>
-#include <piejam/numeric/igen/sine.h>
+#include <piejam/numeric/generators/sine.h>
 
 #include <mipp.h>
 
@@ -22,9 +21,9 @@ BM_pitch_yin(benchmark::State& state)
     constexpr piejam::audio::sample_rate sr{48000};
 
     mipp::vector<float> in_buf(8192);
-    piejam::algorithm::index_generate_to(
+    std::ranges::generate(
             in_buf,
-            piejam::numeric::igen::sine<float>(
+            piejam::numeric::generators::sine<float>(
                     sr.as<float>(),
                     freqs[state.range(0)]));
     benchmark::ClobberMemory();
