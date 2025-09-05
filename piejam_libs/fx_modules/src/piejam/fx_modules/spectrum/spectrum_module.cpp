@@ -7,7 +7,7 @@
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
 #include <piejam/fx_modules/spectrum/spectrum_internal_id.h>
-#include <piejam/math.h>
+#include <piejam/numeric/dB_convert.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/parameter/bool_descriptor.h>
 #include <piejam/runtime/parameter/float_descriptor.h>
@@ -55,8 +55,8 @@ struct dB_ival
     static constexpr auto min{-24.f};
     static constexpr auto max{24.f};
 
-    static constexpr auto min_gain{math::from_dB(min)};
-    static constexpr auto max_gain{math::from_dB(max)};
+    static constexpr auto min_gain{numeric::from_dB(min)};
+    static constexpr auto max_gain{numeric::from_dB(max)};
 
     static constexpr auto to_normalized =
             &runtime::parameter::to_normalized_dB<min, max>;
@@ -84,61 +84,80 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .fx_instance_id = internal_id(),
             .name = box("Spectrum"s),
             .bus_type = args.bus_type,
-            .parameters = box(runtime::fx::module_parameters{
-                    {to_underlying(parameter_key::stream_a_active),
-                     params_factory.make_parameter(runtime::bool_parameter{
-                             .name = box("Stream A Active"s),
-                             .default_value = true})},
-                    {to_underlying(parameter_key::stream_b_active),
-                     params_factory.make_parameter(runtime::bool_parameter{
-                             .name = box("Stream B Active"s),
-                             .default_value = false})},
-                    {to_underlying(parameter_key::channel_a),
-                     params_factory.make_parameter(runtime::int_parameter{
-                             .name = box("Channel A"s),
-                             .default_value =
-                                     to_underlying(stereo_channel::left),
-                             .min = to_underlying(stereo_channel::_min),
-                             .max = to_underlying(stereo_channel::_max),
-                             .value_to_string = &to_stereo_channel_string,
-                     })},
-                    {to_underlying(parameter_key::channel_b),
-                     params_factory.make_parameter(runtime::int_parameter{
-                             .name = box("Channel B"s),
-                             .default_value =
-                                     to_underlying(stereo_channel::right),
-                             .min = to_underlying(stereo_channel::_min),
-                             .max = to_underlying(stereo_channel::_max),
-                             .value_to_string = &to_stereo_channel_string})},
-                    {to_underlying(parameter_key::gain_a),
-                     params_factory.make_parameter(runtime::float_parameter{
-                             .name = box("Gain A"s),
-                             .default_value = 1.f,
-                             .min = dB_ival::min_gain,
-                             .max = dB_ival::max_gain,
-                             .value_to_string = &to_dB_string,
-                             .to_normalized = dB_ival::to_normalized,
-                             .from_normalized = dB_ival::from_normalized})},
-                    {to_underlying(parameter_key::gain_b),
-                     params_factory.make_parameter(runtime::float_parameter{
-                             .name = box("Gain B"s),
-                             .default_value = 1.f,
-                             .min = dB_ival::min_gain,
-                             .max = dB_ival::max_gain,
-                             .value_to_string = &to_dB_string,
-                             .to_normalized = dB_ival::to_normalized,
-                             .from_normalized = dB_ival::from_normalized})},
-                    {to_underlying(parameter_key::freeze),
-                     params_factory.make_parameter(runtime::bool_parameter{
-                             .name = box("Freeze"s),
-                             .default_value = false})},
-            }),
-            .streams = box(runtime::fx::module_streams{
-                    {to_underlying(stream_key::input),
-                     make_stream(
-                             args.streams,
-                             audio::num_channels(args.bus_type))},
-            })};
+            .parameters =
+                    box(runtime::fx::module_parameters{
+                            {to_underlying(parameter_key::stream_a_active),
+                             params_factory.make_parameter(
+                                     runtime::bool_parameter{
+                                             .name = box("Stream A Active"s),
+                                             .default_value = true})},
+                            {to_underlying(parameter_key::stream_b_active),
+                             params_factory.make_parameter(
+                                     runtime::bool_parameter{
+                                             .name = box("Stream B Active"s),
+                                             .default_value = false})},
+                            {to_underlying(parameter_key::channel_a),
+                             params_factory.make_parameter(
+                                     runtime::int_parameter{
+                                             .name = box("Channel A"s),
+                                             .default_value = to_underlying(
+                                                     stereo_channel::left),
+                                             .min = to_underlying(
+                                                     stereo_channel::_min),
+                                             .max = to_underlying(
+                                                     stereo_channel::_max),
+                                             .value_to_string =
+                                                     &to_stereo_channel_string,
+                                     })},
+                            {to_underlying(parameter_key::channel_b),
+                             params_factory.make_parameter(
+                                     runtime::int_parameter{
+                                             .name = box("Channel B"s),
+                                             .default_value = to_underlying(
+                                                     stereo_channel::right),
+                                             .min = to_underlying(
+                                                     stereo_channel::_min),
+                                             .max = to_underlying(
+                                                     stereo_channel::_max),
+                                             .value_to_string =
+                                                     &to_stereo_channel_string})},
+                            {to_underlying(parameter_key::gain_a),
+                             params_factory.make_parameter(
+                                     runtime::float_parameter{
+                                             .name = box("Gain A"s),
+                                             .default_value = 1.f,
+                                             .min = dB_ival::min_gain,
+                                             .max = dB_ival::max_gain,
+                                             .value_to_string = &to_dB_string,
+                                             .to_normalized =
+                                                     dB_ival::to_normalized,
+                                             .from_normalized = dB_ival::
+                                                     from_normalized})},
+                            {to_underlying(parameter_key::gain_b),
+                             params_factory.make_parameter(
+                                     runtime::float_parameter{
+                                             .name = box("Gain B"s),
+                                             .default_value = 1.f,
+                                             .min = dB_ival::min_gain,
+                                             .max = dB_ival::max_gain,
+                                             .value_to_string = &to_dB_string,
+                                             .to_normalized =
+                                                     dB_ival::to_normalized,
+                                             .from_normalized = dB_ival::
+                                                     from_normalized})},
+                            {to_underlying(parameter_key::freeze),
+                             params_factory.make_parameter(
+                                     runtime::bool_parameter{
+                                             .name = box("Freeze"s),
+                                             .default_value = false})},
+                    }),
+            .streams =
+                    box(runtime::fx::module_streams{
+                            {to_underlying(stream_key::input),
+                             make_stream(
+                                     args.streams,
+                                     audio::num_channels(args.bus_type))},
+                    })};
 }
 
 } // namespace piejam::fx_modules::spectrum

@@ -9,6 +9,7 @@
 #include <piejam/functional/operators.h>
 #include <piejam/indexed_access.h>
 #include <piejam/ladspa/port_descriptor.h>
+#include <piejam/numeric/dB_convert.h>
 #include <piejam/runtime/fader_mapping.h>
 #include <piejam/runtime/internal_fx_module_factory.h>
 #include <piejam/runtime/ladspa_fx/ladspa_fx_module.h>
@@ -66,7 +67,7 @@ from_normalized_send(float_parameter const&, float const norm_value) -> float
 auto
 volume_to_string(float volume) -> std::string
 {
-    auto const volume_dB = math::to_dB(volume);
+    auto const volume_dB = numeric::to_dB(volume);
     return fmt::format("{:.1f} dB", volume_dB);
 }
 
@@ -218,11 +219,12 @@ apply_fx_midi_assignments(
         if (auto it = fx_mod.parameters->find(key);
             it != fx_mod.parameters->end())
         {
-            BOOST_ASSERT(std::visit(
-                    []<class ParamId>(ParamId) {
-                        return is_midi_assignable_v<ParamId>;
-                    },
-                    it->second));
+            BOOST_ASSERT(
+                    std::visit(
+                            []<class ParamId>(ParamId) {
+                                return is_midi_assignable_v<ParamId>;
+                            },
+                            it->second));
             new_assignments.emplace(it->second, value);
         }
     }
@@ -293,12 +295,13 @@ insert_ladspa_fx_module(
     fx::chain_t fx_chain = mixer_channel.fx_chain;
     auto const insert_pos = std::min(position, fx_chain.size());
 
-    auto fx_mod_id = st.fx_modules.emplace(ladspa_fx::make_module(
-            instance_id,
-            plugin_desc.name,
-            bus_type,
-            control_inputs,
-            st.params));
+    auto fx_mod_id = st.fx_modules.emplace(
+            ladspa_fx::make_module(
+                    instance_id,
+                    plugin_desc.name,
+                    bus_type,
+                    control_inputs,
+                    st.params));
 
     fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
 
@@ -405,14 +408,15 @@ make_aux_send_parameter(ParameterFactory& ui_params_factory)
 {
     using namespace std::string_literals;
 
-    return ui_params_factory.make_parameter(parameter::float_descriptor{
-            .name = box("Send"s),
-            .default_value = 0.f,
-            .min = 0.f,
-            .max = 1.f,
-            .value_to_string = &volume_to_string,
-            .to_normalized = &to_normalized_send,
-            .from_normalized = &from_normalized_send});
+    return ui_params_factory.make_parameter(
+            parameter::float_descriptor{
+                    .name = box("Send"s),
+                    .default_value = 0.f,
+                    .min = 0.f,
+                    .max = 1.f,
+                    .value_to_string = &volume_to_string,
+                    .to_normalized = &to_normalized_send,
+                    .from_normalized = &from_normalized_send});
 }
 
 template <class ParameterFactory>
@@ -528,31 +532,38 @@ add_mixer_channel(state& st, std::string name, audio::bus_type bus_type)
                     st.mixer_state.channels,
                     st.external_audio_state.outputs,
                     params_factory)),
-            .volume = params_factory.make_parameter(float_parameter{
-                    .name = box("Volume"s),
-                    .default_value = 1.f,
-                    .min = 0.f,
-                    .max = math::from_dB(6.f),
-                    .value_to_string = &volume_to_string,
-                    .to_normalized = &to_normalized_volume,
-                    .from_normalized = &from_normalized_volume}),
-            .pan_balance = params_factory.make_parameter(float_parameter{
-                    .name = box(bus_type_to(bus_type, "Pan"s, "Balance"s)),
-                    .default_value = 0.f,
-                    .min = -1.f,
-                    .max = 1.f,
-                    .bipolar = true,
-                    .to_normalized = &parameter::to_normalized_linear,
-                    .from_normalized = &parameter::from_normalized_linear}),
-            .record = params_factory.make_parameter(bool_parameter{
-                    .name = box("Record"s),
-                    .default_value = false}),
-            .mute = params_factory.make_parameter(bool_parameter{
-                    .name = box("Mute"s),
-                    .default_value = false}),
-            .solo = params_factory.make_parameter(bool_parameter{
-                    .name = box("Solo"s),
-                    .default_value = false}),
+            .volume = params_factory.make_parameter(
+                    float_parameter{
+                            .name = box("Volume"s),
+                            .default_value = 1.f,
+                            .min = 0.f,
+                            .max = numeric::from_dB(6.f),
+                            .value_to_string = &volume_to_string,
+                            .to_normalized = &to_normalized_volume,
+                            .from_normalized = &from_normalized_volume}),
+            .pan_balance = params_factory.make_parameter(
+                    float_parameter{
+                            .name = box(
+                                    bus_type_to(bus_type, "Pan"s, "Balance"s)),
+                            .default_value = 0.f,
+                            .min = -1.f,
+                            .max = 1.f,
+                            .bipolar = true,
+                            .to_normalized = &parameter::to_normalized_linear,
+                            .from_normalized =
+                                    &parameter::from_normalized_linear}),
+            .record = params_factory.make_parameter(
+                    bool_parameter{
+                            .name = box("Record"s),
+                            .default_value = false}),
+            .mute = params_factory.make_parameter(
+                    bool_parameter{
+                            .name = box("Mute"s),
+                            .default_value = false}),
+            .solo = params_factory.make_parameter(
+                    bool_parameter{
+                            .name = box("Solo"s),
+                            .default_value = false}),
             .out_stream = make_stream(st.streams, 2),
             .fx_chain = {},
     });
@@ -677,9 +688,10 @@ remove_external_audio_device(
     }
     else
     {
-        BOOST_ASSERT(algorithm::contains(
-                *st.external_audio_state.outputs,
-                device_id));
+        BOOST_ASSERT(
+                algorithm::contains(
+                        *st.external_audio_state.outputs,
+                        device_id));
         remove_erase(st.external_audio_state.outputs, device_id);
 
         auto const addr = mixer::io_address_t{device_id};

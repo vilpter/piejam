@@ -5,7 +5,7 @@
 #include <piejam/fx_modules/utility/utility_module.h>
 
 #include <piejam/fx_modules/utility/utility_internal_id.h>
-#include <piejam/math.h>
+#include <piejam/numeric/dB_convert.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/parameter/bool_descriptor.h>
 #include <piejam/runtime/parameter/float_descriptor.h>
@@ -54,37 +54,41 @@ make_module(runtime::internal_fx_module_factory_args const& args)
 
     parameters.emplace(
             to_underlying(parameter_key::gain),
-            params_factory.make_parameter(runtime::float_parameter{
-                    .name = box("Gain"s),
-                    .default_value = 1.f,
-                    .min = math::from_dB(dB_ival::min),
-                    .max = math::from_dB(dB_ival::max),
-                    .bipolar = true,
-                    .value_to_string = &to_dB_string,
-                    .to_normalized = dB_ival::to_normalized,
-                    .from_normalized = dB_ival::from_normalized}));
+            params_factory.make_parameter(
+                    runtime::float_parameter{
+                            .name = box("Gain"s),
+                            .default_value = 1.f,
+                            .min = numeric::from_dB(dB_ival::min),
+                            .max = numeric::from_dB(dB_ival::max),
+                            .bipolar = true,
+                            .value_to_string = &to_dB_string,
+                            .to_normalized = dB_ival::to_normalized,
+                            .from_normalized = dB_ival::from_normalized}));
 
     switch (args.bus_type)
     {
         case audio::bus_type::mono:
             parameters.emplace(
                     to_underlying(parameter_key::invert),
-                    params_factory.make_parameter(runtime::bool_parameter{
-                            .name = box("Invert"s),
-                            .default_value = false}));
+                    params_factory.make_parameter(
+                            runtime::bool_parameter{
+                                    .name = box("Invert"s),
+                                    .default_value = false}));
             break;
 
         case audio::bus_type::stereo:
             parameters.emplace(
                     to_underlying(parameter_key::invert_left),
-                    params_factory.make_parameter(runtime::bool_parameter{
-                            .name = box("Invert L"s),
-                            .default_value = false}));
+                    params_factory.make_parameter(
+                            runtime::bool_parameter{
+                                    .name = box("Invert L"s),
+                                    .default_value = false}));
             parameters.emplace(
                     to_underlying(parameter_key::invert_right),
-                    params_factory.make_parameter(runtime::bool_parameter{
-                            .name = box("Invert R"s),
-                            .default_value = false}));
+                    params_factory.make_parameter(
+                            runtime::bool_parameter{
+                                    .name = box("Invert R"s),
+                                    .default_value = false}));
             break;
     }
 

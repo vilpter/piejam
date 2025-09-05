@@ -45,26 +45,6 @@ exact_equal(T a, T b) noexcept -> bool
 #pragma GCC diagnostic pop
 }
 
-template <std::floating_point T>
-constexpr T negative_inf = -std::numeric_limits<T>::infinity();
-
-template <std::floating_point T>
-[[nodiscard]]
-constexpr auto
-to_dB(T log, T min_log = T{1e-20}) noexcept -> T
-{
-    static_assert(std::numeric_limits<T>::is_iec559, "IEEE 754 required");
-    return log <= min_log ? negative_inf<T> : std::log10(log) * T{20};
-}
-
-template <std::floating_point T>
-[[nodiscard]]
-constexpr auto
-from_dB(T dB, T min_dB = negative_inf<T>) noexcept -> T
-{
-    return dB <= min_dB ? T{} : std::pow(T{10}, dB / T{20});
-}
-
 template <class T, std::predicate<T> P>
 [[nodiscard]]
 constexpr auto flush_to_zero_if(T value, P&& p) BOOST_HOF_RETURNS(

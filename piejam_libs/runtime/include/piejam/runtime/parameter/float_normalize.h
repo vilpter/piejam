@@ -8,6 +8,7 @@
 
 #include <piejam/functional/in_interval.h>
 #include <piejam/math.h>
+#include <piejam/numeric/dB_convert.h>
 
 #include <algorithm>
 #include <cmath>
@@ -81,10 +82,11 @@ to_normalized_log(float_descriptor const& p, float const value) -> float
 constexpr auto
 from_normalized_log(float_descriptor const& p, float const norm_value) -> float
 {
-    return std::exp(detail::from_normalized(
-            norm_value,
-            std::log(p.min),
-            std::log(p.max)));
+    return std::exp(
+            detail::from_normalized(
+                    norm_value,
+                    std::log(p.min),
+                    std::log(p.max)));
 }
 
 template <float Min_dB, float Max_dB>
@@ -115,7 +117,7 @@ template <auto Mapping, float Min_dB>
 constexpr auto
 to_normalized_dB_mapping(float const value)
 {
-    float const value_dB = math::to_dB(value);
+    float const value_dB = numeric::to_dB(value);
     if (value_dB <= Min_dB)
     {
         return 0.f;
@@ -159,12 +161,13 @@ from_normalized_dB_maping(float const norm_value)
     auto first = std::ranges::begin(Mapping);
     if (norm_value < first->normalized)
     {
-        return math::from_dB(math::linear_map(
-                norm_value,
-                0.f,
-                first->normalized,
-                Min_dB,
-                first->dB));
+        return numeric::from_dB(
+                math::linear_map(
+                        norm_value,
+                        0.f,
+                        first->normalized,
+                        Min_dB,
+                        first->dB));
     }
 
     auto lower = std::ranges::adjacent_find(
@@ -174,12 +177,13 @@ from_normalized_dB_maping(float const norm_value)
     BOOST_ASSERT(lower != std::ranges::end(Mapping));
     auto const upper = std::next(lower);
 
-    return math::from_dB(math::linear_map(
-            norm_value,
-            lower->normalized,
-            upper->normalized,
-            lower->dB,
-            upper->dB));
+    return numeric::from_dB(
+            math::linear_map(
+                    norm_value,
+                    lower->normalized,
+                    upper->normalized,
+                    lower->dB,
+                    upper->dB));
 }
 
 } // namespace piejam::runtime::parameter

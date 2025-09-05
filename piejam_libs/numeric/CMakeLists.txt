@@ -7,6 +7,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/clamp.h
     include/piejam/numeric/concepts.h
     include/piejam/numeric/constants.h
+    include/piejam/numeric/dB_convert.h
     include/piejam/numeric/dft.h
     include/piejam/numeric/endian.h
     include/piejam/numeric/fwd.h
