@@ -4,7 +4,12 @@
 
 #pragma once
 
-#include <piejam/math.h>
+#include <piejam/numeric/pos_mod.h>
+
+#include <boost/assert.hpp>
+
+#include <cmath>
+#include <concepts>
 
 namespace piejam::audio
 {
@@ -63,7 +68,7 @@ struct pitch
                 static_cast<int>(std::round(semitones_interval_f));
 
         result.pitchclass_ = static_cast<pitchclass>(
-                math::pos_mod(semitones_interval, semitones_per_octave));
+                numeric::pos_mod(semitones_interval, semitones_per_octave));
 
         constexpr int base_octave = 4;
         constexpr int octave_start_offset = 9;

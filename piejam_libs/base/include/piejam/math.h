@@ -59,25 +59,6 @@ linear_map(T v, T src_lo, T src_hi, T dst_lo, T dst_hi) noexcept -> T
     return ((v - src_lo) / (src_hi - src_lo)) * (dst_hi - dst_lo) + dst_lo;
 }
 
-template <std::integral T>
-[[nodiscard]]
-constexpr auto
-pos_mod(T x, T y) noexcept
-{
-    BOOST_ASSERT(y != 0);
-
-    T const n = x % y;
-
-    if constexpr (std::signed_integral<T>)
-    {
-        return n < 0 ? n + y : n;
-    }
-    else
-    {
-        return n;
-    }
-}
-
 inline constexpr auto abs = BOOST_HOF_LIFT(std::abs);
 
 template <std::unsigned_integral T, std::unsigned_integral N>
