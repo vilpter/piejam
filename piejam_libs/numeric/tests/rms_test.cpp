@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/numeric/generate_sine.h>
+#include <piejam/numeric/igen/sine.h>
 #include <piejam/numeric/rms.h>
 #include <piejam/numeric/simd/rms.h>
 
@@ -10,6 +10,28 @@
 
 namespace piejam::numeric::test
 {
+
+namespace
+{
+
+template <std::floating_point T>
+constexpr void
+generate_sine(
+        std::span<T> const out,
+        T const sr,
+        T const freq,
+        T const amp = T{1},
+        T const phi = T{0})
+{
+    auto gen = igen::sine<T>(sr, freq, amp, phi);
+
+    for (std::size_t n = 0, e = out.size(); n < e; ++n)
+    {
+        out[n] = gen(n);
+    }
+}
+
+} // namespace
 
 // test param: amplitude
 struct rms_test : public testing::TestWithParam<float>
