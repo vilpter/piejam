@@ -5,7 +5,7 @@
 #include <piejam/gui/model/PitchGenerator.h>
 
 #include <piejam/audio/dsp/pitch_yin.h>
-#include <piejam/audio/dsp/rms.h>
+#include <piejam/numeric/simd/rms.h>
 
 namespace piejam::gui::model
 {
@@ -29,7 +29,7 @@ PitchGenerator::process() -> float
 {
     if (m_captured_samples >= captureSize)
     {
-        if (audio::dsp::simd::rms<float>(m_signal) < 0.001f) // -60 dB
+        if (numeric::simd::rms(m_signal) < 0.001f) // -60 dB
         {
             m_last_frequency = 0.f;
         }

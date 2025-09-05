@@ -14,7 +14,6 @@ add_executable(piejam_audio_benchmark
     multiply_processor_benchmark.cpp
     peak_level_meter_benchmark.cpp
     pitch_yin_benchmark.cpp
-    rms_benchmark.cpp
 )
 target_link_libraries(piejam_audio_benchmark benchmark benchmark_main piejam_audio)
 target_compile_options(piejam_audio_benchmark PRIVATE -Wall -Wextra -Werror -pedantic-errors)

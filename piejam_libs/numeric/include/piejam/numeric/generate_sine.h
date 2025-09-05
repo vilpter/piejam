@@ -6,7 +6,7 @@
 #include <numbers>
 #include <span>
 
-namespace piejam::audio::dsp
+namespace piejam::numeric
 {
 
 template <std::floating_point T>
@@ -25,4 +25,4 @@ generate_sine(
     }
 }
 
-} // namespace piejam::audio::dsp
+} // namespace piejam::numeric

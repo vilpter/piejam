@@ -4,7 +4,7 @@
 
 #include <piejam/audio/dsp/pitch_yin.h>
 
-#include <piejam/audio/dsp/generate_sine.h>
+#include <piejam/numeric/generate_sine.h>
 
 #include <mipp.h>
 
@@ -23,7 +23,7 @@ struct pitch_yin_test : public testing::TestWithParam<float>
         : signal(buffer_size)
     {
         float const freq = GetParam();
-        generate_sine(std::span{signal}, sr.as<float>(), freq);
+        numeric::generate_sine(std::span{signal}, sr.as<float>(), freq);
     }
 
     mipp::vector<float> signal;

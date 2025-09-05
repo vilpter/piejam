@@ -11,7 +11,6 @@ add_executable(piejam_audio_test
     component_mock.h
     dag_test.cpp
     dsp_pitch_yin_test.cpp
-    dsp_rms_test.cpp
     event_buffer_memory_test.cpp
     event_buffer_test.cpp
     event_converter_processor_test.cpp

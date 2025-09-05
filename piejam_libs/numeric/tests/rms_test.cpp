@@ -2,13 +2,13 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/audio/dsp/rms.h>
-
-#include <piejam/audio/dsp/generate_sine.h>
+#include <piejam/numeric/generate_sine.h>
+#include <piejam/numeric/rms.h>
+#include <piejam/numeric/simd/rms.h>
 
 #include <gtest/gtest.h>
 
-namespace piejam::audio::dsp::test
+namespace piejam::numeric::test
 {
 
 // test param: amplitude
@@ -45,4 +45,4 @@ INSTANTIATE_TEST_SUITE_P(
         rms_test,
         testing::Values(0.001f, 0.01f, 0.1f, 0.2f, 0.5f, 0.8f, 1.f));
 
-} // namespace piejam::audio::dsp::test
+} // namespace piejam::numeric::test

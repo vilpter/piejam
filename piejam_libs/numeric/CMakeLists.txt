@@ -9,15 +9,18 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/dft.h
     include/piejam/numeric/endian.h
     include/piejam/numeric/fwd.h
+    include/piejam/numeric/generate_sine.h
     include/piejam/numeric/intops.h
     include/piejam/numeric/intx.h
     include/piejam/numeric/mipp.h
     include/piejam/numeric/mipp_iterator.h
     include/piejam/numeric/pow_n.h
+    include/piejam/numeric/rms.h
     include/piejam/numeric/rolling_mean.h
     include/piejam/numeric/simd/clamp.h
     include/piejam/numeric/simd/fsqradd.h
     include/piejam/numeric/simd/lrot_n.h
+    include/piejam/numeric/simd/rms.h
     include/piejam/numeric/type_traits.h
     include/piejam/numeric/window.h
     src/piejam/numeric/dft.cpp
@@ -32,4 +35,5 @@ target_link_libraries(piejam_numeric
     piejam_compiler_warnings
     FFTW::Float)
 
+add_subdirectory(benchmarks)
 add_subdirectory(tests)

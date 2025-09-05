@@ -2,13 +2,13 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/audio/dsp/rms.h>
+#include <piejam/numeric/rms.h>
+#include <piejam/numeric/simd/rms.h>
 
 #include <benchmark/benchmark.h>
 
 #include <cstdlib>
 #include <ctime>
-#include <span>
 
 constexpr auto min_period_size = 512;
 constexpr auto max_period_size = 8192;
@@ -25,7 +25,7 @@ BM_rms(benchmark::State& state)
 
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(piejam::audio::dsp::rms<float>(buf));
+        benchmark::DoNotOptimize(piejam::numeric::rms(buf));
     }
 }
 
@@ -43,7 +43,7 @@ BM_simd_rms(benchmark::State& state)
 
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(piejam::audio::dsp::simd::rms<float>(buf));
+        benchmark::DoNotOptimize(piejam::numeric::simd::rms(buf));
     }
 }
 
