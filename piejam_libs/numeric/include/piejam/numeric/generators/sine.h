@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <piejam/numeric/constants.h>
+
 #include <cmath>
 #include <concepts>
 #include <numbers>
@@ -14,8 +16,6 @@ namespace piejam::numeric::generators
 template <std::floating_point T>
 class sine
 {
-    static constexpr T two_pi = T{2} * std::numbers::pi_v<T>;
-
 public:
     constexpr sine(
             T frequency,
@@ -24,7 +24,7 @@ public:
             T phase_ = T{0}) noexcept
         : m_amplitude(amplitude_)
         , m_phase(phase_)
-        , m_phase_increment(two_pi * frequency / sample_rate)
+        , m_phase_increment(constants::two_pi<T> * frequency / sample_rate)
     {
     }
 
@@ -32,9 +32,9 @@ public:
     {
         T value = m_amplitude * std::sin(m_phase);
         m_phase += m_phase_increment;
-        if (m_phase >= two_pi)
+        if (m_phase >= constants::two_pi<T>)
         {
-            m_phase -= two_pi;
+            m_phase -= constants::two_pi<T>;
         }
         return value;
     }
