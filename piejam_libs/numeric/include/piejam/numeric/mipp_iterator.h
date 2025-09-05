@@ -9,7 +9,6 @@
 #include <boost/assert.hpp>
 #include <boost/stl_interfaces/iterator_interface.hpp>
 
-#include <bit>
 #include <ranges>
 #include <span>
 
@@ -181,48 +180,56 @@ make_mipp_iterator_x2(T const* p)
     return mipp_iterator<T const, mipp::Regx2>{p};
 }
 
-template <mipp_number T>
+template <std::ranges::contiguous_range R>
+    requires mipp_number<std::ranges::range_value_t<R>>
 [[nodiscard]]
 constexpr auto
-mipp_begin(std::span<T> const in)
+mipp_begin(R&& in)
 {
-    return mipp_iterator{in.data()};
+    return mipp_iterator{std::ranges::data(in)};
 }
 
-template <mipp_number T>
+template <std::ranges::contiguous_range R>
+    requires mipp_number<std::ranges::range_value_t<R>>
 [[nodiscard]]
 constexpr auto
-mipp_end(std::span<T> const in)
+mipp_end(R&& in)
 {
-    return mipp_iterator{in.data() + in.size()};
+    return mipp_iterator{std::ranges::data(in) + std::ranges::size(in)};
 }
 
-template <mipp_number T>
+template <std::ranges::contiguous_range R>
+    requires mipp_number<std::ranges::range_value_t<R>>
 [[nodiscard]]
 constexpr auto
-mipp_range(std::span<T> const in)
+mipp_range(R&& in)
 {
-    auto const data = in.data();
+    auto const data = std::ranges::data(in);
 
     return std::ranges::subrange{
             mipp_iterator{data},
-            mipp_iterator{data + in.size()}};
+            mipp_iterator{data + std::ranges::size(in)}};
 }
 
-template <mipp_number T>
+template <std::ranges::contiguous_range R>
+    requires mipp_number<std::ranges::range_value_t<R>>
 [[nodiscard]]
 constexpr auto
-mipp_range_split(std::span<T> const in)
+mipp_range_split(R&& in)
 {
+    using T = std::ranges::range_value_t<R>;
     constexpr auto N = mipp::N<T>();
 
-    auto const addr = reinterpret_cast<std::uintptr_t>(in.data());
+    auto const in_data = std::ranges::data(in);
+    auto const in_size = std::ranges::size(in);
+
+    auto const addr = reinterpret_cast<std::uintptr_t>(in_data);
     auto const misalignment = (addr / sizeof(T)) % N;
 
-    auto const pre_size = std::min(in.size(), (N - misalignment) % N);
-    auto const pre_data = in.data();
+    auto const pre_size = std::min(in_size, (N - misalignment) % N);
+    auto const pre_data = in_data;
 
-    auto const size_without_pre = in.size() - pre_size;
+    auto const size_without_pre = in_size - pre_size;
     auto const main_size = (size_without_pre / N) * N;
     auto const main_data = pre_data + pre_size;
 

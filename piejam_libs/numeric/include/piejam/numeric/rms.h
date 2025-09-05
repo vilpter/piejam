@@ -9,7 +9,7 @@
 #include <cmath>
 #include <concepts>
 #include <numeric>
-#include <span>
+#include <ranges>
 
 namespace piejam::numeric
 {
@@ -19,30 +19,25 @@ namespace detail
 
 struct rms_fn
 {
-    template <std::floating_point T>
-    constexpr auto operator()(std::span<T const> const in) const noexcept
+    template <std::ranges::input_range R>
+        requires std::floating_point<std::ranges::range_value_t<R>>
+    constexpr auto operator()(R const& in) const noexcept
     {
-        if (in.empty())
+        using T = std::ranges::range_value_t<R>;
+
+        if (std::ranges::empty(in))
         {
             return T{};
         }
 
         return std::sqrt(
                 std::transform_reduce(
-                        in.begin(),
-                        in.end(),
+                        std::ranges::begin(in),
+                        std::ranges::end(in),
                         T{},
                         std::plus<>{},
                         numeric::pow_n<2>) /
-                in.size());
-    }
-
-    template <std::ranges::contiguous_range R>
-        requires std::floating_point<std::ranges::range_value_t<R>>
-    constexpr auto operator()(R const& in) const noexcept
-    {
-        using T = std::add_const_t<std::ranges::range_value_t<R>>;
-        return operator()(std::span<T>{in});
+                std::ranges::size(in));
     }
 };
 

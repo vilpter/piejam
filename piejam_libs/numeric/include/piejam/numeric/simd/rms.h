@@ -10,7 +10,7 @@
 #include <cmath>
 #include <concepts>
 #include <numeric>
-#include <span>
+#include <ranges>
 
 namespace piejam::numeric::simd
 {
@@ -20,31 +20,28 @@ namespace detail
 
 struct rms_fn
 {
-    template <std::floating_point T>
-    constexpr auto operator()(std::span<T const> const in) const noexcept
-    {
-        if (in.empty())
-        {
-            return T{};
-        }
-
-        auto const rng = mipp_range(in);
-        auto sums = std::transform_reduce(
-                rng.begin(),
-                rng.end(),
-                mipp::Reg<T>(T{}),
-                std::plus<>{},
-                pow_n<2>);
-
-        return std::sqrt(mipp::sum(sums) / in.size());
-    }
-
     template <std::ranges::contiguous_range R>
         requires std::floating_point<std::ranges::range_value_t<R>>
     constexpr auto operator()(R const& in) const noexcept
     {
-        using T = std::add_const_t<std::ranges::range_value_t<R>>;
-        return operator()(std::span<T>{in});
+        using T = std::ranges::range_value_t<R>;
+
+        if (std::ranges::empty(in))
+        {
+            return T{};
+        }
+
+        auto const rng = mipp_range(std::span{in});
+
+        return std::sqrt(
+                mipp::sum(
+                        std::transform_reduce(
+                                std::ranges::begin(rng),
+                                std::ranges::end(rng),
+                                mipp::Reg<T>(T{}),
+                                std::plus<>{},
+                                pow_n<2>)) /
+                std::ranges::size(in));
     }
 };
 
