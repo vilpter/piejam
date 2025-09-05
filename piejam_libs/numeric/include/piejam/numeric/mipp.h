@@ -6,10 +6,6 @@
 
 #include <mipp.h>
 
-#include <boost/assert.hpp>
-#include <boost/preprocessor/arithmetic/sub.hpp>
-#include <boost/preprocessor/iteration/local.hpp>
-
 #include <concepts>
 #include <cstdint>
 #include <type_traits>
@@ -77,29 +73,5 @@ concept mipp_unsigned_integral = mipp_integral<T> && std::is_unsigned_v<T>;
 
 template <class T>
 concept mipp_number = mipp_integral<T> || std::floating_point<T>;
-
-template <mipp_number T>
-[[nodiscard]]
-constexpr auto
-mipp_lrot_n(mipp::Reg<T> reg, std::size_t n)
-{
-#define PIEJAM_LROT_N_MAX_LIMIT 16
-    BOOST_ASSERT(n < mipp::N<T>());
-
-    // clang-format off
-    switch (n)
-    {
-#define BOOST_PP_LOCAL_LIMITS (1, PIEJAM_LROT_N_MAX_LIMIT - 1)
-#define BOOST_PP_LOCAL_MACRO(I)                                                    \
-        case BOOST_PP_SUB(PIEJAM_LROT_N_MAX_LIMIT, I):                             \
-            reg = mipp::lrot(reg);                                                 \
-            [[fallthrough]];
-#include BOOST_PP_LOCAL_ITERATE()
-#undef PIEJAM_LROT_N_MAX_LIMIT
-        default:
-            return reg;
-    }
-    // clang-format on
-}
 
 } // namespace piejam::numeric

@@ -17,6 +17,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/rolling_mean.h
     include/piejam/numeric/simd/clamp.h
     include/piejam/numeric/simd/fsqradd.h
+    include/piejam/numeric/simd/lrot_n.h
     include/piejam/numeric/type_traits.h
     include/piejam/numeric/window.h
     src/piejam/numeric/dft.cpp

@@ -7,6 +7,7 @@
 #include <piejam/numeric/mipp_iterator.h>
 #include <piejam/numeric/pow_n.h>
 #include <piejam/numeric/simd/fsqradd.h>
+#include <piejam/numeric/simd/lrot_n.h>
 
 #include <mipp.h>
 
@@ -63,14 +64,14 @@ sqr_difference_sum(
         auto mask = precomputed_masks<N>[offset];
 
         numeric::mipp_iterator it_tau{data + tau - offset};
-        mipp::Reg<T> reg_lo = numeric::mipp_lrot_n(*it_tau, offset);
+        mipp::Reg<T> reg_lo = numeric::simd::lrot_n(*it_tau, offset);
 
         for (auto reg_i : std::ranges::subrange(
                      numeric::mipp_iterator{data},
                      numeric::mipp_iterator{data + e}))
         {
             ++it_tau;
-            mipp::Reg<T> reg_hi = numeric::mipp_lrot_n(*it_tau, offset);
+            mipp::Reg<T> reg_hi = numeric::simd::lrot_n(*it_tau, offset);
 
             sums = numeric::simd::fsqradd(
                     reg_i - mipp::select(mask, reg_lo, reg_hi),
