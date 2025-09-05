@@ -15,7 +15,6 @@ add_executable(piejam_algorithm_test
     find_or_get_first_test.cpp
     for_each_adjacent_test.cpp
     for_each_visit_test.cpp
-    index_generate_to_test.cpp
     index_of_test.cpp
     shift_push_back_test.cpp
     to_vector_test.cpp

@@ -14,7 +14,6 @@ target_sources(piejam_algorithm INTERFACE
     include/piejam/algorithm/find_or_get_first.h
     include/piejam/algorithm/for_each_adjacent.h
     include/piejam/algorithm/for_each_visit.h
-    include/piejam/algorithm/index_generate_to.h
     include/piejam/algorithm/index_of.h
     include/piejam/algorithm/npos.h
     include/piejam/algorithm/shift_push_back.h
