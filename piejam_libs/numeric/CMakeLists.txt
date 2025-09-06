@@ -12,6 +12,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/dft.h
     include/piejam/numeric/endian.h
     include/piejam/numeric/fwd.h
+    include/piejam/numeric/generators/cosine_window.h
     include/piejam/numeric/generators/sine.h
     include/piejam/numeric/intops.h
     include/piejam/numeric/intx.h
@@ -26,7 +27,6 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/simd/lrot_n.h
     include/piejam/numeric/simd/rms.h
     include/piejam/numeric/type_traits.h
-    include/piejam/numeric/window.h
     src/piejam/numeric/dft.cpp
 )
 

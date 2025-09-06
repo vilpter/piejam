@@ -8,7 +8,7 @@
 #include <piejam/audio/sample_rate.h>
 #include <piejam/numeric/dB_convert.h>
 #include <piejam/numeric/dft.h>
-#include <piejam/numeric/window.h>
+#include <piejam/numeric/generators/cosine_window.h>
 #include <piejam/range/iota.h>
 
 #include <boost/assert.hpp>
@@ -60,8 +60,13 @@ struct SpectrumGenerator::Impl
 {
     explicit Impl(audio::sample_rate sample_rate, DFTResolution dftResolution)
         : m_dft{dftForResolution(dftResolution)}
+        , m_window(m_dft.size())
         , m_dataPoints(m_dft.output_size())
     {
+        std::ranges::generate(
+                m_window,
+                numeric::generators::hann<>{m_dft.size()});
+
         float const binSize =
                 sample_rate.as<float>() / static_cast<float>(m_dft.size());
         for (std::size_t const i : range::iota(m_dft.output_size()))
@@ -114,9 +119,7 @@ struct SpectrumGenerator::Impl
     }
 
     numeric::dft& m_dft;
-    std::vector<float> m_window{algorithm::transform_to_vector(
-            range::iota(m_dft.size()),
-            std::bind_front(&numeric::window::hann, m_dft.size()))};
+    std::vector<float> m_window;
     std::vector<SpectrumDataPoint> m_dataPoints;
 };
 
