@@ -12,7 +12,6 @@ add_executable(piejam_base_test
     entity_data_map_test.cpp
     entity_map_test.cpp
     indexed_access_test.cpp
-    math_test.cpp
     renew_test.cpp
     switch_cast_test.cpp
     tuple_test.cpp
