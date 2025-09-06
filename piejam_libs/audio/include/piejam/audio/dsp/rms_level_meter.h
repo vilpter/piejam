@@ -9,6 +9,7 @@
 #include <piejam/algorithm/transform_accumulate.h>
 #include <piejam/functional/operators.h>
 #include <piejam/math.h>
+#include <piejam/numeric/align.h>
 #include <piejam/numeric/mipp_iterator.h>
 #include <piejam/numeric/pow_n.h>
 
@@ -38,7 +39,7 @@ public:
             T min_level = default_min_level)
         : m_min_level{min_level}
         , m_sqr_history(
-                  math::round_down_to_multiple(
+                  numeric::align_down(
                           sr.samples_for_duration(rms_measure_time),
                           static_cast<std::size_t>(mipp::N<T>())),
                   0.f)

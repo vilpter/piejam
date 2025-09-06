@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: CC0-1.0
 
 add_library(piejam_numeric STATIC
+    include/piejam/numeric/align.h
     include/piejam/numeric/bit.h
     include/piejam/numeric/clamp.h
     include/piejam/numeric/concepts.h

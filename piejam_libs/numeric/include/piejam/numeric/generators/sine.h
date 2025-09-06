@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <concepts>
-#include <numbers>
 
 namespace piejam::numeric::generators
 {

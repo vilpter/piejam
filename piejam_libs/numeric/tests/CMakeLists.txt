@@ -7,6 +7,7 @@ if(NOT PIEJAM_TESTS)
 endif()
 
 add_executable(piejam_numeric_test
+    align_test.cpp
     bit_test.cpp
     clamp_test.cpp
     dB_convert_test.cpp

@@ -61,13 +61,4 @@ linear_map(T v, T src_lo, T src_hi, T dst_lo, T dst_hi) noexcept -> T
 
 inline constexpr auto abs = BOOST_HOF_LIFT(std::abs);
 
-template <std::unsigned_integral T, std::unsigned_integral N>
-[[nodiscard]]
-constexpr auto
-round_down_to_multiple(T x, N n) noexcept -> T
-{
-    BOOST_ASSERT(n != 0);
-    return (x / n) * n;
-}
-
 } // namespace piejam::math
