@@ -8,8 +8,8 @@
 
 #include <piejam/algorithm/transform_accumulate.h>
 #include <piejam/functional/operators.h>
-#include <piejam/math.h>
 #include <piejam/numeric/align.h>
+#include <piejam/numeric/flush_to_zero_if.h>
 #include <piejam/numeric/mipp_iterator.h>
 #include <piejam/numeric/pow_n.h>
 
@@ -17,7 +17,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <concepts>
 
 namespace piejam::audio::dsp
@@ -104,7 +103,7 @@ public:
     [[nodiscard]]
     auto level() const noexcept -> T
     {
-        return math::flush_to_zero_if(
+        return numeric::flush_to_zero_if(
                 std::sqrt(std::max(m_sqr_sum, T{0}) / m_sqr_history_size),
                 less(m_min_level));
     }

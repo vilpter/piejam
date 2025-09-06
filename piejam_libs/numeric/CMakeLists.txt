@@ -30,6 +30,8 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/simd/rms.h
     include/piejam/numeric/type_traits.h
     src/piejam/numeric/dft.cpp
+    include/piejam/numeric/math.h
+    include/piejam/numeric/flush_to_zero_if.h
 )
 
 target_include_directories(piejam_numeric PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

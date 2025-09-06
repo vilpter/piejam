@@ -4,8 +4,6 @@
 
 #include <piejam/gui/item/FixedLinearScaleGrid.h>
 
-#include <piejam/math.h>
-
 #include <QGuiApplication>
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>

@@ -7,15 +7,14 @@
 #include <piejam/gui/model/ScopeSlot.h>
 
 #include <piejam/functional/operators.h>
-#include <piejam/math.h>
+#include <piejam/numeric/flush_to_zero_if.h>
+#include <piejam/numeric/math.h>
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
 #include <QSGGeometryNode>
 
 #include <boost/polymorphic_cast.hpp>
-
-#include <numeric>
 
 namespace piejam::gui::item
 {
@@ -176,13 +175,13 @@ Scope::setScope(model::ScopeSlot* const x)
                     [this]() {
                         m_impl->scopeDirty = true;
 
-                        float newPeakLevel = math::flush_to_zero_if(
+                        float newPeakLevel = numeric::flush_to_zero_if(
                                 std::transform_reduce(
                                         m_impl->scope->get().begin(),
                                         m_impl->scope->get().end(),
                                         0.f,
                                         std::ranges::max,
-                                        math::abs),
+                                        numeric::abs),
                                 less(0.001f)); // -60 dB
 
                         if (m_impl->peakLevel != newPeakLevel)

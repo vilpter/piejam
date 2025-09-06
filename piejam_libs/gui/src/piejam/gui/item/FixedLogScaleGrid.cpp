@@ -4,8 +4,6 @@
 
 #include <piejam/gui/item/FixedLogScaleGrid.h>
 
-#include <piejam/math.h>
-
 #include <QGuiApplication>
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
@@ -13,6 +11,8 @@
 #include <QScreen>
 
 #include <boost/polymorphic_cast.hpp>
+
+#include <cmath>
 
 namespace piejam::gui::item
 {

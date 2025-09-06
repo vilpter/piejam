@@ -7,7 +7,7 @@
 #include <piejam/audio/sample_rate.h>
 
 #include <piejam/functional/operators.h>
-#include <piejam/math.h>
+#include <piejam/numeric/flush_to_zero_if.h>
 
 #include <chrono>
 #include <cmath>
@@ -45,7 +45,7 @@ public:
     [[nodiscard]]
     auto level() const noexcept -> T
     {
-        return math::flush_to_zero_if(m_peak_level, less(m_min_level));
+        return numeric::flush_to_zero_if(m_peak_level, less(m_min_level));
     }
 
     void reset()

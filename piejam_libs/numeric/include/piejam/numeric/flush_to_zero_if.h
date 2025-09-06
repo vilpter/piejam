@@ -4,15 +4,12 @@
 
 #pragma once
 
-#include <boost/assert.hpp>
-#include <boost/hof/lift.hpp>
 #include <boost/hof/returns.hpp>
 
-#include <cmath>
 #include <concepts>
 #include <functional>
 
-namespace piejam::math
+namespace piejam::numeric
 {
 
 template <class T, std::predicate<T> P>
@@ -20,6 +17,4 @@ template <class T, std::predicate<T> P>
 constexpr auto flush_to_zero_if(T value, P&& p) BOOST_HOF_RETURNS(
         std::invoke(std::forward<P>(p), value) ? T{0} : value);
 
-inline constexpr auto abs = BOOST_HOF_LIFT(std::abs);
-
-} // namespace piejam::math
+} // namespace piejam::numeric

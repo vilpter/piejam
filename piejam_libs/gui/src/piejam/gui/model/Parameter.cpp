@@ -10,7 +10,6 @@
 #include <piejam/gui/model/MidiAssignable.h>
 #include <piejam/gui/model/StereoLevel.h>
 
-#include <piejam/math.h>
 #include <piejam/runtime/actions/reset_fx_parameter_to_default_value.h>
 #include <piejam/runtime/actions/set_float_parameter_normalized.h>
 #include <piejam/runtime/actions/set_parameter_value.h>
@@ -88,8 +87,9 @@ Parameter::midi() const noexcept -> MidiAssignable*
 void
 Parameter::resetToDefault()
 {
-    dispatch(runtime::actions::reset_fx_parameter_to_default_value(
-            m_impl->param));
+    dispatch(
+            runtime::actions::reset_fx_parameter_to_default_value(
+                    m_impl->param));
 }
 
 auto

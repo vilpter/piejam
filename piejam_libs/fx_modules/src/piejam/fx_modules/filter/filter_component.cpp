@@ -19,7 +19,6 @@
 #include <piejam/audio/slice_algorithms.h>
 #include <piejam/fx_modules/filter/filter_module.h>
 #include <piejam/make_constant.h>
-#include <piejam/math.h>
 #include <piejam/runtime/components/stream.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>

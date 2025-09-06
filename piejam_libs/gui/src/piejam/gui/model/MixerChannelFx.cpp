@@ -8,7 +8,6 @@
 #include <piejam/gui/model/FxChainModule.h>
 
 #include <piejam/algorithm/edit_script.h>
-#include <piejam/math.h>
 #include <piejam/runtime/actions/fwd.h>
 #include <piejam/runtime/actions/move_fx_module.h>
 #include <piejam/runtime/actions/root_view_actions.h>
