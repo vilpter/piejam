@@ -7,7 +7,7 @@
 #include <piejam/gui/model/DbScaleData.h>
 
 #include <piejam/functional/in_interval.h>
-#include <piejam/math.h>
+#include <piejam/numeric/linear_map.h>
 #include <piejam/runtime/fader_mapping.h>
 
 #include <ranges>
@@ -30,7 +30,7 @@ makeScaleTick(Boundaries&& boundaries, float const dB)
     auto const upper = std::next(lower);
 
     return DbScaleTick{
-            .normalized = math::linear_map(
+            .normalized = numeric::linear_map(
                     dB,
                     lower->dB,
                     upper->dB,
@@ -48,7 +48,7 @@ constexpr auto
 makeLevelMeterScaleTick(float const dB) noexcept -> DbScaleTick
 {
     return DbScaleTick{
-            .normalized = math::linear_map(dB, -60.f, 0.f, 0.05f, 1.f),
+            .normalized = numeric::linear_map(dB, -60.f, 0.f, 0.05f, 1.f),
             .dB = dB};
 }
 
@@ -67,51 +67,54 @@ makeSendFaderScaleTick(float const dB) noexcept -> DbScaleTick
 } // namespace
 
 MixerDbScales::MixerDbScales()
-    : m_levelMeterScale(std::make_unique<DbScaleData>(QVector<DbScaleTick>({
-              infinityTick,
-              makeLevelMeterScaleTick(-60.f),
-              makeLevelMeterScaleTick(-54.f),
-              makeLevelMeterScaleTick(-48.f),
-              makeLevelMeterScaleTick(-42.f),
-              makeLevelMeterScaleTick(-36.f),
-              makeLevelMeterScaleTick(-30.f),
-              makeLevelMeterScaleTick(-24.f),
-              makeLevelMeterScaleTick(-18.f),
-              makeLevelMeterScaleTick(-12.f),
-              makeLevelMeterScaleTick(-6.f),
-              makeLevelMeterScaleTick(0.f),
-      })))
-    , m_volumeFaderScale(std::make_unique<DbScaleData>(QVector<DbScaleTick>({
-              infinityTick,
-              makeVolumeFaderScaleTick(-60.f),
-              makeVolumeFaderScaleTick(-50.f),
-              makeVolumeFaderScaleTick(-40.f),
-              makeVolumeFaderScaleTick(-30.f),
-              makeVolumeFaderScaleTick(-24.f),
-              makeVolumeFaderScaleTick(-18.f),
-              makeVolumeFaderScaleTick(-12.f),
-              makeVolumeFaderScaleTick(-9.f),
-              makeVolumeFaderScaleTick(-6.f),
-              makeVolumeFaderScaleTick(-3.f),
-              makeVolumeFaderScaleTick(0.f),
-              makeVolumeFaderScaleTick(3.f),
-              makeVolumeFaderScaleTick(6.f),
-      })))
-    , m_sendFaderScale(std::make_unique<DbScaleData>(QVector<DbScaleTick>({
-              infinityTick,
-              makeSendFaderScaleTick(-60.f),
-              makeSendFaderScaleTick(-50.f),
-              makeSendFaderScaleTick(-40.f),
-              makeSendFaderScaleTick(-30.f),
-              makeSendFaderScaleTick(-24.f),
-              makeSendFaderScaleTick(-18.f),
-              makeSendFaderScaleTick(-15.f),
-              makeSendFaderScaleTick(-12.f),
-              makeSendFaderScaleTick(-9.f),
-              makeSendFaderScaleTick(-6.f),
-              makeSendFaderScaleTick(-3.f),
-              makeSendFaderScaleTick(0.f),
-      })))
+    : m_levelMeterScale(
+              std::make_unique<DbScaleData>(QVector<DbScaleTick>({
+                      infinityTick,
+                      makeLevelMeterScaleTick(-60.f),
+                      makeLevelMeterScaleTick(-54.f),
+                      makeLevelMeterScaleTick(-48.f),
+                      makeLevelMeterScaleTick(-42.f),
+                      makeLevelMeterScaleTick(-36.f),
+                      makeLevelMeterScaleTick(-30.f),
+                      makeLevelMeterScaleTick(-24.f),
+                      makeLevelMeterScaleTick(-18.f),
+                      makeLevelMeterScaleTick(-12.f),
+                      makeLevelMeterScaleTick(-6.f),
+                      makeLevelMeterScaleTick(0.f),
+              })))
+    , m_volumeFaderScale(
+              std::make_unique<DbScaleData>(QVector<DbScaleTick>({
+                      infinityTick,
+                      makeVolumeFaderScaleTick(-60.f),
+                      makeVolumeFaderScaleTick(-50.f),
+                      makeVolumeFaderScaleTick(-40.f),
+                      makeVolumeFaderScaleTick(-30.f),
+                      makeVolumeFaderScaleTick(-24.f),
+                      makeVolumeFaderScaleTick(-18.f),
+                      makeVolumeFaderScaleTick(-12.f),
+                      makeVolumeFaderScaleTick(-9.f),
+                      makeVolumeFaderScaleTick(-6.f),
+                      makeVolumeFaderScaleTick(-3.f),
+                      makeVolumeFaderScaleTick(0.f),
+                      makeVolumeFaderScaleTick(3.f),
+                      makeVolumeFaderScaleTick(6.f),
+              })))
+    , m_sendFaderScale(
+              std::make_unique<DbScaleData>(QVector<DbScaleTick>({
+                      infinityTick,
+                      makeSendFaderScaleTick(-60.f),
+                      makeSendFaderScaleTick(-50.f),
+                      makeSendFaderScaleTick(-40.f),
+                      makeSendFaderScaleTick(-30.f),
+                      makeSendFaderScaleTick(-24.f),
+                      makeSendFaderScaleTick(-18.f),
+                      makeSendFaderScaleTick(-15.f),
+                      makeSendFaderScaleTick(-12.f),
+                      makeSendFaderScaleTick(-9.f),
+                      makeSendFaderScaleTick(-6.f),
+                      makeSendFaderScaleTick(-3.f),
+                      makeSendFaderScaleTick(0.f),
+              })))
 {
 }
 

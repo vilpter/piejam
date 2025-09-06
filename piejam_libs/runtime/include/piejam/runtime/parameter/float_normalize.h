@@ -7,8 +7,8 @@
 #include <piejam/runtime/parameter/float_descriptor.h>
 
 #include <piejam/functional/in_interval.h>
-#include <piejam/math.h>
 #include <piejam/numeric/dB_convert.h>
+#include <piejam/numeric/linear_map.h>
 
 #include <algorithm>
 #include <cmath>
@@ -126,7 +126,7 @@ to_normalized_dB_mapping(float const value)
     auto first = std::ranges::begin(Mapping);
     if (value_dB < first->dB)
     {
-        return math::linear_map(
+        return numeric::linear_map(
                 value_dB,
                 Min_dB,
                 first->dB,
@@ -141,7 +141,7 @@ to_normalized_dB_mapping(float const value)
     BOOST_ASSERT(lower != std::ranges::end(Mapping));
     auto const upper = std::next(lower);
 
-    return math::linear_map(
+    return numeric::linear_map(
             value_dB,
             lower->dB,
             upper->dB,
@@ -162,7 +162,7 @@ from_normalized_dB_maping(float const norm_value)
     if (norm_value < first->normalized)
     {
         return numeric::from_dB(
-                math::linear_map(
+                numeric::linear_map(
                         norm_value,
                         0.f,
                         first->normalized,
@@ -178,7 +178,7 @@ from_normalized_dB_maping(float const norm_value)
     auto const upper = std::next(lower);
 
     return numeric::from_dB(
-            math::linear_map(
+            numeric::linear_map(
                     norm_value,
                     lower->normalized,
                     upper->normalized,

@@ -16,6 +16,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/generators/sine.h
     include/piejam/numeric/intops.h
     include/piejam/numeric/intx.h
+    include/piejam/numeric/linear_map.h
     include/piejam/numeric/mipp.h
     include/piejam/numeric/mipp_iterator.h
     include/piejam/numeric/pos_mod.h

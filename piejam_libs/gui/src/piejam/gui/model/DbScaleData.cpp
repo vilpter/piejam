@@ -7,7 +7,7 @@
 #include <piejam/gui/model/DbScaleTick.h>
 
 #include <piejam/functional/in_interval.h>
-#include <piejam/math.h>
+#include <piejam/numeric/linear_map.h>
 
 #include <QObject>
 #include <QVector>
@@ -61,7 +61,7 @@ DbScaleData::dBToPosition(float const dB) const
 
     if (lower->dB == -s_inf)
     {
-        return math::linear_map(
+        return numeric::linear_map(
                 dB,
                 s_min_dB,
                 upper->dB,
@@ -74,7 +74,7 @@ DbScaleData::dBToPosition(float const dB) const
         return upper->normalized;
     }
 
-    return math::linear_map(
+    return numeric::linear_map(
             dB,
             lower->dB,
             upper->dB,
@@ -112,7 +112,7 @@ DbScaleData::dBAt(float const position) const
     auto const upper = std::next(lower);
     if (lower->dB == -s_inf)
     {
-        return math::linear_map(
+        return numeric::linear_map(
                 position,
                 lower->normalized,
                 upper->normalized,
@@ -125,7 +125,7 @@ DbScaleData::dBAt(float const position) const
         return s_inf;
     }
 
-    return math::linear_map(
+    return numeric::linear_map(
             position,
             lower->normalized,
             upper->normalized,

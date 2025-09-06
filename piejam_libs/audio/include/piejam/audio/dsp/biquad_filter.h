@@ -5,7 +5,7 @@
 #pragma once
 
 #include <piejam/audio/dsp/biquad.h>
-#include <piejam/math.h>
+#include <piejam/numeric/linear_map.h>
 
 #include <cmath>
 #include <numbers>
@@ -49,7 +49,7 @@ template <std::floating_point T>
 constexpr auto
 calc_Q(T const res, T const min_Q, T const max_Q) noexcept -> T
 {
-    return math::linear_map(res, T{0}, T{1}, min_Q, max_Q);
+    return numeric::linear_map(res, T{0}, T{1}, min_Q, max_Q);
 }
 
 template <std::floating_point T>

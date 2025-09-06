@@ -50,15 +50,6 @@ template <class T, std::predicate<T> P>
 constexpr auto flush_to_zero_if(T value, P&& p) BOOST_HOF_RETURNS(
         std::invoke(std::forward<P>(p), value) ? T{0} : value);
 
-template <std::floating_point T>
-[[nodiscard]]
-constexpr auto
-linear_map(T v, T src_lo, T src_hi, T dst_lo, T dst_hi) noexcept -> T
-{
-    BOOST_ASSERT(src_lo != src_hi);
-    return ((v - src_lo) / (src_hi - src_lo)) * (dst_hi - dst_lo) + dst_lo;
-}
-
 inline constexpr auto abs = BOOST_HOF_LIFT(std::abs);
 
 } // namespace piejam::math

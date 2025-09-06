@@ -4,7 +4,7 @@
 
 #include <piejam/gui/model/DbScaleData.h>
 
-#include <piejam/math.h>
+#include <piejam/numeric/linear_map.h>
 
 #include <gtest/gtest.h>
 
@@ -23,7 +23,7 @@ TEST(DbScaleData, verify_position)
              DbScaleTick{.normalized = 1.f, .dB = 12.f}}};
 
     EXPECT_FLOAT_EQ(
-            math::linear_map(0.f, -12.f, 12.f, 0.45f, 1.f),
+            numeric::linear_map(0.f, -12.f, 12.f, 0.45f, 1.f),
             s_volumeFaderScale.dBToPosition(0.f));
 }
 
