@@ -2,9 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-add_library(piejam_base INTERFACE)
-
-target_sources(piejam_base INTERFACE
+add_library(piejam_base INTERFACE
     include/piejam/bool.h
     include/piejam/box.h
     include/piejam/boxed_string.h

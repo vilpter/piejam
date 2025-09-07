@@ -2,9 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-add_library(piejam_functional INTERFACE)
-
-target_sources(piejam_functional INTERFACE
+add_library(piejam_functional INTERFACE
     include/piejam/functional/address_compare.h
     include/piejam/functional/any_equal_to.h
     include/piejam/functional/edge_detect.h
