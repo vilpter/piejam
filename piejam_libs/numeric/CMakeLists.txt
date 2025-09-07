@@ -12,12 +12,14 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/dft.h
     include/piejam/numeric/endian.h
     include/piejam/numeric/float_compare.h
+    include/piejam/numeric/flush_to_zero_if.h
     include/piejam/numeric/fwd.h
     include/piejam/numeric/generators/cosine_window.h
     include/piejam/numeric/generators/sine.h
     include/piejam/numeric/intops.h
     include/piejam/numeric/intx.h
     include/piejam/numeric/linear_map.h
+    include/piejam/numeric/math.h
     include/piejam/numeric/mipp.h
     include/piejam/numeric/mipp_iterator.h
     include/piejam/numeric/pos_mod.h
@@ -28,10 +30,9 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/simd/fsqradd.h
     include/piejam/numeric/simd/lrot_n.h
     include/piejam/numeric/simd/rms.h
+    include/piejam/numeric/simd/rolling_sum.h
     include/piejam/numeric/type_traits.h
     src/piejam/numeric/dft.cpp
-    include/piejam/numeric/math.h
-    include/piejam/numeric/flush_to_zero_if.h
 )
 
 target_include_directories(piejam_numeric PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
