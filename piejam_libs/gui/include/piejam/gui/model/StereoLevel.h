@@ -24,10 +24,22 @@ class StereoLevel : public QObject
 
 public:
     template <audio::pair_channel C>
+    double level() const
+    {
+        return C == audio::pair_channel::left ? levelLeft() : levelRight();
+    }
+
+    template <audio::pair_channel C>
     void setLevel(double level)
     {
         C == audio::pair_channel::left ? setLevelLeft(level)
                                        : setLevelRight(level);
+    }
+
+    void reset()
+    {
+        setLevelLeft(0.);
+        setLevelRight(0.);
     }
 };
 

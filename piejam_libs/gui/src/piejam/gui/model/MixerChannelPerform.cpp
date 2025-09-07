@@ -9,15 +9,67 @@
 #include <piejam/gui/model/FxStream.h>
 #include <piejam/gui/model/StereoLevel.h>
 
-#include <piejam/audio/dsp/peak_level_meter.h>
-#include <piejam/audio/dsp/rms_level_meter.h>
 #include <piejam/audio/pair.h>
+#include <piejam/functional/operators.h>
+#include <piejam/numeric/flush_to_zero_if.h>
 #include <piejam/numeric/mipp_iterator.h>
+#include <piejam/numeric/simd/rms.h>
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
 
 namespace piejam::gui::model
 {
+
+namespace
+{
+
+template <std::floating_point T>
+auto
+calcPeakLevel(
+        std::span<T const> const samples,
+        T const currentLevel,
+        audio::sample_rate const sr) -> T
+{
+    T const blockPeak = mipp::hmax(
+            std::transform_reduce(
+                    numeric::mipp_begin(samples),
+                    numeric::mipp_end(samples),
+                    mipp::Reg<T>(T{}),
+                    [](mipp::Reg<T> l, mipp::Reg<T> r) {
+                        return mipp::max(l, r);
+                    },
+                    [](mipp::Reg<T> s) { return mipp::abs(s); }));
+
+    T const dt = static_cast<T>(samples.size()) / sr.as<T>();
+    constexpr T tau = T{0.2}; // 200ms
+    T const coeff = std::exp(-dt / tau);
+    T const newLevel = std::max(blockPeak, currentLevel * coeff);
+
+    return numeric::flush_to_zero_if(newLevel, less(T{1e-3})); // -60dB
+}
+
+template <std::floating_point T>
+auto
+calcRmsLevel(
+        std::span<T const> const samples,
+        T const currentLevel,
+        audio::sample_rate const sr) -> T
+{
+    T const blockRms = numeric::simd::rms(samples);
+
+    T const dt = static_cast<T>(samples.size()) / sr.as<T>();
+
+    constexpr T attack = T{0.06}; // 60ms
+    constexpr T release = T{0.4}; // 400ms;
+
+    T const tau = blockRms > currentLevel ? attack : release;
+    T const coeff = std::exp(-dt / tau);
+    T const newLevel = coeff * currentLevel + (1 - coeff) * blockRms;
+
+    return numeric::flush_to_zero_if(newLevel, less(T{1e-8})); // -160dB
+}
+
+} // namespace
 
 struct MixerChannelPerform::Impl
 {
@@ -27,11 +79,6 @@ struct MixerChannelPerform::Impl
     StereoLevel peakLevel;
     StereoLevel rmsLevel;
     std::unique_ptr<FxStream> outStream;
-
-    audio::pair<audio::dsp::peak_level_meter<>> peak_level_meter{
-            default_sample_rate};
-    audio::pair<audio::dsp::rms_level_meter<>> rms_level_meter{
-            default_sample_rate};
 
     std::unique_ptr<FloatParameter> volume;
     std::unique_ptr<FloatParameter> panBalance;
@@ -44,31 +91,31 @@ struct MixerChannelPerform::Impl
         if (sr.valid() && sample_rate != sr)
         {
             sample_rate = sr;
-            renew(peak_level_meter, sr);
-            renew(rms_level_meter, sr);
         }
     }
 
     template <audio::pair_channel C>
-    void calcPeakLevel(std::span<float const> ch)
+    void updatePeakLevel(std::span<float const> ch)
     {
-        std::ranges::copy(ch, std::back_inserter(get<C>(peak_level_meter)));
-        peakLevel.setLevel<C>(get<C>(peak_level_meter).level());
+        peakLevel.setLevel<C>(static_cast<double>(calcPeakLevel<float>(
+                ch,
+                static_cast<float>(peakLevel.level<C>()),
+                sample_rate)));
     }
 
     template <audio::pair_channel C>
-    void calcRmsLevel(std::span<float const> ch)
+    void updateRmsLevel(std::span<float const> ch)
     {
-        get<C>(rms_level_meter).process(ch);
-        rmsLevel.setLevel<C>(get<C>(rms_level_meter).level());
+        rmsLevel.setLevel<C>(static_cast<double>(calcRmsLevel<float>(
+                ch,
+                static_cast<float>(rmsLevel.level<C>()),
+                sample_rate)));
     }
 
     void resetLevelMeter()
     {
-        peak_level_meter.left.reset();
-        peak_level_meter.right.reset();
-        rms_level_meter.left.reset();
-        rms_level_meter.right.reset();
+        peakLevel.reset();
+        rmsLevel.reset();
     }
 };
 
@@ -94,14 +141,14 @@ MixerChannelPerform::MixerChannelPerform(
             [this](AudioStream captured) {
                 auto captured_stereo = captured.channels_cast<2>();
 
-                m_impl->calcPeakLevel<audio::pair_channel::left>(
+                m_impl->updatePeakLevel<audio::pair_channel::left>(
                         captured_stereo.channels()[0]);
-                m_impl->calcPeakLevel<audio::pair_channel::right>(
+                m_impl->updatePeakLevel<audio::pair_channel::right>(
                         captured_stereo.channels()[1]);
 
-                m_impl->calcRmsLevel<audio::pair_channel::left>(
+                m_impl->updateRmsLevel<audio::pair_channel::left>(
                         captured_stereo.channels()[0]);
-                m_impl->calcRmsLevel<audio::pair_channel::right>(
+                m_impl->updateRmsLevel<audio::pair_channel::right>(
                         captured_stereo.channels()[1]);
             });
 
