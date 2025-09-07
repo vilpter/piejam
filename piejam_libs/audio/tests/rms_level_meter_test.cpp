@@ -37,7 +37,7 @@ TEST_F(rms_level_meter_test, constant_input)
     rms_level_meter<float> meter(sr, 100ms);
 
     // Fill the entire buffer with 0.5
-    std::size_t history_size = meter.history_size();
+    std::size_t history_size = meter.window_size();
     mipp::vector<float> samples(history_size, 0.5f);
     meter.process(samples);
 
@@ -50,7 +50,7 @@ TEST_F(rms_level_meter_test, varying_input)
     rms_level_meter<float> meter(sr, 100ms);
 
     // Fill the buffer with alternating 0 and 1
-    std::size_t history_size = meter.history_size();
+    std::size_t history_size = meter.window_size();
     mipp::vector<float> samples(history_size);
     for (std::size_t i = 0; i < history_size; ++i)
     {
@@ -93,7 +93,7 @@ TEST_F(rms_level_meter_test, multiple_pushes)
     rms_level_meter<float> meter(sr, 100ms);
 
     // Fill the entire buffer with 0.5
-    std::size_t history_size = meter.history_size();
+    std::size_t history_size = meter.window_size();
     mipp::vector<float> chunk1(history_size, 0.5f);
     meter.process(chunk1);
 
