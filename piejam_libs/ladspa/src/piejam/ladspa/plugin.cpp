@@ -357,6 +357,9 @@ private:
     template <class T>
     using ev_it_pair_t = std::pair<ev_it_t<T>, ev_it_t<T>>;
 
+    using iterators_t = std::
+            variant<ev_it_pair_t<bool>, ev_it_pair_t<int>, ev_it_pair_t<float>>;
+
     template <class T>
     static void initialize(
             control_input& ci,
@@ -366,10 +369,8 @@ private:
         auto const& ev_buf = ev_bufs.get<T>(buf_index);
 
         using ev_it_pair_t = ev_it_pair_t<T>;
-        static_assert(sizeof(ev_it_pair_t) < sizeof(m_iterators));
 
-        ev_it_pair_t& its = *std::construct_at<ev_it_pair_t>(
-                reinterpret_cast<ev_it_pair_t*>(&ci.m_iterators),
+        ev_it_pair_t& its = ci.m_iterators.emplace<ev_it_pair_t>(
                 ev_buf.begin(),
                 ev_buf.end());
 
@@ -380,9 +381,8 @@ private:
     static void advance(control_input& ci)
     {
         using ev_it_pair_t = ev_it_pair_t<T>;
-        static_assert(sizeof(ev_it_pair_t) < sizeof(m_iterators));
 
-        ev_it_pair_t& its = *reinterpret_cast<ev_it_pair_t*>(&ci.m_iterators);
+        ev_it_pair_t& its = std::get<ev_it_pair_t>(ci.m_iterators);
 
         BOOST_ASSERT(its.first != its.second);
         ci.m_data = static_cast<float>(its.first->value());
@@ -394,7 +394,7 @@ private:
     std::size_t m_offset{};
     float m_data{};
 
-    std::aligned_storage_t<32> m_iterators;
+    iterators_t m_iterators;
 
     using initialize_t = void (*)(
             control_input&,
