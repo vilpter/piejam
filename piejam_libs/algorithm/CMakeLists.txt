@@ -2,9 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-add_library(piejam_algorithm INTERFACE)
-
-target_sources(piejam_algorithm INTERFACE
+add_library(piejam_algorithm INTERFACE
     include/piejam/algorithm/all_of_adjacent.h
     include/piejam/algorithm/concepts.h
     include/piejam/algorithm/contains.h
@@ -19,10 +17,8 @@ target_sources(piejam_algorithm INTERFACE
     include/piejam/algorithm/shift_push_back.h
     include/piejam/algorithm/string_join.h
     include/piejam/algorithm/to_vector.h
-    include/piejam/algorithm/transform_accumulate.h
     include/piejam/algorithm/transform_to_vector.h
 )
-
 target_include_directories(piejam_algorithm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(tests)
