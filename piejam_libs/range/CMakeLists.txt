@@ -9,7 +9,6 @@ add_library(piejam_range INTERFACE
     include/piejam/range/pointer_stride_iterator.h
     include/piejam/range/strided_span.h
     include/piejam/range/table_view.h
-    include/piejam/range/zip.h
 )
 
 target_include_directories(piejam_range INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)

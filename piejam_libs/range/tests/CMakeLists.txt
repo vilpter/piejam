@@ -11,7 +11,6 @@ add_executable(piejam_range_test
     stride_pointer_iterator_test.cpp
     strided_span_test.cpp
     table_view_test.cpp
-    zip_test.cpp
 )
 
 target_link_libraries(piejam_range_test gtest_driver piejam_compiler_warnings piejam_range)

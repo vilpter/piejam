@@ -13,7 +13,6 @@
 
 #include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/range/iota.h>
-#include <piejam/range/zip.h>
 
 #include <fmt/format.h>
 
@@ -176,7 +175,7 @@ public:
     void connect(engine::graph& g) const override
     {
         for (auto const& [gain_proc, amp_proc] :
-             range::zip(m_gain_procs, m_amp_procs))
+             std::views::zip(m_gain_procs, m_amp_procs))
         {
             g.audio.insert({*gain_proc, 0}, {*amp_proc, 1});
         }
