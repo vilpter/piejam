@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.25)
 project(piejam VERSION 0.9.0)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 option(PIEJAM_BENCHMARKS "Build benchmarks" OFF)
 option(PIEJAM_TESTS "Build tests" OFF)

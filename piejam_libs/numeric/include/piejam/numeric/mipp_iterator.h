@@ -96,8 +96,7 @@ constexpr std::size_t num_regs_v = num_regs<Reg>::value;
 template <mipp_number T, template <class> class Reg = mipp::Reg>
 struct mipp_iterator
     : boost::stl_interfaces::iterator_interface<
-              mipp_iterator<T, Reg>,
-              std::random_access_iterator_tag,
+              std::contiguous_iterator_tag,
               Reg<std::remove_cv_t<T>>,
               std::conditional_t<
                       std::is_const_v<T>,
