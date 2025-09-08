@@ -59,34 +59,21 @@ public:
         if (samples_size < window_size)
         {
             auto [lo, hi] = ring_buffer_split(samples_size);
+            auto mid_it = mipp_iterator{samples_data + lo.size()};
 
-            auto mid_it = numeric::mipp_iterator{samples_data + lo.size()};
-
-            update_segment(
-                    numeric::mipp_iterator{samples_data},
-                    mid_it,
-                    mipp_begin(lo));
-
-            if (!hi.empty())
-            {
-                update_segment(
-                        mid_it,
-                        numeric::mipp_iterator{samples_data + samples_size},
-                        mipp_begin(hi));
-            }
+            update_segment(mipp_begin(samples), mid_it, mipp_begin(lo));
+            update_segment(mid_it, mipp_end(samples), mipp_begin(hi));
 
             advance_position(samples_size);
         }
         else
         {
-            auto samples_first = numeric::mipp_iterator{
-                    samples_data + samples_size - window_size};
-            auto samples_last =
-                    numeric::mipp_iterator{samples_data + samples_size};
+            auto samples_first =
+                    mipp_iterator{samples_data + samples_size - window_size};
+            auto samples_last = mipp_iterator{samples_data + samples_size};
 
             mipp::Reg<T> acc(T{});
-
-            for (auto sum_it = numeric::mipp_iterator{m_window.data()};
+            for (auto sum_it = mipp_begin(m_window);
                  samples_first != samples_last;
                  ++samples_first, ++sum_it)
             {
@@ -127,11 +114,6 @@ private:
             *sum_first = new_summand;
         }
 
-        adapt_sum(sub, add);
-    }
-
-    constexpr void adapt_sum(mipp::Reg<T> sub, mipp::Reg<T> add) noexcept
-    {
         m_sum = m_sum - sub + add;
     }
 
