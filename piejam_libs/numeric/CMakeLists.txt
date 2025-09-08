@@ -29,6 +29,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/simd/clamp.h
     include/piejam/numeric/simd/fsqradd.h
     include/piejam/numeric/simd/lrot_n.h
+    include/piejam/numeric/simd/math.h
     include/piejam/numeric/simd/rms.h
     include/piejam/numeric/simd/rolling_sum.h
     include/piejam/numeric/type_traits.h
