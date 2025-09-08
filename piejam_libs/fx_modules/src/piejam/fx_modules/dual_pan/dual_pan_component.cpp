@@ -15,7 +15,6 @@
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
 #include <piejam/runtime/parameter_processor_factory.h>
-#include <piejam/to_underlying.h>
 
 #include <fmt/format.h>
 
@@ -40,25 +39,26 @@ public:
                   runtime::processors::find_or_make_parameter_processor(
                           proc_factory,
                           fx_mod.parameters->at(
-                                  to_underlying(parameter_key::mute_left)),
+                                  std::to_underlying(parameter_key::mute_left)),
                           fmt::format("mute_left {}", name)))
         , m_mute_right_param_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           proc_factory,
                           fx_mod.parameters->at(
-                                  to_underlying(parameter_key::mute_right)),
+                                  std::to_underlying(
+                                          parameter_key::mute_right)),
                           fmt::format("mute_right {}", name)))
         , m_pan_left_param_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           proc_factory,
                           fx_mod.parameters->at(
-                                  to_underlying(parameter_key::pan_left)),
+                                  std::to_underlying(parameter_key::pan_left)),
                           fmt::format("pan_left {}", name)))
         , m_pan_right_param_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           proc_factory,
                           fx_mod.parameters->at(
-                                  to_underlying(parameter_key::pan_right)),
+                                  std::to_underlying(parameter_key::pan_right)),
                           fmt::format("pan_right {}", name)))
 
     {

@@ -14,7 +14,6 @@
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/to_underlying.h>
 
 #include <fmt/format.h>
 
@@ -33,16 +32,16 @@ to_stereo_channel_string(int const n) -> std::string
 
     switch (n)
     {
-        case to_underlying(stereo_channel::left):
+        case std::to_underlying(stereo_channel::left):
             return "L"s;
 
-        case to_underlying(stereo_channel::right):
+        case std::to_underlying(stereo_channel::right):
             return "R"s;
 
-        case to_underlying(stereo_channel::middle):
+        case std::to_underlying(stereo_channel::middle):
             return "M"s;
 
-        case to_underlying(stereo_channel::side):
+        case std::to_underlying(stereo_channel::side):
             return "S"s;
 
         default:
@@ -86,42 +85,46 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .bus_type = args.bus_type,
             .parameters =
                     box(runtime::fx::module_parameters{
-                            {to_underlying(parameter_key::stream_a_active),
+                            {std::to_underlying(parameter_key::stream_a_active),
                              params_factory.make_parameter(
                                      runtime::bool_parameter{
                                              .name = box("Stream A Active"s),
                                              .default_value = true})},
-                            {to_underlying(parameter_key::stream_b_active),
+                            {std::to_underlying(parameter_key::stream_b_active),
                              params_factory.make_parameter(
                                      runtime::bool_parameter{
                                              .name = box("Stream B Active"s),
                                              .default_value = false})},
-                            {to_underlying(parameter_key::channel_a),
+                            {std::to_underlying(parameter_key::channel_a),
                              params_factory.make_parameter(
                                      runtime::int_parameter{
                                              .name = box("Channel A"s),
-                                             .default_value = to_underlying(
-                                                     stereo_channel::left),
-                                             .min = to_underlying(
+                                             .default_value =
+                                                     std::to_underlying(
+                                                             stereo_channel::
+                                                                     left),
+                                             .min = std::to_underlying(
                                                      stereo_channel::_min),
-                                             .max = to_underlying(
+                                             .max = std::to_underlying(
                                                      stereo_channel::_max),
                                              .value_to_string =
                                                      &to_stereo_channel_string,
                                      })},
-                            {to_underlying(parameter_key::channel_b),
+                            {std::to_underlying(parameter_key::channel_b),
                              params_factory.make_parameter(
                                      runtime::int_parameter{
                                              .name = box("Channel B"s),
-                                             .default_value = to_underlying(
-                                                     stereo_channel::right),
-                                             .min = to_underlying(
+                                             .default_value =
+                                                     std::to_underlying(
+                                                             stereo_channel::
+                                                                     right),
+                                             .min = std::to_underlying(
                                                      stereo_channel::_min),
-                                             .max = to_underlying(
+                                             .max = std::to_underlying(
                                                      stereo_channel::_max),
                                              .value_to_string =
                                                      &to_stereo_channel_string})},
-                            {to_underlying(parameter_key::gain_a),
+                            {std::to_underlying(parameter_key::gain_a),
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Gain A"s),
@@ -133,7 +136,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                                      dB_ival::to_normalized,
                                              .from_normalized = dB_ival::
                                                      from_normalized})},
-                            {to_underlying(parameter_key::gain_b),
+                            {std::to_underlying(parameter_key::gain_b),
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Gain B"s),
@@ -145,7 +148,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                                      dB_ival::to_normalized,
                                              .from_normalized = dB_ival::
                                                      from_normalized})},
-                            {to_underlying(parameter_key::freeze),
+                            {std::to_underlying(parameter_key::freeze),
                              params_factory.make_parameter(
                                      runtime::bool_parameter{
                                              .name = box("Freeze"s),
@@ -153,7 +156,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                     }),
             .streams =
                     box(runtime::fx::module_streams{
-                            {to_underlying(stream_key::input),
+                            {std::to_underlying(stream_key::input),
                              make_stream(
                                      args.streams,
                                      audio::num_channels(args.bus_type))},

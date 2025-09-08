@@ -11,7 +11,6 @@
 #include <piejam/runtime/parameter/float_descriptor.h>
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/to_underlying.h>
 
 #include <fmt/format.h>
 
@@ -53,7 +52,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
     runtime::fx::module_parameters parameters;
 
     parameters.emplace(
-            to_underlying(parameter_key::gain),
+            std::to_underlying(parameter_key::gain),
             params_factory.make_parameter(
                     runtime::float_parameter{
                             .name = box("Gain"s),
@@ -69,7 +68,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
     {
         case audio::bus_type::mono:
             parameters.emplace(
-                    to_underlying(parameter_key::invert),
+                    std::to_underlying(parameter_key::invert),
                     params_factory.make_parameter(
                             runtime::bool_parameter{
                                     .name = box("Invert"s),
@@ -78,13 +77,13 @@ make_module(runtime::internal_fx_module_factory_args const& args)
 
         case audio::bus_type::stereo:
             parameters.emplace(
-                    to_underlying(parameter_key::invert_left),
+                    std::to_underlying(parameter_key::invert_left),
                     params_factory.make_parameter(
                             runtime::bool_parameter{
                                     .name = box("Invert L"s),
                                     .default_value = false}));
             parameters.emplace(
-                    to_underlying(parameter_key::invert_right),
+                    std::to_underlying(parameter_key::invert_right),
                     params_factory.make_parameter(
                             runtime::bool_parameter{
                                     .name = box("Invert R"s),

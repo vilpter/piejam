@@ -15,7 +15,6 @@
 #include <piejam/gui/model/SpectrumSlot.h>
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
-#include <piejam/to_underlying.h>
 
 #include <boost/container/flat_map.hpp>
 
@@ -63,26 +62,26 @@ FxFilter::FxFilter(
         runtime::subscriber& state_change_subscriber,
         runtime::fx::module_id const fx_mod_id)
     : FxModule{store_dispatch, state_change_subscriber, fx_mod_id}
-    , m_impl{make_pimpl<Impl>(toBusType(
-              observe_once(runtime::selectors::make_fx_module_bus_type_selector(
+    , m_impl{make_pimpl<Impl>(toBusType(observe_once(
+              runtime::selectors::make_fx_module_bus_type_selector(
                       fx_mod_id))))}
 {
     auto const& parameters = this->parameters();
 
     makeParameter(
             m_impl->filterTypeParam,
-            parameters.at(to_underlying(parameter_key::type)));
+            parameters.at(std::to_underlying(parameter_key::type)));
 
     makeParameter(
             m_impl->cutoffParam,
-            parameters.at(to_underlying(parameter_key::cutoff)));
+            parameters.at(std::to_underlying(parameter_key::cutoff)));
 
     makeParameter(
             m_impl->resonanceParam,
-            parameters.at(to_underlying(parameter_key::resonance)));
+            parameters.at(std::to_underlying(parameter_key::resonance)));
 
     makeStream(
-            to_underlying(stream_key::in_out),
+            std::to_underlying(stream_key::in_out),
             m_impl->inOutStream,
             streams());
 

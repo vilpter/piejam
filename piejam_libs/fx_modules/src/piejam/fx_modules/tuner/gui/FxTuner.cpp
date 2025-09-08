@@ -12,7 +12,6 @@
 #include <piejam/gui/model/PitchGenerator.h>
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
-#include <piejam/to_underlying.h>
 
 #include <fmt/format.h>
 
@@ -51,7 +50,10 @@ FxTuner::FxTuner(
     : FxModule{store_dispatch, state_change_subscriber, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
-    makeStream(to_underlying(stream_key::input), m_impl->stream, streams());
+    makeStream(
+            std::to_underlying(stream_key::input),
+            m_impl->stream,
+            streams());
 
     QObject::connect(
             m_impl->stream.get(),
@@ -106,8 +108,9 @@ FxTuner::FxTuner(
                             return "--";
                         }(pitch.pitchclass_);
 
-                        setDetectedPitch(QString::fromStdString(
-                                fmt::format("{}{}", pc, pitch.octave)));
+                        setDetectedPitch(
+                                QString::fromStdString(
+                                        fmt::format("{}{}", pc, pitch.octave)));
 
                         setDetectedCents(
                                 static_cast<int>(std::round(pitch.cents)));

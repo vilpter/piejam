@@ -13,7 +13,6 @@
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/to_underlying.h>
 
 #include <fmt/format.h>
 
@@ -30,19 +29,19 @@ to_type_string(int const n) -> std::string
 {
     switch (n)
     {
-        case to_underlying(type::lp2):
+        case std::to_underlying(type::lp2):
             return "LP2";
-        case to_underlying(type::lp4):
+        case std::to_underlying(type::lp4):
             return "LP4";
-        case to_underlying(type::bp2):
+        case std::to_underlying(type::bp2):
             return "BP2";
-        case to_underlying(type::bp4):
+        case std::to_underlying(type::bp4):
             return "BP4";
-        case to_underlying(type::hp2):
+        case std::to_underlying(type::hp2):
             return "HP2";
-        case to_underlying(type::hp4):
+        case std::to_underlying(type::hp4):
             return "HP4";
-        case to_underlying(type::br):
+        case std::to_underlying(type::br):
             return "BR";
 
         default:
@@ -80,43 +79,56 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .fx_instance_id = internal_id(),
             .name = box("Filter"s),
             .bus_type = args.bus_type,
-            .parameters = box(runtime::fx::module_parameters{
-                    {to_underlying(parameter_key::type),
-                     params_factory.make_parameter(runtime::int_parameter{
-                             .name = box("Type"s),
-                             .default_value = to_underlying(type::lp2),
-                             .min = 0,
-                             .max = 7,
-                             .value_to_string = &to_type_string})},
-                    {to_underlying(parameter_key::cutoff),
-                     params_factory.make_parameter(runtime::float_parameter{
-                             .name = box("Cutoff"s),
-                             .default_value = 440.f,
-                             .min = 10.f,
-                             .max = 20000.f,
-                             .value_to_string = &to_cutoff_string,
-                             .to_normalized =
-                                     &runtime::parameter::to_normalized_log,
-                             .from_normalized = &runtime::parameter::
-                                                        from_normalized_log})},
-                    {to_underlying(parameter_key::resonance),
-                     params_factory.make_parameter(runtime::float_parameter{
-                             .name = box("Resonance"s),
-                             .default_value = 0.f,
-                             .min = 0.f,
-                             .max = 1.f,
-                             .value_to_string = &to_resonance_string,
-                             .to_normalized =
-                                     &runtime::parameter::to_normalized_linear,
-                             .from_normalized =
-                                     &runtime::parameter::
-                                             from_normalized_linear})}}),
-            .streams = box(runtime::fx::module_streams{
-                    {to_underlying(stream_key::in_out),
-                     make_stream(
-                             args.streams,
-                             num_channels(args.bus_type) * 2)},
-            })};
+            .parameters =
+                    box(runtime::fx::module_parameters{
+                            {std::to_underlying(parameter_key::type),
+                             params_factory.make_parameter(
+                                     runtime::int_parameter{
+                                             .name = box("Type"s),
+                                             .default_value =
+                                                     std::to_underlying(
+                                                             type::lp2),
+                                             .min = 0,
+                                             .max = 7,
+                                             .value_to_string =
+                                                     &to_type_string})},
+                            {std::to_underlying(parameter_key::cutoff),
+                             params_factory.make_parameter(
+                                     runtime::float_parameter{
+                                             .name = box("Cutoff"s),
+                                             .default_value = 440.f,
+                                             .min = 10.f,
+                                             .max = 20000.f,
+                                             .value_to_string =
+                                                     &to_cutoff_string,
+                                             .to_normalized =
+                                                     &runtime::parameter::
+                                                             to_normalized_log,
+                                             .from_normalized =
+                                                     &runtime::parameter::
+                                                             from_normalized_log})},
+                            {std::to_underlying(parameter_key::resonance),
+                             params_factory.make_parameter(
+                                     runtime::float_parameter{
+                                             .name = box("Resonance"s),
+                                             .default_value = 0.f,
+                                             .min = 0.f,
+                                             .max = 1.f,
+                                             .value_to_string =
+                                                     &to_resonance_string,
+                                             .to_normalized =
+                                                     &runtime::parameter::
+                                                             to_normalized_linear,
+                                             .from_normalized =
+                                                     &runtime::parameter::
+                                                             from_normalized_linear})}}),
+            .streams =
+                    box(runtime::fx::module_streams{
+                            {std::to_underlying(stream_key::in_out),
+                             make_stream(
+                                     args.streams,
+                                     num_channels(args.bus_type) * 2)},
+                    })};
 }
 
 } // namespace piejam::fx_modules::filter

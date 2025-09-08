@@ -24,7 +24,6 @@
 #include <piejam/runtime/internal_fx_component_factory.h>
 #include <piejam/runtime/parameter_processor_factory.h>
 #include <piejam/runtime/processors/stream_processor_factory.h>
-#include <piejam/to_underlying.h>
 
 #include <boost/container/flat_map.hpp>
 #include <boost/container/static_vector.hpp>
@@ -90,49 +89,49 @@ make_coefficent_converter_processor(audio::sample_rate const sample_rate)
                     float const res) {
                 switch (type)
                 {
-                    case to_underlying(type::lp2):
+                    case std::to_underlying(type::lp2):
                         return make_coefficients(
                                 lp2_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case to_underlying(type::lp4):
+                    case std::to_underlying(type::lp4):
                         return make_coefficients(
                                 lp4_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case to_underlying(type::bp2):
+                    case std::to_underlying(type::bp2):
                         return make_coefficients(
                                 bp2_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case to_underlying(type::bp4):
+                    case std::to_underlying(type::bp4):
                         return make_coefficients(
                                 bp4_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case to_underlying(type::hp2):
+                    case std::to_underlying(type::hp2):
                         return make_coefficients(
                                 hp2_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case to_underlying(type::hp4):
+                    case std::to_underlying(type::hp4):
                         return make_coefficients(
                                 hp4_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case to_underlying(type::br):
+                    case std::to_underlying(type::br):
                         return make_coefficients(br_tag{}, cutoff, res, inv_sr);
 
                     default:
@@ -319,25 +318,26 @@ public:
                   runtime::processors::find_or_make_parameter_processor(
                           args.param_procs,
                           args.fx_mod.parameters->at(
-                                  to_underlying(parameter_key::type)),
+                                  std::to_underlying(parameter_key::type)),
                           "type"))
         , m_cutoff_input_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           args.param_procs,
                           args.fx_mod.parameters->at(
-                                  to_underlying(parameter_key::cutoff)),
+                                  std::to_underlying(parameter_key::cutoff)),
                           "cutoff"))
         , m_resonance_input_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           args.param_procs,
                           args.fx_mod.parameters->at(
-                                  to_underlying(parameter_key::resonance)),
+                                  std::to_underlying(parameter_key::resonance)),
                           "res"))
         , m_coeffs_proc(make_coefficent_converter_processor(args.sample_rate))
         , m_in_out_stream(make_in_out_stream(
                   args.fx_mod.bus_type,
-                  args.fx_mod.streams->at(to_underlying(
-                          fx_modules::filter::stream_key::in_out)),
+                  args.fx_mod.streams->at(
+                          std::to_underlying(
+                                  fx_modules::filter::stream_key::in_out)),
                   args.stream_procs,
                   args.sample_rate.samples_for_duration(
                           std::chrono::milliseconds(120))))

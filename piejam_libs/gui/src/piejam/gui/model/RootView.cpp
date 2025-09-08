@@ -6,7 +6,6 @@
 
 #include <piejam/runtime/actions/root_view_actions.h>
 #include <piejam/runtime/selectors.h>
-#include <piejam/to_underlying.h>
 
 namespace piejam::gui::model
 {

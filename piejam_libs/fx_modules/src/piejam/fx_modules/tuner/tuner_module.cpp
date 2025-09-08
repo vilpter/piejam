@@ -9,7 +9,6 @@
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
 #include <piejam/runtime/fx/module.h>
-#include <piejam/to_underlying.h>
 
 #include <boost/container/flat_map.hpp>
 
@@ -27,12 +26,13 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .name = box("Tuner"s),
             .bus_type = args.bus_type,
             .parameters = {},
-            .streams = box(runtime::fx::module_streams{
-                    {to_underlying(stream_key::input),
-                     make_stream(
-                             args.streams,
-                             audio::num_channels(args.bus_type))},
-            })};
+            .streams =
+                    box(runtime::fx::module_streams{
+                            {std::to_underlying(stream_key::input),
+                             make_stream(
+                                     args.streams,
+                                     audio::num_channels(args.bus_type))},
+                    })};
 }
 
 } // namespace piejam::fx_modules::tuner

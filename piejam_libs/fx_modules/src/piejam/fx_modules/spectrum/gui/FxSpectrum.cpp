@@ -17,7 +17,6 @@
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
 #include <piejam/switch_cast.h>
-#include <piejam/to_underlying.h>
 
 #include <boost/container/flat_map.hpp>
 
@@ -89,33 +88,36 @@ FxSpectrum::FxSpectrum(
 
     makeParameter(
             m_impl->spectrumProcessor.first.active,
-            parameters.at(to_underlying(parameter_key::stream_a_active)));
+            parameters.at(std::to_underlying(parameter_key::stream_a_active)));
 
     makeParameter(
             m_impl->spectrumProcessor.second.active,
-            parameters.at(to_underlying(parameter_key::stream_b_active)));
+            parameters.at(std::to_underlying(parameter_key::stream_b_active)));
 
     makeParameter(
             m_impl->spectrumProcessor.first.channel,
-            parameters.at(to_underlying(parameter_key::channel_a)));
+            parameters.at(std::to_underlying(parameter_key::channel_a)));
 
     makeParameter(
             m_impl->spectrumProcessor.second.channel,
-            parameters.at(to_underlying(parameter_key::channel_b)));
+            parameters.at(std::to_underlying(parameter_key::channel_b)));
 
     makeParameter(
             m_impl->spectrumProcessor.first.gain,
-            parameters.at(to_underlying(parameter_key::gain_a)));
+            parameters.at(std::to_underlying(parameter_key::gain_a)));
 
     makeParameter(
             m_impl->spectrumProcessor.second.gain,
-            parameters.at(to_underlying(parameter_key::gain_b)));
+            parameters.at(std::to_underlying(parameter_key::gain_b)));
 
     makeParameter(
             m_impl->freeze,
-            parameters.at(to_underlying(parameter_key::freeze)));
+            parameters.at(std::to_underlying(parameter_key::freeze)));
 
-    makeStream(to_underlying(stream_key::input), m_impl->stream, streams());
+    makeStream(
+            std::to_underlying(stream_key::input),
+            m_impl->stream,
+            streams());
 
     if (m_impl->busType == BusType::Mono)
     {

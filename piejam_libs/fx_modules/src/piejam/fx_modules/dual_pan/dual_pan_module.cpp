@@ -11,7 +11,6 @@
 #include <piejam/runtime/parameter/float_descriptor.h>
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/to_underlying.h>
 
 #include <fmt/format.h>
 
@@ -37,36 +36,45 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .fx_instance_id = internal_id(),
             .name = box("Dual Pan"s),
             .bus_type = args.bus_type,
-            .parameters = box(runtime::fx::module_parameters{
-                    {to_underlying(parameter_key::mute_left),
-                     params_factory.make_parameter(runtime::bool_parameter{
-                             .name = box("Mute Left"s),
-                             .default_value = false})},
-                    {to_underlying(parameter_key::pan_left),
-                     params_factory.make_parameter(runtime::float_parameter{
-                             .name = box("Pan Left"s),
-                             .default_value = -1.f,
-                             .min = -1.f,
-                             .max = 1.f,
-                             .bipolar = true,
-                             .to_normalized = s_pan_to_noramlized,
-                             .from_normalized = s_pan_from_noramlized,
-                     })},
-                    {to_underlying(parameter_key::pan_right),
-                     params_factory.make_parameter(runtime::float_parameter{
-                             .name = box("Pan Right"s),
-                             .default_value = 1.f,
-                             .min = -1.f,
-                             .max = 1.f,
-                             .bipolar = true,
-                             .to_normalized = s_pan_to_noramlized,
-                             .from_normalized = s_pan_from_noramlized,
-                     })},
-                    {to_underlying(parameter_key::mute_right),
-                     params_factory.make_parameter(runtime::bool_parameter{
-                             .name = box("Mute Right"s),
-                             .default_value = false})},
-            }),
+            .parameters =
+                    box(runtime::fx::module_parameters{
+                            {std::to_underlying(parameter_key::mute_left),
+                             params_factory.make_parameter(
+                                     runtime::bool_parameter{
+                                             .name = box("Mute Left"s),
+                                             .default_value = false})},
+                            {std::to_underlying(parameter_key::pan_left),
+                             params_factory.make_parameter(
+                                     runtime::float_parameter{
+                                             .name = box("Pan Left"s),
+                                             .default_value = -1.f,
+                                             .min = -1.f,
+                                             .max = 1.f,
+                                             .bipolar = true,
+                                             .to_normalized =
+                                                     s_pan_to_noramlized,
+                                             .from_normalized =
+                                                     s_pan_from_noramlized,
+                                     })},
+                            {std::to_underlying(parameter_key::pan_right),
+                             params_factory.make_parameter(
+                                     runtime::float_parameter{
+                                             .name = box("Pan Right"s),
+                                             .default_value = 1.f,
+                                             .min = -1.f,
+                                             .max = 1.f,
+                                             .bipolar = true,
+                                             .to_normalized =
+                                                     s_pan_to_noramlized,
+                                             .from_normalized =
+                                                     s_pan_from_noramlized,
+                                     })},
+                            {std::to_underlying(parameter_key::mute_right),
+                             params_factory.make_parameter(
+                                     runtime::bool_parameter{
+                                             .name = box("Mute Right"s),
+                                             .default_value = false})},
+                    }),
             .streams = {}};
 }
 

@@ -25,7 +25,6 @@ add_library(piejam_base INTERFACE
     include/piejam/renew.h
     include/piejam/set_if.h
     include/piejam/switch_cast.h
-    include/piejam/to_underlying.h
     include/piejam/tuple.h
     include/piejam/tuple_element_compare.h
     include/piejam/type_traits.h

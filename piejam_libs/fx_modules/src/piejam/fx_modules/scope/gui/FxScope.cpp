@@ -18,7 +18,6 @@
 #include <piejam/gui/model/WaveformGenerator.h>
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
-#include <piejam/to_underlying.h>
 
 #include <boost/container/flat_map.hpp>
 
@@ -146,57 +145,62 @@ FxScope::FxScope(
 
     makeParameter(
             m_impl->mode,
-            parameters.at(to_underlying(parameter_key::mode)));
+            parameters.at(std::to_underlying(parameter_key::mode)));
 
     makeParameter(
             m_impl->triggerSlope,
-            parameters.at(to_underlying(parameter_key::trigger_slope)));
+            parameters.at(std::to_underlying(parameter_key::trigger_slope)));
 
     makeParameter(
             m_impl->triggerLevel,
-            parameters.at(to_underlying(parameter_key::trigger_level)));
+            parameters.at(std::to_underlying(parameter_key::trigger_level)));
 
     makeParameter(
             m_impl->holdTime,
-            parameters.at(to_underlying(parameter_key::hold_time)));
+            parameters.at(std::to_underlying(parameter_key::hold_time)));
 
     makeParameter(
             m_impl->waveformResolution,
-            parameters.at(to_underlying(parameter_key::waveform_window_size)));
+            parameters.at(
+                    std::to_underlying(parameter_key::waveform_window_size)));
 
     makeParameter(
             m_impl->scopeResolution,
-            parameters.at(to_underlying(parameter_key::scope_window_size)));
+            parameters.at(
+                    std::to_underlying(parameter_key::scope_window_size)));
 
     makeParameter(
             m_impl->streamProcessor.first.active,
-            parameters.at(to_underlying(parameter_key::stream_a_active)));
+            parameters.at(std::to_underlying(parameter_key::stream_a_active)));
 
     makeParameter(
             m_impl->streamProcessor.second.active,
-            parameters.at(to_underlying(parameter_key::stream_b_active)));
+            parameters.at(std::to_underlying(parameter_key::stream_b_active)));
 
     makeParameter(
             m_impl->streamProcessor.first.channel,
-            parameters.at(to_underlying(parameter_key::channel_a)));
+            parameters.at(std::to_underlying(parameter_key::channel_a)));
 
     makeParameter(
             m_impl->streamProcessor.second.channel,
-            parameters.at(to_underlying(parameter_key::channel_b)));
+            parameters.at(std::to_underlying(parameter_key::channel_b)));
 
     makeParameter(
             m_impl->streamProcessor.first.gain,
-            parameters.at(to_underlying(parameter_key::gain_a)));
+            parameters.at(std::to_underlying(parameter_key::gain_a)));
 
     makeParameter(
             m_impl->streamProcessor.second.gain,
-            parameters.at(to_underlying(parameter_key::gain_b)));
+            parameters.at(std::to_underlying(parameter_key::gain_b)));
 
     makeParameter(
             m_impl->freeze,
-            parameters.at(to_underlying(parameter_key::freeze)));
+            parameters.at(std::to_underlying(parameter_key::freeze)));
 
-    makeStream(to_underlying(stream_key::input), m_impl->stream, streams());
+    makeStream(
+            std::to_underlying(stream_key::input),
+            m_impl->stream,
+            streams());
 
     auto clear_fn = [this]() { clear(); };
 

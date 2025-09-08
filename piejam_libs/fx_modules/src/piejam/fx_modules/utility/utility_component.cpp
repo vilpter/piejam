@@ -13,7 +13,6 @@
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
 #include <piejam/runtime/parameter_processor_factory.h>
-#include <piejam/to_underlying.h>
 
 #include <fmt/format.h>
 
@@ -70,7 +69,7 @@ public:
         : m_gain_param_proc{runtime::processors::
                                     find_or_make_parameter_processor(
                                             proc_factory,
-                                            fx_mod.parameters->at(to_underlying(
+                                            fx_mod.parameters->at(std::to_underlying(
                                                     parameter_key::gain)),
                                             fmt::format(
                                                     "utility_gain {}",
@@ -78,7 +77,7 @@ public:
         , m_invert_param_proc{fx_mod.bus_type == audio::bus_type::mono ? runtime::processors::
                                    find_or_make_parameter_processor(
                                            proc_factory,
-                                           fx_mod.parameters->at(to_underlying(
+                                           fx_mod.parameters->at(std::to_underlying(
                                                    parameter_key::invert)),
                                            fmt::format(
                                                    "utility_invert {}",
@@ -86,7 +85,7 @@ public:
         , m_invert_left_param_proc{fx_mod.bus_type == audio::bus_type::stereo ? runtime::processors::
                                       find_or_make_parameter_processor(
                                               proc_factory,
-                                              fx_mod.parameters->at(to_underlying(
+                                              fx_mod.parameters->at(std::to_underlying(
                                                       parameter_key::invert_left)),
                                               fmt::format(
                                                       "utility_invert {}",
@@ -94,7 +93,7 @@ public:
         , m_invert_right_param_proc{fx_mod.bus_type == audio::bus_type::stereo ? runtime::processors::
                                       find_or_make_parameter_processor(
                                               proc_factory,
-                                              fx_mod.parameters->at(to_underlying(
+                                              fx_mod.parameters->at(std::to_underlying(
                                                       parameter_key::invert_right)),
                                               fmt::format(
                                                       "utility_invert {}",
