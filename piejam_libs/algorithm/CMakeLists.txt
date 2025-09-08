@@ -5,7 +5,6 @@
 add_library(piejam_algorithm INTERFACE
     include/piejam/algorithm/all_of_adjacent.h
     include/piejam/algorithm/concepts.h
-    include/piejam/algorithm/contains.h
     include/piejam/algorithm/copy_or_move.h
     include/piejam/algorithm/edit_script.h
     include/piejam/algorithm/escape_html.h

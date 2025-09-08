@@ -8,7 +8,6 @@ endif()
 
 add_executable(piejam_algorithm_test
     all_of_adjacent_test.cpp
-    contains_test.cpp
     copy_or_move_test.cpp
     edit_script_test.cpp
     escape_html_test.cpp

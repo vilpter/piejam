@@ -12,7 +12,6 @@
 #include <piejam/audio/engine/mix_processor.h>
 #include <piejam/audio/engine/processor.h>
 
-#include <piejam/algorithm/contains.h>
 #include <piejam/functional/address_compare.h>
 #include <piejam/functional/operators.h>
 
@@ -20,7 +19,6 @@
 #include <boost/range/iterator_range_core.hpp>
 
 #include <algorithm>
-#include <ranges>
 #include <set>
 
 namespace piejam::audio::engine
@@ -48,7 +46,7 @@ has_wire(
         graph_endpoint const& src,
         graph_endpoint const& dst) -> bool
 {
-    return algorithm::contains(
+    return std::ranges::contains(
             boost::make_iterator_range(ws.equal_range(src)),
             dst,
             &graph::wires_map::value_type::second);

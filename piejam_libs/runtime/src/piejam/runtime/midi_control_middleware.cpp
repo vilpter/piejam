@@ -4,7 +4,6 @@
 
 #include <piejam/runtime/midi_control_middleware.h>
 
-#include <piejam/algorithm/contains.h>
 #include <piejam/algorithm/for_each_visit.h>
 #include <piejam/midi/device_update.h>
 #include <piejam/runtime/actions/activate_midi_device.h>
@@ -111,7 +110,7 @@ midi_control_middleware::process_device_update(
         mw_fs.dispatch(action);
 
         m_enabled_devices.erase(it);
-        BOOST_ASSERT(!algorithm::contains(m_enabled_devices, up.name));
+        BOOST_ASSERT(!std::ranges::contains(m_enabled_devices, up.name));
     }
 }
 
@@ -124,7 +123,8 @@ midi_control_middleware::process_device_update(
     if (auto it = st.midi_devices->find(up.device_id);
         it != st.midi_devices->end() && it->second.enabled)
     {
-        BOOST_ASSERT(!algorithm::contains(m_enabled_devices, *it->second.name));
+        BOOST_ASSERT(
+                !std::ranges::contains(m_enabled_devices, *it->second.name));
         m_enabled_devices.emplace_back(it->second.name);
     }
 }

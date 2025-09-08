@@ -4,7 +4,6 @@
 
 #include "get_set_hw_params.h"
 
-#include <piejam/algorithm/contains.h>
 #include <piejam/audio/io_process_config.h>
 #include <piejam/audio/pcm_format.h>
 #include <piejam/audio/period_size.h>
@@ -291,7 +290,7 @@ get_hw_params(
             test_interval_value(fd, hw_params, SNDRV_PCM_HW_PARAM_RATE),
             &audio::sample_rate::value);
 
-    if (sample_rate && algorithm::contains(result.sample_rates, *sample_rate))
+    if (sample_rate && std::ranges::contains(result.sample_rates, *sample_rate))
     {
         set_interval_value(
                 hw_params,
@@ -306,7 +305,7 @@ get_hw_params(
             test_interval_value(fd, hw_params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE),
             &audio::period_size::value);
 
-    if (period_size && algorithm::contains(result.period_sizes, *period_size))
+    if (period_size && std::ranges::contains(result.period_sizes, *period_size))
     {
         set_interval_value(
                 hw_params,

@@ -4,7 +4,6 @@
 
 #include <piejam/runtime/state.h>
 
-#include <piejam/algorithm/contains.h>
 #include <piejam/audio/types.h>
 #include <piejam/functional/operators.h>
 #include <piejam/indexed_access.h>
@@ -25,6 +24,7 @@
 #include <boost/range/algorithm_ext/erase.hpp>
 
 #include <algorithm>
+#include <ranges>
 
 namespace piejam::runtime
 {
@@ -380,7 +380,7 @@ remove_fx_module(
     auto mixer_channels = st.mixer_state.channels.lock();
     auto& mixer_channel = mixer_channels[fx_chain_id];
 
-    BOOST_ASSERT(algorithm::contains(*mixer_channel.fx_chain, fx_mod_id));
+    BOOST_ASSERT(std::ranges::contains(*mixer_channel.fx_chain, fx_mod_id));
     remove_erase(mixer_channel.fx_chain, fx_mod_id);
 
     for (auto&& [key, fx_param_id] : *fx_mod.parameters)
@@ -632,7 +632,8 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
            equal_to(mixer_channel_id),
            mixer::channel_id{});
 
-    BOOST_ASSERT(algorithm::contains(*st.mixer_state.inputs, mixer_channel_id));
+    BOOST_ASSERT(
+            std::ranges::contains(*st.mixer_state.inputs, mixer_channel_id));
     remove_erase(st.mixer_state.inputs, mixer_channel_id);
 
     st.streams.erase(mixer_channel.out_stream);
@@ -682,14 +683,14 @@ remove_external_audio_device(
 
     st.external_audio_state.devices.erase(device_id);
 
-    if (algorithm::contains(*st.external_audio_state.inputs, device_id))
+    if (std::ranges::contains(*st.external_audio_state.inputs, device_id))
     {
         remove_erase(st.external_audio_state.inputs, device_id);
     }
     else
     {
         BOOST_ASSERT(
-                algorithm::contains(
+                std::ranges::contains(
                         *st.external_audio_state.outputs,
                         device_id));
         remove_erase(st.external_audio_state.outputs, device_id);

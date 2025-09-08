@@ -6,7 +6,6 @@
 
 #include <piejam/runtime/state.h>
 
-#include <piejam/algorithm/contains.h>
 #include <piejam/functional/operators.h>
 #include <piejam/set_if.h>
 

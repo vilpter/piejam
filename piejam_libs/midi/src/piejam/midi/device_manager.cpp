@@ -11,7 +11,6 @@
 #include <piejam/midi/event_handler.h>
 #include <piejam/midi/input_event_handler.h>
 
-#include <piejam/algorithm/contains.h>
 #include <piejam/entity_id_hash.h>
 
 #include <fmt/format.h>
@@ -52,11 +51,14 @@ struct alsa_event_handler final : alsa::event_handler
         if (auto it = m_devices.find(std::pair{client_id, port});
             it != m_devices.end())
         {
-            m_ev_handler.process(midi::external_event{
-                    .device_id = it->second,
-                    .event = midi::channel_cc_event{
-                            .channel = channel,
-                            .data = cc_event{.cc = cc_id, .value = value}}});
+            m_ev_handler.process(
+                    midi::external_event{
+                            .device_id = it->second,
+                            .event = midi::channel_cc_event{
+                                    .channel = channel,
+                                    .data = cc_event{
+                                            .cc = cc_id,
+                                            .value = value}}});
         }
     }
 
@@ -103,8 +105,8 @@ public:
 
     auto update_devices() -> std::vector<device_update> override;
 
-    auto
-    make_input_event_handler() -> std::unique_ptr<input_event_handler> override;
+    auto make_input_event_handler()
+            -> std::unique_ptr<input_event_handler> override;
 
 private:
     auto is_update_relevant(alsa::midi_device_added const&) const -> bool
@@ -114,7 +116,7 @@ private:
 
     auto is_update_relevant(alsa::midi_device_removed const& op) const -> bool
     {
-        return algorithm::contains(
+        return std::ranges::contains(
                 m_alsa_input_devices,
                 op.device,
                 &alsa_input_devices_t::value_type::second);
