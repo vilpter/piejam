@@ -15,7 +15,6 @@ add_library(piejam_algorithm INTERFACE
     include/piejam/algorithm/npos.h
     include/piejam/algorithm/shift_push_back.h
     include/piejam/algorithm/string_join.h
-    include/piejam/algorithm/to_vector.h
     include/piejam/algorithm/transform_to_vector.h
 )
 target_include_directories(piejam_algorithm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
