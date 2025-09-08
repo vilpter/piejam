@@ -188,7 +188,6 @@ target_link_libraries(piejam_runtime
     piejam_audio
     piejam_ladspa
     piejam_midi
-    piejam_range
     piejam_redux
 
     PRIVATE
@@ -196,6 +195,7 @@ target_link_libraries(piejam_runtime
     piejam_algorithm
     piejam_functional
     piejam_numeric
+    piejam_range
     piejam_thread
     piejam_log
     nlohmann_json
