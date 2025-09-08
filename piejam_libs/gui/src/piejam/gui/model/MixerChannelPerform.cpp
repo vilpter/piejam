@@ -13,6 +13,7 @@
 #include <piejam/functional/operators.h>
 #include <piejam/numeric/flush_to_zero_if.h>
 #include <piejam/numeric/mipp_iterator.h>
+#include <piejam/numeric/simd/math.h>
 #include <piejam/numeric/simd/rms.h>
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
@@ -35,10 +36,8 @@ calcPeakLevel(
                     numeric::mipp_begin(samples),
                     numeric::mipp_end(samples),
                     mipp::Reg<T>(T{}),
-                    [](mipp::Reg<T> l, mipp::Reg<T> r) {
-                        return mipp::max(l, r);
-                    },
-                    [](mipp::Reg<T> s) { return mipp::abs(s); }));
+                    numeric::simd::max,
+                    numeric::simd::abs));
 
     T const dt = static_cast<T>(samples.size()) / sr.as<T>();
     constexpr T tau = T{0.2}; // 200ms
