@@ -14,12 +14,11 @@
 #include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/range/iota.h>
 
-#include <fmt/format.h>
-
 #include <boost/assert.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 
 #include <array>
+#include <format>
 
 namespace piejam::audio::components
 {
@@ -37,22 +36,22 @@ format_name(
     switch (num_channels)
     {
         case 1:
-            return fmt::format("{} {}", name, param);
+            return std::format("{} {}", name, param);
 
         case 2:
             switch (ch)
             {
                 case 0:
-                    return fmt::format("{} {} L", name, param);
+                    return std::format("{} {} L", name, param);
                 case 1:
-                    return fmt::format("{} {} R", name, param);
+                    return std::format("{} {} R", name, param);
                 default:
                     BOOST_ASSERT(false);
-                    return fmt::format("{} {}", name, param);
+                    return std::format("{} {}", name, param);
             }
 
         default:
-            return fmt::format("{} {} {}", name, param, ch);
+            return std::format("{} {} {}", name, param, ch);
     }
 }
 
@@ -63,7 +62,7 @@ public:
     amplifier(std::size_t num_channels, std::string_view name)
         : m_gain_proc{engine::make_event_to_audio_smoother_processor(
                   engine::default_smooth_length,
-                  fmt::format("{} gain", name))}
+                  std::format("{} gain", name))}
         , m_amp_procs{algorithm::transform_to_vector(
                   range::iota(num_channels),
                   [=](auto ch) {

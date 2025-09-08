@@ -62,7 +62,6 @@ endif()
 
 find_package(Boost CONFIG)
 find_package(spdlog REQUIRED)
-find_package(fmt REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 

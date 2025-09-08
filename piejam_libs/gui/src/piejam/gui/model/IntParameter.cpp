@@ -8,8 +8,6 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
-#include <fmt/format.h>
-
 namespace piejam::gui::model
 {
 
@@ -26,12 +24,12 @@ IntParameter::IntParameter(
     , m_impl{make_pimpl<Impl>(std::get<runtime::int_parameter_id>(param_id))}
 
 {
-    setMinValue(
-            observe_once(runtime::selectors::make_int_parameter_min_selector(
+    setMinValue(observe_once(
+            runtime::selectors::make_int_parameter_min_selector(
                     m_impl->param_id)));
 
-    setMaxValue(
-            observe_once(runtime::selectors::make_int_parameter_max_selector(
+    setMaxValue(observe_once(
+            runtime::selectors::make_int_parameter_max_selector(
                     m_impl->param_id)));
 }
 

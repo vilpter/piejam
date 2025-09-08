@@ -16,11 +16,10 @@
 #include <piejam/runtime/internal_fx_component_factory.h>
 #include <piejam/runtime/parameter_processor_factory.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
 
 #include <array>
+#include <format>
 
 namespace piejam::fx_modules::dual_pan
 {
@@ -40,26 +39,26 @@ public:
                           proc_factory,
                           fx_mod.parameters->at(
                                   std::to_underlying(parameter_key::mute_left)),
-                          fmt::format("mute_left {}", name)))
+                          std::format("mute_left {}", name)))
         , m_mute_right_param_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           proc_factory,
                           fx_mod.parameters->at(
                                   std::to_underlying(
                                           parameter_key::mute_right)),
-                          fmt::format("mute_right {}", name)))
+                          std::format("mute_right {}", name)))
         , m_pan_left_param_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           proc_factory,
                           fx_mod.parameters->at(
                                   std::to_underlying(parameter_key::pan_left)),
-                          fmt::format("pan_left {}", name)))
+                          std::format("pan_left {}", name)))
         , m_pan_right_param_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           proc_factory,
                           fx_mod.parameters->at(
                                   std::to_underlying(parameter_key::pan_right)),
-                          fmt::format("pan_right {}", name)))
+                          std::format("pan_right {}", name)))
 
     {
     }

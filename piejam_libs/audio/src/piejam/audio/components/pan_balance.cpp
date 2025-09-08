@@ -16,7 +16,7 @@
 #include <piejam/audio/engine/processor.h>
 #include <piejam/audio/pair.h>
 
-#include <fmt/format.h>
+#include <format>
 
 namespace piejam::audio::components
 {
@@ -91,7 +91,7 @@ make_pan(
     return std::make_unique<pan_balance>(
             std::move(pan_converter),
             make_remap_input_channels(
-                    make_stereo_split_amplifier(fmt::format("pan {}", name)),
+                    make_stereo_split_amplifier(std::format("pan {}", name)),
                     to<0, 1>));
 }
 
@@ -102,7 +102,7 @@ make_balance(
 {
     return std::make_unique<pan_balance>(
             std::move(balance_converter),
-            make_stereo_split_amplifier(fmt::format("balance {}", name)));
+            make_stereo_split_amplifier(std::format("balance {}", name)));
 }
 
 } // namespace piejam::audio::components

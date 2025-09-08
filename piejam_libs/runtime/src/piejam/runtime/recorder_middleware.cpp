@@ -18,14 +18,13 @@
 
 #include <sndfile.hh>
 
-#include <fmt/format.h>
-
 #include <spdlog/spdlog.h>
 
 #include <boost/assert.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 
+#include <format>
 #include <ranges>
 
 namespace piejam::runtime
@@ -84,8 +83,8 @@ recorder_middleware::process_recorder_action(
     BOOST_ASSERT(!st.recording);
 
     auto take_dir = m_impl->recordings_dir /
-                    fmt::format("session_{:06}", st.rec_session) /
-                    fmt::format("take_{:04}", st.rec_take);
+                    std::format("session_{:06}", st.rec_session) /
+                    std::format("take_{:04}", st.rec_take);
 
     std::error_code ec;
     if (!std::filesystem::create_directories(take_dir, ec))

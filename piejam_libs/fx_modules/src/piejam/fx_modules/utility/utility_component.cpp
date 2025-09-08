@@ -14,11 +14,10 @@
 #include <piejam/runtime/internal_fx_component_factory.h>
 #include <piejam/runtime/parameter_processor_factory.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
 
 #include <array>
+#include <format>
 
 namespace piejam::fx_modules::utility
 {
@@ -71,7 +70,7 @@ public:
                                             proc_factory,
                                             fx_mod.parameters->at(std::to_underlying(
                                                     parameter_key::gain)),
-                                            fmt::format(
+                                            std::format(
                                                     "utility_gain {}",
                                                     name))}
         , m_invert_param_proc{fx_mod.bus_type == audio::bus_type::mono ? runtime::processors::
@@ -79,7 +78,7 @@ public:
                                            proc_factory,
                                            fx_mod.parameters->at(std::to_underlying(
                                                    parameter_key::invert)),
-                                           fmt::format(
+                                           std::format(
                                                    "utility_invert {}",
                                                    name)) : nullptr}
         , m_invert_left_param_proc{fx_mod.bus_type == audio::bus_type::stereo ? runtime::processors::
@@ -87,7 +86,7 @@ public:
                                               proc_factory,
                                               fx_mod.parameters->at(std::to_underlying(
                                                       parameter_key::invert_left)),
-                                              fmt::format(
+                                              std::format(
                                                       "utility_invert {}",
                                                       name)) : nullptr}
         , m_invert_right_param_proc{fx_mod.bus_type == audio::bus_type::stereo ? runtime::processors::
@@ -95,16 +94,16 @@ public:
                                               proc_factory,
                                               fx_mod.parameters->at(std::to_underlying(
                                                       parameter_key::invert_right)),
-                                              fmt::format(
+                                              std::format(
                                                       "utility_invert {}",
                                                       name)) : nullptr}
         , m_gain_converter_proc{make_gain_converter_processor(fx_mod.bus_type, name)}
         , m_amplifier{
                   fx_mod.bus_type == audio::bus_type::mono
                           ? audio::components::make_mono_amplifier(
-                                    fmt::format("utility {}", name))
+                                    std::format("utility {}", name))
                           : audio::components::make_stereo_split_amplifier(
-                                    fmt::format("utility {}", name))}
+                                    std::format("utility {}", name))}
     {
     }
 

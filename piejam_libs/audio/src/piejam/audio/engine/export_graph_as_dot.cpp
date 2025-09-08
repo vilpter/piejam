@@ -9,11 +9,10 @@
 #include <piejam/audio/engine/processor.h>
 #include <piejam/functional/address_compare.h>
 
-#include <fmt/format.h>
-
 #include <boost/range/algorithm_ext/erase.hpp>
 
 #include <algorithm>
+#include <format>
 #include <ostream>
 #include <vector>
 
@@ -72,7 +71,7 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
             os << "<tr>" << '\n';
             for (std::size_t i = 0; i < p.num_inputs(); ++i)
             {
-                os << fmt::format(
+                os << std::format(
                               R"(<td port="ai{}" bgcolor="{}">a{}</td>)",
                               i,
                               audio_color,
@@ -81,7 +80,7 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
             }
             for (std::size_t i = 0; i < num_event_inputs; ++i)
             {
-                os << fmt::format(
+                os << std::format(
                               R"(<td port="ei{}" bgcolor="{}">{}</td>)",
                               i,
                               event_color,
@@ -93,7 +92,7 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
         }
 
         os << "<tr>" << '\n';
-        os << fmt::format(
+        os << std::format(
                 "<td colspan=\"{}\">{}:{}</td>",
                 std::max(
                         p.num_inputs() + num_event_inputs,
@@ -107,7 +106,7 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
             os << "<tr>" << '\n';
             for (std::size_t i = 0; i < p.num_outputs(); ++i)
             {
-                os << fmt::format(
+                os << std::format(
                               R"(<td port="ao{}" bgcolor="{}">a{}</td>)",
                               i,
                               audio_color,
@@ -116,7 +115,7 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
             }
             for (std::size_t i = 0; i < num_event_outputs; ++i)
             {
-                os << fmt::format(
+                os << std::format(
                               R"(<td port="eo{}" bgcolor="{}">{}</td>)",
                               i,
                               event_color,
@@ -134,7 +133,7 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
                                    auto const& w,
                                    auto&& wire_type,
                                    auto&& color) {
-        ss << fmt::format(
+        ss << std::format(
                       "{}_{}:{}o{} -> {}_{}:{}i{} [color=\"{}\"]",
                       w.first.proc.get().type_name(),
                       static_cast<void*>(std::addressof(w.first.proc.get())),

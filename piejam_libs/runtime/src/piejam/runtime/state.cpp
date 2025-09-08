@@ -17,13 +17,12 @@
 #include <piejam/set_if.h>
 #include <piejam/tuple_element_compare.h>
 
-#include <fmt/format.h>
-
 #include <boost/hof/match.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 
 #include <algorithm>
+#include <format>
 #include <ranges>
 
 namespace piejam::runtime
@@ -68,7 +67,7 @@ auto
 volume_to_string(float volume) -> std::string
 {
     auto const volume_dB = numeric::to_dB(volume);
-    return fmt::format("{:.1f} dB", volume_dB);
+    return std::format("{:.1f} dB", volume_dB);
 }
 
 } // namespace

@@ -123,8 +123,7 @@ target_link_libraries(piejam_audio
         piejam_thread
     PRIVATE
         piejam_compiler_warnings
-        fmt
-        spdlog::spdlog
+        piejam_log
 )
 
 add_subdirectory(benchmarks)

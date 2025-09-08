@@ -13,11 +13,10 @@
 #include <piejam/range/iota.h>
 #include <piejam/runtime/parameter_processor_factory.h>
 
-#include <fmt/format.h>
-
 #include <boost/dynamic_bitset.hpp>
 
 #include <array>
+#include <format>
 #include <vector>
 
 namespace piejam::runtime::components
@@ -111,7 +110,7 @@ private:
                     [](std::size_t const member_index) {
                         return audio::engine::event_port(
                                 std::in_place_type<bool>,
-                                fmt::format("in{}", member_index));
+                                std::format("in{}", member_index));
                     })};
 
     std::vector<audio::engine::event_port> m_event_outputs{
@@ -120,7 +119,7 @@ private:
                     [](std::size_t const member_index) {
                         return audio::engine::event_port(
                                 std::in_place_type<bool>,
-                                fmt::format("out{}", member_index));
+                                std::format("out{}", member_index));
                     })};
 };
 

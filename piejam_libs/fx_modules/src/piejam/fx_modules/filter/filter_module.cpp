@@ -14,9 +14,9 @@
 #include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter_factory.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
+
+#include <format>
 
 namespace piejam::fx_modules::filter
 {
@@ -52,17 +52,17 @@ to_type_string(int const n) -> std::string
 auto
 to_cutoff_string(float const f)
 {
-    return f < 1000.f ? fmt::format("{:.2f} Hz", f)
-                      : fmt::format("{:.2f} kHz", f / 1000.f);
+    return f < 1000.f ? std::format("{:.2f} Hz", f)
+                      : std::format("{:.2f} kHz", f / 1000.f);
 }
 
 auto
 to_resonance_string(float const r)
 {
     auto p = r * 100;
-    return p < 10.f ? fmt::format("{:.2f}%", p)
-                    : (p < 100.f ? fmt::format("{:.1f}%", p)
-                                 : fmt::format("{:.0f}%", p));
+    return p < 10.f ? std::format("{:.2f}%", p)
+                    : (p < 100.f ? std::format("{:.1f}%", p)
+                                 : std::format("{:.0f}%", p));
 }
 
 } // namespace

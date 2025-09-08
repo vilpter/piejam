@@ -20,7 +20,7 @@
 #include <piejam/runtime/parameter_processor_factory.h>
 #include <piejam/runtime/processors/stream_processor_factory.h>
 
-#include <fmt/format.h>
+#include <format>
 
 namespace piejam::runtime::components
 {
@@ -31,7 +31,7 @@ namespace
 auto
 format_name(std::string_view name, std::string_view param)
 {
-    return fmt::format("{} {}", param, name);
+    return std::format("{} {}", param, name);
 }
 
 class mixer_channel_output final : public audio::engine::component

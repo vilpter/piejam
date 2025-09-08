@@ -154,8 +154,7 @@ target_link_libraries(piejam_gui
     Qt5::QuickControls2
     Qt5::Svg
     Qt5::VirtualKeyboard
-    fmt
-    spdlog::spdlog
+
     piejam_base
     piejam_range
     piejam_algorithm

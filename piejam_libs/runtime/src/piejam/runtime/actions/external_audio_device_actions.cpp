@@ -9,11 +9,10 @@
 #include <piejam/functional/operators.h>
 #include <piejam/set_if.h>
 
-#include <fmt/format.h>
-
 #include <boost/assert.hpp>
 
 #include <algorithm>
+#include <format>
 
 namespace piejam::runtime::actions
 {
@@ -30,7 +29,7 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
     switch (io_dir)
     {
         case io_direction::input:
-            return fmt::format(
+            return std::format(
                     "In {} {}",
                     st.external_audio_state.inputs->size() + 1,
                     bus_type == audio::bus_type::mono ? "M" : "S");
@@ -45,7 +44,7 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
                     return "Cue"s;
 
                 default:
-                    return fmt::format(
+                    return std::format(
                             "Aux {}",
                             st.external_audio_state.outputs->size() - 1);
             }

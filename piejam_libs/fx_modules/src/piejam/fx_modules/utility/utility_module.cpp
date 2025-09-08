@@ -12,9 +12,9 @@
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter_factory.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
+
+#include <format>
 
 namespace piejam::fx_modules::utility
 {
@@ -36,7 +36,7 @@ struct dB_ival
 auto
 to_dB_string(float x) -> std::string
 {
-    return fmt::format("{:.1f} dB", std::log10(x) * 20.f);
+    return std::format("{:.1f} dB", std::log10(x) * 20.f);
 }
 
 } // namespace

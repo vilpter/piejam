@@ -14,8 +14,6 @@
 #include <piejam/range/indices.h>
 #include <piejam/range/iota.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
 #include <boost/container/static_vector.hpp>
 

@@ -8,8 +8,6 @@
 #include <piejam/io_pair.h>
 #include <piejam/system/device.h>
 
-#include <fmt/format.h>
-
 #include <spdlog/spdlog.h>
 
 #include <sound/asound.h>
@@ -19,6 +17,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <format>
 
 namespace piejam::audio::alsa
 {
@@ -61,9 +60,10 @@ scan_for_sound_cards() -> std::vector<sound_card_info>
                 }
                 else
                 {
-                    cards.emplace_back(sound_card_info{
-                            .control_path = entry.path(),
-                            .info = card_info});
+                    cards.emplace_back(
+                            sound_card_info{
+                                    .control_path = entry.path(),
+                                    .info = card_info});
                 }
             }
         }
@@ -148,11 +148,11 @@ struct to_sound_card_descriptor
     auto operator()(snd_pcm_info const& pcm_info) const -> sound_card_descriptor
     {
         return sound_card_descriptor{
-                .name = fmt::format(
+                .name = std::format(
                         "{} - {}",
                         reinterpret_cast<char const*>(sc.info.name),
                         reinterpret_cast<char const*>(pcm_info.name)),
-                .path = fmt::format(
+                .path = std::format(
                         "/dev/snd/pcmC{}D{}{}",
                         pcm_info.card,
                         pcm_info.device,

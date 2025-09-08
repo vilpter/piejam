@@ -6,8 +6,6 @@
 
 #include <piejam/runtime/selectors.h>
 
-#include <fmt/format.h>
-
 namespace piejam::gui::model
 {
 

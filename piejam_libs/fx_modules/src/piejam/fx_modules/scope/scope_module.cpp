@@ -15,9 +15,9 @@
 #include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter_factory.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
+
+#include <format>
 
 namespace piejam::fx_modules::scope
 {
@@ -90,8 +90,8 @@ to_trigger_slope_string(int const n) -> std::string
 auto
 to_hold_time_string(float const time) -> std::string
 {
-    return time > 1000.f ? fmt::format("{:1.2f} s", time / 1000.f)
-                         : fmt::format("{:.0f} ms", time);
+    return time > 1000.f ? std::format("{:1.2f} s", time / 1000.f)
+                         : std::format("{:.0f} ms", time);
 }
 
 auto
@@ -162,7 +162,7 @@ struct dB_ival
 auto
 to_dB_string(float x) -> std::string
 {
-    return fmt::format("{:.1f} dB", std::log10(x) * 20.f);
+    return std::format("{:.1f} dB", std::log10(x) * 20.f);
 }
 
 } // namespace

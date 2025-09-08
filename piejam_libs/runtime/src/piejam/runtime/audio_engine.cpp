@@ -46,8 +46,6 @@
 #include <piejam/range/iota.h>
 #include <piejam/thread/configuration.h>
 
-#include <fmt/format.h>
-
 #include <boost/hof/match.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 

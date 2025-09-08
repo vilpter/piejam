@@ -16,9 +16,8 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
+#include <boost/mp11/list.hpp>
 #include <boost/mp11/map.hpp>
-
-#include <fmt/format.h>
 
 namespace piejam::gui::model
 {

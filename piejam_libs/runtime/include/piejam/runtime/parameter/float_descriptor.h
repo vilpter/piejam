@@ -6,7 +6,7 @@
 
 #include <piejam/boxed_string.h>
 
-#include <fmt/format.h>
+#include <format>
 
 namespace piejam::runtime::parameter
 {
@@ -28,7 +28,7 @@ struct float_descriptor
     bool bipolar{};
 
     value_to_string_fn value_to_string{
-            [](value_type x) { return fmt::format("{:.2f}", x); }};
+            [](value_type x) { return std::format("{:.2f}", x); }};
 
     to_normalized_f to_normalized{[](auto const&, float x) { return x; }};
     from_normalized_f from_normalized{[](auto const&, float x) { return x; }};

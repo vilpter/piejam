@@ -9,8 +9,6 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
-#include <fmt/format.h>
-
 namespace piejam::gui::model
 {
 

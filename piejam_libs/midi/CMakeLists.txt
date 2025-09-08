@@ -25,5 +25,5 @@ target_link_libraries(piejam_midi
     piejam_compiler_warnings
     piejam_algorithm
     piejam_system
-    fmt
-    spdlog::spdlog)
+    piejam_log
+)

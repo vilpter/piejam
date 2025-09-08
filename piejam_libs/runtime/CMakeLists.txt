@@ -197,9 +197,9 @@ target_link_libraries(piejam_runtime
     piejam_functional
     piejam_numeric
     piejam_thread
+    piejam_log
     nlohmann_json
-    fmt
-    spdlog::spdlog
-    SndFile::sndfile)
+    SndFile::sndfile
+)
 
 add_subdirectory(tests)

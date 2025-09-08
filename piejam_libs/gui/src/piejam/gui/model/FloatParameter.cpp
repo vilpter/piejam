@@ -10,8 +10,6 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
-#include <fmt/format.h>
-
 namespace piejam::gui::model
 {
 
@@ -49,17 +47,19 @@ FloatParameter::onSubscribe()
 void
 FloatParameter::changeValue(double value)
 {
-    dispatch(runtime::actions::set_float_parameter(
-            m_impl->param_id,
-            static_cast<float>(value)));
+    dispatch(
+            runtime::actions::set_float_parameter(
+                    m_impl->param_id,
+                    static_cast<float>(value)));
 }
 
 void
 FloatParameter::changeNormalizedValue(double value)
 {
-    dispatch(runtime::actions::set_float_parameter_normalized(
-            m_impl->param_id,
-            static_cast<float>(value)));
+    dispatch(
+            runtime::actions::set_float_parameter_normalized(
+                    m_impl->param_id,
+                    static_cast<float>(value)));
 }
 
 } // namespace piejam::gui::model

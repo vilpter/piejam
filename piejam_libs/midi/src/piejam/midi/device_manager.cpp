@@ -13,12 +13,11 @@
 
 #include <piejam/entity_id_hash.h>
 
-#include <fmt/format.h>
-
 #include <boost/assert.hpp>
 #include <boost/container/flat_map.hpp>
 
 #include <algorithm>
+#include <format>
 #include <unordered_map>
 
 namespace piejam::midi
@@ -136,7 +135,7 @@ private:
         m_alsa_input_devices.emplace(new_id, op.device);
         return device_added{
                 .device_id = new_id,
-                .name = fmt::format("{}:{}", op.device.name, op.device.port)};
+                .name = std::format("{}:{}", op.device.name, op.device.port)};
     }
 
     auto process_midi_device_update(alsa::midi_device_removed const& op)

@@ -10,8 +10,6 @@
 #include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/tuple.h>
 
-#include <fmt/format.h>
-
 #include <boost/callable_traits/args.hpp>
 #include <boost/callable_traits/return_type.hpp>
 
@@ -62,9 +60,10 @@ public:
         , m_out_gen(std::forward<F>(out_gen))
         , m_input_event_ports(
                   make_event_ports<inputs_t>(input_names, input_index_sequence))
-        , m_output_event_ports(make_event_ports<outputs_t>(
-                  output_names,
-                  output_index_sequence))
+        , m_output_event_ports(
+                  make_event_ports<outputs_t>(
+                          output_names,
+                          output_index_sequence))
     {
     }
 

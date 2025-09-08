@@ -26,7 +26,7 @@ make_pan_processor(std::string_view const name)
             },
             s_input_names,
             s_output_names,
-            fmt::format("pan {}", name));
+            std::format("pan {}", name));
 }
 
 auto
@@ -45,7 +45,7 @@ make_volume_pan_processor(std::string_view const name)
             },
             s_input_names,
             s_output_names,
-            fmt::format("volume_pan {}", name));
+            std::format("volume_pan {}", name));
 }
 
 auto
@@ -64,7 +64,7 @@ make_mute_pan_processor(std::string_view const name)
             },
             s_input_names,
             s_output_names,
-            fmt::format("mute_pan {}", name));
+            std::format("mute_pan {}", name));
 }
 
 auto
@@ -81,7 +81,7 @@ make_balance_processor(std::string_view const name)
             },
             s_input_names,
             s_output_names,
-            fmt::format("balance {}", name));
+            std::format("balance {}", name));
 }
 
 auto
@@ -100,7 +100,7 @@ make_volume_balance_processor(std::string_view const name)
             },
             s_input_names,
             s_output_names,
-            fmt::format("volume_balance {}", name));
+            std::format("volume_balance {}", name));
 }
 
 } // namespace piejam::audio::engine

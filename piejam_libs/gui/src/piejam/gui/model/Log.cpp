@@ -8,8 +8,6 @@
 #include <piejam/redux/subscriptions_manager.h>
 #include <piejam/runtime/selectors.h>
 
-#include <fmt/chrono.h>
-
 #include <spdlog/spdlog.h>
 
 namespace piejam::gui::model
@@ -23,11 +21,13 @@ Log::Log(
     spdlog::default_logger()->sinks().push_back(
             std::make_shared<log::generic_log_sink_mt>(
                     [this](spdlog::details::log_msg const& msg) {
-                        auto qtMsg = QString::fromStdString(fmt::format(
-                                "[{}] [{:%H:%M:%S}] {}",
-                                spdlog::level::to_string_view(msg.level),
-                                msg.time,
-                                msg.payload));
+                        auto qtMsg = QString::fromStdString(
+                                std::format(
+                                        "[{}] [{:%H:%M:%S}] {}",
+                                        spdlog::level::to_string_view(
+                                                msg.level),
+                                        msg.time,
+                                        msg.payload));
                         addLogMessage(qtMsg);
                     },
                     []() {}));

@@ -7,8 +7,6 @@
 #include <piejam/runtime/actions/control_midi_assignment.h>
 #include <piejam/runtime/selectors.h>
 
-#include <fmt/format.h>
-
 #include <boost/assert.hpp>
 
 namespace piejam::gui::model

@@ -9,8 +9,7 @@
 #include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/midi/event.h>
 
-#include <fmt/format.h>
-
+#include <format>
 #include <ranges>
 #include <vector>
 
@@ -36,7 +35,7 @@ public:
                 case midi_assignment::type::cc:
                     m_output_ports.emplace_back(
                             std::in_place_type<midi::cc_event>,
-                            fmt::format(
+                            std::format(
                                     "{} CC {}",
                                     ass.channel,
                                     ass.control_id));

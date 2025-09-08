@@ -30,6 +30,6 @@ target_link_libraries(piejam_ladspa
 
     PRIVATE
     piejam_compiler_warnings
-    fmt
-    spdlog::spdlog
-    piejam_range)
+    piejam_log
+    piejam_range
+)

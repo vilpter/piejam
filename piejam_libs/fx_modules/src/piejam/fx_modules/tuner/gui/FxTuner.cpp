@@ -13,9 +13,9 @@
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
+
+#include <format>
 
 namespace piejam::fx_modules::tuner::gui
 {
@@ -110,7 +110,7 @@ FxTuner::FxTuner(
 
                         setDetectedPitch(
                                 QString::fromStdString(
-                                        fmt::format("{}{}", pc, pitch.octave)));
+                                        std::format("{}{}", pc, pitch.octave)));
 
                         setDetectedCents(
                                 static_cast<int>(std::round(pitch.cents)));

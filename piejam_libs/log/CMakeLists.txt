@@ -8,4 +8,5 @@ add_library(piejam_log INTERFACE
 
 target_include_directories(piejam_log INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(piejam_log INTERFACE spdlog::spdlog)
+target_link_libraries(piejam_log INTERFACE spdlog::spdlog_header_only)
+target_compile_definitions(piejam_log INTERFACE SPDLOG_USE_STD_FORMAT)

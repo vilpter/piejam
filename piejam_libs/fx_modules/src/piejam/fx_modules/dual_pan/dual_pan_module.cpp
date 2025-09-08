@@ -12,8 +12,6 @@
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter_factory.h>
 
-#include <fmt/format.h>
-
 #include <boost/container/flat_map.hpp>
 
 namespace piejam::fx_modules::dual_pan
