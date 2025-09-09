@@ -8,6 +8,7 @@
 #include <piejam/entity_map.h>
 #include <piejam/fx_modules/spectrum/spectrum_internal_id.h>
 #include <piejam/numeric/dB_convert.h>
+#include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/parameter/bool_descriptor.h>
 #include <piejam/runtime/parameter/float_descriptor.h>
@@ -97,33 +98,16 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              .default_value = false})},
                             {std::to_underlying(parameter_key::channel_a),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Channel A"s),
-                                             .default_value =
-                                                     std::to_underlying(
-                                                             stereo_channel::
-                                                                     left),
-                                             .min = std::to_underlying(
-                                                     stereo_channel::_min),
-                                             .max = std::to_underlying(
-                                                     stereo_channel::_max),
-                                             .value_to_string =
-                                                     &to_stereo_channel_string,
-                                     })},
+                                     runtime::enum_parameter(
+                                             "Channel A"s,
+                                             &to_stereo_channel_string,
+                                             stereo_channel::left))},
                             {std::to_underlying(parameter_key::channel_b),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Channel B"s),
-                                             .default_value =
-                                                     std::to_underlying(
-                                                             stereo_channel::
-                                                                     right),
-                                             .min = std::to_underlying(
-                                                     stereo_channel::_min),
-                                             .max = std::to_underlying(
-                                                     stereo_channel::_max),
-                                             .value_to_string =
-                                                     &to_stereo_channel_string})},
+                                     runtime::enum_parameter(
+                                             "Channel B"s,
+                                             &to_stereo_channel_string,
+                                             stereo_channel::right))},
                             {std::to_underlying(parameter_key::gain_a),
                              params_factory.make_parameter(
                                      runtime::float_parameter{

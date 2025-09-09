@@ -8,6 +8,7 @@
 
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
+#include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/parameter/float_descriptor.h>
 #include <piejam/runtime/parameter/float_normalize.h>
@@ -83,15 +84,9 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                     box(runtime::fx::module_parameters{
                             {std::to_underlying(parameter_key::type),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Type"s),
-                                             .default_value =
-                                                     std::to_underlying(
-                                                             type::lp2),
-                                             .min = 0,
-                                             .max = 7,
-                                             .value_to_string =
-                                                     &to_type_string})},
+                                     runtime::enum_parameter<type>(
+                                             "Type"s,
+                                             &to_type_string))},
                             {std::to_underlying(parameter_key::cutoff),
                              params_factory.make_parameter(
                                      runtime::float_parameter{

@@ -8,6 +8,7 @@
 
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
+#include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/parameter/bool_descriptor.h>
 #include <piejam/runtime/parameter/float_descriptor.h>
@@ -25,48 +26,40 @@ namespace piejam::fx_modules::scope
 namespace
 {
 
-template <audio::bus_type BT>
 auto
-to_mode_string(int const n) -> std::string
+to_mode_mono_string(int const n) -> std::string
 {
     using namespace std::string_literals;
 
-    if constexpr (BT == audio::bus_type::stereo)
+    switch (n)
     {
-        switch (n)
-        {
-            case std::to_underlying(mode::free):
-                return "Free"s;
-            case std::to_underlying(mode::trigger_a):
-                return "Trigger A"s;
-            case std::to_underlying(mode::trigger_b):
-                return "Trigger B"s;
+        case std::to_underlying(mode_mono::free):
+            return "Free"s;
+        case std::to_underlying(mode_mono::trigger):
+            return "Trigger"s;
 
-            default:
-                return "ERROR";
-        }
-    }
-    else
-    {
-        switch (n)
-        {
-            case std::to_underlying(mode::free):
-                return "Free"s;
-            case std::to_underlying(mode::trigger_a):
-                return "Trigger"s;
-
-            default:
-                return "ERROR";
-        }
+        default:
+            return "ERROR"s;
     }
 }
 
 auto
-to_mode_string(audio::bus_type bus_type)
+to_mode_stereo_string(int const n) -> std::string
 {
-    return bus_type == audio::bus_type::stereo
-                   ? &to_mode_string<audio::bus_type::stereo>
-                   : &to_mode_string<audio::bus_type::mono>;
+    using namespace std::string_literals;
+
+    switch (n)
+    {
+        case std::to_underlying(mode_stereo::free):
+            return "Free"s;
+        case std::to_underlying(mode_stereo::trigger_a):
+            return "Trigger A"s;
+        case std::to_underlying(mode_stereo::trigger_b):
+            return "Trigger B"s;
+
+        default:
+            return "ERROR"s;
+    }
 }
 
 auto
@@ -83,7 +76,7 @@ to_trigger_slope_string(int const n) -> std::string
             return "Falling Edge"s;
 
         default:
-            return "ERROR";
+            return "ERROR"s;
     }
 }
 
@@ -183,39 +176,20 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                     box(runtime::fx::module_parameters{
                             {std::to_underlying(parameter_key::mode),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Mode"s),
-                                             .default_value = bus_type_to(
-                                                     args.bus_type,
-                                                     std::to_underlying(
-                                                             mode::trigger),
-                                                     std::to_underlying(
-                                                             mode::trigger_a)),
-                                             .min = std::to_underlying(
-                                                     mode::_min),
-                                             .max = bus_type_to(
-                                                     args.bus_type,
-                                                     std::to_underlying(
-                                                             mode::trigger),
-                                                     std::to_underlying(
-                                                             mode::trigger_b)),
-                                             .value_to_string = to_mode_string(
-                                                     args.bus_type),
-                                     })},
+                                     args.bus_type == audio::bus_type::mono
+                                             ? runtime::enum_parameter<
+                                                       mode_mono>(
+                                                       "Mode"s,
+                                                       &to_mode_mono_string)
+                                             : runtime::enum_parameter<
+                                                       mode_stereo>(
+                                                       "Mode"s,
+                                                       &to_mode_stereo_string))},
                             {std::to_underlying(parameter_key::trigger_slope),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Slope"s),
-                                             .default_value = std::to_underlying(
-                                                     trigger_slope::
-                                                             rising_edge),
-                                             .min = std::to_underlying(
-                                                     trigger_slope::_min),
-                                             .max = std::to_underlying(
-                                                     trigger_slope::_max),
-                                             .value_to_string =
-                                                     &to_trigger_slope_string,
-                                     })},
+                                     runtime::enum_parameter<trigger_slope>(
+                                             "Slope"s,
+                                             &to_trigger_slope_string))},
                             {std::to_underlying(parameter_key::trigger_level),
                              params_factory.make_parameter(
                                      runtime::float_parameter{
@@ -247,33 +221,17 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                             {std::to_underlying(
                                      parameter_key::waveform_window_size),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Window Size"s),
-                                             .default_value =
-                                                     std::to_underlying(
-                                                             window_size::
-                                                                     large),
-                                             .min = std::to_underlying(
-                                                     window_size::_min),
-                                             .max = std::to_underlying(
-                                                     window_size::_max),
-                                             .value_to_string =
-                                                     &to_window_size_string,
-                                     })},
+                                     runtime::enum_parameter<window_size>(
+                                             "Window Size"s,
+                                             &to_window_size_string,
+                                             window_size::large))},
                             {std::to_underlying(
                                      parameter_key::scope_window_size),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Window Size"s),
-                                             .default_value = std::to_underlying(
-                                                     window_size::very_small),
-                                             .min = std::to_underlying(
-                                                     window_size::_min),
-                                             .max = std::to_underlying(
-                                                     window_size::_max),
-                                             .value_to_string =
-                                                     &to_window_size_string,
-                                     })},
+                                     runtime::enum_parameter<window_size>(
+                                             "Window Size"s,
+                                             &to_window_size_string,
+                                             window_size::very_small))},
                             {std::to_underlying(parameter_key::stream_a_active),
                              params_factory.make_parameter(
                                      runtime::bool_parameter{
@@ -286,34 +244,16 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              .default_value = false})},
                             {std::to_underlying(parameter_key::channel_a),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Channel A"s),
-                                             .default_value =
-                                                     std::to_underlying(
-                                                             stereo_channel::
-                                                                     left),
-                                             .min = std::to_underlying(
-                                                     stereo_channel::_min),
-                                             .max = std::to_underlying(
-                                                     stereo_channel::_max),
-                                             .value_to_string =
-                                                     &to_stereo_channel_string,
-                                     })},
+                                     runtime::enum_parameter(
+                                             "Channel A"s,
+                                             &to_stereo_channel_string,
+                                             stereo_channel::left))},
                             {std::to_underlying(parameter_key::channel_b),
                              params_factory.make_parameter(
-                                     runtime::int_parameter{
-                                             .name = box("Channel B"s),
-                                             .default_value =
-                                                     std::to_underlying(
-                                                             stereo_channel::
-                                                                     right),
-                                             .min = std::to_underlying(
-                                                     stereo_channel::_min),
-                                             .max = std::to_underlying(
-                                                     stereo_channel::_max),
-                                             .value_to_string =
-                                                     &to_stereo_channel_string,
-                                     })},
+                                     runtime::enum_parameter(
+                                             "Channel B"s,
+                                             &to_stereo_channel_string,
+                                             stereo_channel::right))},
                             {std::to_underlying(parameter_key::gain_a),
                              params_factory.make_parameter(
                                      runtime::float_parameter{

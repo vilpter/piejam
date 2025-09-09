@@ -24,7 +24,11 @@ enum class type
     bp4,
     hp2,
     hp4,
-    br
+    br,
+
+    _default = lp2,
+    _min = bypass,
+    _max = br,
 };
 
 enum class parameter_key : runtime::parameter::key
