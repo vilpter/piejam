@@ -99,9 +99,10 @@ export_parameter_values(fx::module const& fx_mod, parameters_map const& params)
                 [&]<class ParamId>(ParamId param) {
                     if constexpr (is_persistable_parameter_v<ParamId>)
                     {
-                        result.emplace_back(fx::parameter_value_assignment{
-                                key,
-                                params[param].value.get()});
+                        result.emplace_back(
+                                fx::parameter_value_assignment{
+                                        key,
+                                        params[param].value.get()});
                     }
                 },
                 fx_param_id);
@@ -195,11 +196,12 @@ export_fx_chain(state const& st, fx::chain_t const& fx_chain)
     for (auto const& fx_mod_id : fx_chain)
     {
         fx::module const& fx_mod = st.fx_modules[fx_mod_id];
-        result.emplace_back(std::visit(
-                [&st, &fx_mod](auto const& id) {
-                    return export_fx_plugin(st, fx_mod, id);
-                },
-                fx_mod.fx_instance_id));
+        result.emplace_back(
+                std::visit(
+                        [&st, &fx_mod](auto const& id) {
+                            return export_fx_plugin(st, fx_mod, id);
+                        },
+                        fx_mod.fx_instance_id));
     }
 
     return result;
@@ -303,11 +305,12 @@ export_mixer_aux_sends(state const& st, mixer::aux_sends_t const& aux_sends)
 
     for (auto const& [aux, aux_send] : aux_sends)
     {
-        result.emplace_back(session::mixer_aux_send{
-                .route = export_mixer_io(st, aux),
-                .enabled = aux_send.enabled,
-                .volume = st.params[aux_send.volume].value.get(),
-        });
+        result.emplace_back(
+                session::mixer_aux_send{
+                        .route = export_mixer_io(st, aux),
+                        .enabled = aux_send.enabled,
+                        .volume = st.params[aux_send.volume].value.get(),
+                });
     }
 
     return result;
@@ -328,6 +331,7 @@ export_mixer_channel(
     result.parameter = export_mixer_parameters(st, channel);
     result.in = export_mixer_io(st, channel.in);
     result.out = export_mixer_io(st, channel.out);
+    result.aux = export_mixer_io(st, channel.aux);
     result.aux_sends = export_mixer_aux_sends(st, channel.aux_sends);
     return result;
 }

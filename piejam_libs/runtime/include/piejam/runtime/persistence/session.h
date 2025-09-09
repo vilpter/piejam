@@ -113,6 +113,7 @@ struct session
         fx_chain_t fx_chain;
         mixer_io in;
         mixer_io out;
+        mixer_io aux;
         std::vector<mixer_aux_send> aux_sends;
     };
 

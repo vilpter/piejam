@@ -234,6 +234,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         fx_chain,
         in,
         out,
+        aux,
         aux_sends);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(

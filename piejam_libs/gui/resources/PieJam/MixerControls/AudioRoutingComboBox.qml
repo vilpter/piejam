@@ -15,7 +15,7 @@ import "../Controls"
 SubscribableItem {
     id: root
 
-    property bool allowDefaultSelection: true
+    property bool hasSelectableDefault: true
     property string defaultText: "-"
 
     implicitHeight: comboBox.implicitHeight
@@ -49,10 +49,10 @@ SubscribableItem {
 
         popup: Menu {
             MenuItem {
-                enabled: root.allowDefaultSelection && root.model && root.model.defaultIsValid
+                enabled: root.hasSelectableDefault && root.model && root.model.defaultIsValid
 
-                height: root.allowDefaultSelection ? implicitHeight : 0
-                visible: root.allowDefaultSelection
+                visible: root.hasSelectableDefault
+                height: visible ? implicitHeight : 0
 
                 text: root.defaultText
 
@@ -90,7 +90,7 @@ SubscribableItem {
                 Repeater {
                     id: channelsRep
 
-                    model: root.model ? root.model.channels : []
+                    model: root.model ? root.model.channels : null
 
                     delegate: MenuItem {
                         text: model.item.value
@@ -103,6 +103,22 @@ SubscribableItem {
                         }
                     }
                 }
+            }
+
+            MenuSeparator {
+                visible: !root.hasSelectableDefault && root.model
+                enabled: visible
+                height: visible ? implicitHeight : 0
+            }
+
+            MenuItem {
+                text: "[Clear Selection]"
+
+                visible: !root.hasSelectableDefault && root.model
+                enabled: visible
+                height: visible ? implicitHeight : 0
+
+                onClicked: root.model.changeToDefault()
             }
         }
     }

@@ -37,8 +37,8 @@ SubscribableItem {
             AudioRoutingComboBox {
                 Layout.fillWidth: true
 
-                allowDefaultSelection: false
-                defaultText: "Send"
+                hasSelectableDefault: false
+                defaultText: "Send..."
                 model: root.model ? root.model.aux : null
             }
 

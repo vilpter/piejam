@@ -153,6 +153,7 @@ apply_mixer_io(
         mixer::channel_id const& channel_id,
         persistence::session::mixer_io const& in,
         persistence::session::mixer_io const& out,
+        persistence::session::mixer_io const& aux,
         std::vector<persistence::session::mixer_aux_send> const& aux_sends_data)
 {
     auto find_route = [&](auto const& mixer_io, io_direction io_dir) {
@@ -179,6 +180,7 @@ apply_mixer_io(
     [&](mixer::channel& channel) {
         channel.in = find_route(in, io_direction::input);
         channel.out = find_route(out, io_direction::output);
+        channel.aux = find_route(aux, io_direction::output);
 
         auto aux_sends = channel.aux_sends.lock();
 
@@ -276,6 +278,7 @@ apply_session::reduce(state& st) const
                 channel_id,
                 channel_data.in,
                 channel_data.out,
+                channel_data.aux,
                 channel_data.aux_sends);
     }
 
@@ -286,6 +289,7 @@ apply_session::reduce(state& st) const
             st.mixer_state.main,
             session->main_mixer_channel.in,
             session->main_mixer_channel.out,
+            session->main_mixer_channel.aux,
             session->main_mixer_channel.aux_sends);
 }
 

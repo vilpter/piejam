@@ -13,7 +13,6 @@
 #include <piejam/runtime/ui/cloneable_action.h>
 
 #include <filesystem>
-#include <unordered_map>
 
 namespace piejam::runtime::actions
 {
