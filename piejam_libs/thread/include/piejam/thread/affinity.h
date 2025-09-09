@@ -7,6 +7,6 @@
 namespace piejam::this_thread
 {
 
-void set_affinity(int cpu);
+void set_affinity(unsigned int cpu);
 
 } // namespace piejam::this_thread

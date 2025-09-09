@@ -7,17 +7,22 @@
 #include <pthread.h>
 #include <sched.h>
 
+#include <boost/assert.hpp>
+
 #include <system_error>
+#include <thread>
 
 namespace piejam::this_thread
 {
 
 void
-set_affinity(int const cpu)
+set_affinity(unsigned int const cpu)
 {
+    BOOST_ASSERT(cpu < std::thread::hardware_concurrency());
+
     cpu_set_t cpuset{};
     CPU_SET(cpu, &cpuset);
-    int const status =
+    auto const status =
             pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
     if (status)
     {

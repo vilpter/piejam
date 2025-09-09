@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/audio/engine/processor.h>
 #include <piejam/audio/sound_card_manager.h>
 #include <piejam/fx_modules/init.h>
@@ -14,19 +15,20 @@
 #include <piejam/midi/device_manager.h>
 #include <piejam/midi/device_update.h>
 #include <piejam/midi/input_event_handler.h>
+#include <piejam/range/iota.h>
 #include <piejam/redux/middleware_factory.h>
 #include <piejam/redux/queueing_middleware.h>
 #include <piejam/redux/store.h>
-#include <piejam/redux/thread_delegate_middleware.h>
-#include <piejam/redux/thunk_middleware.h>
 #include <piejam/redux/subscriber.h>
 #include <piejam/redux/subscriptions_manager.h>
+#include <piejam/redux/thread_delegate_middleware.h>
+#include <piejam/redux/thunk_middleware.h>
 #include <piejam/runtime/actions/audio_engine_sync.h>
 #include <piejam/runtime/actions/load_app_config.h>
 #include <piejam/runtime/actions/load_session.h>
 #include <piejam/runtime/actions/recording.h>
-#include <piejam/runtime/actions/refresh_sound_cards.h>
 #include <piejam/runtime/actions/refresh_midi_devices.h>
+#include <piejam/runtime/actions/refresh_sound_cards.h>
 #include <piejam/runtime/actions/save_app_config.h>
 #include <piejam/runtime/actions/save_session.h>
 #include <piejam/runtime/actions/scan_ladspa_fx_plugins.h>
@@ -112,8 +114,10 @@ main(int argc, char* argv[]) -> int
 
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 
+    std::size_t const hw_threads = std::thread::hardware_concurrency();
+
     // run app on the second cpu, first one is for the system
-    this_thread::set_affinity(1);
+    this_thread::set_affinity(hw_threads > 1 ? 1 : 0);
 
     piejam::gui::init();
     piejam::fx_modules::init();
@@ -178,25 +182,23 @@ main(int argc, char* argv[]) -> int
             middleware_factory::make<runtime::recorder_middleware>(
                     locs.rec_dir));
 
+    auto audio_workers = piejam::algorithm::transform_to_vector(
+            piejam::range::iota(hw_threads - 1),
+            [=](std::size_t const i) {
+                std::size_t const cpu = (3 + i) % hw_threads;
+                return thread::configuration{
+                        .affinity = cpu,
+                        .realtime_priority = realtime_priority,
+                        .name = "audio_worker_" + std::to_string(i)};
+            });
+
     store.apply_middleware(
             middleware_factory::make<runtime::audio_engine_middleware>(
                     thread::configuration{
-                            .affinity = 2,
+                            .affinity = hw_threads > 2 ? 2 : 0,
                             .realtime_priority = realtime_priority,
                             .name = "audio_main"},
-                    std::array{
-                            thread::configuration{
-                                    .affinity = 3,
-                                    .realtime_priority = realtime_priority,
-                                    .name = "audio_worker_0"},
-                            thread::configuration{
-                                    .affinity = 0,
-                                    .realtime_priority = realtime_priority,
-                                    .name = "audio_worker_1"},
-                            thread::configuration{
-                                    .affinity = 1,
-                                    .realtime_priority = realtime_priority,
-                                    .name = "audio_worker_2"}},
+                    audio_workers,
                     *audio_device_manager,
                     ladspa_manager,
                     runtime::make_midi_input_controller(*midi_device_manager)));
@@ -213,8 +215,9 @@ main(int argc, char* argv[]) -> int
 
     store.apply_middleware(middleware_factory::make<redux::thunk_middleware>());
 
-    store.apply_middleware(middleware_factory::make<
-                           redux::queueing_middleware<runtime::action>>());
+    store.apply_middleware(
+            middleware_factory::make<
+                    redux::queueing_middleware<runtime::action>>());
 
     store.apply_middleware(
             middleware_factory::make<
@@ -255,7 +258,7 @@ main(int argc, char* argv[]) -> int
     store.dispatch(runtime::actions::load_app_config(config_file_path(locs)));
     store.dispatch(runtime::actions::load_session(session_file));
 
-    system::avg_cpu_load_tracker avg_cpu_load(4);
+    system::avg_cpu_load_tracker avg_cpu_load(hw_threads);
 
     // slow updates
     {
@@ -267,12 +270,14 @@ main(int argc, char* argv[]) -> int
 
             avg_cpu_load.update();
             auto cpu_load_per_core = avg_cpu_load.per_core();
-            modelManager.info()->setCpuLoad(QList<float>(
-                    cpu_load_per_core.begin(),
-                    cpu_load_per_core.end()));
+            modelManager.info()->setCpuLoad(
+                    QList<float>(
+                            cpu_load_per_core.begin(),
+                            cpu_load_per_core.end()));
 
-            modelManager.info()->setDiskUsage(static_cast<int>(
-                    std::round(system::disk_usage(locs.home_dir) * 100)));
+            modelManager.info()->setDiskUsage(
+                    static_cast<int>(std::round(
+                            system::disk_usage(locs.home_dir) * 100)));
         });
         timer->start(std::chrono::seconds(1));
     }
