@@ -29,6 +29,12 @@ enum class io_socket
     aux,
 };
 
+enum class fader_tap : bool
+{
+    post,
+    pre,
+};
+
 using channel_ids_t = std::vector<channel_id>;
 
 struct state;

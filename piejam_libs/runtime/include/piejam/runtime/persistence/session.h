@@ -100,6 +100,7 @@ struct session
     {
         mixer_io route;
         bool enabled;
+        mixer::fader_tap tap;
         float volume;
     };
 

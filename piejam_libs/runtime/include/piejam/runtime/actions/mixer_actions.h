@@ -92,6 +92,15 @@ struct enable_mixer_channel_aux_route final
     void reduce(state&) const override;
 };
 
+struct toggle_mixer_channel_aux_fader_tap final
+    : ui::cloneable_action<toggle_mixer_channel_aux_fader_tap, reducible_action>
+    , visitable_audio_engine_action<toggle_mixer_channel_aux_fader_tap>
+{
+    mixer::channel_id channel_id;
+
+    void reduce(state&) const override;
+};
+
 struct move_mixer_channel_left final
     : ui::cloneable_action<move_mixer_channel_left, reducible_action>
 {

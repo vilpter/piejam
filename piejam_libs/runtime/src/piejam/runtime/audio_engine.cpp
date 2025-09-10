@@ -40,6 +40,7 @@
 #include <piejam/audio/engine/stream_processor.h>
 #include <piejam/audio/engine/value_io_processor.h>
 #include <piejam/audio/sample_rate.h>
+#include <piejam/enum.h>
 #include <piejam/midi/event.h>
 #include <piejam/midi/input_event_handler.h>
 #include <piejam/range/indices.h>
@@ -403,7 +404,7 @@ connect_mixer_output(
         component_map const& comps,
         std::span<audio::engine::output_processor> const output_procs,
         std::span<processor_ptr> const output_clip_procs,
-        mixer::io_address_t const& mixer_channel_out,
+        mixer::io_address_t const& mixer_channel_out_route,
         audio::engine::component& mixer_channel_out_comp)
 {
     std::visit(
@@ -450,21 +451,21 @@ connect_mixer_output(
 
                         if (std::holds_alternative<default_t>(dst_channel.in))
                         {
-                            auto* const dst_mb_in =
+                            auto* const dst_mixer_channel_in_comp =
                                     comps.find(mixer_input_key{
                                                        dst_channel_id,
                                                        dst_channel.in})
                                             .get();
-                            BOOST_ASSERT(dst_mb_in);
+                            BOOST_ASSERT(dst_mixer_channel_in_comp);
 
                             audio::engine::connect(
                                     g,
                                     mixer_channel_out_comp,
-                                    *dst_mb_in);
+                                    *dst_mixer_channel_in_comp);
                         }
                     },
                     [](auto const&) {}),
-            mixer_channel_out);
+            mixer_channel_out_route);
 }
 
 auto
@@ -480,10 +481,10 @@ make_graph(
 
     for (auto const& [mixer_channel_id, mixer_channel] : channels)
     {
-        audio::engine::component* mixer_channel_in =
+        audio::engine::component* const mixer_channel_in =
                 comps.find(mixer_input_key{mixer_channel_id, mixer_channel.in})
                         .get();
-        audio::engine::component* mixer_channel_out =
+        audio::engine::component* const mixer_channel_out =
                 comps.find(mixer_output_key{mixer_channel_id}).get();
 
         BOOST_ASSERT(mixer_channel_in);
@@ -527,10 +528,17 @@ make_graph(
             {
                 mixer_channel_aux_send->connect(g);
 
-                audio::engine::connect(
-                        g,
-                        *mixer_channel_out,
-                        *mixer_channel_aux_send);
+                auto const [out_L, out_R] = bool_enum_to(
+                        aux_send.tap,
+                        std::pair{0uz, 1uz},
+                        std::pair{2uz, 3uz});
+
+                g.audio.insert(
+                        mixer_channel_out->outputs()[out_L],
+                        mixer_channel_aux_send->inputs()[0]);
+                g.audio.insert(
+                        mixer_channel_out->outputs()[out_R],
+                        mixer_channel_aux_send->inputs()[1]);
 
                 connect_mixer_output(
                         g,

@@ -68,20 +68,37 @@ SubscribableItem {
                         }
                     }
 
-                    Button {
+                    RowLayout {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
 
                         visible: root.model && root.model.volume
 
-                        icon.source: (!root.model || root.model.canToggle)
-                                     ? "qrc:///images/icons/power.svg"
-                                     : "qrc:///images/icons/cycle_arrows.svg"
-                        checkable: true
-                        checked: root.model && root.model.enabled
-                        enabled: root.model && root.model.canToggle
+                        Button {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 40
 
-                        onClicked: if (root.model) root.model.toggleEnabled()
+                            text: root.model && root.model.faderTap === PJModels.MixerChannelAuxSend.FaderTap.Pre ? "PRE" : "POST"
+
+                            enabled: root.model
+
+                            onClicked: root.model.toggleFaderTap()
+                        }
+
+                        Button {
+                            Layout.preferredWidth: 40
+                            Layout.preferredHeight: 40
+
+
+                            icon.source: (!root.model || root.model.canToggle)
+                                         ? "qrc:///images/icons/power.svg"
+                                         : "qrc:///images/icons/cycle_arrows.svg"
+                            checkable: true
+                            checked: root.model && root.model.enabled
+                            enabled: root.model && root.model.canToggle
+
+                            onClicked: root.model.toggleEnabled()
+                        }
                     }
                 }
             }

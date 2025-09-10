@@ -4,6 +4,7 @@
 
 #include <piejam/runtime/actions/mixer_actions.h>
 
+#include <piejam/enum.h>
 #include <piejam/functional/get.h>
 #include <piejam/runtime/actions/delete_fx_module.h>
 #include <piejam/runtime/state.h>
@@ -85,15 +86,20 @@ enable_mixer_channel_aux_route::reduce(state& st) const
 {
     [this](mixer::channel& mixer_channel) {
         auto aux_sends = mixer_channel.aux_sends.lock();
-        if (auto it = aux_sends->find(mixer_channel.aux);
-            it != aux_sends->end())
-        {
-            it->second.enabled = enabled;
-        }
-        else
-        {
-            BOOST_ASSERT(false);
-        }
+        auto it = aux_sends->find(mixer_channel.aux);
+        BOOST_ASSERT(it != aux_sends->end());
+        it->second.enabled = enabled;
+    }(st.mixer_state.channels.lock()[channel_id]);
+}
+
+void
+toggle_mixer_channel_aux_fader_tap::reduce(state& st) const
+{
+    [](mixer::channel& mixer_channel) {
+        auto aux_sends = mixer_channel.aux_sends.lock();
+        auto it = aux_sends->find(mixer_channel.aux);
+        BOOST_ASSERT(it != aux_sends->end());
+        toggle_bool_enum_in_place(it->second.tap);
     }(st.mixer_state.channels.lock()[channel_id]);
 }
 

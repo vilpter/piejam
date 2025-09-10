@@ -74,6 +74,15 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
                 {material_color::yellow, "yellow"},
         });
 
+namespace mixer
+{
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+        fader_tap,
+        {{fader_tap::pre, "pre"}, {fader_tap::post, "post"}})
+
+} // namespace mixer
+
 namespace parameter
 {
 
@@ -222,6 +231,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         session::mixer_aux_send,
         route,
         enabled,
+        tap,
         volume);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(

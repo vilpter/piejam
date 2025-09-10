@@ -370,6 +370,23 @@ make_mixer_channel_aux_enabled_selector(mixer::channel_id const channel_id)
             channel_id);
 }
 
+static auto
+get_mixer_channel_aux_fader_tap(mixer::channel const& channel)
+        -> mixer::fader_tap
+{
+    auto it = channel.aux_sends->find(channel.aux);
+    return it != channel.aux_sends->end() ? it->second.tap
+                                          : mixer::fader_tap::post;
+}
+
+auto
+make_mixer_channel_aux_fader_tap_selector(mixer::channel_id const channel_id)
+        -> selector<mixer::fader_tap>
+{
+    return make_mixer_channel_member_selector<&get_mixer_channel_aux_fader_tap>(
+            channel_id);
+}
+
 auto
 make_mixer_channel_can_toggle_aux_selector(mixer::channel_id const channel_id)
         -> selector<bool>

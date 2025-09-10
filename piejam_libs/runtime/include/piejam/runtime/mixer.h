@@ -25,6 +25,7 @@ namespace piejam::runtime::mixer
 struct aux_send
 {
     bool enabled{};
+    fader_tap tap{fader_tap::post};
     float_parameter_id volume{};
 };
 

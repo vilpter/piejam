@@ -66,6 +66,12 @@ MixerChannelAuxSend::onSubscribe()
                     channel_id()),
             [this](bool const enabled) { setEnabled(enabled); });
 
+    observe(runtime::selectors::make_mixer_channel_aux_fader_tap_selector(
+                    channel_id()),
+            [this](runtime::mixer::fader_tap tap) {
+                setFaderTap(bool_enum_to<FaderTap>(tap));
+            });
+
     observe(runtime::selectors::make_mixer_channel_can_toggle_aux_selector(
                     channel_id()),
             [this](bool const x) { setCanToggle(x); });
@@ -95,6 +101,14 @@ MixerChannelAuxSend::toggleEnabled()
     runtime::actions::enable_mixer_channel_aux_route action;
     action.channel_id = channel_id();
     action.enabled = !m_enabled;
+    dispatch(action);
+}
+
+void
+MixerChannelAuxSend::toggleFaderTap()
+{
+    runtime::actions::toggle_mixer_channel_aux_fader_tap action;
+    action.channel_id = channel_id();
     dispatch(action);
 }
 

@@ -20,11 +20,23 @@ class MixerChannelAuxSend final : public MixerChannel
 {
     Q_OBJECT
 
+public:
+    enum class FaderTap : bool
+    {
+        Post,
+        Pre,
+    };
+
+    Q_ENUM(FaderTap)
+
+private:
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AudioRouting*, aux)
     M_PIEJAM_GUI_PROPERTY(bool, canToggle, setCanToggle)
     M_PIEJAM_GUI_PROPERTY(bool, enabled, setEnabled)
-    Q_PROPERTY(piejam::gui::model::FloatParameter* volume READ volume NOTIFY
-                       volumeChanged FINAL)
+    M_PIEJAM_GUI_PROPERTY(FaderTap, faderTap, setFaderTap)
+    Q_PROPERTY(
+            piejam::gui::model::FloatParameter* volume READ volume NOTIFY
+                    volumeChanged FINAL)
 
 public:
     MixerChannelAuxSend(
@@ -35,6 +47,7 @@ public:
     auto volume() const noexcept -> FloatParameter*;
 
     Q_INVOKABLE void toggleEnabled();
+    Q_INVOKABLE void toggleFaderTap();
 
 signals:
     void volumeChanged();

@@ -31,4 +31,20 @@ bool_enum_to(FromE e) noexcept -> decltype(auto)
     return static_cast<ToE>(static_cast<bool>(e));
 }
 
+template <bool_enum E>
+[[nodiscard]]
+constexpr auto
+toggle_bool_enum(E e) noexcept -> E
+{
+    return static_cast<bool>(e) ? static_cast<E>(false) : static_cast<E>(true);
+}
+
+template <bool_enum E>
+constexpr auto
+toggle_bool_enum_in_place(E& e) noexcept -> E
+{
+    e = toggle_bool_enum(e);
+    return e;
+}
+
 } // namespace piejam

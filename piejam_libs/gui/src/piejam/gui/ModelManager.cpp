@@ -114,6 +114,13 @@ runRegistration()
             "FxModule",
             "Not createable");
 
+    qmlRegisterUncreatableType<piejam::gui::model::MixerChannelAuxSend>(
+            "PieJam.Models",
+            1,
+            0,
+            "MixerChannelAuxSend",
+            "Not creatable");
+
     qmlRegisterUncreatableType<piejam::gui::model::Parameter>(
             "PieJam.Models",
             1,

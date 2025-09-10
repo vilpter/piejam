@@ -39,6 +39,7 @@ struct delete_mixer_channel;
 template <mixer::io_socket>
 struct set_mixer_channel_route;
 struct enable_mixer_channel_aux_route;
+struct toggle_mixer_channel_aux_fader_tap;
 struct move_mixer_channel_left;
 struct move_mixer_channel_right;
 struct show_fx_browser;

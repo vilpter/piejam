@@ -71,6 +71,8 @@ public:
         , m_mute_input_proc(param_procs.find_or_make_processor(
                   mixer_channel.mute,
                   format_name(channel_name, "mute")))
+        , m_input(audio::components::make_identity(
+                  audio::num_channels(mixer_channel.bus_type)))
         , m_volume_pan_balance{make_volume_pan_balance_component(
                   mixer_channel.bus_type,
                   channel_name)}
@@ -80,18 +82,28 @@ public:
                   2,
                   sample_rate.samples_for_duration(
                           std::chrono::milliseconds{120}),
-                  channel_name)}
+                  format_name(channel_name, "level_meter"))}
     {
+        m_outputs.push_back(m_mute_solo->outputs()[0]); // post L
+        m_outputs.push_back(m_mute_solo->outputs()[1]); // post R
+        m_outputs.push_back(m_input->outputs()[bool_enum_to(
+                mixer_channel.bus_type,
+                0,
+                0)]); // pre L
+        m_outputs.push_back(m_input->outputs()[bool_enum_to(
+                mixer_channel.bus_type,
+                0,
+                1)]); // pre R
     }
 
     auto inputs() const -> endpoints override
     {
-        return m_volume_pan_balance->inputs();
+        return m_input->inputs();
     }
 
     auto outputs() const -> endpoints override
     {
-        return m_mute_solo->outputs();
+        return m_outputs;
     }
 
     auto event_inputs() const -> endpoints override
@@ -106,6 +118,7 @@ public:
 
     void connect(audio::engine::graph& g) const override
     {
+        m_input->connect(g);
         m_volume_pan_balance->connect(g);
         m_mute_solo->connect(g);
 
@@ -139,6 +152,7 @@ public:
                 *m_mute_solo,
                 to<1>);
 
+        audio::engine::connect(g, *m_input, *m_volume_pan_balance);
         audio::engine::connect(g, *m_volume_pan_balance, *m_mute_solo);
         audio::engine::connect(g, *m_volume_pan_balance, *m_out_stream);
     }
@@ -150,9 +164,12 @@ private:
             m_pan_balance_input_proc;
     std::shared_ptr<audio::engine::value_io_processor<bool>> m_solo_input_proc;
     std::shared_ptr<audio::engine::value_io_processor<bool>> m_mute_input_proc;
+    std::unique_ptr<audio::engine::component> m_input;
     std::unique_ptr<audio::engine::component> m_volume_pan_balance;
     std::unique_ptr<audio::engine::component> m_mute_solo;
     std::shared_ptr<audio::engine::processor> m_out_stream;
+
+    boost::container::static_vector<audio::engine::graph_endpoint, 4> m_outputs;
 
     std::array<audio::engine::graph_endpoint, 1> m_event_inputs{
             {m_mute_solo->event_inputs()[2]}};

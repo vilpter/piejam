@@ -101,6 +101,9 @@ auto make_mixer_channel_aux_volume_parameter_selector(mixer::channel_id)
         -> selector<float_parameter_id>;
 auto make_mixer_channel_aux_enabled_selector(mixer::channel_id)
         -> selector<bool>;
+auto
+make_mixer_channel_aux_fader_tap_selector(mixer::channel_id const channel_id)
+        -> selector<mixer::fader_tap>;
 auto make_mixer_channel_can_toggle_aux_selector(mixer::channel_id)
         -> selector<bool>;
 

@@ -197,6 +197,7 @@ apply_mixer_io(
                             aux_send_data.volume);
 
                     aux_send_it->second.enabled = aux_send_data.enabled;
+                    aux_send_it->second.tap = aux_send_data.tap;
                 }
             }
         }

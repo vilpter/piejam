@@ -168,8 +168,8 @@ has_cycle(io_graph& g, channel_id const id)
 bool
 has_cycle(io_graph g)
 {
-    return std::ranges::any_of(g, [&g](auto const& id_node) {
-        return has_cycle(g, id_node.first);
+    return std::ranges::any_of(g | std::views::keys, [&g](auto id) {
+        return has_cycle(g, id);
     });
 }
 

@@ -309,6 +309,7 @@ export_mixer_aux_sends(state const& st, mixer::aux_sends_t const& aux_sends)
                 session::mixer_aux_send{
                         .route = export_mixer_io(st, aux),
                         .enabled = aux_send.enabled,
+                        .tap = aux_send.tap,
                         .volume = st.params[aux_send.volume].value.get(),
                 });
     }
