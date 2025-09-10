@@ -62,7 +62,7 @@ FxFilter::FxFilter(
         runtime::subscriber& state_change_subscriber,
         runtime::fx::module_id const fx_mod_id)
     : FxModule{store_dispatch, state_change_subscriber, fx_mod_id}
-    , m_impl{make_pimpl<Impl>(toBusType(observe_once(
+    , m_impl{make_pimpl<Impl>(bool_enum_to<BusType>(observe_once(
               runtime::selectors::make_fx_module_bus_type_selector(
                       fx_mod_id))))}
 {

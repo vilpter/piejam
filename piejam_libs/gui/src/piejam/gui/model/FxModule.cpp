@@ -24,9 +24,10 @@ FxModule::FxModule(
               observe_once(
                       runtime::selectors::make_fx_module_parameters_selector(
                               fx_mod_id)),
-              observe_once(runtime::selectors::make_fx_module_streams_selector(
-                      fx_mod_id)))}
-    , m_busType{toBusType(observe_once(
+              observe_once(
+                      runtime::selectors::make_fx_module_streams_selector(
+                              fx_mod_id)))}
+    , m_busType{bool_enum_to<BusType>(observe_once(
               runtime::selectors::make_fx_module_bus_type_selector(fx_mod_id)))}
 {
 }

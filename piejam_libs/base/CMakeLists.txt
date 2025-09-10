@@ -7,6 +7,7 @@ add_library(piejam_base INTERFACE
     include/piejam/box.h
     include/piejam/boxed_string.h
     include/piejam/boxed_vector.h
+    include/piejam/enum.h
     include/piejam/entity_data_map.h
     include/piejam/entity_id.h
     include/piejam/entity_id_hash.h

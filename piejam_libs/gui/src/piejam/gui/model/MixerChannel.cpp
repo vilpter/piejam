@@ -17,7 +17,7 @@ MixerChannel::MixerChannel(
     , m_color{static_cast<MaterialColor>(observe_once(
               runtime::selectors::make_mixer_channel_color_selector(id)))}
     , m_channel_id{id}
-    , m_busType{toBusType(observe_once(
+    , m_busType{bool_enum_to<BusType>(observe_once(
               runtime::selectors::make_mixer_channel_bus_type_selector(id)))}
 {
 }

@@ -516,6 +516,7 @@ add_mixer_channel(state& st, std::string name, audio::bus_type bus_type)
         -> mixer::channel_id
 {
     using namespace std::string_literals;
+    using namespace std::string_view_literals;
 
     auto name_id = string_id::generate();
     st.strings.insert(name_id, box{std::move(name)});
@@ -542,8 +543,11 @@ add_mixer_channel(state& st, std::string name, audio::bus_type bus_type)
                             .from_normalized = &from_normalized_volume}),
             .pan_balance = params_factory.make_parameter(
                     float_parameter{
-                            .name = box(
-                                    bus_type_to(bus_type, "Pan"s, "Balance"s)),
+                            .name =
+                                    box(std::string(bool_enum_to(
+                                            bus_type,
+                                            "Pan"sv,
+                                            "Balance"sv))),
                             .default_value = 0.f,
                             .min = -1.f,
                             .max = 1.f,
