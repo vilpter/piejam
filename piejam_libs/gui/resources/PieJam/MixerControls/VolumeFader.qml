@@ -8,10 +8,10 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
 
+import PieJam.Controls 1.0
 import PieJam.Items 1.0 as PJItems
 
 import ".."
-import "../Controls"
 import "../Util/ColorExt.js" as ColorExt
 import "../Util/DbConvert.js" as DbConvert
 import "../Util/MathExt.js" as MathExt

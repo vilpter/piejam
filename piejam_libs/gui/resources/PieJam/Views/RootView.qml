@@ -11,10 +11,10 @@ import QtQuick.VirtualKeyboard.Settings 2.15
 
 import QtQml 2.15
 
+import PieJam.Controls 1.0
 import PieJam.Models 1.0 as PJModels
 
 import ".."
-import "../Controls"
 import "../MixerControls"
 import "../Util/QmlExt.js" as QmlExt
 

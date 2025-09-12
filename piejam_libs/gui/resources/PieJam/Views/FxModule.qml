@@ -8,10 +8,10 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 import QtQml 2.15
 
+import PieJam.Controls 1.0
 import PieJam.Models 1.0
 
 import ".."
-import "../Controls"
 import "../FxChainControls"
 
 ViewPane {

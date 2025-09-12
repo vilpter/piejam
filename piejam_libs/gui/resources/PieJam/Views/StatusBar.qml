@@ -9,8 +9,9 @@ import QtQuick.Layouts 1.15
 
 import QtQml 2.15
 
+import PieJam.Controls 1.0
+
 import ".."
-import "../Controls"
 
 SubscribableItem {
     id: root
