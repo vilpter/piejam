@@ -55,8 +55,10 @@ SubscribableItem {
 
             Button {
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
 
                 text: "+Mono"
+                font.bold: true
                 visible: root.showAddMono
 
                 onClicked: root.model.addMonoDevice()
@@ -64,8 +66,10 @@ SubscribableItem {
 
             Button {
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
 
                 text: "+Stereo"
+                font.bold: true
                 visible: root.showAddStereo
 
                 onClicked: root.model.addStereoDevice()

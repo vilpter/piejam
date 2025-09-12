@@ -15,7 +15,6 @@ SubscribableItem {
     property variant channels: [ "-" ]
 
     RowLayout {
-
         anchors.fill: parent
         anchors.margins: 4
 
@@ -25,40 +24,52 @@ SubscribableItem {
             model: root.model ? root.model.name : null
         }
 
-        ComboBox {
-            Layout.preferredWidth: 64 + 6 + 64
+        StackLayout {
+            Layout.maximumWidth: 128
 
-            model: root.channels
-            currentIndex: root.model ? root.model.monoChannel : -1
-            visible: root.model && root.model.mono
+            currentIndex: root.model ? (root.model.mono ? 0 : 1) : -1
 
-            onActivated: if (root.model) root.model.changeMonoChannel(index)
-        }
+            ComboBox {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-        ComboBox {
-            Layout.preferredWidth: 64
+                model: root.channels
+                currentIndex: root.model ? root.model.monoChannel : -1
 
-            model: root.channels
-            currentIndex: root.model ? root.model.stereoLeftChannel : -1
-            visible: root.model && !root.model.mono
+                onActivated: if (root.model) root.model.changeMonoChannel(index)
+            }
 
-            onActivated: if (root.model) root.model.changeStereoLeftChannel(index)
-        }
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-        ComboBox {
-            Layout.preferredWidth: 64
+                ComboBox {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-            model: root.channels
-            currentIndex: root.model ? root.model.stereoRightChannel : -1
-            visible: root.model && !root.model.mono
+                    model: root.channels
+                    currentIndex: root.model ? root.model.stereoLeftChannel : -1
 
-            onActivated: if (root.model) root.model.changeStereoRightChannel(index)
+                    onActivated: if (root.model) root.model.changeStereoLeftChannel(index)
+                }
+
+                ComboBox {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    model: root.channels
+                    currentIndex: root.model ? root.model.stereoRightChannel : -1
+
+                    onActivated: if (root.model) root.model.changeStereoRightChannel(index)
+                }
+            }
         }
 
         Button {
             Layout.preferredWidth: 38
 
             text: "X"
+            font.bold: true
 
             onClicked: if (root.model) root.model.remove()
         }
