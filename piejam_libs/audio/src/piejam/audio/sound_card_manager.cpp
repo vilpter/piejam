@@ -30,8 +30,8 @@ public:
 
     auto hw_params(
             sound_card_stream_descriptor const& d,
-            sample_rate const* const sample_rate,
-            period_size const* const period_size)
+            sample_rate const sample_rate,
+            period_size const period_size)
             -> sound_card_stream_hw_params override
     {
         return alsa::get_hw_params(d, sample_rate, period_size);

@@ -229,8 +229,8 @@ pcm_to_alsa_format(pcm_format pf) -> unsigned
 auto
 get_hw_params(
         sound_card_stream_descriptor const& sound_card,
-        sample_rate const* const sample_rate,
-        period_size const* const period_size) -> sound_card_stream_hw_params
+        sample_rate const sample_rate,
+        period_size const period_size) -> sound_card_stream_hw_params
 {
     sound_card_stream_hw_params result;
 
@@ -290,12 +290,13 @@ get_hw_params(
             test_interval_value(fd, hw_params, SNDRV_PCM_HW_PARAM_RATE),
             &audio::sample_rate::value);
 
-    if (sample_rate && std::ranges::contains(result.sample_rates, *sample_rate))
+    if (sample_rate.valid() &&
+        std::ranges::contains(result.sample_rates, sample_rate))
     {
         set_interval_value(
                 hw_params,
                 SNDRV_PCM_HW_PARAM_RATE,
-                sample_rate->value());
+                sample_rate.value());
     }
 
     BOOST_ASSERT(result.period_sizes.empty());
@@ -305,12 +306,13 @@ get_hw_params(
             test_interval_value(fd, hw_params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE),
             &audio::period_size::value);
 
-    if (period_size && std::ranges::contains(result.period_sizes, *period_size))
+    if (period_size.valid() &&
+        std::ranges::contains(result.period_sizes, period_size))
     {
         set_interval_value(
                 hw_params,
                 SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
-                period_size->value());
+                period_size.value());
     }
 
     BOOST_ASSERT(result.period_counts.empty());

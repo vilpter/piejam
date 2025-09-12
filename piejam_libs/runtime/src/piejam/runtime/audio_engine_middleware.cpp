@@ -174,18 +174,14 @@ make_update_devices_action(
 
     if (!selected_sc.streams.in.empty())
     {
-        next_action.selected_sc.hw_params.in = box(device_manager.hw_params(
-                selected_sc.streams.in,
-                nullptr,
-                nullptr));
+        next_action.selected_sc.hw_params.in =
+                box(device_manager.hw_params(selected_sc.streams.in, {}, {}));
     }
 
     if (!selected_sc.streams.out.empty())
     {
-        next_action.selected_sc.hw_params.out = box(device_manager.hw_params(
-                selected_sc.streams.out,
-                nullptr,
-                nullptr));
+        next_action.selected_sc.hw_params.out =
+                box(device_manager.hw_params(selected_sc.streams.out, {}, {}));
     }
 
     auto next_value =
@@ -211,12 +207,12 @@ make_update_devices_action(
     {
         next_action.selected_sc.hw_params.in = device_manager.hw_params(
                 selected_sc.streams.in,
-                &next_action.sample_rate,
-                nullptr);
+                next_action.sample_rate,
+                {});
         next_action.selected_sc.hw_params.out = device_manager.hw_params(
                 selected_sc.streams.out,
-                &next_action.sample_rate,
-                nullptr);
+                next_action.sample_rate,
+                {});
     }
 
     next_action.period_size = next_value(
@@ -229,12 +225,12 @@ make_update_devices_action(
     {
         next_action.selected_sc.hw_params.in = device_manager.hw_params(
                 selected_sc.streams.in,
-                &next_action.sample_rate,
-                &next_action.period_size);
+                next_action.sample_rate,
+                next_action.period_size);
         next_action.selected_sc.hw_params.out = device_manager.hw_params(
                 selected_sc.streams.out,
-                &next_action.sample_rate,
-                &next_action.period_size);
+                next_action.sample_rate,
+                next_action.period_size);
     }
 
     next_action.period_count = next_value(
