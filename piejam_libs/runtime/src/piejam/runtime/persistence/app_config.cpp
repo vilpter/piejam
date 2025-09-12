@@ -45,8 +45,7 @@ get_version(nlohmann::json const& conf) -> unsigned
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         app_config,
-        input_sound_card,
-        output_sound_card,
+        sound_card,
         sample_rate,
         period_size,
         period_count,

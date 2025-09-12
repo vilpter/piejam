@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <piejam/audio/sound_card_hw_params.h>
+#include <piejam/audio/sound_card_stream_hw_params.h>
 #include <piejam/box.h>
+#include <piejam/io_pair.h>
 #include <piejam/npos.h>
 
 namespace piejam::runtime
@@ -14,10 +15,10 @@ namespace piejam::runtime
 struct selected_sound_card
 {
     std::size_t index{npos};
-    box<audio::sound_card_hw_params> hw_params;
+    io_pair<box<audio::sound_card_stream_hw_params>> hw_params;
 
-    auto
-    operator==(selected_sound_card const&) const noexcept -> bool = default;
+    auto operator==(selected_sound_card const&) const noexcept
+            -> bool = default;
 };
 
 } // namespace piejam::runtime

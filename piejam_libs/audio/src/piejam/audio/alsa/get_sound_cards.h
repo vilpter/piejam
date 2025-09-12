@@ -9,6 +9,6 @@
 namespace piejam::audio::alsa
 {
 
-auto get_io_sound_cards() -> io_sound_cards;
+auto get_sound_cards() -> sound_cards;
 
 } // namespace piejam::audio::alsa

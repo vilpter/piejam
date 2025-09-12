@@ -38,8 +38,8 @@
 #include <piejam/audio/io_process_config.h>
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_hw_params.h>
 #include <piejam/audio/sound_card_manager.h>
+#include <piejam/audio/sound_card_stream_hw_params.h>
 #include <piejam/functional/operators.h>
 #include <piejam/ladspa/plugin.h>
 #include <piejam/ladspa/plugin_descriptor.h>
@@ -65,10 +65,9 @@ namespace
 struct update_devices final
     : ui::cloneable_action<update_devices, reducible_action>
 {
-    piejam::audio::io_sound_cards io_sound_cards;
+    box<piejam::audio::sound_cards> sound_cards;
 
-    selected_sound_card input;
-    selected_sound_card output;
+    selected_sound_card selected_sc;
 
     audio::sample_rate sample_rate{};
     audio::period_size period_size{};
@@ -76,9 +75,8 @@ struct update_devices final
 
     void reduce(state& st) const override
     {
-        st.io_sound_cards = io_sound_cards;
-        st.selected_io_sound_card.in = input;
-        st.selected_io_sound_card.out = output;
+        st.sound_cards = sound_cards;
+        st.selected_sound_card = selected_sc;
         st.sample_rate = sample_rate;
         st.period_size = period_size;
         st.period_count = period_count;
@@ -96,11 +94,11 @@ struct update_devices final
         };
 
         update_channels(
-                input.hw_params->num_channels,
+                selected_sc.hw_params.in->num_channels,
                 *st.external_audio_state.inputs);
 
         update_channels(
-                output.hw_params->num_channels,
+                selected_sc.hw_params.out->num_channels,
                 *st.external_audio_state.outputs);
     }
 };
@@ -150,97 +148,98 @@ audio_engine_middleware::process_device_action(
 static auto
 make_update_devices_action(
         audio::sound_card_manager& device_manager,
-        audio::io_sound_cards const& new_devices,
-        audio::io_sound_cards const& current_devices,
-        std::size_t const input_index,
-        std::size_t const output_index,
+        box<audio::sound_cards> const& new_devices,
+        box<audio::sound_cards> const& current_devices,
+        std::size_t const current_index,
         audio::sample_rate const sample_rate,
         audio::period_size const period_size,
         audio::period_count const period_count) -> update_devices
 {
     update_devices next_action;
-    next_action.io_sound_cards = new_devices;
+    next_action.sound_cards = new_devices;
 
-    auto next_device = [&](auto const& new_devices,
-                           auto const& current_devices,
-                           auto const current_index) {
-        auto const found_index =
-                current_index != npos ? algorithm::index_of(
-                                                new_devices,
-                                                current_devices[current_index])
-                                      : npos;
-        return selected_sound_card{
-                .index = found_index,
-                .hw_params = box(
-                        found_index != npos ? device_manager.hw_params(
-                                                      new_devices[found_index],
-                                                      nullptr,
-                                                      nullptr)
-                                            : audio::sound_card_hw_params{}),
-        };
-    };
+    next_action.selected_sc.index =
+            current_index != npos
+                    ? algorithm::index_of(
+                              *new_devices,
+                              current_devices.get()[current_index])
+                    : npos;
 
-    next_action.input = next_device(
-            new_devices.in.get(),
-            current_devices.in.get(),
-            input_index);
+    if (next_action.selected_sc.index == npos)
+    {
+        return next_action;
+    }
 
-    next_action.output = next_device(
-            new_devices.out.get(),
-            current_devices.out.get(),
-            output_index);
+    auto const& selected_sc = new_devices.get()[next_action.selected_sc.index];
 
-    auto next_value = [](audio::sound_card_hw_params const& input_hw_params,
-                         audio::sound_card_hw_params const& output_hw_params,
-                         auto&& sel,
-                         auto current) {
-        auto const values = std::invoke(
-                std::forward<decltype(sel)>(sel),
-                input_hw_params,
-                output_hw_params);
-        auto const it = algorithm::find_or_get_first(values, current);
-        return it != values.end() ? *it : decltype(*it){};
-    };
+    if (!selected_sc.streams.in.empty())
+    {
+        next_action.selected_sc.hw_params.in = box(device_manager.hw_params(
+                selected_sc.streams.in,
+                nullptr,
+                nullptr));
+    }
+
+    if (!selected_sc.streams.out.empty())
+    {
+        next_action.selected_sc.hw_params.out = box(device_manager.hw_params(
+                selected_sc.streams.out,
+                nullptr,
+                nullptr));
+    }
+
+    auto next_value =
+            [](audio::sound_card_stream_hw_params const& input_hw_params,
+               audio::sound_card_stream_hw_params const& output_hw_params,
+               auto&& sel,
+               auto current) {
+                auto const values = std::invoke(
+                        std::forward<decltype(sel)>(sel),
+                        input_hw_params,
+                        output_hw_params);
+                auto const it = algorithm::find_or_get_first(values, current);
+                return it != values.end() ? *it : decltype(*it){};
+            };
 
     next_action.sample_rate = next_value(
-            next_action.input.hw_params,
-            next_action.output.hw_params,
+            next_action.selected_sc.hw_params.in,
+            next_action.selected_sc.hw_params.out,
             &sample_rates,
             sample_rate);
 
     if (next_action.sample_rate.valid())
     {
-        next_action.input.hw_params = device_manager.hw_params(
-                new_devices.in.get()[next_action.input.index],
+        next_action.selected_sc.hw_params.in = device_manager.hw_params(
+                selected_sc.streams.in,
                 &next_action.sample_rate,
                 nullptr);
-        next_action.output.hw_params = device_manager.hw_params(
-                new_devices.out.get()[next_action.output.index],
+        next_action.selected_sc.hw_params.out = device_manager.hw_params(
+                selected_sc.streams.out,
                 &next_action.sample_rate,
                 nullptr);
     }
 
     next_action.period_size = next_value(
-            next_action.input.hw_params,
-            next_action.output.hw_params,
+            next_action.selected_sc.hw_params.in,
+            next_action.selected_sc.hw_params.out,
             &period_sizes,
             period_size);
 
     if (next_action.period_size.valid())
     {
-        next_action.input.hw_params = device_manager.hw_params(
-                new_devices.in.get()[next_action.input.index],
+        next_action.selected_sc.hw_params.in = device_manager.hw_params(
+                selected_sc.streams.in,
                 &next_action.sample_rate,
                 &next_action.period_size);
-        next_action.output.hw_params = device_manager.hw_params(
-                new_devices.out.get()[next_action.output.index],
+        next_action.selected_sc.hw_params.out = device_manager.hw_params(
+                selected_sc.streams.out,
                 &next_action.sample_rate,
                 &next_action.period_size);
     }
 
     next_action.period_count = next_value(
-            next_action.input.hw_params,
-            next_action.output.hw_params,
+            next_action.selected_sc.hw_params.in,
+            next_action.selected_sc.hw_params.out,
             &period_counts,
             period_count);
 
@@ -257,15 +256,11 @@ audio_engine_middleware::process_device_action(
 
     mw_fs.next(make_update_devices_action(
             m_sound_card_manager,
-            current_state.io_sound_cards,
-            current_state.io_sound_cards,
+            current_state.sound_cards,
+            current_state.sound_cards,
             algorithm::index_of(
-                    current_state.io_sound_cards.in.get(),
-                    a.conf.input_sound_card,
-                    &audio::sound_card_descriptor::name),
-            algorithm::index_of(
-                    current_state.io_sound_cards.out.get(),
-                    a.conf.output_sound_card,
+                    current_state.sound_cards.get(),
+                    a.conf.sound_card,
                     &audio::sound_card_descriptor::name),
             a.conf.sample_rate,
             a.conf.period_size,
@@ -284,10 +279,9 @@ audio_engine_middleware::process_device_action(
 
     mw_fs.next(make_update_devices_action(
             m_sound_card_manager,
-            m_sound_card_manager.io_descriptors(),
-            current_state.io_sound_cards,
-            current_state.selected_io_sound_card.in.index,
-            current_state.selected_io_sound_card.out.index,
+            box(m_sound_card_manager.get_sound_cards()),
+            current_state.sound_cards,
+            current_state.selected_sound_card.index,
             current_state.sample_rate,
             current_state.period_size,
             current_state.period_count));
@@ -303,14 +297,9 @@ audio_engine_middleware::process_device_action(
 
     mw_fs.next(make_update_devices_action(
             m_sound_card_manager,
-            current_state.io_sound_cards,
-            current_state.io_sound_cards,
-            action.io_dir == io_direction::input
-                    ? action.index
-                    : current_state.selected_io_sound_card.in.index,
-            action.io_dir == io_direction::output
-                    ? action.index
-                    : current_state.selected_io_sound_card.out.index,
+            current_state.sound_cards,
+            current_state.sound_cards,
+            action.index,
             current_state.sample_rate,
             current_state.period_size,
             current_state.period_count));
@@ -329,10 +318,9 @@ audio_engine_middleware::process_device_action(
     {
         mw_fs.next(make_update_devices_action(
                 m_sound_card_manager,
-                current_state.io_sound_cards,
-                current_state.io_sound_cards,
-                current_state.selected_io_sound_card.in.index,
-                current_state.selected_io_sound_card.out.index,
+                current_state.sound_cards,
+                current_state.sound_cards,
+                current_state.selected_sound_card.index,
                 srs[action.index],
                 current_state.period_size,
                 current_state.period_count));
@@ -352,10 +340,9 @@ audio_engine_middleware::process_device_action(
     {
         mw_fs.next(make_update_devices_action(
                 m_sound_card_manager,
-                current_state.io_sound_cards,
-                current_state.io_sound_cards,
-                current_state.selected_io_sound_card.in.index,
-                current_state.selected_io_sound_card.out.index,
+                current_state.sound_cards,
+                current_state.sound_cards,
+                current_state.selected_sound_card.index,
                 current_state.sample_rate,
                 pss[action.index],
                 current_state.period_count));
@@ -375,10 +362,9 @@ audio_engine_middleware::process_device_action(
     {
         mw_fs.next(make_update_devices_action(
                 m_sound_card_manager,
-                current_state.io_sound_cards,
-                current_state.io_sound_cards,
-                current_state.selected_io_sound_card.in.index,
-                current_state.selected_io_sound_card.out.index,
+                current_state.sound_cards,
+                current_state.sound_cards,
+                current_state.selected_sound_card.index,
                 current_state.sample_rate,
                 current_state.period_size,
                 pcs[action.index]));
@@ -554,10 +540,8 @@ audio_engine_middleware::close_sound_card()
 void
 audio_engine_middleware::open_sound_card(state const& st)
 {
-    if (st.selected_io_sound_card.in.index == npos ||
-        st.selected_io_sound_card.out.index == npos ||
-        st.sample_rate.invalid() || st.period_size.invalid() ||
-        st.period_count.invalid())
+    if (st.selected_sound_card.index == npos || st.sample_rate.invalid() ||
+        st.period_size.invalid() || st.period_count.invalid())
     {
         return;
     }
@@ -565,21 +549,20 @@ audio_engine_middleware::open_sound_card(state const& st)
     try
     {
         auto io_process = m_sound_card_manager.make_io_process(
-                st.io_sound_cards.in.get()[st.selected_io_sound_card.in.index],
-                st.io_sound_cards.out
-                        .get()[st.selected_io_sound_card.out.index],
+                st.sound_cards.get()[st.selected_sound_card.index].streams.in,
+                st.sound_cards.get()[st.selected_sound_card.index].streams.out,
                 audio::io_process_config{
                         audio::sound_card_config{
-                                st.selected_io_sound_card.in.hw_params
+                                st.selected_sound_card.hw_params.in
                                         ->interleaved,
-                                st.selected_io_sound_card.in.hw_params->format,
-                                st.selected_io_sound_card.in.hw_params
+                                st.selected_sound_card.hw_params.in->format,
+                                st.selected_sound_card.hw_params.in
                                         ->num_channels},
                         audio::sound_card_config{
-                                st.selected_io_sound_card.out.hw_params
+                                st.selected_sound_card.hw_params.out
                                         ->interleaved,
-                                st.selected_io_sound_card.out.hw_params->format,
-                                st.selected_io_sound_card.out.hw_params
+                                st.selected_sound_card.hw_params.out->format,
+                                st.selected_sound_card.hw_params.out
                                         ->num_channels},
                         audio::sound_card_buffer_config{
                                 st.sample_rate,
@@ -604,8 +587,8 @@ audio_engine_middleware::start_engine(state const& st)
         m_engine = std::make_unique<audio_engine>(
                 m_workers,
                 st.sample_rate,
-                st.selected_io_sound_card.in.hw_params->num_channels,
-                st.selected_io_sound_card.out.hw_params->num_channels);
+                st.selected_sound_card.hw_params.in->num_channels,
+                st.selected_sound_card.hw_params.out->num_channels);
 
         m_io_process->start(
                 m_audio_thread_config,

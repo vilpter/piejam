@@ -148,7 +148,6 @@ main(int argc, char* argv[]) -> int
 
     QQuickStyle::setStyle("Material");
 
-    auto audio_device_manager = audio::make_sound_card_manager();
     auto midi_device_manager = midi::make_device_manager();
     ladspa::instance_manager_processor_factory ladspa_manager;
 
@@ -199,7 +198,7 @@ main(int argc, char* argv[]) -> int
                             .realtime_priority = realtime_priority,
                             .name = "audio_main"},
                     audio_workers,
-                    *audio_device_manager,
+                    audio::get_default_sound_card_manager(),
                     ladspa_manager,
                     runtime::make_midi_input_controller(*midi_device_manager)));
 

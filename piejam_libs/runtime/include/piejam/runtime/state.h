@@ -30,7 +30,7 @@
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_hw_params.h>
+#include <piejam/audio/sound_card_stream_hw_params.h>
 #include <piejam/audio/types.h>
 #include <piejam/box.h>
 #include <piejam/boxed_vector.h>
@@ -53,8 +53,8 @@ struct state
 
     strings_t strings;
 
-    audio::io_sound_cards io_sound_cards;
-    io_pair<selected_sound_card> selected_io_sound_card;
+    box<audio::sound_cards> sound_cards;
+    runtime::selected_sound_card selected_sound_card;
 
     audio::sample_rate sample_rate{};
     audio::period_size period_size{};
@@ -102,20 +102,20 @@ struct state
 auto make_initial_state() -> state;
 
 auto sample_rates(
-        audio::sound_card_hw_params const& input_hw_params,
-        audio::sound_card_hw_params const& output_hw_params)
+        audio::sound_card_stream_hw_params const& input_hw_params,
+        audio::sound_card_stream_hw_params const& output_hw_params)
         -> audio::sample_rates_t;
 auto sample_rates_from_state(state const&) -> audio::sample_rates_t;
 
 auto period_sizes(
-        audio::sound_card_hw_params const& input_hw_params,
-        audio::sound_card_hw_params const& output_hw_params)
+        audio::sound_card_stream_hw_params const& input_hw_params,
+        audio::sound_card_stream_hw_params const& output_hw_params)
         -> audio::period_sizes_t;
 auto period_sizes_from_state(state const&) -> audio::period_sizes_t;
 
 auto period_counts(
-        audio::sound_card_hw_params const& input_hw_params,
-        audio::sound_card_hw_params const& output_hw_params)
+        audio::sound_card_stream_hw_params const& input_hw_params,
+        audio::sound_card_stream_hw_params const& output_hw_params)
         -> audio::period_counts_t;
 auto period_counts_from_state(state const&) -> audio::period_counts_t;
 

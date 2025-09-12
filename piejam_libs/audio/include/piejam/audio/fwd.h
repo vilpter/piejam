@@ -17,7 +17,7 @@ class process_thread;
 
 struct sound_card_descriptor;
 struct sound_card_config;
-struct sound_card_hw_params;
+struct sound_card_stream_hw_params;
 struct sound_card_buffer_config;
 struct io_process_config;
 

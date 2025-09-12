@@ -11,11 +11,12 @@
 #include <piejam/redux/store.h>
 #include <piejam/redux/subscriptions_manager.h>
 #include <piejam/runtime/actions/initiate_sound_card_selection.h>
-#include <piejam/runtime/actions/refresh_sound_cards.h>
+#include <piejam/runtime/actions/scan_for_sound_cards.h>
 #include <piejam/runtime/actions/select_period_count.h>
 #include <piejam/runtime/actions/select_period_size.h>
 #include <piejam/runtime/actions/select_sample_rate.h>
 #include <piejam/runtime/selectors.h>
+#include <piejam/runtime/ui/thunk_action.h>
 
 #include <boost/hof/lift.hpp>
 
@@ -58,17 +59,9 @@ AudioDeviceSettings::AudioDeviceSettings(
 }
 
 auto
-AudioDeviceSettings::inputSoundCards() const noexcept
-        -> inputSoundCards_property_t
+AudioDeviceSettings::soundCards() const noexcept -> soundCards_property_t
 {
     return &m_impl->input_sound_cards;
-}
-
-auto
-AudioDeviceSettings::outputSoundCards() const noexcept
-        -> outputSoundCards_property_t
-{
-    return &m_impl->output_sound_cards;
 }
 
 auto
@@ -88,21 +81,12 @@ AudioDeviceSettings::onSubscribe()
 {
     namespace selectors = runtime::selectors;
 
-    observe(selectors::select_input_sound_card,
+    observe(selectors::select_sound_card,
             [this](selectors::sound_card_choice const& choice) {
-                inputSoundCards()->setElements(to_QStringList(
+                soundCards()->setElements(to_QStringList(
                         choice.available,
                         &QString::fromStdString));
-                inputSoundCards()->setFocused(static_cast<int>(choice.current));
-            });
-
-    observe(selectors::select_output_sound_card,
-            [this](selectors::sound_card_choice const& choice) {
-                outputSoundCards()->setElements(to_QStringList(
-                        choice.available,
-                        &QString::fromStdString));
-                outputSoundCards()->setFocused(
-                        static_cast<int>(choice.current));
+                soundCards()->setFocused(static_cast<int>(choice.current));
             });
 
     observe(selectors::select_sample_rate,
@@ -133,30 +117,25 @@ AudioDeviceSettings::onSubscribe()
                 periodSizes()->setFocused(static_cast<int>(index));
             });
 
-    observe(selectors::select_buffer_latency,
-            [this](float const x) { setBufferLatency(x); });
+    observe(selectors::select_buffer_latency, [this](float const x) {
+        setBufferLatency(static_cast<double>(x));
+    });
+
+    requestUpdates(std::chrono::seconds{1}, [this]() {
+        refreshSoundCardLists();
+    });
 }
 
 void
 AudioDeviceSettings::refreshSoundCardLists()
 {
-    dispatch(runtime::actions::refresh_sound_cards{});
+    dispatch(runtime::actions::scan_for_sound_cards());
 }
 
 void
-AudioDeviceSettings::selectInputSoundCard(unsigned const index)
+AudioDeviceSettings::selectSoundCard(unsigned const index)
 {
     runtime::actions::initiate_sound_card_selection action;
-    action.io_dir = io_direction::input;
-    action.index = index;
-    dispatch(action);
-}
-
-void
-AudioDeviceSettings::selectOutputSoundCard(unsigned const index)
-{
-    runtime::actions::initiate_sound_card_selection action;
-    action.io_dir = io_direction::output;
     action.index = index;
     dispatch(action);
 }

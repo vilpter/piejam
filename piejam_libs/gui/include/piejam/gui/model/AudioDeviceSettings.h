@@ -18,12 +18,7 @@ class AudioDeviceSettings final : public Subscribable<SubscribableModel>
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::StringList*,
-            inputSoundCards)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::StringList*,
-            outputSoundCards)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, soundCards)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, sampleRates)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, periodSizes)
     M_PIEJAM_GUI_PROPERTY(double, bufferLatency, setBufferLatency)
@@ -32,8 +27,7 @@ public:
     AudioDeviceSettings(runtime::store_dispatch, runtime::subscriber&);
 
     Q_INVOKABLE void refreshSoundCardLists();
-    Q_INVOKABLE void selectInputSoundCard(unsigned index);
-    Q_INVOKABLE void selectOutputSoundCard(unsigned index);
+    Q_INVOKABLE void selectSoundCard(unsigned index);
     Q_INVOKABLE void selectSampleRate(unsigned index);
     Q_INVOKABLE void selectPeriodSize(unsigned index);
     Q_INVOKABLE void selectPeriodCount(unsigned index);

@@ -9,7 +9,7 @@
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_hw_params.h>
+#include <piejam/audio/sound_card_stream_hw_params.h>
 #include <piejam/system/device.h>
 
 #include <spdlog/spdlog.h>
@@ -228,15 +228,15 @@ pcm_to_alsa_format(pcm_format pf) -> unsigned
 
 auto
 get_hw_params(
-        sound_card_descriptor const& sound_card,
+        sound_card_stream_descriptor const& sound_card,
         sample_rate const* const sample_rate,
-        period_size const* const period_size) -> sound_card_hw_params
+        period_size const* const period_size) -> sound_card_stream_hw_params
 {
-    sound_card_hw_params result;
+    sound_card_stream_hw_params result;
 
     auto hw_params = make_snd_pcm_hw_params_for_refine_any();
 
-    system::device fd(sound_card.path);
+    system::device fd(sound_card);
     if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_REFINE, hw_params))
     {
         throw std::system_error(err);

@@ -19,58 +19,16 @@ SubscribableItem {
         anchors.fill: parent
         anchors.margins: 8
 
-        RowLayout {
+        ComboBoxSetting {
             Layout.fillWidth: true
 
-            ColumnLayout {
-                Layout.fillWidth: true
+            model: root.model.soundCards.elements
+            currentIndex: root.model.soundCards.focused
 
-                ComboBoxSetting {
-                    Layout.fillWidth: true
+            nameLabelText: qsTr("device:")
+            unselectedText: qsTr("Select...")
 
-                    model: root.model.inputSoundCards.elements
-                    currentIndex: root.model.inputSoundCards.focused
-
-                    nameLabelText: qsTr("input:")
-                    unselectedText: qsTr("Select input...")
-
-                    onOptionSelected: root.model.selectInputSoundCard(index)
-                }
-
-                ComboBoxSetting {
-                    Layout.fillWidth: true
-
-                    model: root.model.outputSoundCards.elements
-                    currentIndex: root.model.outputSoundCards.focused
-
-                    nameLabelText: qsTr("output:")
-                    unselectedText: qsTr("Select output...")
-
-                    onOptionSelected: root.model.selectOutputSoundCard(index)
-                }
-            }
-
-            Frame {
-                Layout.preferredWidth: 117
-                Layout.preferredHeight: 117
-
-                RoundButton {
-                    id: reloadBtn
-
-                    width: 72
-                    height: 72
-
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    icon.width: 24
-                    icon.height: 24
-                    icon.source: "qrc:///images/icons/cycle_arrows.svg"
-                    display: AbstractButton.IconOnly
-
-                    onClicked: root.model.refreshSoundCardLists()
-                }
-            }
+            onOptionSelected: root.model.selectSoundCard(index)
         }
 
         ComboBoxSetting {

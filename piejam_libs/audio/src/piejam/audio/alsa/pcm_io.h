@@ -7,6 +7,8 @@
 #include <piejam/audio/fwd.h>
 #include <piejam/audio/io_process.h>
 #include <piejam/audio/io_process_config.h>
+#include <piejam/audio/sound_card_descriptor.h>
+
 #include <piejam/system/device.h>
 
 #include <atomic>
@@ -19,8 +21,8 @@ class pcm_io final : public piejam::audio::io_process
 {
 public:
     pcm_io() noexcept;
-    pcm_io(sound_card_descriptor const& in,
-           sound_card_descriptor const& out,
+    pcm_io(sound_card_stream_descriptor const& in,
+           sound_card_stream_descriptor const& out,
            io_process_config const& io_config);
     ~pcm_io() override;
 

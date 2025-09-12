@@ -17,19 +17,19 @@ class sound_card_manager
 public:
     virtual ~sound_card_manager() = default;
 
-    virtual auto io_descriptors() -> io_sound_cards = 0;
+    virtual auto get_sound_cards() -> sound_cards = 0;
 
     virtual auto hw_params(
-            sound_card_descriptor const&,
+            sound_card_stream_descriptor const&,
             sample_rate const*,
-            period_size const*) -> sound_card_hw_params = 0;
+            period_size const*) -> sound_card_stream_hw_params = 0;
 
     virtual auto make_io_process(
-            sound_card_descriptor const& in,
-            sound_card_descriptor const& out,
+            sound_card_stream_descriptor const& in,
+            sound_card_stream_descriptor const& out,
             io_process_config const&) -> std::unique_ptr<io_process> = 0;
 };
 
-auto make_sound_card_manager() -> std::unique_ptr<sound_card_manager>;
+auto get_default_sound_card_manager() -> sound_card_manager&;
 
 } // namespace piejam::audio

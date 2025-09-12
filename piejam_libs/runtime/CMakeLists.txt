@@ -178,6 +178,8 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/state.cpp
     src/piejam/runtime/store_dispatch.cpp
     src/piejam/runtime/thunk_action.cpp
+    include/piejam/runtime/actions/scan_for_sound_cards.h
+    src/piejam/runtime/actions/scan_for_sound_cards.cpp
 )
 
 find_package(nlohmann_json REQUIRED)

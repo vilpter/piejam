@@ -9,7 +9,7 @@
 
 #include <piejam/audio/process_thread.h>
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_hw_params.h>
+#include <piejam/audio/sound_card_stream_hw_params.h>
 
 #include <spdlog/spdlog.h>
 
@@ -70,13 +70,11 @@ open_pcm(
 pcm_io::pcm_io() noexcept = default;
 
 pcm_io::pcm_io(
-        sound_card_descriptor const& in,
-        sound_card_descriptor const& out,
+        sound_card_stream_descriptor const& in,
+        sound_card_stream_descriptor const& out,
         io_process_config const& io_config)
-    : m_input_fd(
-              open_pcm(in.path, io_config.in_config, io_config.buffer_config))
-    , m_output_fd(
-              open_pcm(out.path, io_config.out_config, io_config.buffer_config))
+    : m_input_fd(open_pcm(in, io_config.in_config, io_config.buffer_config))
+    , m_output_fd(open_pcm(out, io_config.out_config, io_config.buffer_config))
     , m_io_config(io_config)
 {
     if (m_input_fd && m_output_fd)

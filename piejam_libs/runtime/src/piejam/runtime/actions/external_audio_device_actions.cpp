@@ -56,8 +56,8 @@ default_channels(state const& st, io_direction io_dir, audio::bus_type bus_type)
 {
     auto num_channels =
             io_dir == io_direction::input
-                    ? st.selected_io_sound_card.in.hw_params->num_channels
-                    : st.selected_io_sound_card.out.hw_params->num_channels;
+                    ? st.selected_sound_card.hw_params.in->num_channels
+                    : st.selected_sound_card.hw_params.out->num_channels;
 
     std::vector<bool> assigned_channels(num_channels);
 

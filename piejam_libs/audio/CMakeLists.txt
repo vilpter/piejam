@@ -73,11 +73,11 @@ add_library(piejam_audio STATIC
     include/piejam/audio/slice.h
     include/piejam/audio/slice_algorithms.h
     include/piejam/audio/sound_card_descriptor.h
-    include/piejam/audio/sound_card_hw_params.h
+    include/piejam/audio/sound_card_stream_hw_params.h
     include/piejam/audio/sound_card_manager.h
     include/piejam/audio/types.h
-    src/piejam/audio/alsa/get_io_sound_cards.cpp
-    src/piejam/audio/alsa/get_io_sound_cards.h
+    src/piejam/audio/alsa/get_sound_cards.cpp
+    src/piejam/audio/alsa/get_sound_cards.h
     src/piejam/audio/alsa/get_set_hw_params.cpp
     src/piejam/audio/alsa/get_set_hw_params.h
     src/piejam/audio/alsa/pcm_io.cpp

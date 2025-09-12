@@ -66,10 +66,10 @@ make_string_selector(string_id id) -> selector<boxed_string>
 }
 
 selector<box<sample_rate_choice>> const select_sample_rate([](state const& st) {
-    static auto const get_sample_rate =
-            memo([](box<audio::sound_card_hw_params> const& input_hw_params,
-                    box<audio::sound_card_hw_params> const& output_hw_params,
-                    audio::sample_rate const current) {
+    static auto const get_sample_rate = memo(
+            [](box<audio::sound_card_stream_hw_params> const& input_hw_params,
+               box<audio::sound_card_stream_hw_params> const& output_hw_params,
+               audio::sample_rate const current) {
                 return box<sample_rate_choice>{
                         std::in_place,
                         runtime::sample_rates(
@@ -79,16 +79,16 @@ selector<box<sample_rate_choice>> const select_sample_rate([](state const& st) {
             });
 
     return get_sample_rate(
-            st.selected_io_sound_card.in.hw_params,
-            st.selected_io_sound_card.out.hw_params,
+            st.selected_sound_card.hw_params.in,
+            st.selected_sound_card.hw_params.out,
             st.sample_rate);
 });
 
 selector<box<period_size_choice>> const select_period_size([](state const& st) {
-    static auto const get_period_size =
-            memo([](box<audio::sound_card_hw_params> const& input_hw_params,
-                    box<audio::sound_card_hw_params> const& output_hw_params,
-                    audio::period_size const current) {
+    static auto const get_period_size = memo(
+            [](box<audio::sound_card_stream_hw_params> const& input_hw_params,
+               box<audio::sound_card_stream_hw_params> const& output_hw_params,
+               audio::period_size const current) {
                 return box<period_size_choice>{
                         std::in_place,
                         runtime::period_sizes(
@@ -98,8 +98,8 @@ selector<box<period_size_choice>> const select_period_size([](state const& st) {
             });
 
     return get_period_size(
-            st.selected_io_sound_card.in.hw_params,
-            st.selected_io_sound_card.out.hw_params,
+            st.selected_sound_card.hw_params.in,
+            st.selected_sound_card.hw_params.out,
             st.period_size);
 });
 
@@ -112,30 +112,18 @@ selector<float> const select_buffer_latency([](state const& st) {
                    : 0.f;
 });
 
-static auto get_sound_card =
-        memo([](box<std::vector<audio::sound_card_descriptor>> const& descs,
-                std::size_t const index) {
-            return box<sound_card_choice>{
-                    std::in_place,
-                    algorithm::transform_to_vector(
-                            descs.get(),
-                            &audio::sound_card_descriptor::name),
-                    index};
-        });
-
-selector<box<sound_card_choice>> const
-        select_input_sound_card([](state const& st) {
-            return get_sound_card(
-                    st.io_sound_cards.in,
-                    st.selected_io_sound_card.in.index);
-        });
-
-selector<box<sound_card_choice>> const
-        select_output_sound_card([](state const& st) {
-            return get_sound_card(
-                    st.io_sound_cards.out,
-                    st.selected_io_sound_card.out.index);
-        });
+selector<box<sound_card_choice>> const select_sound_card([](state const& st) {
+    static auto get_sound_card = memo(
+            [](box<audio::sound_cards> const& descs, std::size_t const index) {
+                return box<sound_card_choice>{
+                        std::in_place,
+                        algorithm::transform_to_vector(
+                                descs.get(),
+                                &audio::sound_card_descriptor::name),
+                        index};
+            });
+    return get_sound_card(st.sound_cards, st.selected_sound_card.index);
+});
 
 auto
 make_num_device_channels_selector(io_direction const io_dir)
@@ -145,12 +133,12 @@ make_num_device_channels_selector(io_direction const io_dir)
     {
         case io_direction::input:
             return selector<std::size_t>([](state const& st) -> std::size_t {
-                return st.selected_io_sound_card.in.hw_params->num_channels;
+                return st.selected_sound_card.hw_params.in->num_channels;
             });
 
         case io_direction::output:
             return selector<std::size_t>([](state const& st) -> std::size_t {
-                return st.selected_io_sound_card.out.hw_params->num_channels;
+                return st.selected_sound_card.hw_params.out->num_channels;
             });
     }
 }

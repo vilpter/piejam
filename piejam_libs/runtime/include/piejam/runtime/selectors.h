@@ -57,8 +57,7 @@ extern selector<box<period_size_choice>> const select_period_size;
 extern selector<float> const select_buffer_latency;
 
 using sound_card_choice = choice_model<std::vector<std::string>, std::size_t>;
-extern selector<box<sound_card_choice>> const select_input_sound_card;
-extern selector<box<sound_card_choice>> const select_output_sound_card;
+extern selector<box<sound_card_choice>> const select_sound_card;
 
 auto make_num_device_channels_selector(io_direction) -> selector<std::size_t>;
 
@@ -120,8 +119,8 @@ struct mixer_channel_route
     mixer::channel_id channel_id;
     string_id name;
 
-    auto
-    operator==(mixer_channel_route const&) const noexcept -> bool = default;
+    auto operator==(mixer_channel_route const&) const noexcept
+            -> bool = default;
 };
 
 auto make_mixer_channel_default_route_is_valid_selector(

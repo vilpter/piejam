@@ -5,15 +5,17 @@
 #pragma once
 
 #include <piejam/audio/fwd.h>
+#include <piejam/audio/sound_card_descriptor.h>
+
 #include <piejam/system/fwd.h>
 
 namespace piejam::audio::alsa
 {
 
 auto get_hw_params(
-        sound_card_descriptor const&,
+        sound_card_stream_descriptor const&,
         sample_rate const*,
-        period_size const*) -> sound_card_hw_params;
+        period_size const*) -> sound_card_stream_hw_params;
 
 void set_hw_params(
         system::device&,

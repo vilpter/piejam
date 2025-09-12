@@ -16,7 +16,6 @@ struct initiate_sound_card_selection final
     : ui::cloneable_action<initiate_sound_card_selection, action>
     , visitable_audio_io_process_action<initiate_sound_card_selection>
 {
-    io_direction io_dir{};
     std::size_t index{};
 };
 

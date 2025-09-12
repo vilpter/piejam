@@ -38,16 +38,10 @@ save_app_config(
 
         persistence::app_config conf;
 
-        conf.input_sound_card =
-                state.selected_io_sound_card.in.index != npos
-                        ? state.io_sound_cards.in
-                                  .get()[state.selected_io_sound_card.in.index]
-                                  .name
-                        : std::string();
-        conf.output_sound_card =
-                state.selected_io_sound_card.out.index != npos
-                        ? state.io_sound_cards.out
-                                  .get()[state.selected_io_sound_card.out.index]
+        conf.sound_card =
+                state.selected_sound_card.index != npos
+                        ? state.sound_cards
+                                  .get()[state.selected_sound_card.index]
                                   .name
                         : std::string();
         conf.sample_rate = state.sample_rate;

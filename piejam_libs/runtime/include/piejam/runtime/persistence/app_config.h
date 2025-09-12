@@ -21,8 +21,7 @@ inline constexpr unsigned current_app_config_version = 0;
 
 struct app_config
 {
-    std::string input_sound_card;
-    std::string output_sound_card;
+    std::string sound_card;
     audio::sample_rate sample_rate{};
     audio::period_size period_size{};
     audio::period_count period_count{};

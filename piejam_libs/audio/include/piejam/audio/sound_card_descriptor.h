@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/box.h>
 #include <piejam/io_pair.h>
 
 #include <filesystem>
@@ -14,15 +13,17 @@
 namespace piejam::audio
 {
 
+using sound_card_stream_descriptor = std::filesystem::path;
+
 struct sound_card_descriptor
 {
     std::string name;
-    std::filesystem::path path;
+    io_pair<sound_card_stream_descriptor> streams;
 
     auto operator==(sound_card_descriptor const& other) const noexcept
             -> bool = default;
 };
 
-using io_sound_cards = io_pair<box<std::vector<sound_card_descriptor>>>;
+using sound_cards = std::vector<sound_card_descriptor>;
 
 } // namespace piejam::audio
