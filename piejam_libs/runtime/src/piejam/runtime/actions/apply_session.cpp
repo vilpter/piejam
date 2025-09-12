@@ -258,11 +258,11 @@ apply_session::reduce(state& st) const
                 st.params,
                 main_mixer_channel,
                 session->main_mixer_channel.parameter);
-        apply_mixer_fx_chain(
-                st,
-                st.mixer_state.main,
-                session->main_mixer_channel.fx_chain);
     }(st.mixer_state.channels.lock()[st.mixer_state.main]);
+    apply_mixer_fx_chain(
+            st,
+            st.mixer_state.main,
+            session->main_mixer_channel.fx_chain);
 
     runtime::update_midi_assignments(st, mixer_midi_assignments);
 
