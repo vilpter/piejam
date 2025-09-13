@@ -47,7 +47,8 @@ Item {
 
                 Layout.fillWidth: true
 
-                text: qsTr("+ Mono")
+                text: qsTr("+Mono")
+                font.bold: true
 
                 Material.background: Material.color(Material.Green, Material.Shade400)
 
@@ -59,7 +60,8 @@ Item {
 
                 Layout.fillWidth: true
 
-                text: qsTr("+ Stereo")
+                text: qsTr("+Stereo")
+                font.bold: true
 
                 Material.background: Material.color(Material.Green, Material.Shade400)
 

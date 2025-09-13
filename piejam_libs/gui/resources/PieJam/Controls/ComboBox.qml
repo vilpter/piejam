@@ -13,10 +13,12 @@ Item {
     property alias count: comboBox.count
     property int currentIndex: -1
     property alias currentText: comboBox.currentText
-    property string displayText: ""
+    property alias displayText: comboBox.displayText
     property int elideMode: Qt.ElideNone
     property var model: null
     property alias popup: comboBox.popup
+    property alias textHorizontalAlignment: contentTextItem.horizontalAlignment
+    property alias textVerticalAlignment: contentTextItem.verticalAlignment
     property alias textRole: comboBox.textRole
     property alias valueRole: comboBox.valueRole
 
@@ -39,12 +41,12 @@ Item {
         model: root.model
         currentIndex: root.currentIndex
 
-        displayText: root.displayText
-
         contentItem: Text {
+            id: contentTextItem
+
             anchors.fill: comboBox
 
-            text: root.displayText
+            text: comboBox.displayText
             font: comboBox.font
             color: root.enabled ? Material.primaryTextColor : Material.secondaryTextColor
             verticalAlignment: Text.AlignVCenter

@@ -99,7 +99,8 @@ SubscribableItem {
 
                     enabled: root.model && root.model.canMoveLeft
 
-                    text: qsTr("<")
+                    text: "<"
+                    font.bold: true
 
                     onClicked: root.model.moveLeft()
                 }
@@ -109,7 +110,8 @@ SubscribableItem {
 
                     enabled: root.model && root.model.canMoveRight
 
-                    text: qsTr(">")
+                    text: ">"
+                    font.bold: true
 
                     onClicked: root.model.moveRight()
                 }
@@ -122,6 +124,7 @@ SubscribableItem {
                 Layout.fillWidth: true
 
                 text: qsTr("Delete")
+                font.bold: true
 
                 Material.background: Material.color(Material.Red, Material.Shade400)
 

@@ -44,22 +44,28 @@ SubscribableItem {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                ComboBox {
+                PJControls.ComboBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    Layout.topMargin: 4
+                    Layout.bottomMargin: 4
 
                     model: root.channels
                     currentIndex: root.model ? root.model.stereoLeftChannel : -1
+                    textHorizontalAlignment: Text.AlignHCenter
 
                     onActivated: if (root.model) root.model.changeStereoLeftChannel(index)
                 }
 
-                ComboBox {
+                PJControls.ComboBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    Layout.topMargin: 4
+                    Layout.bottomMargin: 4
 
                     model: root.channels
                     currentIndex: root.model ? root.model.stereoRightChannel : -1
+                    textHorizontalAlignment: Text.AlignHCenter
 
                     onActivated: if (root.model) root.model.changeStereoRightChannel(index)
                 }

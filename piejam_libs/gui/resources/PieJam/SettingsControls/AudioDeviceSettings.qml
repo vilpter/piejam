@@ -25,7 +25,7 @@ SubscribableItem {
             model: root.model.soundCards.elements
             currentIndex: root.model.soundCards.focused
 
-            nameLabelText: qsTr("device:")
+            nameLabelText: qsTr("Device:")
             unselectedText: qsTr("Select...")
 
             onOptionSelected: root.model.selectSoundCard(index)
@@ -37,7 +37,7 @@ SubscribableItem {
             model: root.model.sampleRates.elements
             currentIndex: root.model.sampleRates.focused
 
-            nameLabelText: qsTr("sample rate:")
+            nameLabelText: qsTr("Sample rate:")
             unselectedText: qsTr("Select sample rate...")
 
             onOptionSelected: root.model.selectSampleRate(index)
@@ -62,7 +62,7 @@ SubscribableItem {
                         textFormat: Text.PlainText
                         font.pixelSize: 18
 
-                        text: qsTr("buffer size:")
+                        text: qsTr("Buffer size:")
                     }
 
                     Slider {
