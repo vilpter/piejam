@@ -7,7 +7,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
 // A ComboBox with elided display text.
-
 Item {
     id: root
 
@@ -40,12 +39,39 @@ Item {
         model: root.model
         currentIndex: root.currentIndex
 
-        displayText: root.elideMode === Qt.ElideNone
-                ? root.displayText
-                // TODO: how to derive proper contentItem.width
-                : fontMetrics.elidedText(root.displayText, root.elideMode, comboBox.contentItem.width - 4)
+        displayText: root.displayText
 
-        contentItem.anchors.fill: contentItem.parent
+        contentItem: Text {
+            anchors.fill: comboBox
+
+            text: root.displayText
+            font: comboBox.font
+            color: root.enabled ? Material.primaryTextColor : Material.secondaryTextColor
+            verticalAlignment: Text.AlignVCenter
+            elide: root.elideMode
+            padding: 6
+        }
+
+        indicator: Canvas {
+            anchors.right: comboBox.right
+            anchors.bottom: comboBox.bottom
+            anchors.bottomMargin: 6
+
+            width: 10
+            height: 10
+
+            contextType: "2d"
+
+            onPaint: {
+                context.reset();
+                context.moveTo(0, height);
+                context.lineTo(width, 0);
+                context.lineTo(width, height);
+                context.closePath();
+                context.fillStyle = Material.primaryTextColor;
+                context.fill();
+            }
+        }
 
         onActivated: root.activated(index)
 
@@ -53,5 +79,3 @@ Item {
         onModelChanged: currentIndex = Qt.binding(function () { return root.currentIndex } )
     }
 }
-
-
