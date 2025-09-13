@@ -34,6 +34,8 @@ SubscribableItem {
         ComboBoxSetting {
             Layout.fillWidth: true
 
+            enabled: root.model.soundCards.focused !== -1
+
             model: root.model.sampleRates.elements
             currentIndex: root.model.sampleRates.focused
 
@@ -46,6 +48,8 @@ SubscribableItem {
         Frame {
             Layout.fillWidth: true
             Layout.preferredHeight: 96
+
+            enabled: root.model.soundCards.focused !== -1
 
             ColumnLayout {
                 anchors.fill: parent
