@@ -6,7 +6,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-import PieJam.Controls 1.0
+import PieJam.Controls 1.0 as PJControls
 
 import ".."
 
@@ -19,7 +19,7 @@ SubscribableItem {
         anchors.fill: parent
         anchors.margins: 4
 
-        StringTextField {
+        PJControls.StringTextField {
             Layout.fillWidth: true
 
             model: root.model ? root.model.name : null
@@ -30,7 +30,7 @@ SubscribableItem {
 
             currentIndex: root.model ? (root.model.mono ? 0 : 1) : -1
 
-            ComboBox {
+            PJControls.ComboBox {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 

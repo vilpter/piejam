@@ -6,6 +6,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import PieJam.Controls 1.0 as PJControls
+
 Item {
 
     id: root
@@ -46,16 +48,16 @@ Item {
                 font.pixelSize: 18
             }
 
-            ComboBox {
+            PJControls.ComboBox {
                 id: comboBox
 
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                displayText: comboBox.count == 0
-                             ? emptyText
-                             : (comboBox.currentIndex == -1 ? unselectedText : comboBox.currentText)
-                enabled: comboBox.count != 0
+                displayText: comboBox.count === 0
+                             ? root.emptyText
+                             : (comboBox.currentIndex === -1 ? root.unselectedText : comboBox.currentText)
+                enabled: comboBox.count !== 0
 
                 onActivated: root.optionSelected(index)
             }

@@ -9,7 +9,7 @@ SPDX-License-Identifier: CC0-1.0
         <file>Main.qml</file>
         <file>PieJam/Controls/BusyLoader.qml</file>
         <file>PieJam/Controls/Circle.qml</file>
-        <file>PieJam/Controls/ComboBoxElided.qml</file>
+        <file>PieJam/Controls/ComboBox.qml</file>
         <file>PieJam/Controls/CpuLoadMeter.qml</file>
         <file>PieJam/Controls/DiskSpaceIndicator.qml</file>
         <file>PieJam/Controls/HeaderLabel.qml</file>

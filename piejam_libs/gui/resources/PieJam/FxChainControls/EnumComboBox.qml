@@ -5,7 +5,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
-import PieJam.Controls 1.0
+import PieJam.Controls 1.0 as PJControls
 import PieJam.Models 1.0
 
 import ".."
@@ -19,7 +19,7 @@ SubscribableItem {
         readonly property var paramModel: root.model && root.model.type === Parameter.Type.Enum ? root.model : null
     }
 
-    ComboBox {
+    PJControls.ComboBox {
         id: comboBox
 
         anchors.fill: parent;
@@ -37,7 +37,7 @@ SubscribableItem {
         }
     }
 
-    MidiAssignArea {
+    PJControls.MidiAssignArea {
         anchors.fill: parent
 
         model: private_.paramModel ? private_.paramModel.midi : null

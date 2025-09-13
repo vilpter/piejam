@@ -4,7 +4,7 @@
 
 module PieJam.Controls
 BusyLoader 1.0 BusyLoader.qml
-ComboBoxElided 1.0 ComboBoxElided.qml
+ComboBox 1.0 ComboBox.qml
 ColorSelector 1.0 ColorSelector.qml
 HeaderLabel 1.0 HeaderLabel.qml
 InfoReadout 1.0 InfoReadout.qml
