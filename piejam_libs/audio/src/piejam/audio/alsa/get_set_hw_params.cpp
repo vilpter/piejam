@@ -236,7 +236,7 @@ get_hw_params(
 
     auto hw_params = make_snd_pcm_hw_params_for_refine_any();
 
-    system::device fd(sound_card);
+    system::device fd(sound_card.device_path);
     if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_REFINE, hw_params))
     {
         throw std::system_error(err);

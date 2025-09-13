@@ -13,14 +13,20 @@
 namespace piejam::audio
 {
 
-using sound_card_stream_descriptor = std::filesystem::path;
+struct sound_card_stream_descriptor
+{
+    std::filesystem::path device_path;
+
+    auto operator==(sound_card_stream_descriptor const&) const noexcept
+            -> bool = default;
+};
 
 struct sound_card_descriptor
 {
     std::string name;
     io_pair<sound_card_stream_descriptor> streams;
 
-    auto operator==(sound_card_descriptor const& other) const noexcept
+    auto operator==(sound_card_descriptor const&) const noexcept
             -> bool = default;
 };
 

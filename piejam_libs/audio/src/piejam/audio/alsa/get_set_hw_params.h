@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/audio/fwd.h>
-#include <piejam/audio/sound_card_descriptor.h>
 
 #include <piejam/system/fwd.h>
 

@@ -7,7 +7,6 @@
 #include <piejam/audio/fwd.h>
 #include <piejam/audio/io_process.h>
 #include <piejam/audio/io_process_config.h>
-#include <piejam/audio/sound_card_descriptor.h>
 
 #include <piejam/system/device.h>
 

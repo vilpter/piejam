@@ -73,8 +73,14 @@ pcm_io::pcm_io(
         sound_card_stream_descriptor const& in,
         sound_card_stream_descriptor const& out,
         io_process_config const& io_config)
-    : m_input_fd(open_pcm(in, io_config.in_config, io_config.buffer_config))
-    , m_output_fd(open_pcm(out, io_config.out_config, io_config.buffer_config))
+    : m_input_fd(open_pcm(
+              in.device_path,
+              io_config.in_config,
+              io_config.buffer_config))
+    , m_output_fd(open_pcm(
+              out.device_path,
+              io_config.out_config,
+              io_config.buffer_config))
     , m_io_config(io_config)
 {
     if (m_input_fd && m_output_fd)

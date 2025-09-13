@@ -172,13 +172,13 @@ make_update_devices_action(
 
     auto const& selected_sc = new_devices.get()[next_action.selected_sc.index];
 
-    if (!selected_sc.streams.in.empty())
+    if (!selected_sc.streams.in.device_path.empty())
     {
         next_action.selected_sc.hw_params.in =
                 box(device_manager.hw_params(selected_sc.streams.in, {}, {}));
     }
 
-    if (!selected_sc.streams.out.empty())
+    if (!selected_sc.streams.out.device_path.empty())
     {
         next_action.selected_sc.hw_params.out =
                 box(device_manager.hw_params(selected_sc.streams.out, {}, {}));

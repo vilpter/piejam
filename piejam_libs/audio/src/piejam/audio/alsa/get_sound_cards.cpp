@@ -113,24 +113,22 @@ get_sound_card_descriptors(sound_card_info const& sc)
                     spdlog::error("get_sound_card_pcm_infos: {}", message);
                 }
 
-                return sound_card_stream_descriptor{};
+                return std::filesystem::path{};
             }
 
             desc.name = std::format(
                     "{} - {}",
                     reinterpret_cast<char const*>(sc.info.name),
                     reinterpret_cast<char const*>(info.name));
-            return std::filesystem::path(
-                    std::format(
-                            "/dev/snd/pcmC{}D{}{}",
-                            sc.info.card,
-                            info.device,
-                            stream_type == SNDRV_PCM_STREAM_CAPTURE ? 'c'
-                                                                    : 'p'));
+            return std::filesystem::path{std::format(
+                    "/dev/snd/pcmC{}D{}{}",
+                    sc.info.card,
+                    info.device,
+                    stream_type == SNDRV_PCM_STREAM_CAPTURE ? 'c' : 'p')};
         };
 
-        desc.streams.in = get_stream(SNDRV_PCM_STREAM_CAPTURE);
-        desc.streams.out = get_stream(SNDRV_PCM_STREAM_PLAYBACK);
+        desc.streams.in.device_path = get_stream(SNDRV_PCM_STREAM_CAPTURE);
+        desc.streams.out.device_path = get_stream(SNDRV_PCM_STREAM_PLAYBACK);
         result.emplace_back(std::move(desc));
 
     } while (device != -1);
