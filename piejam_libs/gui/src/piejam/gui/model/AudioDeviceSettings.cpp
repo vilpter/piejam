@@ -12,7 +12,6 @@
 #include <piejam/redux/subscriptions_manager.h>
 #include <piejam/runtime/actions/initiate_sound_card_selection.h>
 #include <piejam/runtime/actions/scan_for_sound_cards.h>
-#include <piejam/runtime/actions/select_period_count.h>
 #include <piejam/runtime/actions/select_period_size.h>
 #include <piejam/runtime/actions/select_sample_rate.h>
 #include <piejam/runtime/selectors.h>

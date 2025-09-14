@@ -25,7 +25,6 @@ struct io_process_config;
 template <class T>
 struct pair;
 
-class period_count;
 class period_size;
 class sample_rate;
 

@@ -46,7 +46,6 @@ save_app_config(
                         : std::string();
         conf.sample_rate = state.sample_rate;
         conf.period_size = state.period_size;
-        conf.period_count = state.period_count;
 
         conf.enabled_midi_input_devices = enabled_midi_input_devices;
 

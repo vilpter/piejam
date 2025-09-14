@@ -64,7 +64,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/pcm_convert.h
     include/piejam/audio/pcm_format.h
     include/piejam/audio/pcm_sample_type.h
-    include/piejam/audio/period_count.h
     include/piejam/audio/period_size.h
     include/piejam/audio/pitch.h
     include/piejam/audio/process_function.h

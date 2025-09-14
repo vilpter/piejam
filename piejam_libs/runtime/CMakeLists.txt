@@ -36,7 +36,6 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/actions/save_app_config.h
     include/piejam/runtime/actions/save_session.h
     include/piejam/runtime/actions/scan_ladspa_fx_plugins.h
-    include/piejam/runtime/actions/select_period_count.h
     include/piejam/runtime/actions/select_period_size.h
     include/piejam/runtime/actions/select_sample_rate.h
     include/piejam/runtime/actions/set_float_parameter_normalized.h

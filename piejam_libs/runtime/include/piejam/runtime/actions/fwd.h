@@ -21,7 +21,6 @@ struct recorder_action;
 
 struct select_sample_rate;
 struct select_period_size;
-struct select_period_count;
 
 struct refresh_midi_devices;
 struct activate_midi_device;

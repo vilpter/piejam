@@ -32,10 +32,10 @@ open_pcm(
     {
         system::device fd(path);
 
-        set_hw_params(fd, device_config, process_config);
+        auto [period_count] = set_hw_params(fd, device_config, process_config);
 
-        unsigned const buffer_size = process_config.period_size.value() *
-                                     process_config.period_count.value();
+        unsigned const buffer_size =
+                process_config.period_size.value() * period_count;
         snd_pcm_sw_params sw_params{};
         sw_params.proto = SNDRV_PCM_VERSION;
         sw_params.tstamp_mode = SNDRV_PCM_TSTAMP_ENABLE;

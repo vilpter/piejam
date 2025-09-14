@@ -13,7 +13,6 @@
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/string_id.h>
 
-#include <piejam/audio/period_count.h>
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/sound_card_descriptor.h>

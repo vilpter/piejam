@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/audio/period_count.h>
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 
@@ -19,9 +18,9 @@ struct sound_card_stream_hw_params
     unsigned num_channels{};
     sample_rates_t sample_rates;
     period_sizes_t period_sizes;
-    period_counts_t period_counts;
 
-    auto operator==(sound_card_stream_hw_params const&) const noexcept
+    [[nodiscard]]
+    constexpr auto operator==(sound_card_stream_hw_params const&) const noexcept
             -> bool = default;
 };
 

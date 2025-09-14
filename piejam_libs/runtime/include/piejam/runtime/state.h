@@ -26,7 +26,6 @@
 #include <piejam/runtime/selected_sound_card.h>
 #include <piejam/runtime/string_id.h>
 
-#include <piejam/audio/period_count.h>
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/sound_card_descriptor.h>
@@ -58,7 +57,6 @@ struct state
 
     audio::sample_rate sample_rate{};
     audio::period_size period_size{};
-    audio::period_count period_count{};
 
     external_audio::state external_audio_state;
 
@@ -112,12 +110,6 @@ auto period_sizes(
         audio::sound_card_stream_hw_params const& output_hw_params)
         -> audio::period_sizes_t;
 auto period_sizes_from_state(state const&) -> audio::period_sizes_t;
-
-auto period_counts(
-        audio::sound_card_stream_hw_params const& input_hw_params,
-        audio::sound_card_stream_hw_params const& output_hw_params)
-        -> audio::period_counts_t;
-auto period_counts_from_state(state const&) -> audio::period_counts_t;
 
 auto add_external_audio_device(
         state&,

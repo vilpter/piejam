@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 
 namespace piejam::audio::alsa
 {
@@ -224,6 +225,25 @@ pcm_to_alsa_format(pcm_format pf) -> unsigned
     }
 }
 
+auto
+get_period_count(system::device& fd, auto const& hw_params)
+{
+    auto max_period_count =
+            get_interval(hw_params, SNDRV_PCM_HW_PARAM_PERIODS).max;
+    auto availabe_period_counts = std::views::iota(2u, max_period_count + 1);
+    auto ideal_period_count = std::ranges::find_if(
+            availabe_period_counts,
+            test_interval_value(fd, hw_params, SNDRV_PCM_HW_PARAM_PERIODS));
+
+    if (ideal_period_count == availabe_period_counts.end())
+    {
+        throw std::runtime_error(
+                "couldn't not configure driver: no valid period count");
+    }
+
+    return *ideal_period_count;
+}
+
 } // namespace
 
 auto
@@ -315,22 +335,17 @@ get_hw_params(
                 period_size.value());
     }
 
-    BOOST_ASSERT(result.period_counts.empty());
-    std::ranges::copy_if(
-            preferred_period_counts,
-            std::back_inserter(result.period_counts),
-            test_interval_value(fd, hw_params, SNDRV_PCM_HW_PARAM_PERIODS),
-            &audio::period_count::value);
-
     return result;
 }
 
-void
+auto
 set_hw_params(
         system::device& fd,
         sound_card_config const& sound_card_config,
-        sound_card_buffer_config const& buffer_config)
+        sound_card_buffer_config const& buffer_config) -> set_hw_params_result
 {
+    set_hw_params_result result;
+
     auto hw_params = make_snd_pcm_hw_params_for_refine_any();
 
     if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_REFINE, hw_params))
@@ -372,15 +387,20 @@ set_hw_params(
             hw_params,
             SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
             buffer_config.period_size.value());
+
+    result.period_count = get_period_count(fd, hw_params);
+
     set_interval_value(
             hw_params,
             SNDRV_PCM_HW_PARAM_PERIODS,
-            buffer_config.period_count.value());
+            result.period_count);
 
     if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_PARAMS, hw_params))
     {
         throw std::system_error(err);
     }
+
+    return result;
 }
 
 } // namespace piejam::audio::alsa

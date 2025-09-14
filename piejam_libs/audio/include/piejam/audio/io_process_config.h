@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/audio/period_count.h>
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 
@@ -23,7 +22,6 @@ struct sound_card_buffer_config
 {
     audio::sample_rate sample_rate;
     audio::period_size period_size;
-    audio::period_count period_count;
 };
 
 struct io_process_config

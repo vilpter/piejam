@@ -17,7 +17,6 @@ struct audio_io_process_action_visitor
               initiate_sound_card_selection,
               select_sample_rate,
               select_period_size,
-              select_period_count,
               activate_midi_device,
               deactivate_midi_device>
 {

@@ -8,7 +8,6 @@
 
 #include <piejam/audio/engine/processor.h>
 #include <piejam/audio/io_process.h>
-#include <piejam/audio/period_count.h>
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/runtime/actions/initiate_sound_card_selection.h>
@@ -78,7 +77,7 @@ TEST_F(audio_engine_middleware_test, select_sample_rate_will_change_sample_rate)
             .sample_rates =
                     {audio::sample_rate(44100u), audio::sample_rate(48000u)},
             .period_sizes = {},
-            .period_counts = {}};
+    };
 
     state st;
     st.sound_cards = audio::sound_cards{std::vector{
@@ -110,7 +109,7 @@ TEST_F(audio_engine_middleware_test, select_period_size_will_change_period_size)
             .sample_rates =
                     {audio::sample_rate(44100u), audio::sample_rate(48000u)},
             .period_sizes = {audio::period_size(64u), audio::period_size(128u)},
-            .period_counts = {}};
+    };
 
     state st;
     st.sound_cards = audio::sound_cards{std::vector{
@@ -142,7 +141,7 @@ TEST_F(audio_engine_middleware_test,
     piejam::audio::sound_card_stream_hw_params hw_params{
             .sample_rates = {audio::sample_rate(44100u)},
             .period_sizes = {audio::period_size(128u)},
-            .period_counts = {audio::period_count(2u)}};
+    };
 
     state st;
     st.selected_sound_card.index = 0;

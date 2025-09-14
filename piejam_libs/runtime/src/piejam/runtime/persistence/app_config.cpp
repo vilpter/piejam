@@ -24,11 +24,6 @@ M_PIEJAM_PERSISTENCE_DEFINE_STRONG_TYPE_SERIALIER(
         unsigned,
         "period_size");
 
-M_PIEJAM_PERSISTENCE_DEFINE_STRONG_TYPE_SERIALIER(
-        period_count,
-        unsigned,
-        "period_count");
-
 } // namespace piejam::audio
 
 namespace piejam::runtime::persistence
@@ -48,7 +43,6 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         sound_card,
         sample_rate,
         period_size,
-        period_count,
         enabled_midi_input_devices,
         rec_session);
 
