@@ -15,15 +15,14 @@ enum class pcm_format : unsigned;
 
 struct sound_card_stream_hw_params
 {
-    bool interleaved{};
     pcm_format format{};
     unsigned num_channels{};
     sample_rates_t sample_rates;
     period_sizes_t period_sizes;
     period_counts_t period_counts;
 
-    auto
-    operator==(sound_card_stream_hw_params const&) const noexcept -> bool = default;
+    auto operator==(sound_card_stream_hw_params const&) const noexcept
+            -> bool = default;
 };
 
 } // namespace piejam::audio

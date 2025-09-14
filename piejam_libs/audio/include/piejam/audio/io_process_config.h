@@ -15,7 +15,6 @@ enum class pcm_format : unsigned;
 
 struct sound_card_config
 {
-    bool interleaved{};
     pcm_format format{};
     unsigned num_channels{};
 };

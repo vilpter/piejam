@@ -549,14 +549,10 @@ audio_engine_middleware::open_sound_card(state const& st)
                 st.sound_cards.get()[st.selected_sound_card.index].streams.out,
                 audio::io_process_config{
                         audio::sound_card_config{
-                                st.selected_sound_card.hw_params.in
-                                        ->interleaved,
                                 st.selected_sound_card.hw_params.in->format,
                                 st.selected_sound_card.hw_params.in
                                         ->num_channels},
                         audio::sound_card_config{
-                                st.selected_sound_card.hw_params.out
-                                        ->interleaved,
                                 st.selected_sound_card.hw_params.out->format,
                                 st.selected_sound_card.hw_params.out
                                         ->num_channels},

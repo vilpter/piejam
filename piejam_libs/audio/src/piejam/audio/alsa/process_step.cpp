@@ -196,9 +196,6 @@ make_reader(
         return std::make_unique<dummy_reader>();
     }
 
-    if (config.interleaved)
-    {
-
 #define M_PIEJAM_INTERLEAVED_READER_CASE(Format)                               \
     case Format:                                                               \
         return std::make_unique<interleaved_reader<Format>>(                   \
@@ -206,34 +203,29 @@ make_reader(
                 config.num_channels,                                           \
                 period_size)
 
-        switch (config.format)
-        {
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s8);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u8);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s16_le);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s16_be);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u16_le);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u16_be);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s32_le);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s32_be);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u32_le);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u32_be);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s24_3le);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s24_3be);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u24_3le);
-            M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u24_3be);
+    switch (config.format)
+    {
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s8);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u8);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s16_le);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s16_be);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u16_le);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u16_be);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s32_le);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s32_be);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u32_le);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u32_be);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s24_3le);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::s24_3be);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u24_3le);
+        M_PIEJAM_INTERLEAVED_READER_CASE(pcm_format::u24_3be);
 
-            default:
-                BOOST_ASSERT(false);
-                return std::make_unique<dummy_reader>();
-        }
+        default:
+            BOOST_ASSERT(false);
+            return std::make_unique<dummy_reader>();
+    }
 
 #undef M_PIEJAM_INTERLEAVED_READER_CASE
-    }
-    else
-    {
-        return std::make_unique<dummy_reader>();
-    }
 }
 
 struct dummy_writer final : pcm_writer
@@ -355,9 +347,6 @@ make_writer(
         return std::make_unique<dummy_writer>();
     }
 
-    if (config.interleaved)
-    {
-
 #define M_PIEJAM_INTERLEAVED_WRITER_CASE(Format)                               \
     case Format:                                                               \
         return std::make_unique<interleaved_writer<Format>>(                   \
@@ -365,34 +354,29 @@ make_writer(
                 config.num_channels,                                           \
                 period_size)
 
-        switch (config.format)
-        {
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s8);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u8);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s16_le);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s16_be);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u16_le);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u16_be);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s32_le);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s32_be);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u32_le);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u32_be);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s24_3le);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s24_3be);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u24_3le);
-            M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u24_3be);
+    switch (config.format)
+    {
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s8);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u8);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s16_le);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s16_be);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u16_le);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u16_be);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s32_le);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s32_be);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u32_le);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u32_be);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s24_3le);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::s24_3be);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u24_3le);
+        M_PIEJAM_INTERLEAVED_WRITER_CASE(pcm_format::u24_3be);
 
-            default:
-                BOOST_ASSERT(false);
-                return std::make_unique<dummy_writer>();
-        }
+        default:
+            BOOST_ASSERT(false);
+            return std::make_unique<dummy_writer>();
+    }
 
 #undef M_PIEJAM_INTERLEAVED_WRITER_CASE
-    }
-    else
-    {
-        return std::make_unique<dummy_writer>();
-    }
 }
 
 } // namespace

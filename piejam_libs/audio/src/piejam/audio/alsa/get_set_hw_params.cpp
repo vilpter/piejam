@@ -256,20 +256,6 @@ get_hw_params(
         throw std::system_error(err);
     }
 
-    result.interleaved =
-            test_mask_bit(
-                    hw_params,
-                    SNDRV_PCM_HW_PARAM_ACCESS,
-                    SNDRV_PCM_ACCESS_RW_NONINTERLEAVED)
-                    ? false
-            : test_mask_bit(
-                      hw_params,
-                      SNDRV_PCM_HW_PARAM_ACCESS,
-                      SNDRV_PCM_ACCESS_RW_INTERLEAVED)
-                    ? true
-                    : throw std::runtime_error(
-                              "rw access not supported, only mmap?");
-
     static constexpr std::array preferred_formats{
             SNDRV_PCM_FORMAT_S32_LE,
             SNDRV_PCM_FORMAT_U32_LE,
@@ -354,10 +340,22 @@ set_hw_params(
 
     hw_params.cmask = 0;
 
-    unsigned const interleaved_bit =
-            sound_card_config.interleaved ? SNDRV_PCM_ACCESS_RW_INTERLEAVED
-                                          : SNDRV_PCM_ACCESS_RW_NONINTERLEAVED;
-    set_mask_bit(hw_params, SNDRV_PCM_HW_PARAM_ACCESS, interleaved_bit);
+    if (test_mask_bit(
+                hw_params,
+                SNDRV_PCM_HW_PARAM_ACCESS,
+                SNDRV_PCM_ACCESS_RW_INTERLEAVED))
+    {
+        set_mask_bit(
+                hw_params,
+                SNDRV_PCM_HW_PARAM_ACCESS,
+                SNDRV_PCM_ACCESS_RW_INTERLEAVED);
+    }
+    else
+    {
+        throw std::runtime_error(
+                "driver doesn't support interleaved transfer mode");
+    }
+
     set_mask_bit(
             hw_params,
             SNDRV_PCM_HW_PARAM_FORMAT,
