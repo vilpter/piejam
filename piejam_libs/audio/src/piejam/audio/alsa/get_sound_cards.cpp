@@ -148,7 +148,7 @@ get_sound_cards() -> sound_cards
         result.append_range(get_sound_card_descriptors(sc_info));
     }
 
-    return box(std::move(result));
+    return result;
 }
 
 } // namespace piejam::audio::alsa
