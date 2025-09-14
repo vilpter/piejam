@@ -13,6 +13,7 @@ Item {
     property alias count: comboBox.count
     property int currentIndex: -1
     property alias currentText: comboBox.currentText
+    property alias delegate: comboBox.delegate
     property alias displayText: comboBox.displayText
     property int elideMode: Qt.ElideNone
     property var model: null

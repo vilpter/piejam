@@ -18,6 +18,8 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
+#include <QAbstractListModel>
+
 #include <boost/hof/lift.hpp>
 
 #include <algorithm>
@@ -44,8 +46,7 @@ auto const QString_from_number = BOOST_HOF_LIFT(QString::number);
 
 struct AudioDeviceSettings::Impl
 {
-    StringList input_sound_cards;
-    StringList output_sound_cards;
+    QVector<SoundCardInfo> sound_cards;
     StringList sample_rates;
     StringList period_sizes;
 };
@@ -56,12 +57,7 @@ AudioDeviceSettings::AudioDeviceSettings(
     : Subscribable(store_dispatch, state_change_subscriber)
     , m_impl{make_pimpl<Impl>()}
 {
-}
-
-auto
-AudioDeviceSettings::soundCards() const noexcept -> soundCards_property_t
-{
-    return &m_impl->input_sound_cards;
+    m_selectedSoundCardIndex = -1;
 }
 
 auto
@@ -83,10 +79,20 @@ AudioDeviceSettings::onSubscribe()
 
     observe(selectors::select_sound_card,
             [this](selectors::sound_card_choice const& choice) {
-                soundCards()->setElements(to_QStringList(
+                QVector<SoundCardInfo> infos;
+                infos.reserve(choice.available.size());
+                std::ranges::transform(
                         choice.available,
-                        &QString::fromStdString));
-                soundCards()->setFocused(static_cast<int>(choice.current));
+                        std::back_inserter(infos),
+                        [](runtime::selectors::sound_card_info const& info) {
+                            SoundCardInfo result;
+                            result.name = QString::fromStdString(info.name);
+                            result.numIns = static_cast<int>(info.num_ins);
+                            result.numOuts = static_cast<int>(info.num_outs);
+                            return result;
+                        });
+                setSoundCards(std::move(infos));
+                setSelectedSoundCardIndex(static_cast<int>(choice.current));
             });
 
     observe(selectors::select_sample_rate,
@@ -152,14 +158,6 @@ void
 AudioDeviceSettings::selectPeriodSize(unsigned const index)
 {
     runtime::actions::select_period_size action;
-    action.index = index;
-    dispatch(action);
-}
-
-void
-AudioDeviceSettings::selectPeriodCount(unsigned const index)
-{
-    runtime::actions::select_period_count action;
     action.index = index;
     dispatch(action);
 }

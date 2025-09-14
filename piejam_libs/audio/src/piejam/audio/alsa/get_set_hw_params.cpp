@@ -227,6 +227,20 @@ pcm_to_alsa_format(pcm_format pf) -> unsigned
 } // namespace
 
 auto
+get_num_channels(std::filesystem::path const& device_path) -> unsigned
+{
+    system::device fd(device_path, system::device::blocking::off);
+
+    auto hw_params = make_snd_pcm_hw_params_for_refine_any();
+    if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_REFINE, hw_params))
+    {
+        throw std::system_error(err);
+    }
+
+    return get_interval(hw_params, SNDRV_PCM_HW_PARAM_CHANNELS).max;
+}
+
+auto
 get_hw_params(
         sound_card_stream_descriptor const& sound_card,
         sample_rate const sample_rate,

@@ -56,7 +56,15 @@ extern selector<box<period_size_choice>> const select_period_size;
 
 extern selector<float> const select_buffer_latency;
 
-using sound_card_choice = choice_model<std::vector<std::string>, std::size_t>;
+struct sound_card_info
+{
+    std::string name;
+    unsigned num_ins{};
+    unsigned num_outs{};
+};
+
+using sound_card_choice =
+        choice_model<std::vector<sound_card_info>, std::size_t>;
 extern selector<box<sound_card_choice>> const select_sound_card;
 
 auto make_num_device_channels_selector(io_direction) -> selector<std::size_t>;

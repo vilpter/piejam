@@ -4,6 +4,8 @@
 
 #include "get_sound_cards.h"
 
+#include "get_set_hw_params.h"
+
 #include <piejam/box.h>
 #include <piejam/io_pair.h>
 #include <piejam/system/device.h>
@@ -17,6 +19,7 @@
 
 #include <filesystem>
 #include <format>
+#include <fstream>
 
 namespace piejam::audio::alsa
 {
@@ -72,6 +75,84 @@ scan_for_sound_cards() -> std::vector<sound_card_info>
 }
 
 auto
+get_num_channels_from_procfs(int card, unsigned int device, char stream_type)
+        -> unsigned
+{
+    auto hw_params_path = std::filesystem::path{std::format(
+            "/proc/asound/card{}/pcm{}{}/sub0/hw_params",
+            card,
+            device,
+            stream_type)};
+    if (!std::filesystem::exists(hw_params_path))
+    {
+        spdlog::error(
+                "get_num_channels_from_procfs: {} does not exist",
+                hw_params_path.string());
+        return 0u;
+    }
+
+    std::ifstream file(hw_params_path);
+    if (!file.is_open())
+    {
+        spdlog::error(
+                "get_num_channels_from_procfs: cannot open {}",
+                hw_params_path.string());
+        return 0u;
+    }
+
+    std::string line;
+    unsigned channels = 0;
+
+    while (std::getline(file, line))
+    {
+        if (std::sscanf(line.c_str(), "channels: %u", &channels) == 1)
+        {
+            return channels;
+        }
+    }
+
+    spdlog::error("get_num_channels_from_procfs: could not retrieve channels");
+    return 0u;
+}
+
+auto
+make_sound_card_stream_descriptor(
+        int card,
+        unsigned int device,
+        char stream_type) -> sound_card_stream_descriptor
+{
+    auto device_path = std::filesystem::path{
+            std::format("/dev/snd/pcmC{}D{}{}", card, device, stream_type)};
+
+    BOOST_ASSERT(std::filesystem::exists(device_path));
+
+    unsigned num_channels{};
+
+    try
+    {
+        num_channels = get_num_channels(device_path);
+    }
+    catch (std::system_error const& e)
+    {
+        if (e.code() !=
+            std::make_error_code(std::errc::device_or_resource_busy))
+        {
+            spdlog::error("make_sound_card_stream_descriptor: {}", e.what());
+        }
+        else
+        {
+            num_channels =
+                    get_num_channels_from_procfs(card, device, stream_type);
+        }
+    }
+
+    return sound_card_stream_descriptor{
+            .device_path = device_path,
+            .num_channels = num_channels,
+    };
+}
+
+auto
 get_sound_card_descriptors(sound_card_info const& sc)
         -> std::vector<sound_card_descriptor>
 {
@@ -113,22 +194,22 @@ get_sound_card_descriptors(sound_card_info const& sc)
                     spdlog::error("get_sound_card_pcm_infos: {}", message);
                 }
 
-                return std::filesystem::path{};
+                return sound_card_stream_descriptor{};
             }
 
             desc.name = std::format(
                     "{} - {}",
                     reinterpret_cast<char const*>(sc.info.name),
                     reinterpret_cast<char const*>(info.name));
-            return std::filesystem::path{std::format(
-                    "/dev/snd/pcmC{}D{}{}",
+
+            return make_sound_card_stream_descriptor(
                     sc.info.card,
                     info.device,
-                    stream_type == SNDRV_PCM_STREAM_CAPTURE ? 'c' : 'p')};
+                    stream_type == SNDRV_PCM_STREAM_CAPTURE ? 'c' : 'p');
         };
 
-        desc.streams.in.device_path = get_stream(SNDRV_PCM_STREAM_CAPTURE);
-        desc.streams.out.device_path = get_stream(SNDRV_PCM_STREAM_PLAYBACK);
+        desc.streams.in = get_stream(SNDRV_PCM_STREAM_CAPTURE);
+        desc.streams.out = get_stream(SNDRV_PCM_STREAM_PLAYBACK);
         result.emplace_back(std::move(desc));
 
     } while (device != -1);

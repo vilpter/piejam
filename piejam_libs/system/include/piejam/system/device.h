@@ -18,8 +18,14 @@ namespace piejam::system
 class device
 {
 public:
+    enum class blocking : bool
+    {
+        off,
+        on,
+    };
+
     device() noexcept = default;
-    device(std::filesystem::path const& pathname);
+    device(std::filesystem::path const& pathname, blocking = blocking::on);
     device(device const&) = delete;
     device(device&& other) noexcept;
 

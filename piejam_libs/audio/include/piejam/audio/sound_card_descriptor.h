@@ -16,6 +16,7 @@ namespace piejam::audio
 struct sound_card_stream_descriptor
 {
     std::filesystem::path device_path;
+    unsigned num_channels{};
 
     auto operator==(sound_card_stream_descriptor const&) const noexcept
             -> bool = default;

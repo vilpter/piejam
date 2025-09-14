@@ -16,8 +16,10 @@ Item {
     property alias nameLabelText: nameLabel.text
     property alias model: comboBox.model
     property alias currentIndex: comboBox.currentIndex
+    property alias delegate: comboBox.delegate
     property string emptyText: qsTr("Not Available")
     property string unselectedText: qsTr("Select...")
+    property var displayText: undefined
 
     signal optionSelected(int index)
 
@@ -55,8 +57,10 @@ Item {
                 Layout.fillHeight: true
 
                 displayText: comboBox.count === 0
-                             ? root.emptyText
-                             : (comboBox.currentIndex === -1 ? root.unselectedText : comboBox.currentText)
+                        ? root.emptyText
+                        : (comboBox.currentIndex === -1
+                                ? root.unselectedText
+                                : (root.displayText !== undefined ? root.displayText : comboBox.currentText))
                 enabled: comboBox.count !== 0
 
                 onActivated: root.optionSelected(index)

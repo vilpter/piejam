@@ -19,6 +19,7 @@ using Strings = GenericListModel<String>;
 using MaterialColor = int;
 
 class AudioDeviceSettings;
+class SoundCardInfo;
 class AudioInputOutputSettings;
 
 class FxChainModule;

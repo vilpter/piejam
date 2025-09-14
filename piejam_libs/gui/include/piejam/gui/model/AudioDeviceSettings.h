@@ -5,11 +5,14 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
+#include <piejam/gui/model/SoundCardInfo.h>
 #include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/pimpl.h>
+
+#include <QVector>
 
 namespace piejam::gui::model
 {
@@ -18,7 +21,14 @@ class AudioDeviceSettings final : public Subscribable<SubscribableModel>
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, soundCards)
+    M_PIEJAM_GUI_PROPERTY(
+            QVector<piejam::gui::model::SoundCardInfo>,
+            soundCards,
+            setSoundCards)
+    M_PIEJAM_GUI_PROPERTY(
+            int,
+            selectedSoundCardIndex,
+            setSelectedSoundCardIndex)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, sampleRates)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StringList*, periodSizes)
     M_PIEJAM_GUI_PROPERTY(double, bufferLatency, setBufferLatency)
@@ -26,14 +36,14 @@ class AudioDeviceSettings final : public Subscribable<SubscribableModel>
 public:
     AudioDeviceSettings(runtime::store_dispatch, runtime::subscriber&);
 
-    Q_INVOKABLE void refreshSoundCardLists();
     Q_INVOKABLE void selectSoundCard(unsigned index);
     Q_INVOKABLE void selectSampleRate(unsigned index);
     Q_INVOKABLE void selectPeriodSize(unsigned index);
-    Q_INVOKABLE void selectPeriodCount(unsigned index);
 
 private:
     void onSubscribe() override;
+
+    void refreshSoundCardLists();
 
     struct Impl;
     pimpl<Impl> m_impl;

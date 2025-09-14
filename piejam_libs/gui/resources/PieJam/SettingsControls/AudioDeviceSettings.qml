@@ -4,6 +4,7 @@
 
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import ".."
@@ -22,11 +23,55 @@ SubscribableItem {
         ComboBoxSetting {
             Layout.fillWidth: true
 
-            model: root.model.soundCards.elements
-            currentIndex: root.model.soundCards.focused
+            model: root.model.soundCards
+            currentIndex: root.model.selectedSoundCardIndex
+
+            delegate: ItemDelegate {
+                id: delegate
+
+                required property var modelData
+                required property int index
+
+                implicitHeight: 48
+                width: parent ? parent.width : undefined
+
+                contentItem: Item {
+                    anchors.fill: parent
+                    anchors.margins: 4
+
+                    ColumnLayout {
+                        anchors.fill: parent
+
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+
+                            color: delegate.highlighted ? Material.accent : Material.foreground
+                            elide: Text.ElideRight
+                            font.pixelSize: 16
+                            verticalAlignment: Text.AlignVCenter
+                            text: delegate.modelData.name
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+
+                            text: "Ins: " + delegate.modelData.numIns + " Outs: " + delegate.modelData.numOuts
+                            font.pixelSize: 14
+                            color: Material.hintTextColor
+                        }
+                    }
+                }
+
+                highlighted: root.model.selectedSoundCardIndex === delegate.index
+            }
 
             nameLabelText: qsTr("Device:")
             unselectedText: qsTr("Select...")
+            displayText: root.model.selectedSoundCardIndex !== -1
+                    ? root.model.soundCards[root.model.selectedSoundCardIndex].name
+                    : undefined
 
             onOptionSelected: root.model.selectSoundCard(index)
         }
@@ -34,7 +79,7 @@ SubscribableItem {
         ComboBoxSetting {
             Layout.fillWidth: true
 
-            enabled: root.model.soundCards.focused !== -1
+            enabled: root.model.selectedSoundCardIndex !== -1
 
             model: root.model.sampleRates.elements
             currentIndex: root.model.sampleRates.focused
@@ -49,7 +94,7 @@ SubscribableItem {
             Layout.fillWidth: true
             Layout.preferredHeight: 96
 
-            enabled: root.model.soundCards.focused !== -1
+            enabled: root.model.selectedSoundCardIndex !== -1
 
             ColumnLayout {
                 anchors.fill: parent

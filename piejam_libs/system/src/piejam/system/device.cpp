@@ -17,8 +17,10 @@
 namespace piejam::system
 {
 
-device::device(std::filesystem::path const& pathname)
-    : m_fd(::open(pathname.c_str(), O_RDONLY))
+device::device(std::filesystem::path const& pathname, blocking b)
+    : m_fd(
+              ::open(pathname.c_str(),
+                     O_RDONLY | (b == blocking::off ? O_NONBLOCK : 0)))
 {
     if (m_fd < 0)
     {

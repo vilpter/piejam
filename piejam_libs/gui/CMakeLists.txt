@@ -145,6 +145,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/SpectrumGenerator.cpp
     src/piejam/gui/model/String.cpp
     src/piejam/gui/qt_log.cpp
+    include/piejam/gui/model/SoundCardInfo.h
 )
 
 target_include_directories(piejam_gui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

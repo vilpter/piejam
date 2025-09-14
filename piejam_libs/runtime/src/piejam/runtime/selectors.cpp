@@ -113,15 +113,21 @@ selector<float> const select_buffer_latency([](state const& st) {
 });
 
 selector<box<sound_card_choice>> const select_sound_card([](state const& st) {
-    static auto get_sound_card = memo(
-            [](box<audio::sound_cards> const& descs, std::size_t const index) {
-                return box<sound_card_choice>{
-                        std::in_place,
-                        algorithm::transform_to_vector(
-                                descs.get(),
-                                &audio::sound_card_descriptor::name),
-                        index};
-            });
+    static auto get_sound_card = memo([](box<audio::sound_cards> const& descs,
+                                         std::size_t const index) {
+        return box<sound_card_choice>{
+                std::in_place,
+                algorithm::transform_to_vector(
+                        descs.get(),
+                        [](auto const& desc) {
+                            return sound_card_info{
+                                    .name = desc.name,
+                                    .num_ins = desc.streams.in.num_channels,
+                                    .num_outs = desc.streams.out.num_channels,
+                            };
+                        }),
+                index};
+    });
     return get_sound_card(st.sound_cards, st.selected_sound_card.index);
 });
 
