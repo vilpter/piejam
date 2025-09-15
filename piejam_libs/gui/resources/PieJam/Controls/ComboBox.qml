@@ -66,10 +66,12 @@ Item {
             contextType: "2d"
 
             onPaint: {
+                var radius = 2
                 context.reset();
                 context.moveTo(0, height);
                 context.lineTo(width, 0);
-                context.lineTo(width, height);
+                context.lineTo(width, height - radius);
+                context.arc(width - radius, height - radius, radius, 0, Math.PI / 2, false)
                 context.closePath();
                 context.fillStyle = Material.primaryTextColor;
                 context.fill();
