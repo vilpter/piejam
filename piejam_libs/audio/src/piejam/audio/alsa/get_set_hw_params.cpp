@@ -300,15 +300,44 @@ get_hw_params(
         sample_rate const sample_rate,
         period_size const period_size) -> sound_card_stream_hw_params
 {
-    sound_card_stream_hw_params result;
+    if (sound_card.device_path.empty())
+    {
+        static sound_card_stream_hw_params dummy_hw_params{
+                .sample_rates =
+                        {preferred_sample_rates.begin(),
+                         preferred_sample_rates.end()},
+                .period_sizes =
+                        {preferred_period_sizes.begin(),
+                         preferred_period_sizes.end()},
+        };
+        return dummy_hw_params;
+    }
 
     auto hw_params = make_snd_pcm_hw_params_for_refine_any();
 
-    system::device fd(sound_card.device_path);
+    system::device fd;
+
+    try
+    {
+        fd = system::device(
+                sound_card.device_path,
+                system::device::blocking::off);
+    }
+    catch (std::system_error const& err)
+    {
+        spdlog::error("failed to open sound card: {}", err.what());
+        return {};
+    }
+
     if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_REFINE, hw_params))
     {
-        throw std::system_error(err);
+        spdlog::error(
+                "failed to retrieve sound card capabilities: {}",
+                err.message());
+        return {};
     }
+
+    sound_card_stream_hw_params result;
 
     BOOST_ASSERT(result.sample_rates.empty());
     std::ranges::copy_if(

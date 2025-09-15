@@ -168,21 +168,15 @@ make_update_devices_action(
 
     auto const& selected_sc = new_devices.get()[next_action.selected_sc.index];
 
-    if (!selected_sc.streams.in.device_path.empty())
-    {
-        next_action.selected_sc.hw_params.in =
-                box(device_manager.hw_params(selected_sc.streams.in, {}, {}));
-        next_action.selected_sc.num_channels.in =
-                selected_sc.streams.in.num_channels;
-    }
+    next_action.selected_sc.hw_params.in =
+            box(device_manager.hw_params(selected_sc.streams.in, {}, {}));
+    next_action.selected_sc.num_channels.in =
+            selected_sc.streams.in.num_channels;
 
-    if (!selected_sc.streams.out.device_path.empty())
-    {
-        next_action.selected_sc.hw_params.out =
-                box(device_manager.hw_params(selected_sc.streams.out, {}, {}));
-        next_action.selected_sc.num_channels.out =
-                selected_sc.streams.out.num_channels;
-    }
+    next_action.selected_sc.hw_params.out =
+            box(device_manager.hw_params(selected_sc.streams.out, {}, {}));
+    next_action.selected_sc.num_channels.out =
+            selected_sc.streams.out.num_channels;
 
     auto next_value =
             [](audio::sound_card_stream_hw_params const& input_hw_params,
