@@ -40,7 +40,7 @@ public:
     auto make_io_process(
             sound_card_stream_descriptor const& in,
             sound_card_stream_descriptor const& out,
-            io_process_config const& config)
+            sound_card_config const& config)
             -> std::unique_ptr<io_process> override
     {
         return std::make_unique<alsa::pcm_io>(in, out, config);

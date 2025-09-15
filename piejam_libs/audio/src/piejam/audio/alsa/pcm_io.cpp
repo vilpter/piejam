@@ -19,20 +19,23 @@
 
 #include <boost/assert.hpp>
 
+#include <utility>
+
 namespace piejam::audio::alsa
 {
 
 static auto
 open_pcm(
         std::filesystem::path const& path,
-        sound_card_config const& device_config,
-        sound_card_buffer_config const& process_config) -> system::device
+        sound_card_config const& process_config)
+        -> std::pair<system::device, sound_card_stream_config>
 {
     if (!path.empty())
     {
         system::device fd(path);
 
-        auto [period_count] = set_hw_params(fd, device_config, process_config);
+        auto [num_channels, format, period_count] =
+                set_hw_params(fd, process_config);
 
         unsigned const buffer_size =
                 process_config.period_size.value() * period_count;
@@ -61,7 +64,11 @@ open_pcm(
             throw std::system_error(err);
         }
 
-        return fd;
+        return {std::move(fd),
+                sound_card_stream_config{
+                        .format = format,
+                        .num_channels = num_channels,
+                }};
     }
 
     return {};
@@ -72,17 +79,14 @@ pcm_io::pcm_io() noexcept = default;
 pcm_io::pcm_io(
         sound_card_stream_descriptor const& in,
         sound_card_stream_descriptor const& out,
-        io_process_config const& io_config)
-    : m_input_fd(open_pcm(
-              in.device_path,
-              io_config.in_config,
-              io_config.buffer_config))
-    , m_output_fd(open_pcm(
-              out.device_path,
-              io_config.out_config,
-              io_config.buffer_config))
-    , m_io_config(io_config)
+        sound_card_config const& sc_config)
 {
+    std::tie(m_input_fd, m_io_config.in_config) =
+            open_pcm(in.device_path, sc_config);
+    std::tie(m_output_fd, m_io_config.out_config) =
+            open_pcm(out.device_path, sc_config);
+    m_io_config.sc_config = sc_config;
+
     if (m_input_fd && m_output_fd)
     {
         if (auto err = m_input_fd.ioctl(

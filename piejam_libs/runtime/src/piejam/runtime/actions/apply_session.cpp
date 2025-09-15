@@ -212,12 +212,12 @@ apply_session::reduce(state& st) const
     apply_external_audio_device_configs<io_direction::input>(
             st,
             session->external_audio_input_devices,
-            st.selected_sound_card.hw_params.in->num_channels);
+            st.selected_sound_card.num_channels.in);
 
     apply_external_audio_device_configs<io_direction::output>(
             st,
             session->external_audio_output_devices,
-            st.selected_sound_card.hw_params.out->num_channels);
+            st.selected_sound_card.num_channels.out);
 
     BOOST_ASSERT(st.mixer_state.inputs->empty());
     BOOST_ASSERT(st.mixer_state.channels.size() == 1);

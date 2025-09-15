@@ -4,7 +4,8 @@
 
 #include "get_set_hw_params.h"
 
-#include <piejam/audio/io_process_config.h>
+#include "io_process_config.h"
+
 #include <piejam/audio/pcm_format.h>
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
@@ -226,9 +227,42 @@ pcm_to_alsa_format(pcm_format pf) -> unsigned
 }
 
 auto
-get_period_count(system::device& fd, auto const& hw_params)
+get_pcm_format(snd_pcm_hw_params const& hw_params)
 {
-    auto max_period_count =
+    static constexpr std::array preferred_formats{
+            SNDRV_PCM_FORMAT_S32_LE,
+            SNDRV_PCM_FORMAT_U32_LE,
+            SNDRV_PCM_FORMAT_S32_BE,
+            SNDRV_PCM_FORMAT_U32_BE,
+            SNDRV_PCM_FORMAT_S24_3LE,
+            SNDRV_PCM_FORMAT_S24_3BE,
+            SNDRV_PCM_FORMAT_U24_3LE,
+            SNDRV_PCM_FORMAT_U24_3BE,
+            SNDRV_PCM_FORMAT_S16_LE,
+            SNDRV_PCM_FORMAT_U16_LE,
+            SNDRV_PCM_FORMAT_S16_BE,
+            SNDRV_PCM_FORMAT_U16_BE,
+            SNDRV_PCM_FORMAT_S8,
+            SNDRV_PCM_FORMAT_U8};
+
+    auto const it_format = std::ranges::find_if(
+            preferred_formats,
+            test_mask_bit(hw_params, SNDRV_PCM_HW_PARAM_FORMAT));
+
+    if (it_format == preferred_formats.end())
+    {
+        throw std::runtime_error(
+                "couldn't configure driver: unsupported pcm format");
+    }
+
+    return *it_format;
+}
+
+auto
+set_period_count(system::device& fd, snd_pcm_hw_params const& hw_params)
+        -> unsigned
+{
+    unsigned max_period_count =
             get_interval(hw_params, SNDRV_PCM_HW_PARAM_PERIODS).max;
     auto availabe_period_counts = std::views::iota(2u, max_period_count + 1);
     auto ideal_period_count = std::ranges::find_if(
@@ -238,7 +272,7 @@ get_period_count(system::device& fd, auto const& hw_params)
     if (ideal_period_count == availabe_period_counts.end())
     {
         throw std::runtime_error(
-                "couldn't not configure driver: no valid period count");
+                "couldn't configure driver: no valid period count");
     }
 
     return *ideal_period_count;
@@ -276,33 +310,6 @@ get_hw_params(
         throw std::system_error(err);
     }
 
-    static constexpr std::array preferred_formats{
-            SNDRV_PCM_FORMAT_S32_LE,
-            SNDRV_PCM_FORMAT_U32_LE,
-            SNDRV_PCM_FORMAT_S32_BE,
-            SNDRV_PCM_FORMAT_U32_BE,
-            SNDRV_PCM_FORMAT_S24_3LE,
-            SNDRV_PCM_FORMAT_S24_3BE,
-            SNDRV_PCM_FORMAT_U24_3LE,
-            SNDRV_PCM_FORMAT_U24_3BE,
-            SNDRV_PCM_FORMAT_S16_LE,
-            SNDRV_PCM_FORMAT_U16_LE,
-            SNDRV_PCM_FORMAT_S16_BE,
-            SNDRV_PCM_FORMAT_U16_BE,
-            SNDRV_PCM_FORMAT_S8,
-            SNDRV_PCM_FORMAT_U8};
-
-    auto const it_format = std::ranges::find_if(
-            preferred_formats,
-            test_mask_bit(hw_params, SNDRV_PCM_HW_PARAM_FORMAT));
-    result.format =
-            it_format != preferred_formats.end()
-                    ? alsa_to_pcm_format(static_cast<unsigned>(*it_format))
-                    : pcm_format::unsupported;
-
-    result.num_channels =
-            get_interval(hw_params, SNDRV_PCM_HW_PARAM_CHANNELS).max;
-
     BOOST_ASSERT(result.sample_rates.empty());
     std::ranges::copy_if(
             preferred_sample_rates,
@@ -339,10 +346,8 @@ get_hw_params(
 }
 
 auto
-set_hw_params(
-        system::device& fd,
-        sound_card_config const& sound_card_config,
-        sound_card_buffer_config const& buffer_config) -> set_hw_params_result
+set_hw_params(system::device& fd, sound_card_config const& sc_config)
+        -> set_hw_params_result
 {
     set_hw_params_result result;
 
@@ -371,24 +376,27 @@ set_hw_params(
                 "driver doesn't support interleaved transfer mode");
     }
 
-    set_mask_bit(
-            hw_params,
-            SNDRV_PCM_HW_PARAM_FORMAT,
-            pcm_to_alsa_format(sound_card_config.format));
+    auto format = get_pcm_format(hw_params);
+    result.format = alsa_to_pcm_format(format);
+    set_mask_bit(hw_params, SNDRV_PCM_HW_PARAM_FORMAT, format);
+
+    result.num_channels =
+            get_interval(hw_params, SNDRV_PCM_HW_PARAM_CHANNELS).max;
     set_interval_value(
             hw_params,
             SNDRV_PCM_HW_PARAM_CHANNELS,
-            sound_card_config.num_channels);
+            result.num_channels);
+
     set_interval_value(
             hw_params,
             SNDRV_PCM_HW_PARAM_RATE,
-            buffer_config.sample_rate.value());
+            sc_config.sample_rate.value());
     set_interval_value(
             hw_params,
             SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
-            buffer_config.period_size.value());
+            sc_config.period_size.value());
 
-    result.period_count = get_period_count(fd, hw_params);
+    result.period_count = set_period_count(fd, hw_params);
 
     set_interval_value(
             hw_params,

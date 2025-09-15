@@ -16,7 +16,9 @@ struct selected_sound_card
 {
     std::size_t index{npos};
     io_pair<box<audio::sound_card_stream_hw_params>> hw_params;
+    io_pair<unsigned> num_channels;
 
+    [[nodiscard]]
     auto operator==(selected_sound_card const&) const noexcept
             -> bool = default;
 };

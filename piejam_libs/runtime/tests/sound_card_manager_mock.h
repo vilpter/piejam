@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/audio/io_process_config.h>
+#include <piejam/audio/sound_card_config.h>
 #include <piejam/audio/sound_card_descriptor.h>
 #include <piejam/audio/sound_card_manager.h>
 #include <piejam/audio/sound_card_stream_hw_params.h>
@@ -27,7 +27,7 @@ struct sound_card_manager_mock : public audio::sound_card_manager
             make_io_process,
             (audio::sound_card_stream_descriptor const&,
              audio::sound_card_stream_descriptor const&,
-             audio::io_process_config const&));
+             audio::sound_card_config const&));
 };
 
 } // namespace piejam::runtime::test

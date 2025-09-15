@@ -4,15 +4,16 @@
 
 #pragma once
 
-#include <piejam/audio/io_process_config.h>
+#include "io_process_config.h"
+
 #include <piejam/audio/process_function.h>
+
 #include <piejam/numeric/rolling_mean.h>
 #include <piejam/system/fwd.h>
 
 #include <atomic>
 #include <memory>
 #include <system_error>
-#include <vector>
 
 namespace piejam::audio::alsa
 {

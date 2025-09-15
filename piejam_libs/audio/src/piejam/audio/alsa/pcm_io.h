@@ -4,9 +4,10 @@
 
 #pragma once
 
+#include "io_process_config.h"
+
 #include <piejam/audio/fwd.h>
 #include <piejam/audio/io_process.h>
-#include <piejam/audio/io_process_config.h>
 
 #include <piejam/system/device.h>
 
@@ -22,7 +23,7 @@ public:
     pcm_io() noexcept;
     pcm_io(sound_card_stream_descriptor const& in,
            sound_card_stream_descriptor const& out,
-           io_process_config const& io_config);
+           sound_card_config const& sc_config);
     ~pcm_io() override;
 
     [[nodiscard]]

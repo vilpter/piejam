@@ -4,11 +4,11 @@
 
 #include "process_step.h"
 
+#include "io_process_config.h"
 #include "pcm_reader.h"
 #include "pcm_writer.h"
 
 #include <piejam/algorithm/transform_to_vector.h>
-#include <piejam/audio/io_process_config.h>
 #include <piejam/audio/pcm_convert.h>
 #include <piejam/audio/pcm_format.h>
 #include <piejam/audio/pcm_sample_type.h>
@@ -188,7 +188,7 @@ private:
 auto
 make_reader(
         system::device& fd,
-        sound_card_config const& config,
+        sound_card_stream_config const& config,
         audio::period_size const period_size) -> std::unique_ptr<pcm_reader>
 {
     if (!fd)
@@ -339,7 +339,7 @@ private:
 auto
 make_writer(
         system::device& fd,
-        sound_card_config const& config,
+        sound_card_stream_config const& config,
         audio::period_size const period_size) -> std::unique_ptr<pcm_writer>
 {
     if (!fd)
@@ -398,15 +398,15 @@ process_step::process_step(
     , m_reader(make_reader(
               m_input_fd,
               m_io_config.in_config,
-              m_io_config.buffer_config.period_size))
+              m_io_config.sc_config.period_size))
     , m_writer(make_writer(
               m_output_fd,
               m_io_config.out_config,
-              m_io_config.buffer_config.period_size))
+              m_io_config.sc_config.period_size))
     , m_cpu_load_mean_acc(
-              io_config.buffer_config.sample_rate.samples_for_duration(
+              io_config.sc_config.sample_rate.samples_for_duration(
                       std::chrono::seconds{1}) /
-              io_config.buffer_config.period_size.value()) // 1sec window
+              io_config.sc_config.period_size.value()) // 1sec window
 {
     m_xruns.store(0, std::memory_order_relaxed);
 
@@ -459,11 +459,11 @@ process_step::operator()() -> std::error_condition
     if (!err)
     {
         std::size_t const period_size =
-                m_io_config.buffer_config.period_size.value();
+                m_io_config.sc_config.period_size.value();
 
         auto const cpu_load_duration = m_process_function(period_size);
         auto const max_processing_time{
-                m_io_config.buffer_config.sample_rate
+                m_io_config.sc_config.sample_rate
                         .duration_for_samples<std::nano>(period_size)};
 
         m_cpu_load.store(

@@ -10,25 +10,10 @@
 namespace piejam::audio
 {
 
-enum class pcm_format : unsigned;
-
 struct sound_card_config
-{
-    pcm_format format{};
-    unsigned num_channels{};
-};
-
-struct sound_card_buffer_config
 {
     audio::sample_rate sample_rate;
     audio::period_size period_size;
-};
-
-struct io_process_config
-{
-    sound_card_config in_config;
-    sound_card_config out_config;
-    sound_card_buffer_config buffer_config;
 };
 
 } // namespace piejam::audio

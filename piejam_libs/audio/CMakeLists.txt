@@ -55,7 +55,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/engine/verify_process_context.h
     include/piejam/audio/fwd.h
     include/piejam/audio/io_process.h
-    include/piejam/audio/io_process_config.h
     include/piejam/audio/multichannel_buffer.h
     include/piejam/audio/multichannel_layout.h
     include/piejam/audio/multichannel_view.h
@@ -71,14 +70,16 @@ add_library(piejam_audio STATIC
     include/piejam/audio/sample_rate.h
     include/piejam/audio/slice.h
     include/piejam/audio/slice_algorithms.h
+    include/piejam/audio/sound_card_config.h
     include/piejam/audio/sound_card_descriptor.h
-    include/piejam/audio/sound_card_stream_hw_params.h
     include/piejam/audio/sound_card_manager.h
+    include/piejam/audio/sound_card_stream_hw_params.h
     include/piejam/audio/types.h
-    src/piejam/audio/alsa/get_sound_cards.cpp
-    src/piejam/audio/alsa/get_sound_cards.h
     src/piejam/audio/alsa/get_set_hw_params.cpp
     src/piejam/audio/alsa/get_set_hw_params.h
+    src/piejam/audio/alsa/get_sound_cards.cpp
+    src/piejam/audio/alsa/get_sound_cards.h
+    src/piejam/audio/alsa/io_process_config.h
     src/piejam/audio/alsa/pcm_io.cpp
     src/piejam/audio/alsa/pcm_io.h
     src/piejam/audio/alsa/pcm_reader.h

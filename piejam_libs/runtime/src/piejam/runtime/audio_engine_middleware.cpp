@@ -34,8 +34,8 @@
 #include <piejam/audio/engine/processor.h>
 #include <piejam/audio/engine/rt_task_executor.h>
 #include <piejam/audio/io_process.h>
-#include <piejam/audio/io_process_config.h>
 #include <piejam/audio/multichannel_buffer.h>
+#include <piejam/audio/sound_card_config.h>
 #include <piejam/audio/sound_card_descriptor.h>
 #include <piejam/audio/sound_card_manager.h>
 #include <piejam/audio/sound_card_stream_hw_params.h>
@@ -91,11 +91,11 @@ struct update_devices final
         };
 
         update_channels(
-                selected_sc.hw_params.in->num_channels,
+                selected_sc.num_channels.in,
                 *st.external_audio_state.inputs);
 
         update_channels(
-                selected_sc.hw_params.out->num_channels,
+                selected_sc.num_channels.out,
                 *st.external_audio_state.outputs);
     }
 };
@@ -172,12 +172,16 @@ make_update_devices_action(
     {
         next_action.selected_sc.hw_params.in =
                 box(device_manager.hw_params(selected_sc.streams.in, {}, {}));
+        next_action.selected_sc.num_channels.in =
+                selected_sc.streams.in.num_channels;
     }
 
     if (!selected_sc.streams.out.device_path.empty())
     {
         next_action.selected_sc.hw_params.out =
                 box(device_manager.hw_params(selected_sc.streams.out, {}, {}));
+        next_action.selected_sc.num_channels.out =
+                selected_sc.streams.out.num_channels;
     }
 
     auto next_value =
@@ -510,21 +514,7 @@ audio_engine_middleware::open_sound_card(state const& st)
         auto io_process = m_sound_card_manager.make_io_process(
                 st.sound_cards.get()[st.selected_sound_card.index].streams.in,
                 st.sound_cards.get()[st.selected_sound_card.index].streams.out,
-                audio::io_process_config{
-                        audio::sound_card_config{
-                                st.selected_sound_card.hw_params.in->format,
-                                st.selected_sound_card.hw_params.in
-                                        ->num_channels,
-                        },
-                        audio::sound_card_config{
-                                st.selected_sound_card.hw_params.out->format,
-                                st.selected_sound_card.hw_params.out
-                                        ->num_channels,
-                        },
-                        audio::sound_card_buffer_config{
-                                st.sample_rate,
-                                st.period_size,
-                        }});
+                audio::sound_card_config{st.sample_rate, st.period_size});
         m_io_process.swap(io_process);
     }
     catch (std::exception const& err)
@@ -544,8 +534,8 @@ audio_engine_middleware::start_engine(state const& st)
         m_engine = std::make_unique<audio_engine>(
                 m_workers,
                 st.sample_rate,
-                st.selected_sound_card.hw_params.in->num_channels,
-                st.selected_sound_card.hw_params.out->num_channels);
+                st.selected_sound_card.num_channels.in,
+                st.selected_sound_card.num_channels.out);
 
         m_io_process->start(
                 m_audio_thread_config,
