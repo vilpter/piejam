@@ -486,8 +486,7 @@ audio_engine_middleware::open_sound_card(state const& st)
     }
     catch (std::exception const& err)
     {
-        auto const* const message = err.what();
-        spdlog::error("opening device failed: {}", message);
+        spdlog::error("opening device failed: {}", err.what());
     }
 }
 
