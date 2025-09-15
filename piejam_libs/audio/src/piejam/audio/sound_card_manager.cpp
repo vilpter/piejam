@@ -9,7 +9,7 @@
 #include "alsa/pcm_io.h"
 
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_stream_hw_params.h>
+#include <piejam/audio/sound_card_hw_params.h>
 
 #include <piejam/box.h>
 #include <piejam/io_pair.h>
@@ -34,12 +34,12 @@ public:
             sound_card_descriptor const& d,
             sample_rate const sample_rate,
             period_size const period_size)
-            -> sound_card_stream_hw_params override
+            -> sound_card_hw_params override
     {
         auto const& [in, out] =
                 std::any_cast<alsa::stream_descriptors>(d.impl_data);
 
-        sound_card_stream_hw_params result;
+        sound_card_hw_params result;
 
         auto in_params = alsa::get_hw_params(in, sample_rate, period_size);
         auto out_params = alsa::get_hw_params(out, sample_rate, period_size);

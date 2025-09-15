@@ -10,7 +10,7 @@
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_stream_hw_params.h>
+#include <piejam/audio/sound_card_hw_params.h>
 #include <piejam/system/device.h>
 
 #include <spdlog/spdlog.h>
@@ -298,11 +298,11 @@ auto
 get_hw_params(
         std::filesystem::path const& pcm_device_path,
         sample_rate const sample_rate,
-        period_size const period_size) -> sound_card_stream_hw_params
+        period_size const period_size) -> sound_card_hw_params
 {
     if (pcm_device_path.empty())
     {
-        static sound_card_stream_hw_params dummy_hw_params{
+        static sound_card_hw_params dummy_hw_params{
                 .sample_rates =
                         {preferred_sample_rates.begin(),
                          preferred_sample_rates.end()},
@@ -335,7 +335,7 @@ get_hw_params(
         return {};
     }
 
-    sound_card_stream_hw_params result;
+    sound_card_hw_params result;
 
     BOOST_ASSERT(result.sample_rates.empty());
     std::ranges::copy_if(

@@ -21,7 +21,7 @@ public:
 
     virtual auto
     hw_params(sound_card_descriptor const&, sample_rate, period_size)
-            -> sound_card_stream_hw_params = 0;
+            -> sound_card_hw_params = 0;
 
     virtual auto
     make_io_process(sound_card_descriptor const&, sound_card_config const&)

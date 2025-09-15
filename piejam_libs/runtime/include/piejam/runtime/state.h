@@ -29,7 +29,7 @@
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_stream_hw_params.h>
+#include <piejam/audio/sound_card_hw_params.h>
 #include <piejam/audio/types.h>
 #include <piejam/box.h>
 #include <piejam/boxed_vector.h>

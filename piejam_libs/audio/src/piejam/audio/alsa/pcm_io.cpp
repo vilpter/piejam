@@ -9,7 +9,7 @@
 
 #include <piejam/audio/process_thread.h>
 #include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/audio/sound_card_stream_hw_params.h>
+#include <piejam/audio/sound_card_hw_params.h>
 
 #include <spdlog/spdlog.h>
 

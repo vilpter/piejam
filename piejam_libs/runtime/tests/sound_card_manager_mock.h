@@ -5,7 +5,7 @@
 #include <piejam/audio/sound_card_config.h>
 #include <piejam/audio/sound_card_descriptor.h>
 #include <piejam/audio/sound_card_manager.h>
-#include <piejam/audio/sound_card_stream_hw_params.h>
+#include <piejam/audio/sound_card_hw_params.h>
 
 #include <gmock/gmock.h>
 
@@ -16,7 +16,7 @@ struct sound_card_manager_mock : public audio::sound_card_manager
 {
     MOCK_METHOD(audio::sound_cards, get_sound_cards, ());
     MOCK_METHOD(
-            audio::sound_card_stream_hw_params,
+            audio::sound_card_hw_params,
             hw_params,
             (audio::sound_card_descriptor const&,
              audio::sample_rate,

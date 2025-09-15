@@ -67,7 +67,7 @@ make_string_selector(string_id id) -> selector<boxed_string>
 
 selector<box<sample_rate_choice>> const select_sample_rate([](state const& st) {
     static auto const get_sample_rate =
-            memo([](box<audio::sound_card_stream_hw_params> const& hw_params,
+            memo([](box<audio::sound_card_hw_params> const& hw_params,
                     audio::sample_rate const current) {
                 return box<sample_rate_choice>{
                         std::in_place,
@@ -80,7 +80,7 @@ selector<box<sample_rate_choice>> const select_sample_rate([](state const& st) {
 
 selector<box<period_size_choice>> const select_period_size([](state const& st) {
     static auto const get_period_size =
-            memo([](box<audio::sound_card_stream_hw_params> const& hw_params,
+            memo([](box<audio::sound_card_hw_params> const& hw_params,
                     audio::period_size const current) {
                 return box<period_size_choice>{
                         std::in_place,

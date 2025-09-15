@@ -73,7 +73,7 @@ add_library(piejam_audio STATIC
     include/piejam/audio/sound_card_config.h
     include/piejam/audio/sound_card_descriptor.h
     include/piejam/audio/sound_card_manager.h
-    include/piejam/audio/sound_card_stream_hw_params.h
+    include/piejam/audio/sound_card_hw_params.h
     include/piejam/audio/types.h
     src/piejam/audio/alsa/get_set_hw_params.cpp
     src/piejam/audio/alsa/get_set_hw_params.h

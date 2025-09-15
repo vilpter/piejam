@@ -37,8 +37,8 @@
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/audio/sound_card_config.h>
 #include <piejam/audio/sound_card_descriptor.h>
+#include <piejam/audio/sound_card_hw_params.h>
 #include <piejam/audio/sound_card_manager.h>
-#include <piejam/audio/sound_card_stream_hw_params.h>
 #include <piejam/functional/operators.h>
 #include <piejam/ladspa/plugin.h>
 #include <piejam/ladspa/plugin_descriptor.h>
@@ -168,8 +168,7 @@ make_update_devices_action(
 
     auto const& selected_sc = new_devices.get()[next_action.selected_sc.index];
 
-    next_action.selected_sc.num_channels.in = selected_sc.num_channels.in;
-    next_action.selected_sc.num_channels.out = selected_sc.num_channels.out;
+    next_action.selected_sc.num_channels = selected_sc.num_channels;
     next_action.selected_sc.hw_params =
             box(device_manager.hw_params(selected_sc, {}, {}));
 

@@ -69,7 +69,7 @@ TEST_F(audio_engine_middleware_test, select_sample_rate_will_change_sample_rate)
 {
     using namespace testing;
 
-    audio::sound_card_stream_hw_params const default_hw_params{
+    audio::sound_card_hw_params const default_hw_params{
             .sample_rates =
                     {audio::sample_rate(44100u), audio::sample_rate(48000u)},
             .period_sizes = {},
@@ -103,7 +103,7 @@ TEST_F(audio_engine_middleware_test, select_period_size_will_change_period_size)
 {
     using namespace testing;
 
-    audio::sound_card_stream_hw_params const default_hw_params{
+    audio::sound_card_hw_params const default_hw_params{
             .sample_rates =
                     {audio::sample_rate(44100u), audio::sample_rate(48000u)},
             .period_sizes = {audio::period_size(64u), audio::period_size(128u)},
@@ -140,7 +140,7 @@ TEST_F(audio_engine_middleware_test,
 {
     using namespace testing;
 
-    piejam::audio::sound_card_stream_hw_params hw_params{
+    piejam::audio::sound_card_hw_params hw_params{
             .sample_rates = {audio::sample_rate(44100u)},
             .period_sizes = {audio::period_size(128u)},
     };
