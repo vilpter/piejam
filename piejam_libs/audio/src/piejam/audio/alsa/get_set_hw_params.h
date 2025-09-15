@@ -15,8 +15,7 @@ namespace piejam::audio::alsa
 
 auto get_num_channels(std::filesystem::path const& device_path) -> unsigned;
 
-auto
-get_hw_params(sound_card_stream_descriptor const&, sample_rate, period_size)
+auto get_hw_params(std::filesystem::path const&, sample_rate, period_size)
         -> sound_card_stream_hw_params;
 
 struct set_hw_params_result

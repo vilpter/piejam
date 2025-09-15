@@ -12,6 +12,7 @@
 #include <piejam/system/device.h>
 
 #include <atomic>
+#include <filesystem>
 #include <memory>
 
 namespace piejam::audio::alsa
@@ -21,8 +22,8 @@ class pcm_io final : public piejam::audio::io_process
 {
 public:
     pcm_io() noexcept;
-    pcm_io(sound_card_stream_descriptor const& in,
-           sound_card_stream_descriptor const& out,
+    pcm_io(std::filesystem::path const& in,
+           std::filesystem::path const& out,
            sound_card_config const& sc_config);
     ~pcm_io() override;
 

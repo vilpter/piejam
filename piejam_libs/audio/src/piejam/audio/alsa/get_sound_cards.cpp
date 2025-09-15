@@ -119,7 +119,7 @@ auto
 make_sound_card_stream_descriptor(
         int card,
         unsigned int device,
-        char stream_type) -> std::pair<sound_card_stream_descriptor, unsigned>
+        char stream_type) -> std::pair<std::filesystem::path, unsigned>
 {
     auto device_path = std::filesystem::path{
             std::format("/dev/snd/pcmC{}D{}{}", card, device, stream_type)};
@@ -146,10 +146,7 @@ make_sound_card_stream_descriptor(
         }
     }
 
-    return {sound_card_stream_descriptor{
-                    .device_path = device_path,
-            },
-            num_channels};
+    return {device_path, num_channels};
 }
 
 auto
@@ -178,7 +175,7 @@ get_sound_card_descriptors(sound_card_info const& sc)
         sound_card_descriptor desc{};
 
         auto get_stream = [&](int stream_type)
-                -> std::pair<sound_card_stream_descriptor, unsigned> {
+                -> std::pair<std::filesystem::path, unsigned> {
             snd_pcm_info info{};
             info.card = sc.info.card;
             info.device = static_cast<unsigned>(device);
@@ -209,10 +206,15 @@ get_sound_card_descriptors(sound_card_info const& sc)
                     stream_type == SNDRV_PCM_STREAM_CAPTURE ? 'c' : 'p');
         };
 
-        std::tie(desc.streams.in, desc.num_channels.in) =
+        std::filesystem::path in_path;
+        std::filesystem::path out_path;
+
+        std::tie(in_path, desc.num_channels.in) =
                 get_stream(SNDRV_PCM_STREAM_CAPTURE);
-        std::tie(desc.streams.out, desc.num_channels.out) =
+        std::tie(out_path, desc.num_channels.out) =
                 get_stream(SNDRV_PCM_STREAM_PLAYBACK);
+        desc.impl_data =
+                stream_descriptors{std::move(in_path), std::move(out_path)};
         result.emplace_back(std::move(desc));
 
     } while (device != -1);

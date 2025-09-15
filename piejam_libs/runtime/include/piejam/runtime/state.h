@@ -99,18 +99,6 @@ struct state
 
 auto make_initial_state() -> state;
 
-auto sample_rates(
-        audio::sound_card_stream_hw_params const& input_hw_params,
-        audio::sound_card_stream_hw_params const& output_hw_params)
-        -> audio::sample_rates_t;
-auto sample_rates_from_state(state const&) -> audio::sample_rates_t;
-
-auto period_sizes(
-        audio::sound_card_stream_hw_params const& input_hw_params,
-        audio::sound_card_stream_hw_params const& output_hw_params)
-        -> audio::period_sizes_t;
-auto period_sizes_from_state(state const&) -> audio::period_sizes_t;
-
 auto add_external_audio_device(
         state&,
         std::string const& name,

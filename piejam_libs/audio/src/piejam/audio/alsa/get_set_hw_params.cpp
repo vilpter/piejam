@@ -281,9 +281,9 @@ set_period_count(system::device& fd, snd_pcm_hw_params const& hw_params)
 } // namespace
 
 auto
-get_num_channels(std::filesystem::path const& device_path) -> unsigned
+get_num_channels(std::filesystem::path const& pcm_device_path) -> unsigned
 {
-    system::device fd(device_path, system::device::blocking::off);
+    system::device fd(pcm_device_path, system::device::blocking::off);
 
     auto hw_params = make_snd_pcm_hw_params_for_refine_any();
     if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_REFINE, hw_params))
@@ -296,11 +296,11 @@ get_num_channels(std::filesystem::path const& device_path) -> unsigned
 
 auto
 get_hw_params(
-        sound_card_stream_descriptor const& sound_card,
+        std::filesystem::path const& pcm_device_path,
         sample_rate const sample_rate,
         period_size const period_size) -> sound_card_stream_hw_params
 {
-    if (sound_card.device_path.empty())
+    if (pcm_device_path.empty())
     {
         static sound_card_stream_hw_params dummy_hw_params{
                 .sample_rates =
@@ -319,9 +319,7 @@ get_hw_params(
 
     try
     {
-        fd = system::device(
-                sound_card.device_path,
-                system::device::blocking::off);
+        fd = system::device(pcm_device_path, system::device::blocking::off);
     }
     catch (std::system_error const& err)
     {

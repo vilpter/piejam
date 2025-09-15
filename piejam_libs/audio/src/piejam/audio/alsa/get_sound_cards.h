@@ -6,8 +6,12 @@
 
 #include <piejam/audio/sound_card_descriptor.h>
 
+#include <filesystem>
+
 namespace piejam::audio::alsa
 {
+
+using stream_descriptors = io_pair<std::filesystem::path>;
 
 auto get_sound_cards() -> sound_cards;
 

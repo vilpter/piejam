@@ -18,15 +18,14 @@ struct sound_card_manager_mock : public audio::sound_card_manager
     MOCK_METHOD(
             audio::sound_card_stream_hw_params,
             hw_params,
-            (audio::sound_card_stream_descriptor const&,
+            (audio::sound_card_descriptor const&,
              audio::sample_rate,
              audio::period_size));
 
     MOCK_METHOD(
             std::unique_ptr<audio::io_process>,
             make_io_process,
-            (audio::sound_card_stream_descriptor const&,
-             audio::sound_card_stream_descriptor const&,
+            (audio::sound_card_descriptor const&,
              audio::sound_card_config const&));
 };
 

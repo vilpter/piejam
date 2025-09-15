@@ -77,14 +77,12 @@ open_pcm(
 pcm_io::pcm_io() noexcept = default;
 
 pcm_io::pcm_io(
-        sound_card_stream_descriptor const& in,
-        sound_card_stream_descriptor const& out,
+        std::filesystem::path const& in,
+        std::filesystem::path const& out,
         sound_card_config const& sc_config)
 {
-    std::tie(m_input_fd, m_io_config.in_config) =
-            open_pcm(in.device_path, sc_config);
-    std::tie(m_output_fd, m_io_config.out_config) =
-            open_pcm(out.device_path, sc_config);
+    std::tie(m_input_fd, m_io_config.in_config) = open_pcm(in, sc_config);
+    std::tie(m_output_fd, m_io_config.out_config) = open_pcm(out, sc_config);
     m_io_config.sc_config = sc_config;
 
     if (m_input_fd && m_output_fd)

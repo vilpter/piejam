@@ -6,29 +6,31 @@
 
 #include <piejam/io_pair.h>
 
-#include <filesystem>
+#include <any>
 #include <string>
 #include <vector>
 
 namespace piejam::audio
 {
 
-struct sound_card_stream_descriptor
-{
-    std::filesystem::path device_path;
-
-    auto operator==(sound_card_stream_descriptor const&) const noexcept
-            -> bool = default;
-};
-
 struct sound_card_descriptor
 {
     std::string name;
     io_pair<unsigned> num_channels;
-    io_pair<sound_card_stream_descriptor> streams;
 
-    auto operator==(sound_card_descriptor const&) const noexcept
-            -> bool = default;
+    std::any impl_data;
+
+    [[nodiscard]]
+    auto operator==(sound_card_descriptor const& other) const noexcept -> bool
+    {
+        return name == other.name && num_channels == other.num_channels;
+    }
+
+    [[nodiscard]]
+    auto operator!=(sound_card_descriptor const& other) const noexcept -> bool
+    {
+        return !(*this == other);
+    }
 };
 
 using sound_cards = std::vector<sound_card_descriptor>;

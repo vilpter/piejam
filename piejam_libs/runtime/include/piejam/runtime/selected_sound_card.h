@@ -15,8 +15,8 @@ namespace piejam::runtime
 struct selected_sound_card
 {
     std::size_t index{npos};
-    io_pair<box<audio::sound_card_stream_hw_params>> hw_params;
     io_pair<unsigned> num_channels;
+    box<audio::sound_card_stream_hw_params> hw_params;
 
     [[nodiscard]]
     auto operator==(selected_sound_card const&) const noexcept

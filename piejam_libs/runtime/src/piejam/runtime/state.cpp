@@ -104,44 +104,6 @@ set_intersection(Vector const& in, Vector const& out)
     return result;
 }
 
-auto
-sample_rates(
-        audio::sound_card_stream_hw_params const& input_hw_params,
-        audio::sound_card_stream_hw_params const& output_hw_params)
-        -> audio::sample_rates_t
-{
-    return set_intersection(
-            input_hw_params.sample_rates,
-            output_hw_params.sample_rates);
-}
-
-auto
-sample_rates_from_state(state const& state) -> audio::sample_rates_t
-{
-    return sample_rates(
-            state.selected_sound_card.hw_params.in,
-            state.selected_sound_card.hw_params.out);
-}
-
-auto
-period_sizes(
-        audio::sound_card_stream_hw_params const& input_hw_params,
-        audio::sound_card_stream_hw_params const& output_hw_params)
-        -> audio::period_sizes_t
-{
-    return set_intersection(
-            input_hw_params.period_sizes,
-            output_hw_params.period_sizes);
-}
-
-auto
-period_sizes_from_state(state const& state) -> audio::period_sizes_t
-{
-    return period_sizes(
-            state.selected_sound_card.hw_params.in,
-            state.selected_sound_card.hw_params.out);
-}
-
 static auto
 make_internal_fx_module(fx::modules_t& fx_modules, fx::module&& fx_mod)
 {

@@ -168,59 +168,36 @@ make_update_devices_action(
 
     auto const& selected_sc = new_devices.get()[next_action.selected_sc.index];
 
-    next_action.selected_sc.hw_params.in =
-            box(device_manager.hw_params(selected_sc.streams.in, {}, {}));
     next_action.selected_sc.num_channels.in = selected_sc.num_channels.in;
-
-    next_action.selected_sc.hw_params.out =
-            box(device_manager.hw_params(selected_sc.streams.out, {}, {}));
     next_action.selected_sc.num_channels.out = selected_sc.num_channels.out;
+    next_action.selected_sc.hw_params =
+            box(device_manager.hw_params(selected_sc, {}, {}));
 
-    auto next_value =
-            [](audio::sound_card_stream_hw_params const& input_hw_params,
-               audio::sound_card_stream_hw_params const& output_hw_params,
-               auto&& sel,
-               auto current) {
-                auto const values = std::invoke(
-                        std::forward<decltype(sel)>(sel),
-                        input_hw_params,
-                        output_hw_params);
-                auto const it = algorithm::find_or_get_first(values, current);
-                return it != values.end() ? *it : decltype(*it){};
-            };
+    auto next_value = [](auto const& values, auto current) {
+        auto const it = algorithm::find_or_get_first(values, current);
+        return it != values.end() ? *it : decltype(*it){};
+    };
 
     next_action.sample_rate = next_value(
-            next_action.selected_sc.hw_params.in,
-            next_action.selected_sc.hw_params.out,
-            &sample_rates,
+            next_action.selected_sc.hw_params->sample_rates,
             sample_rate);
 
     if (next_action.sample_rate.valid())
     {
-        next_action.selected_sc.hw_params.in = device_manager.hw_params(
-                selected_sc.streams.in,
-                next_action.sample_rate,
-                {});
-        next_action.selected_sc.hw_params.out = device_manager.hw_params(
-                selected_sc.streams.out,
+        next_action.selected_sc.hw_params = device_manager.hw_params(
+                selected_sc,
                 next_action.sample_rate,
                 {});
     }
 
     next_action.period_size = next_value(
-            next_action.selected_sc.hw_params.in,
-            next_action.selected_sc.hw_params.out,
-            &period_sizes,
+            next_action.selected_sc.hw_params->period_sizes,
             period_size);
 
     if (next_action.period_size.valid())
     {
-        next_action.selected_sc.hw_params.in = device_manager.hw_params(
-                selected_sc.streams.in,
-                next_action.sample_rate,
-                next_action.period_size);
-        next_action.selected_sc.hw_params.out = device_manager.hw_params(
-                selected_sc.streams.out,
+        next_action.selected_sc.hw_params = device_manager.hw_params(
+                selected_sc,
                 next_action.sample_rate,
                 next_action.period_size);
     }
@@ -292,7 +269,7 @@ audio_engine_middleware::process_device_action(
 {
     state const& current_state = mw_fs.get_state();
 
-    auto const srs = sample_rates_from_state(current_state);
+    auto const& srs = current_state.selected_sound_card.hw_params->sample_rates;
     if (action.index < srs.size())
     {
         mw_fs.next(make_update_devices_action(
@@ -313,7 +290,7 @@ audio_engine_middleware::process_device_action(
 {
     state const& current_state = mw_fs.get_state();
 
-    auto const pss = period_sizes_from_state(current_state);
+    auto const& pss = current_state.selected_sound_card.hw_params->period_sizes;
     if (action.index < pss.size())
     {
         mw_fs.next(make_update_devices_action(
@@ -504,8 +481,7 @@ audio_engine_middleware::open_sound_card(state const& st)
     try
     {
         auto io_process = m_sound_card_manager.make_io_process(
-                st.sound_cards.get()[st.selected_sound_card.index].streams.in,
-                st.sound_cards.get()[st.selected_sound_card.index].streams.out,
+                st.sound_cards.get()[st.selected_sound_card.index],
                 audio::sound_card_config{st.sample_rate, st.period_size});
         m_io_process.swap(io_process);
     }
