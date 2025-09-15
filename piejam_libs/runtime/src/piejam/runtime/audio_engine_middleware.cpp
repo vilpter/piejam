@@ -179,7 +179,7 @@ make_update_devices_action(
 
     next_action.sample_rate = next_value(
             next_action.selected_sc.hw_params->sample_rates,
-            sample_rate);
+            sample_rate.invalid() ? audio::sample_rate{48000} : sample_rate);
 
     if (next_action.sample_rate.valid())
     {
@@ -191,7 +191,7 @@ make_update_devices_action(
 
     next_action.period_size = next_value(
             next_action.selected_sc.hw_params->period_sizes,
-            period_size);
+            period_size.invalid() ? audio::period_size{192} : period_size);
 
     if (next_action.period_size.valid())
     {
