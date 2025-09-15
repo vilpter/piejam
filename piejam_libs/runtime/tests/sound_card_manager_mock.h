@@ -17,7 +17,7 @@ struct sound_card_manager_mock : public audio::sound_card_manager
     MOCK_METHOD(audio::sound_cards, get_sound_cards, ());
     MOCK_METHOD(
             audio::sound_card_hw_params,
-            hw_params,
+            get_hw_params,
             (audio::sound_card_descriptor const&,
              audio::sample_rate,
              audio::period_size));

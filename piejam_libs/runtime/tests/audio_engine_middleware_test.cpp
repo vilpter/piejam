@@ -72,7 +72,7 @@ TEST_F(audio_engine_middleware_test, select_sample_rate_will_change_sample_rate)
     audio::sound_card_hw_params const default_hw_params{
             .sample_rates =
                     {audio::sample_rate(44100u), audio::sample_rate(48000u)},
-            .period_sizes = {},
+            .period_sizes = {audio::period_size(64u), audio::period_size(128u)},
     };
 
     state st;
@@ -87,8 +87,10 @@ TEST_F(audio_engine_middleware_test, select_sample_rate_will_change_sample_rate)
     EXPECT_CALL(mf_mock, next(_)).WillRepeatedly([&st](auto const& a) {
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
-    EXPECT_CALL(sound_card_manager, hw_params(_, _, _))
+    EXPECT_CALL(sound_card_manager, get_hw_params(_, _, _))
             .WillRepeatedly(Return(default_hw_params));
+    EXPECT_CALL(sound_card_manager, make_io_process(_, _))
+            .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
 
     actions::select_sample_rate action;
     action.index = 1;
@@ -121,7 +123,7 @@ TEST_F(audio_engine_middleware_test, select_period_size_will_change_period_size)
     EXPECT_CALL(mf_mock, next(_)).WillRepeatedly([&st](auto const& a) {
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
-    EXPECT_CALL(sound_card_manager, hw_params(_, _, _))
+    EXPECT_CALL(sound_card_manager, get_hw_params(_, _, _))
             .WillRepeatedly(Return(default_hw_params));
     EXPECT_CALL(sound_card_manager, make_io_process(_, _))
             .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
@@ -157,7 +159,7 @@ TEST_F(audio_engine_middleware_test,
     EXPECT_CALL(mf_mock, next(_)).WillRepeatedly([&st](auto const& a) {
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
-    EXPECT_CALL(sound_card_manager, hw_params(_, _, _))
+    EXPECT_CALL(sound_card_manager, get_hw_params(_, _, _))
             .WillRepeatedly(Return(hw_params));
     EXPECT_CALL(sound_card_manager, make_io_process(_, _))
             .WillOnce(Return(ByMove(audio::make_dummy_io_process())));

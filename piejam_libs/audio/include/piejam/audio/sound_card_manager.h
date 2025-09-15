@@ -20,7 +20,7 @@ public:
     virtual auto get_sound_cards() -> sound_cards = 0;
 
     virtual auto
-    hw_params(sound_card_descriptor const&, sample_rate, period_size)
+    get_hw_params(sound_card_descriptor const&, sample_rate, period_size)
             -> sound_card_hw_params = 0;
 
     virtual auto

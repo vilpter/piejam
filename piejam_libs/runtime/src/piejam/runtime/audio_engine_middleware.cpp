@@ -170,7 +170,7 @@ make_update_devices_action(
 
     next_action.selected_sc.num_channels = selected_sc.num_channels;
     next_action.selected_sc.hw_params =
-            box(device_manager.hw_params(selected_sc, {}, {}));
+            box(device_manager.get_hw_params(selected_sc, {}, {}));
 
     auto next_value = [](auto const& values, auto current) {
         auto const it = algorithm::find_or_get_first(values, current);
@@ -183,7 +183,7 @@ make_update_devices_action(
 
     if (next_action.sample_rate.valid())
     {
-        next_action.selected_sc.hw_params = device_manager.hw_params(
+        next_action.selected_sc.hw_params = device_manager.get_hw_params(
                 selected_sc,
                 next_action.sample_rate,
                 {});
@@ -195,7 +195,7 @@ make_update_devices_action(
 
     if (next_action.period_size.valid())
     {
-        next_action.selected_sc.hw_params = device_manager.hw_params(
+        next_action.selected_sc.hw_params = device_manager.get_hw_params(
                 selected_sc,
                 next_action.sample_rate,
                 next_action.period_size);

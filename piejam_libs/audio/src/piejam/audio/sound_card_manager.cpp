@@ -30,7 +30,7 @@ public:
         return alsa::get_sound_cards();
     }
 
-    auto hw_params(
+    auto get_hw_params(
             sound_card_descriptor const& d,
             sample_rate const sample_rate,
             period_size const period_size)
