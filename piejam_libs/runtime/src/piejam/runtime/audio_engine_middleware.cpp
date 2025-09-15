@@ -170,13 +170,11 @@ make_update_devices_action(
 
     next_action.selected_sc.hw_params.in =
             box(device_manager.hw_params(selected_sc.streams.in, {}, {}));
-    next_action.selected_sc.num_channels.in =
-            selected_sc.streams.in.num_channels;
+    next_action.selected_sc.num_channels.in = selected_sc.num_channels.in;
 
     next_action.selected_sc.hw_params.out =
             box(device_manager.hw_params(selected_sc.streams.out, {}, {}));
-    next_action.selected_sc.num_channels.out =
-            selected_sc.streams.out.num_channels;
+    next_action.selected_sc.num_channels.out = selected_sc.num_channels.out;
 
     auto next_value =
             [](audio::sound_card_stream_hw_params const& input_hw_params,

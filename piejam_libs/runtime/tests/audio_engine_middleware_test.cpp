@@ -27,13 +27,13 @@ namespace piejam::runtime::test
 struct audio_engine_middleware_test : ::testing::Test
 {
     testing::StrictMock<middleware_functors_mock> mf_mock;
-    testing::StrictMock<sound_card_manager_mock> audio_device_manager;
+    testing::StrictMock<sound_card_manager_mock> sound_card_manager;
     testing::StrictMock<ladspa_processor_factory_mock> ladspa_processor_factory;
 
     audio_engine_middleware sut{
             {},
             {},
-            audio_device_manager,
+            sound_card_manager,
             ladspa_processor_factory,
             nullptr};
 };
@@ -80,8 +80,11 @@ TEST_F(audio_engine_middleware_test, select_sample_rate_will_change_sample_rate)
     };
 
     state st;
-    st.sound_cards = audio::sound_cards{std::vector{
-            audio::sound_card_descriptor{.name = "foo", .streams = {}}}};
+    st.sound_cards =
+            audio::sound_cards{std::vector{audio::sound_card_descriptor{
+                    .name = "foo",
+                    .num_channels = {},
+                    .streams = {}}}};
     st.selected_sound_card.index = 0;
     st.selected_sound_card.hw_params.in = default_hw_params;
     st.selected_sound_card.hw_params.out = default_hw_params;
@@ -89,7 +92,7 @@ TEST_F(audio_engine_middleware_test, select_sample_rate_will_change_sample_rate)
     EXPECT_CALL(mf_mock, next(_)).WillRepeatedly([&st](auto const& a) {
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
-    EXPECT_CALL(audio_device_manager, hw_params(_, _, _))
+    EXPECT_CALL(sound_card_manager, hw_params(_, _, _))
             .WillRepeatedly(Return(default_hw_params));
 
     actions::select_sample_rate action;
@@ -112,8 +115,11 @@ TEST_F(audio_engine_middleware_test, select_period_size_will_change_period_size)
     };
 
     state st;
-    st.sound_cards = audio::sound_cards{std::vector{
-            audio::sound_card_descriptor{.name = "foo", .streams = {}}}};
+    st.sound_cards =
+            audio::sound_cards{std::vector{audio::sound_card_descriptor{
+                    .name = "foo",
+                    .num_channels = {},
+                    .streams = {}}}};
     st.selected_sound_card.index = 0;
     st.selected_sound_card.hw_params.in = default_hw_params;
     st.selected_sound_card.hw_params.out = default_hw_params;
@@ -121,8 +127,10 @@ TEST_F(audio_engine_middleware_test, select_period_size_will_change_period_size)
     EXPECT_CALL(mf_mock, next(_)).WillRepeatedly([&st](auto const& a) {
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
-    EXPECT_CALL(audio_device_manager, hw_params(_, _, _))
+    EXPECT_CALL(sound_card_manager, hw_params(_, _, _))
             .WillRepeatedly(Return(default_hw_params));
+    EXPECT_CALL(sound_card_manager, make_io_process(_, _, _))
+            .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
 
     actions::select_period_size action;
     action.index = 1;
@@ -148,18 +156,24 @@ TEST_F(audio_engine_middleware_test,
     st.selected_sound_card.hw_params.in = hw_params;
     st.selected_sound_card.hw_params.out = hw_params;
     st.sound_cards = audio::sound_cards{std::vector{
-            audio::sound_card_descriptor{.name = "foo", .streams = {}},
-            audio::sound_card_descriptor{.name = "bar", .streams = {}},
+            audio::sound_card_descriptor{
+                    .name = "foo",
+                    .num_channels = {},
+                    .streams = {}},
+            audio::sound_card_descriptor{
+                    .name = "bar",
+                    .num_channels = {},
+                    .streams = {}},
     }};
 
     EXPECT_CALL(mf_mock, get_state()).WillRepeatedly(ReturnRef(st));
     EXPECT_CALL(mf_mock, next(_)).WillRepeatedly([&st](auto const& a) {
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
-    EXPECT_CALL(audio_device_manager, hw_params(_, _, _))
+    EXPECT_CALL(sound_card_manager, hw_params(_, _, _))
             .WillRepeatedly(Return(hw_params));
-    EXPECT_CALL(audio_device_manager, make_io_process(_, _, _))
-            .WillRepeatedly(Return(ByMove(audio::make_dummy_io_process())));
+    EXPECT_CALL(sound_card_manager, make_io_process(_, _, _))
+            .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
 
     actions::initiate_sound_card_selection in_action;
     in_action.index = 1; // select another sound card
