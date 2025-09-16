@@ -6,6 +6,7 @@
 
 #include <boost/outcome/std_result.hpp>
 
+#include <chrono>
 #include <filesystem>
 #include <span>
 #include <system_error>
@@ -87,6 +88,12 @@ public:
 
     [[nodiscard]]
     auto set_nonblock(bool set = true) -> std::error_code;
+
+    //! Polls the device for input. Returns true if input is available, false if
+    //! timed out.
+    [[nodiscard]]
+    auto poll(std::chrono::milliseconds timeout) noexcept
+            -> outcome::std_result<bool>;
 
 private:
     [[nodiscard]]

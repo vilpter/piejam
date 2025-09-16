@@ -8,6 +8,7 @@
 #include <boost/core/ignore_unused.hpp>
 
 #include <fcntl.h>
+#include <poll.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -163,6 +164,25 @@ device::set_nonblock(bool const set) -> std::error_code
     }
 
     return {};
+}
+
+auto
+device::poll(std::chrono::milliseconds timeout) noexcept
+        -> outcome::std_result<bool>
+{
+    BOOST_ASSERT(m_fd != invalid);
+
+    struct pollfd pfd{};
+    pfd.fd = m_fd;
+    pfd.events = POLLIN;
+
+    int res = ::poll(&pfd, 1, static_cast<int>(timeout.count()));
+    if (res < 0)
+    {
+        return std::error_code(errno, std::generic_category());
+    }
+
+    return res > 0;
 }
 
 } // namespace piejam::system
