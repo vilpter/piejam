@@ -12,93 +12,84 @@ import PieJam.Models 1.0 as PJModels
 
 import ".."
 
-SubscribableItem {
+ChannelStripBase {
     id: root
 
-    implicitWidth: 132
-
-    Material.primary: root.model ? root.model.color : Material.Pink
-    Material.accent: root.model ? root.model.color : Material.Pink
-
-    Frame {
+    ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 0
+        HeaderLabel {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 24
 
-            HeaderLabel {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 24
+            text: root.model ? root.model.name : ""
+        }
 
-                text: root.model ? root.model.name : ""
-            }
+        AudioRoutingComboBox {
+            Layout.fillWidth: true
 
-            AudioRoutingComboBox {
-                Layout.fillWidth: true
+            hasSelectableDefault: false
+            defaultText: "Send..."
+            model: root.model ? root.model.aux : null
+        }
 
-                hasSelectableDefault: false
-                defaultText: "Send..."
-                model: root.model ? root.model.aux : null
-            }
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 0
+                VolumeFader {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                    VolumeFader {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                    visible: root.model && root.model.volume
 
-                        visible: root.model && root.model.volume
+                    model: root.model ? root.model.volume : null
 
-                        model: root.model ? root.model.volume : null
+                    scaleData: PJModels.MixerDbScales.sendFaderScale
 
-                        scaleData: PJModels.MixerDbScales.sendFaderScale
-
-                        onMoved: {
-                            if (root.model && root.model.canToggle && !root.model.enabled)
-                            {
-                                root.model.toggleEnabled()
-                            }
+                    onMoved: {
+                        if (root.model && root.model.canToggle && !root.model.enabled)
+                        {
+                            root.model.toggleEnabled()
                         }
                     }
+                }
 
-                    RowLayout {
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+
+                    visible: root.model && root.model.volume
+
+                    Button {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
 
-                        visible: root.model && root.model.volume
+                        text: root.model && root.model.faderTap === PJModels.MixerChannelAuxSend.FaderTap.Pre ? "PRE" : "POST"
 
-                        Button {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 40
+                        enabled: root.model
 
-                            text: root.model && root.model.faderTap === PJModels.MixerChannelAuxSend.FaderTap.Pre ? "PRE" : "POST"
+                        onClicked: root.model.toggleFaderTap()
+                    }
 
-                            enabled: root.model
-
-                            onClicked: root.model.toggleFaderTap()
-                        }
-
-                        Button {
-                            Layout.preferredWidth: 40
-                            Layout.preferredHeight: 40
+                    Button {
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 40
 
 
-                            icon.source: (!root.model || root.model.canToggle)
-                                         ? "qrc:///images/icons/power.svg"
-                                         : "qrc:///images/icons/cycle_arrows.svg"
-                            checkable: true
-                            checked: root.model && root.model.enabled
-                            enabled: root.model && root.model.canToggle
+                        icon.source: (!root.model || root.model.canToggle)
+                                     ? "qrc:///images/icons/power.svg"
+                                     : "qrc:///images/icons/cycle_arrows.svg"
+                        checkable: true
+                        checked: root.model && root.model.enabled
+                        enabled: root.model && root.model.canToggle
 
-                            onClicked: root.model.toggleEnabled()
-                        }
+                        onClicked: root.model.toggleEnabled()
                     }
                 }
             }

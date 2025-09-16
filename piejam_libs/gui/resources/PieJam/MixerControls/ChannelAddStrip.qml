@@ -7,7 +7,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
-Item {
+ChannelStripBase {
     id: root
 
     property alias name: nameText.text
@@ -15,58 +15,50 @@ Item {
     signal addMonoClicked()
     signal addStereoClicked()
 
-    implicitWidth: 132
-
-    Frame {
-        id: frame
+    ColumnLayout {
 
         anchors.fill: parent
+        spacing: 0
 
-        ColumnLayout {
+        TextField {
+            id: nameText
 
-            anchors.fill: parent
-            spacing: 0
+            Layout.fillWidth: true
 
-            TextField {
-                id: nameText
+            placeholderText: qsTr("Name")
 
-                Layout.fillWidth: true
+            onEditingFinished: focus = false
+        }
 
-                placeholderText: qsTr("Name")
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
 
-                onEditingFinished: focus = false
-            }
+        Button {
+            id: addMonoButton
 
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
+            Layout.fillWidth: true
 
-            Button {
-                id: addMonoButton
+            text: qsTr("+Mono")
+            font.bold: true
 
-                Layout.fillWidth: true
+            Material.background: Material.color(Material.Green, Material.Shade400)
 
-                text: qsTr("+Mono")
-                font.bold: true
+            onClicked: root.addMonoClicked()
+        }
 
-                Material.background: Material.color(Material.Green, Material.Shade400)
+        Button {
+            id: addStereoButton
 
-                onClicked: root.addMonoClicked()
-            }
+            Layout.fillWidth: true
 
-            Button {
-                id: addStereoButton
+            text: qsTr("+Stereo")
+            font.bold: true
 
-                Layout.fillWidth: true
+            Material.background: Material.color(Material.Green, Material.Shade400)
 
-                text: qsTr("+Stereo")
-                font.bold: true
-
-                Material.background: Material.color(Material.Green, Material.Shade400)
-
-                onClicked: root.addStereoClicked()
-            }
+            onClicked: root.addStereoClicked()
         }
     }
 }

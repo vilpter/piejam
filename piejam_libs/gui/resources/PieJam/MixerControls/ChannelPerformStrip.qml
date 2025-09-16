@@ -12,59 +12,48 @@ import PieJam.Models 1.0 as PJModels
 
 import ".."
 
-SubscribableItem {
+ChannelStripBase {
     id: root
 
-    implicitWidth: 132
-
-    Material.primary: root.model ? root.model.color : Material.Pink
-    Material.accent: root.model ? root.model.color : Material.Pink
-
-    Frame {
-        id: frame
-
+    ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 0
+        HeaderLabel {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 24
 
-            HeaderLabel {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 24
+            text: root.model ? root.model.name : ""
+        }
 
-                text: root.model ? root.model.name : ""
-            }
+        ParameterSymmetricBipolarSlider {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 48
 
-            ParameterSymmetricBipolarSlider {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48
+            model: root.model ? root.model.panBalance : null
+        }
 
-                model: root.model ? root.model.panBalance : null
-            }
+        LevelMeterVolumeFader {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-            LevelMeterVolumeFader {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            volume: root.model ? root.model.volume : null
+            peakLevel: root.model ? root.model.peakLevel : null
+            rmsLevel: root.model ? root.model.rmsLevel : null
 
-                volume: root.model ? root.model.volume : null
-                peakLevel: root.model ? root.model.peakLevel : null
-                rmsLevel: root.model ? root.model.rmsLevel : null
+            muted: root.model && !root.model.solo.value && (root.model.mute.value || root.model.mutedBySolo)
 
-                muted: root.model && !root.model.solo.value && (root.model.mute.value || root.model.mutedBySolo)
+            levelMeterScale: PJModels.MixerDbScales.levelMeterScale
+            volumeFaderScale: PJModels.MixerDbScales.volumeFaderScale
+        }
 
-                levelMeterScale: PJModels.MixerDbScales.levelMeterScale
-                volumeFaderScale: PJModels.MixerDbScales.volumeFaderScale
-            }
+        ChannelControls {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
 
-            ChannelControls {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 40
-
-                record: root.model ? root.model.record : null
-                mute: root.model ? root.model.mute : null
-                solo: root.model ? root.model.solo : null
-            }
+            record: root.model ? root.model.record : null
+            mute: root.model ? root.model.mute : null
+            solo: root.model ? root.model.solo : null
         }
     }
 }

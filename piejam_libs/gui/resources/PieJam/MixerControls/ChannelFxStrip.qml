@@ -13,159 +13,147 @@ import PieJam.Models 1.0 as PJModels
 
 import ".."
 
-SubscribableItem {
+ChannelStripBase {
     id: root
 
-    implicitWidth: 132
-
-    Material.primary: root.model ? root.model.color : Material.Pink
-    Material.accent: root.model ? root.model.color : Material.Pink
-
-    Frame {
-        id: frame
-
+    ColumnLayout {
         anchors.fill: parent
 
-        ColumnLayout {
-            anchors.fill: parent
+        HeaderLabel {
+            id: title
 
-            HeaderLabel {
-                id: title
+            Layout.fillWidth: true
+            Layout.preferredHeight: 24
 
-                Layout.fillWidth: true
-                Layout.preferredHeight: 24
+            text: root.model ? root.model.name : ""
+        }
 
-                text: root.model ? root.model.name : ""
-            }
+        ListView {
+            id: fxModulesList
 
-            ListView {
-                id: fxModulesList
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            boundsMovement: Flickable.StopAtBounds
 
-                clip: true
-                boundsBehavior: Flickable.StopAtBounds
-                boundsMovement: Flickable.StopAtBounds
+            model: root.model ? root.model.fxChain : null
 
-                model: root.model ? root.model.fxChain : null
+            delegate: Item {
+                id: delegateRoot
 
-                delegate: Item {
-                    id: delegateRoot
+                height: 36
 
-                    height: 36
+                anchors.left: parent ? parent.left : undefined
+                anchors.right: parent ? parent.right : undefined
 
-                    anchors.left: parent ? parent.left : undefined
-                    anchors.right: parent ? parent.right : undefined
+                Rectangle {
+                    id: content
 
-                    Rectangle {
-                        id: content
+                    width: delegateRoot.width
+                    height: 32
+                    anchors.verticalCenter: delegateRoot.verticalCenter
 
-                        width: delegateRoot.width
-                        height: 32
-                        anchors.verticalCenter: delegateRoot.verticalCenter
+                    border.color: model.item && model.item.focused ? Material.primaryColor : Material.frameColor
+                    border.width: 2
+                    color: Material.backgroundColor
+                    radius: 4
 
-                        border.color: model.item && model.item.focused ? Material.primaryColor : Material.frameColor
-                        border.width: 2
-                        color: Material.backgroundColor
-                        radius: 4
+                    RowLayout {
+                        anchors.fill: parent
 
-                        RowLayout {
-                            anchors.fill: parent
+                        Label {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+
+                            padding: 4
+                            text: model.item.name
+                            verticalAlignment: Label.AlignVCenter
+
+                            elide: Text.ElideRight
+
+                            MouseArea {
+                                id: nameMouseArea
+
+                                anchors.fill: parent
+
+                                onClicked: model.item.focused ? model.item.showFxModule() : model.item.focus()
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: 24
+                            Layout.fillHeight: true
+
+                            visible: model.item.focused
+
+                            color: Material.primaryColor
+                            radius: 4
 
                             Label {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
+                                anchors.fill: parent
 
-                                padding: 4
-                                text: model.item.name
-                                verticalAlignment: Label.AlignVCenter
+                                text: "X"
+                                font.bold: true
 
-                                elide: Text.ElideRight
-
-                                MouseArea {
-                                    id: nameMouseArea
-
-                                    anchors.fill: parent
-
-                                    onClicked: model.item.focused ? model.item.showFxModule() : model.item.focus()
-                                }
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
                             }
 
-                            Rectangle {
-                                Layout.preferredWidth: 24
-                                Layout.fillHeight: true
+                            MouseArea {
+                                id: deleteMouseArea
 
-                                visible: model.item.focused
+                                anchors.fill: parent
 
-                                color: Material.primaryColor
-                                radius: 4
-
-                                Label {
-                                    anchors.fill: parent
-
-                                    text: "X"
-                                    font.bold: true
-
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                MouseArea {
-                                    id: deleteMouseArea
-
-                                    anchors.fill: parent
-
-                                    onClicked: model.item.remove()
-                                }
+                                onClicked: model.item.remove()
                             }
                         }
                     }
-
-                    ModelSubscription {
-                        target: model.item
-                        subscribed: visible
-                    }
                 }
 
+                ModelSubscription {
+                    target: model.item
+                    subscribed: visible
+                }
             }
+        }
 
-            RowLayout {
+        RowLayout {
+            Layout.fillWidth: true
+
+            Button {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 40
 
-                Button {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
+                display: AbstractButton.IconOnly
+                icon.source: "qrc:///images/icons/chevron-up.svg"
 
-                    display: AbstractButton.IconOnly
-                    icon.source: "qrc:///images/icons/chevron-up.svg"
+                enabled: root.model && root.model.canMoveUpFxModule
 
-                    enabled: root.model && root.model.canMoveUpFxModule
-
-                    onClicked: root.model.moveUpFxModule()
-                }
-
-                Button {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
-
-                    text: "+"
-
-                    onClicked: root.model.appendFxModule()
-                }
-
-                Button {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
-
-                    display: AbstractButton.IconOnly
-                    icon.source: "qrc:///images/icons/chevron-down.svg"
-
-                    enabled: root.model && root.model.canMoveDownFxModule
-
-                    onClicked: root.model.moveDownFxModule()
-                }
+                onClicked: root.model.moveUpFxModule()
             }
-       }
+
+            Button {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
+
+                text: "+"
+
+                onClicked: root.model.appendFxModule()
+            }
+
+            Button {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
+
+                display: AbstractButton.IconOnly
+                icon.source: "qrc:///images/icons/chevron-down.svg"
+
+                enabled: root.model && root.model.canMoveDownFxModule
+
+                onClicked: root.model.moveDownFxModule()
+            }
+        }
     }
 }

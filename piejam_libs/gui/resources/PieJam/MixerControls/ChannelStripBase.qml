@@ -1,0 +1,26 @@
+// PieJam - An audio mixer for Raspberry Pi.
+// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Controls.Material 2.15
+
+import ".."
+
+SubscribableItem {
+    id: root
+
+    default property alias contentData: frame.contentData
+
+    implicitWidth: 132
+
+    Material.primary: root.model ? root.model.color : Material.Pink
+    Material.accent: root.model ? root.model.color : Material.Pink
+
+    Frame {
+        id: frame
+
+        anchors.fill: parent
+    }
+}
