@@ -4,13 +4,19 @@
 
 #include "alsa.h"
 
+#include <piejam/thread/name.h>
+#include <piejam/thread/priority.h>
+
 #include <spdlog/spdlog.h>
+
+#include <boost/lockfree/spsc_queue.hpp>
 
 #include <sound/asequencer.h>
 #include <sound/asound.h>
 #include <sys/ioctl.h>
 
 #include <algorithm>
+#include <ctime>
 
 namespace piejam::midi::alsa
 {
@@ -58,9 +64,12 @@ make_input_port(system::device& seq, midi_client_id_t client_id) -> midi_port_t
 {
     snd_seq_port_info port_info{};
     port_info.addr.client = client_id;
-    port_info.type = SNDRV_SEQ_PORT_TYPE_APPLICATION;
+    port_info.type =
+            SNDRV_SEQ_PORT_TYPE_APPLICATION | SNDRV_SEQ_PORT_TYPE_MIDI_GENERIC;
     port_info.capability =
             SNDRV_SEQ_PORT_CAP_WRITE | SNDRV_SEQ_PORT_CAP_SUBS_WRITE;
+    port_info.flags =
+            SNDRV_SEQ_PORT_FLG_TIMESTAMP | SNDRV_SEQ_PORT_FLG_TIME_REAL;
 
     if (auto err = seq.ioctl(SNDRV_SEQ_IOCTL_CREATE_PORT, port_info))
     {
@@ -100,7 +109,7 @@ scan_devices(system::device& seq, Handler&& handler)
 
         do
         {
-            std::invoke(std::forward<Handler>(handler), client_info, port_info);
+            std::invoke(handler, client_info, port_info);
         } while (!seq.ioctl(SNDRV_SEQ_IOCTL_QUERY_NEXT_PORT, port_info));
     }
 }
@@ -120,42 +129,78 @@ scan_input_devices(system::device& seq) -> std::vector<midi_device>
                     (port_info.capability & SNDRV_SEQ_PORT_CAP_READ) &&
                     (port_info.capability & SNDRV_SEQ_PORT_CAP_SUBS_READ))
                 {
-                    result.emplace_back(midi_device{
-                            .client_id = port_info.addr.client,
-                            .port = port_info.addr.port,
-                            .name = client_info.name});
+                    result.emplace_back(
+                            midi_device{
+                                    .client_id = port_info.addr.client,
+                                    .port = port_info.addr.port,
+                                    .name = client_info.name});
                 }
             });
 
     return result;
 }
 
+constexpr std::size_t input_events_capacity = 1024;
+
 } // namespace
 
-struct midi_io::input_events
+struct midi_io::impl
 {
-    std::array<snd_seq_event, 128> buffer;
+    boost::lockfree::spsc_queue<
+            snd_seq_event,
+            boost::lockfree::capacity<input_events_capacity>>
+            queue;
 };
 
 midi_io::midi_io()
     : m_seq(open_seq())
     , m_client_id(get_client_id(m_seq))
     , m_in_port(make_input_port(m_seq, m_client_id))
-    , m_input_events(make_pimpl<input_events>())
+    , m_input_events(make_pimpl<impl>())
+    , m_in_thread([this](std::stop_token stoken) {
+        this_thread::set_name("midi_in");
+        this_thread::set_realtime_priority(80);
+
+        std::array<snd_seq_event, input_events_capacity> read_event_buffer{};
+
+        while (!stoken.stop_requested())
+        {
+            auto poll_result = m_seq.poll(std::chrono::milliseconds(100));
+            if (poll_result.has_value() && poll_result.value())
+            {
+                auto read_result = m_seq.read(std::span{read_event_buffer});
+                if (read_result)
+                {
+                    auto input_events = read_result.value();
+
+                    struct timespec ts{};
+                    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+                    for (auto& ev : input_events)
+                    {
+                        // Set the event timestamp to the current time
+                        ev.time.time.tv_sec = ts.tv_sec;
+                        ev.time.time.tv_nsec = ts.tv_nsec;
+                    }
+
+                    m_input_events->queue.push(
+                            read_result.value().data(),
+                            read_result.value().size());
+                }
+            }
+        }
+    })
 {
+}
+
+midi_io::~midi_io()
+{
+    m_in_thread.request_stop();
 }
 
 void
 midi_io::process_input(event_handler& handler)
 {
-    auto read_result = m_seq.read(std::span{m_input_events->buffer});
-    if (!read_result)
-    {
-        return;
-    }
-
-    for (snd_seq_event const& ev : read_result.value())
-    {
+    m_input_events->queue.consume_all([&](snd_seq_event const& ev) {
         switch (ev.type)
         {
             case SNDRV_SEQ_EVENT_CONTROLLER:
@@ -170,7 +215,7 @@ midi_io::process_input(event_handler& handler)
             default:
                 break;
         }
-    }
+    });
 }
 
 midi_devices::midi_devices(midi_client_id_t in_client_id, midi_port_t in_port)
@@ -226,6 +271,8 @@ midi_devices::connect_input(
     port_sub.sender.port = source_port;
     port_sub.dest.client = m_in_client_id;
     port_sub.dest.port = m_in_port;
+    port_sub.flags =
+            SNDRV_SEQ_PORT_SUBS_TIMESTAMP | SNDRV_SEQ_PORT_SUBS_TIME_REAL;
 
     return !m_seq.ioctl(SNDRV_SEQ_IOCTL_SUBSCRIBE_PORT, port_sub);
 }

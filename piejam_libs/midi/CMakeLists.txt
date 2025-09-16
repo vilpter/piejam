@@ -26,4 +26,5 @@ target_link_libraries(piejam_midi
     piejam_algorithm
     piejam_system
     piejam_log
+    piejam_thread
 )

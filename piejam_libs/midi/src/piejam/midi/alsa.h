@@ -8,6 +8,7 @@
 #include <piejam/system/device.h>
 
 #include <string>
+#include <thread>
 #include <variant>
 #include <vector>
 
@@ -34,6 +35,7 @@ class midi_io
 {
 public:
     midi_io();
+    ~midi_io();
 
     [[nodiscard]]
     auto client_id() const noexcept -> midi_client_id_t
@@ -55,8 +57,10 @@ private:
     midi_client_id_t m_client_id{};
     midi_port_t m_in_port{};
 
-    struct input_events;
-    pimpl<input_events> m_input_events;
+    struct impl;
+    pimpl<impl> m_input_events;
+
+    std::jthread m_in_thread;
 };
 
 struct midi_device
