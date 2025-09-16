@@ -22,7 +22,7 @@ namespace
 auto
 open_seq() -> system::device
 {
-    system::device seq("/dev/snd/seq");
+    system::device seq("/dev/snd/seq", system::device::blocking::off);
 
     int version{};
     if (auto err = seq.ioctl(SNDRV_SEQ_IOCTL_PVERSION, version))
@@ -143,10 +143,6 @@ midi_io::midi_io()
     , m_in_port(make_input_port(m_seq, m_client_id))
     , m_input_events(make_pimpl<input_events>())
 {
-    if (auto err = m_seq.set_nonblock())
-    {
-        throw std::system_error(err);
-    }
 }
 
 void
@@ -158,11 +154,7 @@ midi_io::process_input(event_handler& handler)
         return;
     }
 
-    std::span<snd_seq_event const> events(
-            m_input_events->buffer.data(),
-            read_result.value() / sizeof(snd_seq_event));
-
-    for (snd_seq_event const& ev : events)
+    for (snd_seq_event const& ev : read_result.value())
     {
         switch (ev.type)
         {
@@ -203,11 +195,6 @@ midi_devices::midi_devices(midi_client_id_t in_client_id, midi_port_t in_port)
             scan_input_devices(m_seq),
             std::back_inserter(m_initial_updates),
             [](auto const& d) { return midi_device_added{.device = d}; });
-
-    if (auto err = m_seq.set_nonblock())
-    {
-        throw std::system_error(err);
-    }
 }
 
 midi_devices::~midi_devices()
@@ -268,15 +255,8 @@ midi_devices::update() -> std::vector<midi_device_event>
     std::vector<midi_device_event> result = std::move(m_initial_updates);
 
     snd_seq_event ev{};
-    while (auto read_result =
-                   m_seq.read({reinterpret_cast<std::byte*>(&ev), sizeof(ev)}))
+    while (auto read_result = m_seq.read(ev))
     {
-        if (read_result.value() != sizeof(ev))
-        {
-            spdlog::critical("midi_devices: failed to read announcement event");
-            return result;
-        }
-
         switch (ev.type)
         {
             case SNDRV_SEQ_EVENT_PORT_START:

@@ -56,12 +56,33 @@ public:
     template <class T, std::size_t Extent>
     [[nodiscard]]
     auto read(std::span<T, Extent> buffer) noexcept
-            -> outcome::std_result<std::size_t>
+            -> outcome::std_result<std::span<T>>
     {
-        return read(
-                std::span<std::byte>{
+        auto res =
+                read(std::span<std::byte>{
                         reinterpret_cast<std::byte*>(buffer.data()),
                         buffer.size_bytes()});
+        if (!res)
+        {
+            return res.error();
+        }
+
+        // Number of complete T elements that fit into *res bytes
+        std::size_t n = res.value() / sizeof(T);
+        BOOST_ASSERT(res.value() % sizeof(T) == 0);
+
+        return buffer.first(n);
+    }
+
+    template <class T>
+        requires std::is_trivially_copyable_v<T>
+    [[nodiscard]]
+    auto read(T& x) noexcept -> outcome::std_result<void>
+    {
+        return read_fully(
+                std::span<std::byte>{
+                        reinterpret_cast<std::byte*>(&x),
+                        sizeof(T)});
     }
 
     [[nodiscard]]
@@ -71,6 +92,9 @@ private:
     [[nodiscard]]
     auto ioctl(unsigned long request, void* p, std::size_t size) noexcept
             -> std::error_code;
+
+    auto read_fully(std::span<std::byte> buffer) noexcept
+            -> outcome::std_result<void>;
 
     static constexpr int invalid = -1;
 

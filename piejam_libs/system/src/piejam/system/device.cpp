@@ -97,13 +97,46 @@ auto
 device::read(std::span<std::byte> const buffer) noexcept
         -> outcome::std_result<std::size_t>
 {
-    auto const res = ::read(m_fd, buffer.data(), buffer.size());
+    ssize_t res{};
+    do
+    {
+        res = ::read(m_fd, buffer.data(), buffer.size());
+    } while (res < 0 && errno == EINTR);
+
     if (res < 0)
     {
         return std::error_code(errno, std::generic_category());
     }
 
     return static_cast<std::size_t>(res);
+}
+
+auto
+device::read_fully(std::span<std::byte> buffer) noexcept
+        -> outcome::std_result<void>
+{
+    std::size_t total = 0;
+
+    while (total < buffer.size())
+    {
+        auto sub = buffer.subspan(total);
+
+        auto res = read(sub);
+        if (!res)
+        {
+            return res.error();
+        }
+
+        if (res.value() == 0)
+        {
+            // EOF before buffer was filled
+            return std::make_error_code(std::errc::no_message_available);
+        }
+
+        total += res.value();
+    }
+
+    return outcome::success();
 }
 
 auto
