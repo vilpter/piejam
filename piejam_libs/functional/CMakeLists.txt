@@ -5,6 +5,7 @@
 add_library(piejam_functional INTERFACE
     include/piejam/functional/address_compare.h
     include/piejam/functional/any_equal_to.h
+    include/piejam/functional/compose.h
     include/piejam/functional/edge_detect.h
     include/piejam/functional/get.h
     include/piejam/functional/get_if.h
