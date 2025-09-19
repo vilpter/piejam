@@ -20,7 +20,7 @@ class ExternalAudioDeviceConfig final : public Subscribable<SubscribableModel>
     Q_OBJECT
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::String*, name)
-    M_PIEJAM_GUI_PROPERTY(bool, mono, setMono)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(bool, mono)
     M_PIEJAM_GUI_PROPERTY(int, monoChannel, setMonoChannel)
     M_PIEJAM_GUI_PROPERTY(int, stereoLeftChannel, setStereoLeftChannel)
     M_PIEJAM_GUI_PROPERTY(int, stereoRightChannel, setStereoRightChannel)
@@ -39,8 +39,9 @@ public:
 private:
     void onSubscribe() override;
 
-    struct Impl;
-    pimpl<Impl> const m_impl;
+    runtime::external_audio::device_id m_device_id;
+    pimpl<String> m_string;
+    bool m_mono;
 };
 
 } // namespace piejam::gui::model
