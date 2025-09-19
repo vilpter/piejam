@@ -27,6 +27,8 @@ SubscribableItem {
 
         StackLayout {
             Layout.maximumWidth: 128
+            Layout.topMargin: 4
+            Layout.bottomMargin: 4
 
             currentIndex: root.model ? (root.model.mono ? 0 : 1) : -1
 
@@ -36,6 +38,7 @@ SubscribableItem {
 
                 model: root.channels
                 currentIndex: root.model ? root.model.monoChannel : -1
+                textHorizontalAlignment: Text.AlignHCenter
 
                 onActivated: if (root.model) root.model.changeMonoChannel(index)
             }
@@ -47,8 +50,6 @@ SubscribableItem {
                 PJControls.ComboBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.topMargin: 4
-                    Layout.bottomMargin: 4
 
                     model: root.channels
                     currentIndex: root.model ? root.model.stereoLeftChannel : -1
@@ -60,8 +61,6 @@ SubscribableItem {
                 PJControls.ComboBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.topMargin: 4
-                    Layout.bottomMargin: 4
 
                     model: root.channels
                     currentIndex: root.model ? root.model.stereoRightChannel : -1
