@@ -15,24 +15,43 @@ template <class T>
 class event final : public boost::intrusive::set_base_hook<>
 {
     static_assert(std::is_trivially_destructible_v<T>);
-    static_assert(std::is_nothrow_default_constructible_v<T>);
-    static_assert(std::is_nothrow_copy_constructible_v<T>);
-    static_assert(std::is_nothrow_move_constructible_v<T>);
 
 public:
-    event() noexcept = default;
+    event() noexcept
+        requires(std::is_nothrow_default_constructible_v<T>)
+    = default;
 
     event(std::size_t const offset, T const& value) noexcept
+        requires(std::is_nothrow_copy_constructible_v<T>)
         : m_offset(offset)
         , m_value(value)
     {
     }
 
     event(std::size_t const offset, T&& value) noexcept
+        requires(std::is_nothrow_move_constructible_v<T>)
         : m_offset(offset)
         , m_value(std::move(value))
     {
     }
+
+    event(event const&) noexcept
+        requires(std::is_nothrow_copy_constructible_v<T>)
+    = default;
+
+    event(event&&) noexcept
+        requires(std::is_nothrow_move_constructible_v<T>)
+    = default;
+
+    ~event() noexcept = default;
+
+    auto operator=(event const&) noexcept -> event&
+        requires(std::is_nothrow_copy_assignable_v<T>)
+    = default;
+
+    auto operator=(event&&) noexcept -> event&
+        requires(std::is_nothrow_move_assignable_v<T>)
+    = default;
 
     [[nodiscard]]
     auto offset() const noexcept -> std::size_t
