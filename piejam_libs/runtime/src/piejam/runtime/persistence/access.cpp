@@ -318,7 +318,7 @@ export_mixer_channel(
 {
     session::mixer_channel result;
     result.name = st.strings[channel.name];
-    result.color = st.gui_state.mixer_colors[channel_id];
+    result.color = st.mixer_colors[channel_id];
     result.bus_type = channel.bus_type;
     result.fx_chain = export_fx_chain(st, *channel.fx_chain);
     result.midi = export_mixer_midi(st, channel);

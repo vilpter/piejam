@@ -26,9 +26,9 @@ insert_internal_fx_module::reduce(state& st) const
 
     if (show_fx_module)
     {
-        st.gui_state.focused_fx_chain_id = fx_chain_id;
-        st.gui_state.focused_fx_mod_id = fx_mod_id;
-        st.gui_state.root_view_mode_ = runtime::root_view_mode::fx_module;
+        st.focused_fx_chain_id = fx_chain_id;
+        st.focused_fx_mod_id = fx_mod_id;
+        st.root_view_mode = runtime::root_view_mode::fx_module;
     }
 }
 
@@ -47,9 +47,9 @@ insert_ladspa_fx_module::reduce(state& st) const
 
     if (show_fx_module)
     {
-        st.gui_state.focused_fx_chain_id = fx_chain_id;
-        st.gui_state.focused_fx_mod_id = fx_mod_id;
-        st.gui_state.root_view_mode_ = runtime::root_view_mode::fx_module;
+        st.focused_fx_chain_id = fx_chain_id;
+        st.focused_fx_mod_id = fx_mod_id;
+        st.root_view_mode = runtime::root_view_mode::fx_module;
     }
 }
 
@@ -96,12 +96,13 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
                     audio::num_channels(mixer_channel.bus_type) ==
                     ladspa_instance.plugin_desc.num_outputs);
 
-            auto const fx_mod_id = fx_modules.emplace(ladspa_fx::make_module(
-                    ladspa_instance.instance_id,
-                    ladspa_instance.plugin_desc.name,
-                    mixer_channel.bus_type,
-                    ladspa_instance.control_inputs,
-                    st.params));
+            auto const fx_mod_id = fx_modules.emplace(
+                    ladspa_fx::make_module(
+                            ladspa_instance.instance_id,
+                            ladspa_instance.plugin_desc.name,
+                            mixer_channel.bus_type,
+                            ladspa_instance.control_inputs,
+                            st.params));
 
             (*fx_chain)[pos] = fx_mod_id;
 

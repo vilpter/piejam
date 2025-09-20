@@ -84,17 +84,13 @@ struct state
     std::size_t xruns{};
     float cpu_load{};
 
-    struct
-    {
-        root_view_mode root_view_mode_{};
+    runtime::root_view_mode root_view_mode{};
+    mixer::channel_id fx_browser_fx_chain_id;
 
-        mixer::channel_id fx_browser_fx_chain_id;
+    entity_data_map<mixer::channel_id, material_color> mixer_colors;
 
-        mixer::channel_id focused_fx_chain_id;
-        fx::module_id focused_fx_mod_id;
-
-        entity_data_map<mixer::channel_id, material_color> mixer_colors;
-    } gui_state;
+    mixer::channel_id focused_fx_chain_id;
+    fx::module_id focused_fx_mod_id;
 };
 
 auto make_initial_state() -> state;

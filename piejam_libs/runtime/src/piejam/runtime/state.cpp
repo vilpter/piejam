@@ -527,7 +527,7 @@ add_mixer_channel(state& st, std::string name, audio::bus_type bus_type)
         }
     }
 
-    st.gui_state.mixer_colors.insert(channel_id, material_color::pink);
+    st.mixer_colors.insert(channel_id, material_color::pink);
 
     return channel_id;
 }
@@ -568,15 +568,16 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
         remove_fx_module(st, mixer_channel_id, fx_mod_id);
     }
 
-    if (st.gui_state.focused_fx_chain_id == mixer_channel_id)
+    if (st.focused_fx_chain_id == mixer_channel_id)
     {
-        st.gui_state.focused_fx_chain_id = {};
-        st.gui_state.focused_fx_mod_id = {};
+        st.focused_fx_chain_id = {};
+        st.focused_fx_mod_id = {};
     }
 
-    set_if(st.gui_state.fx_browser_fx_chain_id,
-           equal_to(mixer_channel_id),
-           mixer::channel_id{});
+    if (st.fx_browser_fx_chain_id == mixer_channel_id)
+    {
+        st.fx_browser_fx_chain_id = mixer::channel_id{};
+    }
 
     BOOST_ASSERT(
             std::ranges::contains(*st.mixer_state.inputs, mixer_channel_id));
@@ -598,7 +599,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
         set_if(channel.aux, equal_to_mixer_channel, default_t{});
     }
 
-    st.gui_state.mixer_colors.erase(mixer_channel_id);
+    st.mixer_colors.erase(mixer_channel_id);
 }
 
 void

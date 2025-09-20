@@ -12,14 +12,14 @@ namespace piejam::runtime::actions
 void
 set_root_view_mode::reduce(state& st) const
 {
-    st.gui_state.root_view_mode_ = mode;
+    st.root_view_mode = mode;
 }
 
 void
 show_fx_browser::reduce(state& st) const
 {
-    st.gui_state.fx_browser_fx_chain_id = fx_chain_id;
-    st.gui_state.root_view_mode_ = root_view_mode::fx_browser;
+    st.fx_browser_fx_chain_id = fx_chain_id;
+    st.root_view_mode = root_view_mode::fx_browser;
 }
 
 } // namespace piejam::runtime::actions

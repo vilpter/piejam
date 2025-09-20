@@ -14,7 +14,7 @@ namespace piejam::runtime::actions
 void
 delete_fx_module::reduce(state& st) const
 {
-    if (st.gui_state.focused_fx_mod_id == fx_mod_id)
+    if (st.focused_fx_mod_id == fx_mod_id)
     {
         auto& mixer_channel = st.mixer_state.channels[fx_chain_id];
 
@@ -37,10 +37,10 @@ delete_fx_module::reduce(state& st) const
 
         remove_fx_module(st, fx_chain_id, fx_mod_id);
 
-        st.gui_state.focused_fx_mod_id = next_focused_fx_mod_id;
+        st.focused_fx_mod_id = next_focused_fx_mod_id;
         if (!next_focused_fx_mod_id.valid())
         {
-            st.gui_state.focused_fx_chain_id = {};
+            st.focused_fx_chain_id = {};
         }
     }
     else

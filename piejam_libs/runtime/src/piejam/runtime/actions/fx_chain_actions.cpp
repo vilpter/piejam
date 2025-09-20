@@ -13,20 +13,20 @@ namespace piejam::runtime::actions
 void
 toggle_focused_fx_module_bypass::reduce(state& st) const
 {
-    toggle_bool_in_place(st.fx_modules.lock()[st.gui_state.focused_fx_mod_id].bypassed);
+    toggle_bool_in_place(st.fx_modules.lock()[st.focused_fx_mod_id].bypassed);
 }
 
 void
 focus_fx_module::reduce(state& st) const
 {
-    st.gui_state.focused_fx_chain_id = fx_chain_id;
-    st.gui_state.focused_fx_mod_id = fx_mod_id;
+    st.focused_fx_chain_id = fx_chain_id;
+    st.focused_fx_mod_id = fx_mod_id;
 }
 
 void
 show_fx_module::reduce(state& st) const
 {
-    st.gui_state.root_view_mode_ = runtime::root_view_mode::fx_module;
+    st.root_view_mode = runtime::root_view_mode::fx_module;
 }
 
 } // namespace piejam::runtime::actions

@@ -267,7 +267,7 @@ make_mixer_channel_color_selector(mixer::channel_id const channel_id)
         -> selector<material_color>
 {
     return make_entity_data_map_selector(
-            [](state const& st) -> auto& { return st.gui_state.mixer_colors; },
+            [](state const& st) -> auto& { return st.mixer_colors; },
             boost::hof::always(channel_id),
             material_color::pink);
 }
@@ -755,8 +755,8 @@ make_fx_module_can_move_selector(mixer::channel_id const fx_chain_id, bool up)
     return [get = std::move(get)](state const& st) -> bool {
         return get(
                 st.mixer_state.channels,
-                st.gui_state.focused_fx_chain_id,
-                st.gui_state.focused_fx_mod_id);
+                st.focused_fx_chain_id,
+                st.focused_fx_mod_id);
     };
 }
 
@@ -1020,18 +1020,18 @@ selector<float> const select_cpu_load([](state const& st) {
 });
 
 selector<root_view_mode> const select_root_view_mode([](state const& st) {
-    return st.gui_state.root_view_mode_;
+    return st.root_view_mode;
 });
 
 selector<mixer::channel_id> const select_fx_browser_fx_chain(
-        [](state const& st) { return st.gui_state.fx_browser_fx_chain_id; });
+        [](state const& st) { return st.fx_browser_fx_chain_id; });
 
 selector<mixer::channel_id> const select_focused_fx_chain([](state const& st) {
-    return st.gui_state.focused_fx_chain_id;
+    return st.focused_fx_chain_id;
 });
 
 selector<fx::module_id> const select_focused_fx_module([](state const& st) {
-    return st.gui_state.focused_fx_mod_id;
+    return st.focused_fx_mod_id;
 });
 
 static auto
@@ -1047,7 +1047,7 @@ get_focused_fx_module_name(
 
 selector<boxed_string> const select_focused_fx_module_name(
         [get = memo(&get_focused_fx_module_name)](state const& st) {
-            return get(st.fx_modules, st.gui_state.focused_fx_mod_id);
+            return get(st.fx_modules, st.focused_fx_mod_id);
         });
 
 selector<material_color> const select_focused_fx_module_color(
@@ -1055,14 +1055,13 @@ selector<material_color> const select_focused_fx_module_color(
          color = cached_entity_data_ptr<material_color>{}](
                 state const& st) mutable {
             if (focused_fx_chain &&
-                *focused_fx_chain == st.gui_state.focused_fx_chain_id && color)
-                    [[likely]]
+                *focused_fx_chain == st.focused_fx_chain_id && color) [[likely]]
             {
                 return *color;
             }
 
-            focused_fx_chain = st.gui_state.focused_fx_chain_id;
-            color = st.gui_state.mixer_colors.cached(*focused_fx_chain);
+            focused_fx_chain = st.focused_fx_chain_id;
+            color = st.mixer_colors.cached(*focused_fx_chain);
             return color ? *color : material_color::pink;
         });
 
@@ -1077,7 +1076,7 @@ get_focused_fx_module_bypassed(
 
 selector<bool> const select_focused_fx_module_bypassed(
         [get = memo(&get_focused_fx_module_bypassed)](state const& st) -> bool {
-            return get(st.fx_modules, st.gui_state.focused_fx_mod_id);
+            return get(st.fx_modules, st.focused_fx_mod_id);
         });
 
 } // namespace piejam::runtime::selectors
