@@ -77,7 +77,7 @@ make_initial_state() -> state
 {
     state st;
     st.mixer_state.main =
-            add_mixer_channel(st, "Main", audio::bus_type::stereo);
+            add_mixer_channel(st, audio::bus_type::stereo, "Main");
     // main doesn't belong into inputs
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
     // reset the output to default back again
@@ -455,7 +455,7 @@ add_external_audio_device(
 }
 
 auto
-add_mixer_channel(state& st, std::string name, audio::bus_type bus_type)
+add_mixer_channel(state& st, audio::bus_type bus_type, std::string name)
         -> mixer::channel_id
 {
     using namespace std::string_literals;
@@ -464,11 +464,15 @@ add_mixer_channel(state& st, std::string name, audio::bus_type bus_type)
     auto name_id = string_id::generate();
     st.strings.insert(name_id, box{std::move(name)});
 
+    auto color_id = material_color_id::generate();
+    st.material_colors.insert(color_id, material_color::pink);
+
     parameter_factory params_factory{st.params};
     auto mixer_channels = st.mixer_state.channels.lock();
     auto channel_id = mixer_channels.insert({
-            .name = name_id,
             .bus_type = bus_type,
+            .name = name_id,
+            .color = color_id,
             .in = {},
             .out = st.mixer_state.main,
             .aux_sends = box(make_aux_sends(
@@ -527,8 +531,6 @@ add_mixer_channel(state& st, std::string name, audio::bus_type bus_type)
         }
     }
 
-    st.mixer_colors.insert(channel_id, material_color::pink);
-
     return channel_id;
 }
 
@@ -541,6 +543,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
             st.mixer_state.channels[mixer_channel_id];
 
     st.strings.erase(mixer_channel.name);
+    st.material_colors.erase(mixer_channel.color);
 
     remove_parameter(st, mixer_channel.volume);
     remove_parameter(st, mixer_channel.pan_balance);
@@ -585,8 +588,6 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
 
     st.streams.erase(mixer_channel.out_stream);
 
-    mixer_channels.erase(mixer_channel_id);
-
     auto const equal_to_mixer_channel = equal_to(addr);
     for (auto& [_, channel] : mixer_channels)
     {
@@ -599,7 +600,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
         set_if(channel.aux, equal_to_mixer_channel, default_t{});
     }
 
-    st.mixer_colors.erase(mixer_channel_id);
+    mixer_channels.erase(mixer_channel_id);
 }
 
 void

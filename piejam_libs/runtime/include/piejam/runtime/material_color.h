@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <piejam/entity_data_map.h>
+
 #include <cstdint>
 
 namespace piejam::runtime
@@ -32,5 +34,9 @@ enum class material_color : std::uint8_t
     grey,
     blue_grey,
 };
+
+using material_color_id = entity_id<struct material_color_id_tag>;
+
+using material_colors_t = entity_data_map<material_color_id, material_color>;
 
 } // namespace piejam::runtime

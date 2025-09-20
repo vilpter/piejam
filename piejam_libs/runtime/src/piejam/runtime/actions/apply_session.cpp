@@ -228,10 +228,10 @@ apply_session::reduce(state& st) const
     {
         auto added_channel_id = runtime::add_mixer_channel(
                 st,
-                channel_data.name,
-                channel_data.bus_type);
-        st.mixer_colors.set(added_channel_id, channel_data.color);
+                channel_data.bus_type,
+                channel_data.name);
         auto& added_channel = st.mixer_state.channels[added_channel_id];
+        st.material_colors.set(added_channel.color, channel_data.color);
         apply_mixer_midi(
                 mixer_midi_assignments,
                 added_channel,
@@ -247,8 +247,8 @@ apply_session::reduce(state& st) const
         st.strings.set(
                 main_mixer_channel.name,
                 box{session->main_mixer_channel.name});
-        st.mixer_colors.set(
-                st.mixer_state.main,
+        st.material_colors.set(
+                main_mixer_channel.color,
                 session->main_mixer_channel.color);
         apply_mixer_midi(
                 mixer_midi_assignments,

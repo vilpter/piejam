@@ -267,8 +267,10 @@ make_mixer_channel_color_selector(mixer::channel_id const channel_id)
         -> selector<material_color>
 {
     return make_entity_data_map_selector(
-            [](state const& st) -> auto& { return st.mixer_colors; },
-            boost::hof::always(channel_id),
+            [](state const& st) -> auto& { return st.material_colors; },
+            [channel_id](state const& st) {
+                return st.mixer_state.channels[channel_id].color;
+            },
             material_color::pink);
 }
 
@@ -1061,7 +1063,8 @@ selector<material_color> const select_focused_fx_module_color(
             }
 
             focused_fx_chain = st.focused_fx_chain_id;
-            color = st.mixer_colors.cached(*focused_fx_chain);
+            color = st.material_colors.cached(
+                    st.mixer_state.channels[st.focused_fx_chain_id].color);
             return color ? *color : material_color::pink;
         });
 

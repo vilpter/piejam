@@ -15,7 +15,7 @@ namespace piejam::runtime::test
 struct state_with_one_mixer_input : testing::Test
 {
     state_with_one_mixer_input()
-        : channel_id(add_mixer_channel(sut, "foo", audio::bus_type::mono))
+        : channel_id(add_mixer_channel(sut, audio::bus_type::mono, "foo"))
     {
     }
 

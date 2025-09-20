@@ -7,6 +7,7 @@
 #include <piejam/runtime/audio_stream_id.h>
 #include <piejam/runtime/external_audio_fwd.h>
 #include <piejam/runtime/fx/fwd.h>
+#include <piejam/runtime/material_color.h>
 #include <piejam/runtime/mixer_fwd.h>
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/string_id.h>
@@ -33,9 +34,10 @@ using aux_sends_t = std::map<io_address_t, aux_send>;
 
 struct channel
 {
-    string_id name{};
-
     audio::bus_type bus_type{};
+
+    string_id name{};
+    material_color_id color{};
 
     io_address_t in{};
     io_address_t out{};

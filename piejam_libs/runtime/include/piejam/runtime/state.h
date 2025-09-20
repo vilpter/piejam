@@ -51,6 +51,7 @@ struct state
     std::size_t reduce_count{};
 
     strings_t strings;
+    material_colors_t material_colors;
 
     box<audio::sound_cards> sound_cards;
     runtime::selected_sound_card selected_sound_card;
@@ -87,8 +88,6 @@ struct state
     runtime::root_view_mode root_view_mode{};
     mixer::channel_id fx_browser_fx_chain_id;
 
-    entity_data_map<mixer::channel_id, material_color> mixer_colors;
-
     mixer::channel_id focused_fx_chain_id;
     fx::module_id focused_fx_mod_id;
 };
@@ -102,7 +101,7 @@ auto add_external_audio_device(
         audio::bus_type,
         channel_index_pair const&) -> external_audio::device_id;
 
-auto add_mixer_channel(state&, std::string name, audio::bus_type)
+auto add_mixer_channel(state&, audio::bus_type, std::string name)
         -> mixer::channel_id;
 
 void remove_mixer_channel(state&, mixer::channel_id);

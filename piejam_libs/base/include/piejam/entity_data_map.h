@@ -118,8 +118,8 @@ private:
 
 template <class Entity, class Data>
 auto
-insert(entity_data_map<entity_id<Entity>, std::decay_t<Data>>& m,
-       Data&& value) -> entity_id<Entity>
+insert(entity_data_map<entity_id<Entity>, std::decay_t<Data>>& m, Data&& value)
+        -> entity_id<Entity>
 {
     auto id = entity_id<Entity>::generate();
     BOOST_VERIFY(m.insert(id, std::forward<Data>(value)));

@@ -117,13 +117,13 @@ TEST_F(audio_engine_render_test, add_input_channel)
 {
     auto st = make_initial_state();
 
-    add_mixer_channel(st, "in1", audio::bus_type::stereo);
-    add_mixer_channel(st, "out", audio::bus_type::stereo);
+    add_mixer_channel(st, audio::bus_type::stereo, "in1");
+    add_mixer_channel(st, audio::bus_type::stereo, "out");
 
     rebuild(st);
     render(200);
 
-    add_mixer_channel(st, "in2", audio::bus_type::mono);
+    add_mixer_channel(st, audio::bus_type::mono, "in2");
 
     rebuild(st);
     render(200);

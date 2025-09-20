@@ -20,7 +20,7 @@ void
 add_mixer_channel::reduce(state& st) const
 {
     auto added_mixer_channel_id =
-            runtime::add_mixer_channel(st, name, bus_type);
+            runtime::add_mixer_channel(st, bus_type, name);
 
     if (auto_assign_input)
     {
@@ -51,7 +51,8 @@ delete_mixer_channel::reduce(state& st) const
 void
 set_mixer_channel_color::reduce(state& st) const
 {
-    st.mixer_colors.set(channel_id, color);
+    auto const& channel = st.mixer_state.channels[channel_id];
+    st.material_colors.set(channel.color, color);
 }
 
 template <mixer::io_socket IOSocket>
