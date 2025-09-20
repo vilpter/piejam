@@ -14,31 +14,31 @@ namespace piejam::runtime::actions
 void
 move_fx_module_up::reduce(state& st) const
 {
-    auto channels = st.mixer_state.channels.lock();
-    auto& mixer_channel = channels[st.focused_fx_chain_id];
+    auto fx_chain = *st.mixer_state.fx_chains[st.focused_fx_chain_id];
 
-    auto fx_chain = mixer_channel.fx_chain.lock();
+    auto it = std::ranges::find(fx_chain, st.focused_fx_mod_id);
+    BOOST_ASSERT(it != fx_chain.end());
+    BOOST_ASSERT(it != fx_chain.begin());
+    std::iter_swap(it, std::prev(it));
 
-    if (auto it = std::ranges::find(*fx_chain, st.focused_fx_mod_id);
-        it != fx_chain->end() && it != fx_chain->begin())
-    {
-        std::iter_swap(it, std::prev(it));
-    }
+    st.mixer_state.fx_chains.set(
+            st.focused_fx_chain_id,
+            box{std::move(fx_chain)});
 }
 
 void
 move_fx_module_down::reduce(state& st) const
 {
-    auto channels = st.mixer_state.channels.lock();
-    auto& mixer_channel = channels[st.focused_fx_chain_id];
+    auto fx_chain = *st.mixer_state.fx_chains[st.focused_fx_chain_id];
 
-    auto fx_chain = mixer_channel.fx_chain.lock();
+    auto it = std::ranges::find(fx_chain, st.focused_fx_mod_id);
+    BOOST_ASSERT(it != fx_chain.end());
+    BOOST_ASSERT(std::next(it) != fx_chain.end());
+    std::iter_swap(it, std::next(it));
 
-    if (auto it = std::ranges::find(*fx_chain, st.focused_fx_mod_id);
-        it != fx_chain->end() && std::next(it) != fx_chain->end())
-    {
-        std::iter_swap(it, std::next(it));
-    }
+    st.mixer_state.fx_chains.set(
+            st.focused_fx_chain_id,
+            box{std::move(fx_chain)});
 }
 
 } // namespace piejam::runtime::actions

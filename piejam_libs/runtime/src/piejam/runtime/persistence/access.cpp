@@ -311,13 +311,17 @@ export_mixer_aux_sends(state const& st, mixer::aux_sends_t const& aux_sends)
 }
 
 auto
-export_mixer_channel(state const& st, mixer::channel const& channel)
+export_mixer_channel(
+        state const& st,
+        mixer::channel_id const channel_id,
+        mixer::channel const& channel)
 {
     session::mixer_channel result;
     result.name = st.strings[channel.name];
     result.color = st.material_colors[channel.color];
     result.bus_type = channel.bus_type;
-    result.fx_chain = export_fx_chain(st, *channel.fx_chain);
+    result.fx_chain =
+            export_fx_chain(st, *st.mixer_state.fx_chains[channel_id]);
     result.midi = export_mixer_midi(st, channel);
     result.parameter = export_mixer_parameters(st, channel);
     result.in = export_mixer_io(st, channel.in);
@@ -335,6 +339,7 @@ export_mixer_channels(state const& st, mixer::channel_ids_t const& channel_ids)
             [&st](mixer::channel_id const channel_id) {
                 return export_mixer_channel(
                         st,
+                        channel_id,
                         st.mixer_state.channels[channel_id]);
             });
 }
@@ -368,6 +373,7 @@ save_session(std::filesystem::path const& file, state const& st)
         ses.mixer_channels = export_mixer_channels(st, *st.mixer_state.inputs);
         ses.main_mixer_channel = export_mixer_channel(
                 st,
+                st.mixer_state.main,
                 st.mixer_state.channels[st.mixer_state.main]);
 
         save_session(out, ses);

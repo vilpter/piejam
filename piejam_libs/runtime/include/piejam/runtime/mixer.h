@@ -39,12 +39,6 @@ struct channel
     string_id name{};
     material_color_id color{};
 
-    io_address_t in{};
-    io_address_t out{};
-    io_address_t aux{}; // currently selected aux route
-
-    box<aux_sends_t> aux_sends{};
-
     float_parameter_id volume{};
     float_parameter_id pan_balance{};
     bool_parameter_id record{};
@@ -53,28 +47,13 @@ struct channel
 
     audio_stream_id out_stream{};
 
-    box<fx::chain_t> fx_chain{};
+    io_address_t in{};
+    io_address_t out{};
+    io_address_t aux{}; // currently selected aux route
+
+    box<aux_sends_t> aux_sends{};
 
     auto operator==(channel const&) const noexcept -> bool = default;
-
-    auto get_io_addr(io_socket const s) const noexcept -> io_address_t const&
-    {
-        switch (s)
-        {
-            case io_socket::in:
-                return in;
-
-            case io_socket::out:
-                return out;
-
-            case io_socket::aux:
-                return aux;
-        }
-
-        BOOST_ASSERT(false);
-        static io_address_t const s_default;
-        return s_default;
-    }
 };
 
 struct state
@@ -83,6 +62,9 @@ struct state
 
     box<channel_ids_t> inputs;
     channel_id main;
+
+    using fx_chains_t = entity_data_map<channel_id, box<fx::chain_t>>;
+    fx_chains_t fx_chains;
 };
 
 auto is_default_source_valid(channels_t const&, channel_id) -> bool;

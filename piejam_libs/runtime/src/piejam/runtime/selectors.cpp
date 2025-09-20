@@ -678,8 +678,12 @@ auto
 make_fx_chain_selector(mixer::channel_id const channel_id)
         -> selector<box<fx::chain_t>>
 {
-    return make_mixer_channel_member_selector<&mixer::channel::fx_chain>(
-            channel_id);
+    return make_entity_data_map_selector(
+            [](state const& st) -> mixer::state::fx_chains_t const& {
+                return st.mixer_state.fx_chains;
+            },
+            boost::hof::always(channel_id),
+            box<fx::chain_t>{});
 }
 
 template <auto GetMember>
@@ -739,26 +743,25 @@ static auto
 make_fx_module_can_move_selector(mixer::channel_id const fx_chain_id, bool up)
         -> selector<bool>
 {
-    auto get = memo([fx_chain_id,
-                     up](mixer::channels_t const& channels,
-                         mixer::channel_id focused_fx_chain_id,
-                         fx::module_id focused_fx_mod_id) {
-        if (fx_chain_id != focused_fx_chain_id)
+    auto get_fx_chain = make_entity_data_map_selector(
+            [](state const& st) -> mixer::state::fx_chains_t const& {
+                return st.mixer_state.fx_chains;
+            },
+            boost::hof::always(fx_chain_id),
+            box<fx::chain_t>{});
+
+    return [fx_chain_id, up, get_fx_chain = std::move(get_fx_chain)](
+                   state const& st) -> bool {
+        if (fx_chain_id != st.focused_fx_chain_id)
         {
             return false;
         }
 
-        mixer::channel const* const mixer_channel = channels.find(fx_chain_id);
-        return mixer_channel && !mixer_channel->fx_chain->empty() &&
-               (up ? mixer_channel->fx_chain->front()
-                   : mixer_channel->fx_chain->back()) != focused_fx_mod_id;
-    });
+        auto fx_chain = get_fx_chain(st);
 
-    return [get = std::move(get)](state const& st) -> bool {
-        return get(
-                st.mixer_state.channels,
-                st.focused_fx_chain_id,
-                st.focused_fx_mod_id);
+        return !fx_chain->empty() &&
+               (up ? fx_chain->front() : fx_chain->back()) !=
+                       st.focused_fx_mod_id;
     };
 }
 

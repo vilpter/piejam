@@ -471,7 +471,7 @@ connect_mixer_output(
 auto
 make_graph(
         component_map const& comps,
-        mixer::channels_t const& channels,
+        mixer::state const& mixer_state,
         external_audio::devices_t const& device_buses,
         std::span<audio::engine::input_processor> const input_procs,
         std::span<audio::engine::output_processor> const output_procs,
@@ -479,7 +479,7 @@ make_graph(
 {
     audio::engine::graph g;
 
-    for (auto const& [mixer_channel_id, mixer_channel] : channels)
+    for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
         audio::engine::component* const mixer_channel_in =
                 comps.find(mixer_input_key{mixer_channel_id, mixer_channel.in})
@@ -495,7 +495,7 @@ make_graph(
 
         connect_mixer_input(
                 g,
-                channels,
+                mixer_state.channels,
                 device_buses,
                 comps,
                 input_procs,
@@ -506,12 +506,12 @@ make_graph(
                 g,
                 comps,
                 *mixer_channel_in,
-                mixer_channel.fx_chain,
+                mixer_state.fx_chains[mixer_channel_id],
                 *mixer_channel_out);
 
         connect_mixer_output(
                 g,
-                channels,
+                mixer_state.channels,
                 device_buses,
                 comps,
                 output_procs,
@@ -542,7 +542,7 @@ make_graph(
 
                 connect_mixer_output(
                         g,
-                        channels,
+                        mixer_state.channels,
                         device_buses,
                         comps,
                         output_procs,
@@ -822,7 +822,7 @@ audio_engine::rebuild(
 
     auto new_graph = make_graph(
             comps,
-            st.mixer_state.channels,
+            st.mixer_state,
             st.external_audio_state.devices,
             m_impl->input_procs,
             m_impl->output_procs,
