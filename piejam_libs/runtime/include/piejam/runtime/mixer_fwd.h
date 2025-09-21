@@ -4,16 +4,32 @@
 
 #pragma once
 
+#include <piejam/runtime/external_audio_fwd.h>
+
+#include <piejam/audio/types.h>
 #include <piejam/default.h>
 #include <piejam/fwd.h>
 #include <piejam/invalid.h>
-#include <piejam/runtime/external_audio_fwd.h>
 
 #include <variant>
 #include <vector>
 
 namespace piejam::runtime::mixer
 {
+
+enum class channel_type
+{
+    mono,
+    stereo,
+    aux,
+};
+
+constexpr auto
+to_bus_type(channel_type t) -> audio::bus_type
+{
+    return t == channel_type::mono ? audio::bus_type::mono
+                                   : audio::bus_type::stereo;
+}
 
 struct channel;
 using channel_id = entity_id<channel>;
@@ -22,7 +38,7 @@ using channels_t = entity_map<channel>;
 using io_address_t = std::
         variant<default_t, invalid_t, external_audio::device_id, channel_id>;
 
-enum class io_socket
+enum class io_socket : bool
 {
     in,
     out,

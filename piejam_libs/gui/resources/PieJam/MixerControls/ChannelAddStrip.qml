@@ -14,6 +14,7 @@ ChannelStripBase {
 
     signal addMonoClicked()
     signal addStereoClicked()
+    signal addAuxClicked()
 
     ColumnLayout {
 
@@ -25,7 +26,8 @@ ChannelStripBase {
 
             Layout.fillWidth: true
 
-            placeholderText: qsTr("Name")
+            placeholderText: qsTr("<New>")
+            placeholderTextColor: Material.secondaryTextColor
 
             onEditingFinished: focus = false
         }
@@ -36,8 +38,6 @@ ChannelStripBase {
         }
 
         Button {
-            id: addMonoButton
-
             Layout.fillWidth: true
 
             text: qsTr("+Mono")
@@ -49,8 +49,6 @@ ChannelStripBase {
         }
 
         Button {
-            id: addStereoButton
-
             Layout.fillWidth: true
 
             text: qsTr("+Stereo")
@@ -59,6 +57,17 @@ ChannelStripBase {
             Material.background: Material.color(Material.Green, Material.Shade400)
 
             onClicked: root.addStereoClicked()
+        }
+
+        Button {
+            Layout.fillWidth: true
+
+            text: qsTr("+Aux")
+            font.bold: true
+
+            Material.background: Material.color(Material.Green, Material.Shade400)
+
+            onClicked: root.addAuxClicked()
         }
     }
 }

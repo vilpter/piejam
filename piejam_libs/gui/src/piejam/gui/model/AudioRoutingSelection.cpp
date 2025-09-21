@@ -15,7 +15,7 @@ struct AudioRoutingSelection::Impl
 {
     runtime::mixer::channel_id mixer_channel_id;
     runtime::mixer::io_socket io_socket;
-    audio::bus_type bus_type;
+    runtime::mixer::channel_type channel_type;
 
     runtime::subscription_id target_channel_state_sub_id{
             runtime::subscription_id::generate()};
@@ -33,7 +33,7 @@ AudioRoutingSelection::AudioRoutingSelection(
               id,
               io_socket,
               observe_once(
-                      runtime::selectors::make_mixer_channel_bus_type_selector(
+                      runtime::selectors::make_mixer_channel_type_selector(
                               id)))}
 {
 }
@@ -71,8 +71,9 @@ AudioRoutingSelection::onSubscribe()
                                             make_external_audio_device_name_string_selector(
                                                     device_id),
                                             [this](boxed_string device_name) {
-                                                setLabel(QString::fromStdString(
-                                                        device_name));
+                                                setLabel(
+                                                        QString::fromStdString(
+                                                                device_name));
                                             });
                                 },
                                 [this](channel_id target_channel) {
@@ -102,8 +103,9 @@ AudioRoutingSelection::onSubscribe()
                                             make_mixer_channel_name_string_selector(
                                                     target_channel),
                                             [this](boxed_string channel_name) {
-                                                setLabel(QString::fromStdString(
-                                                        channel_name));
+                                                setLabel(
+                                                        QString::fromStdString(
+                                                                channel_name));
                                             });
                                 }),
                         io_address);

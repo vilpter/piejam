@@ -56,6 +56,8 @@ ChannelStripBase {
         AudioRoutingComboBox {
             Layout.fillWidth: true
 
+            enabled: root.model && root.model.channelType !== PJModels.Types.ChannelType.Aux
+
             defaultText: root.model ? (root.model.busType === PJModels.Types.BusType.Stereo ? "Mix" : "None") : "-"
             model: root.model ? root.model.in : null
         }

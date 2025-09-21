@@ -22,7 +22,7 @@ struct AudioRouting::Impl
 {
     runtime::mixer::channel_id mixer_channel_id;
     runtime::mixer::io_socket io_socket;
-    audio::bus_type bus_type;
+    runtime::mixer::channel_type channel_type;
 
     std::unique_ptr<AudioRoutingSelection> selected;
     Strings devicesList{};
@@ -42,8 +42,7 @@ AudioRouting::AudioRouting(
               id,
               io_socket,
               observe_once(
-                      runtime::selectors::make_mixer_channel_bus_type_selector(
-                              id)),
+                      runtime::selectors::make_mixer_channel_type_selector(id)),
               std::make_unique<AudioRoutingSelection>(
                       store_dispatch,
                       state_change_subscriber,
@@ -81,9 +80,7 @@ AudioRouting::onSubscribe()
             [this](bool const x) { setDefaultIsValid(x); });
 
     observe(runtime::selectors::make_mixer_device_routes_selector(
-                    m_impl->io_socket != runtime::mixer::io_socket::in
-                            ? audio::bus_type::stereo
-                            : m_impl->bus_type,
+                    m_impl->channel_type,
                     m_impl->io_socket),
             [this](boxed_vector<runtime::selectors::mixer_device_route> const&
                            devices) {

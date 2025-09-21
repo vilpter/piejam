@@ -34,7 +34,7 @@ using aux_sends_t = std::map<channel_id, aux_send>;
 
 struct channel
 {
-    audio::bus_type bus_type{};
+    channel_type type{};
 
     string_id name{};
     material_color_id color{};

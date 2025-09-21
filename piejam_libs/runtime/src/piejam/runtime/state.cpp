@@ -77,7 +77,7 @@ make_initial_state() -> state
 {
     state st;
     st.mixer_state.main =
-            add_mixer_channel(st, audio::bus_type::stereo, "Main");
+            add_mixer_channel(st, mixer::channel_type::stereo, "Main");
     // main doesn't belong into inputs
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
     // reset the output to default back again
@@ -188,7 +188,7 @@ insert_internal_fx_module(
 
     mixer::channel const& mixer_channel =
             st.mixer_state.channels[mixer_channel_id];
-    auto const bus_type = mixer_channel.bus_type;
+    auto const bus_type = to_bus_type(mixer_channel.type);
     fx::chain_t fx_chain = st.mixer_state.fx_chains[mixer_channel_id];
     auto const insert_pos = std::min(position, fx_chain.size());
 
@@ -232,7 +232,7 @@ insert_ladspa_fx_module(
 
     mixer::channel const& mixer_channel =
             st.mixer_state.channels[mixer_channel_id];
-    auto const bus_type = mixer_channel.bus_type;
+    auto const bus_type = to_bus_type(mixer_channel.type);
     fx::chain_t fx_chain = st.mixer_state.fx_chains[mixer_channel_id];
     auto const insert_pos = std::min(position, fx_chain.size());
 
@@ -279,7 +279,7 @@ insert_missing_ladspa_fx_module(
             st.fx_modules.insert({
                     .fx_instance_id = id,
                     .name = box(std::string(name)),
-                    .bus_type = mixer_channel.bus_type,
+                    .bus_type = to_bus_type(mixer_channel.type),
                     .parameters = {},
                     .streams = {},
             }));
@@ -342,33 +342,26 @@ remove_fx_module(
 
 template <class ParameterFactory>
 static auto
-make_aux_send_parameter(ParameterFactory& ui_params_factory)
-{
-    using namespace std::string_literals;
-
-    return ui_params_factory.make_parameter(
-            parameter::float_descriptor{
-                    .name = box("Send"s),
-                    .default_value = 0.f,
-                    .min = 0.f,
-                    .max = 1.f,
-                    .value_to_string = &volume_to_string,
-                    .to_normalized = &to_normalized_send,
-                    .from_normalized = &from_normalized_send});
-}
-
-template <class ParameterFactory>
-static auto
 make_aux_send(
         mixer::aux_sends_t& aux_sends,
-        mixer::channel_id const& route,
+        mixer::channel_id const& aux_id,
         ParameterFactory& ui_params_factory)
 {
+    using namespace std::string_literals;
     aux_sends.emplace(
-            route,
+            aux_id,
             mixer::aux_send{
                     .enabled = false,
-                    .volume = make_aux_send_parameter(ui_params_factory)});
+                    .volume = ui_params_factory.make_parameter(
+                            parameter::float_descriptor{
+                                    .name = box("Send"s),
+                                    .default_value = 0.f,
+                                    .min = 0.f,
+                                    .max = 1.f,
+                                    .value_to_string = &volume_to_string,
+                                    .to_normalized = &to_normalized_send,
+                                    .from_normalized =
+                                            &from_normalized_send})});
 }
 
 template <class ParameterFactory>
@@ -380,7 +373,7 @@ make_aux_sends(
     mixer::aux_sends_t result;
     for (auto const& [channel_id, channel] : channels)
     {
-        if (channel.bus_type == audio::bus_type::stereo)
+        if (channel.type == mixer::channel_type::aux)
         {
             make_aux_send(result, channel_id, ui_params_factory);
         }
@@ -393,9 +386,9 @@ static auto
 remove_aux_send(
         state& st,
         mixer::aux_sends_t& aux_sends,
-        mixer::channel_id const& route)
+        mixer::channel_id const& aux_id)
 {
-    if (auto it = aux_sends.find(route); it != aux_sends.end())
+    if (auto it = aux_sends.find(aux_id); it != aux_sends.end())
     {
         remove_parameter(st, it->second.volume);
         aux_sends.erase(it);
@@ -432,7 +425,7 @@ add_external_audio_device(
 }
 
 auto
-add_mixer_channel(state& st, audio::bus_type bus_type, std::string name)
+add_mixer_channel(state& st, mixer::channel_type type, std::string name)
         -> mixer::channel_id
 {
     using namespace std::string_literals;
@@ -447,7 +440,7 @@ add_mixer_channel(state& st, audio::bus_type bus_type, std::string name)
     parameter_factory params_factory{st.params};
     auto mixer_channels = st.mixer_state.channels.lock();
     auto channel_id = mixer_channels.insert({
-            .bus_type = bus_type,
+            .type = type,
             .name = name_id,
             .color = color_id,
             .volume = params_factory.make_parameter(
@@ -463,7 +456,7 @@ add_mixer_channel(state& st, audio::bus_type bus_type, std::string name)
                     float_parameter{
                             .name =
                                     box(std::string(bool_enum_to(
-                                            bus_type,
+                                            to_bus_type(type),
                                             "Pan"sv,
                                             "Balance"sv))),
                             .default_value = 0.f,
@@ -494,14 +487,17 @@ add_mixer_channel(state& st, audio::bus_type bus_type, std::string name)
     emplace_back(st.mixer_state.inputs, channel_id);
 
     // add as aux_send to each channel
-    for (auto& [id, channel] : mixer_channels)
+    if (type == mixer::channel_type::aux)
     {
-        if (id != channel_id)
+        for (auto& [id, channel] : mixer_channels)
         {
-            make_aux_send(
-                    *channel.aux_sends.lock(),
-                    channel_id,
-                    params_factory);
+            if (channel_id != id)
+            {
+                make_aux_send(
+                        *channel.aux_sends.lock(),
+                        channel_id,
+                        params_factory);
+            }
         }
     }
 
@@ -527,18 +523,21 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     remove_parameter(st, mixer_channel.mute);
     remove_parameter(st, mixer_channel.solo);
 
-    // remove own aux_sends
-    for (auto& aux_send : mixer_channel.aux_sends.get())
-    {
-        remove_parameter(st, aux_send.second.volume);
-    }
-
     auto mixer_channels = st.mixer_state.channels.lock();
 
-    // remove itself as aux_send from other channels
-    for (auto& [id, channel] : mixer_channels)
+    if (mixer_channel.type == mixer::channel_type::aux)
     {
-        remove_aux_send(st, *channel.aux_sends.lock(), mixer_channel_id);
+        // remove own aux_sends
+        for (auto const& aux_send : mixer_channel.aux_sends.get())
+        {
+            remove_parameter(st, aux_send.second.volume);
+        }
+
+        // remove itself as aux_send from other channels
+        for (auto& [id, channel] : mixer_channels)
+        {
+            remove_aux_send(st, *channel.aux_sends.lock(), mixer_channel_id);
+        }
     }
 
     for (auto fx_mod_id :
@@ -570,7 +569,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     {
         set_if(channel.in,
                equal_to_mixer_channel,
-               channel.bus_type == audio::bus_type::stereo
+               channel.type == mixer::channel_type::stereo
                        ? mixer::io_address_t{invalid_t{}}
                        : mixer::io_address_t{default_t{}});
         set_if(channel.out, equal_to_mixer_channel, default_t{});
@@ -599,7 +598,7 @@ remove_external_audio_device(
         {
             set_if(mixer_channel.in,
                    equal_to_device,
-                   mixer_channel.bus_type == audio::bus_type::stereo
+                   mixer_channel.type == mixer::channel_type::stereo
                            ? mixer::io_address_t{invalid_t{}}
                            : mixer::io_address_t{default_t{}});
             set_if(mixer_channel.out, equal_to_device, default_t{});

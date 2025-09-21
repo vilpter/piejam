@@ -111,7 +111,7 @@ recorder_middleware::process_recorder_action(
 
         auto const format = SF_FORMAT_WAV | SF_FORMAT_PCM_24;
         std::size_t const num_channels =
-                audio::num_channels(mixer_channel.bus_type);
+                audio::num_channels(to_bus_type(mixer_channel.type));
         if (SndfileHandle::formatCheck(
                     format,
                     static_cast<int>(num_channels),

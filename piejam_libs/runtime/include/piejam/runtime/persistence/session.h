@@ -108,7 +108,7 @@ struct session
     {
         std::string name;
         material_color color;
-        audio::bus_type bus_type;
+        mixer::channel_type channel_type;
         mixer_parameters parameter;
         mixer_midi midi;
         fx_chain_t fx_chain;

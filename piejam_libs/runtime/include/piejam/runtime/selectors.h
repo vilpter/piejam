@@ -87,8 +87,8 @@ auto make_external_audio_device_bus_channel_selector(
 extern selector<box<mixer::channel_ids_t>> const select_mixer_user_channels;
 extern selector<mixer::channel_id> const select_mixer_main_channel;
 
-auto make_mixer_channel_bus_type_selector(mixer::channel_id)
-        -> selector<audio::bus_type>;
+auto make_mixer_channel_type_selector(mixer::channel_id)
+        -> selector<mixer::channel_type>;
 auto make_mixer_channel_color_selector(mixer::channel_id)
         -> selector<material_color>;
 auto make_mixer_channel_volume_parameter_selector(mixer::channel_id)
@@ -143,7 +143,7 @@ auto make_mixer_channel_selected_route_selector(
         mixer::channel_id,
         mixer::io_socket) -> selector<mixer::io_address_t>;
 
-auto make_mixer_device_routes_selector(audio::bus_type, mixer::io_socket)
+auto make_mixer_device_routes_selector(mixer::channel_type, mixer::io_socket)
         -> selector<boxed_vector<mixer_device_route>>;
 
 auto make_mixer_channel_routes_selector(mixer::channel_id, mixer::io_socket)

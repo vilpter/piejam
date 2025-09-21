@@ -255,10 +255,10 @@ make_mixer_channel_member_selector(
 }
 
 auto
-make_mixer_channel_bus_type_selector(mixer::channel_id const channel_id)
-        -> selector<audio::bus_type>
+make_mixer_channel_type_selector(mixer::channel_id const channel_id)
+        -> selector<mixer::channel_type>
 {
-    return make_mixer_channel_member_selector<&mixer::channel::bus_type>(
+    return make_mixer_channel_member_selector<&mixer::channel::type>(
             channel_id);
 }
 
@@ -464,10 +464,14 @@ make_mixer_channel_selected_route_selector(
 
 auto
 make_mixer_device_routes_selector(
-        audio::bus_type const bus_type,
+        mixer::channel_type const channel_type,
         mixer::io_socket const io_socket)
         -> selector<boxed_vector<mixer_device_route>>
 {
+    auto const bus_type = channel_type == mixer::channel_type::mono
+                                  ? bool_enum_to<audio::bus_type>(io_socket)
+                                  : audio::bus_type::stereo;
+
     auto get_mixer_device_routes =
             memo([bus_type](
                          external_audio::devices_t const& devices,
@@ -491,6 +495,11 @@ make_mixer_device_routes_selector(
     switch (io_socket)
     {
         case mixer::io_socket::in:
+            if (channel_type == mixer::channel_type::aux)
+            {
+                return boost::hof::always(boxed_vector<mixer_device_route>{});
+            }
+
             return [get = std::move(get_mixer_device_routes)](
                            state const& st) mutable {
                 return get(
@@ -499,7 +508,6 @@ make_mixer_device_routes_selector(
             };
 
         case mixer::io_socket::out:
-            BOOST_ASSERT(bus_type == audio::bus_type::stereo);
             return [get = std::move(get_mixer_device_routes)](
                            state const& st) mutable {
                 return get(
@@ -520,6 +528,12 @@ make_mixer_channel_routes_selector(
 {
     auto get_mixer_channel_routes =
             memo([channel_id, io_socket](mixer::channels_t const& channels) {
+                if (io_socket == mixer::io_socket::in &&
+                    channels[channel_id].type == mixer::channel_type::aux)
+                {
+                    return boxed_vector<mixer_channel_route>{};
+                }
+
                 auto valid_sources =
                         mixer::valid_channels(io_socket, channels, channel_id);
                 return box(

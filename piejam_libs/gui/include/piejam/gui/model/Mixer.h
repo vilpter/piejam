@@ -9,6 +9,8 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
+#include <piejam/runtime/mixer_fwd.h>
+
 #include <piejam/pimpl.h>
 
 class QAbstractListModel;
@@ -30,9 +32,15 @@ public:
 
     Q_INVOKABLE void addMonoChannel(QString const& newChannelName);
     Q_INVOKABLE void addStereoChannel(QString const& newChannelName);
+    Q_INVOKABLE void addAuxChannel(QString const& newChannelName);
 
 private:
     void onSubscribe() override;
+
+    void addChannel(
+            QString const& name,
+            runtime::mixer::channel_type,
+            bool auto_assign_input);
 
     struct Impl;
     pimpl<Impl> const m_impl;

@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 module PieJam.ParameterControls
-FloatSlider 1.0 FloatSlider.qml
+ValueLabel 1.0 ValueLabel.qml

@@ -19,10 +19,10 @@ TEST(mixer_valid_io, test1)
 
     channels_t channels;
     auto channel1 = channels.insert({
-            .bus_type = audio::bus_type::stereo,
+            .type = channel_type::stereo,
     });
     auto channel2 = channels.insert({
-            .bus_type = audio::bus_type::stereo,
+            .type = channel_type::stereo,
     });
 
     auto vs1 = valid_channels(io_socket::in, channels, channel1);
@@ -48,7 +48,7 @@ TEST(mixer_valid_io, test2)
     channels_t channels;
     auto channel1 = channels.insert({});
     auto channel2 = channels.insert({
-            .bus_type = audio::bus_type::stereo,
+            .type = channel_type::stereo,
             .in = channel1,
     });
 

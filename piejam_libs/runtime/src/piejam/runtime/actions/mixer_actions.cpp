@@ -20,9 +20,9 @@ void
 add_mixer_channel::reduce(state& st) const
 {
     auto added_mixer_channel_id =
-            runtime::add_mixer_channel(st, bus_type, name);
+            runtime::add_mixer_channel(st, channel_type, name);
 
-    if (auto_assign_input)
+    if (auto_assign_input && channel_type != mixer::channel_type::aux)
     {
         for (auto device_id : *st.external_audio_state.inputs)
         {
@@ -32,7 +32,8 @@ add_mixer_channel::reduce(state& st) const
                     boost::hof::compose(&mixer::channel::in, get_by_index<1>));
 
             if (it == st.mixer_state.channels.end() &&
-                st.external_audio_state.devices[device_id].bus_type == bus_type)
+                st.external_audio_state.devices[device_id].bus_type ==
+                        to_bus_type(channel_type))
             {
                 st.mixer_state.channels.lock()[added_mixer_channel_id].in =
                         device_id;

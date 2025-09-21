@@ -23,15 +23,8 @@ struct add_mixer_channel final
     : ui::cloneable_action<add_mixer_channel, reducible_action>
     , visitable_audio_engine_action<add_mixer_channel>
 {
-    add_mixer_channel() = default;
-    add_mixer_channel(std::string name, audio::bus_type bus_type)
-        : name(std::move(name))
-        , bus_type(bus_type)
-    {
-    }
-
     std::string name;
-    audio::bus_type bus_type;
+    mixer::channel_type channel_type;
     bool auto_assign_input{};
 
     void reduce(state&) const override;

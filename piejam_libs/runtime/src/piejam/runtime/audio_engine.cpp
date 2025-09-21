@@ -368,7 +368,7 @@ connect_mixer_input(
                                     mixer_channel_in.inputs()[0]);
                         }
 
-                        if (mixer_channel.bus_type == audio::bus_type::stereo &&
+                        if (mixer_channel.type == mixer::channel_type::stereo &&
                             device.channels.right != npos)
                         {
                             g.audio.insert(

@@ -16,10 +16,19 @@ Q_NAMESPACE
 enum class BusType : bool
 {
     Mono,
-    Stereo
+    Stereo,
 };
 
 Q_ENUM_NS(BusType)
+
+enum class ChannelType
+{
+    Mono,
+    Stereo,
+    Aux,
+};
+
+Q_ENUM_NS(ChannelType)
 
 enum class DFTResolution
 {

@@ -188,8 +188,7 @@ valid_io_channels(channels_t const& channels, channel_id const ch_id)
         if (mixer_channel_id == ch_id)
         {
             // mono mixer channels can't have input channels
-            if (D == io_socket::in &&
-                mixer_channel.bus_type == audio::bus_type::mono)
+            if (D == io_socket::in && mixer_channel.type == channel_type::mono)
             {
                 return {};
             }
@@ -198,8 +197,7 @@ valid_io_channels(channels_t const& channels, channel_id const ch_id)
             continue;
         }
 
-        if (D == io_socket::out &&
-            mixer_channel.bus_type == audio::bus_type::mono)
+        if (D == io_socket::out && mixer_channel.type == channel_type::mono)
         {
             // mono mixer channels can't be targets
             continue;

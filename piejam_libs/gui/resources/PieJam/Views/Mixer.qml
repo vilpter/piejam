@@ -41,7 +41,7 @@ ViewPane {
         }
     }
 
-    ChannelsListView {
+    ListView {
         id: inputs
 
         anchors.left: parent.left
@@ -51,7 +51,20 @@ ViewPane {
         anchors.margins: 8
         anchors.leftMargin: 0
 
+        spacing: 2
+        clip: true
+        orientation: ListView.Horizontal
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
+
         model: root.model.userChannels
+
+        delegate: ChannelStrip {
+            anchors.top: parent ? parent.top : undefined
+            anchors.bottom: parent ? parent.bottom : undefined
+
+            model: item
+        }
 
         header: Item {
             width: 8
@@ -61,6 +74,8 @@ ViewPane {
         }
 
         footer: Item {
+            id: channelAddStrip
+
             width: 142
 
             anchors.top: parent.top
@@ -69,24 +84,41 @@ ViewPane {
             visible: MixerViewSettings.mode == MixerViewSettings.edit
 
             ChannelAddStrip {
-                id: channelAddStrip
-
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
+                anchors.fill: parent
+                anchors.leftMargin: 2
                 anchors.rightMargin: 8
 
-                name: "In " + (inputs.count + 1)
+                onAddMonoClicked: {
+                    root.model.addMonoChannel(name ? name : "In " + (inputs.count + 1))
+                    name = ""
+                    channelAddStrip.slideToEnd()
+                }
 
-                onAddMonoClicked: root.model.addMonoChannel(channelAddStrip.name)
-                onAddStereoClicked: root.model.addStereoChannel(channelAddStrip.name)
+                onAddStereoClicked: {
+                    root.model.addStereoChannel(name ? name : "In " + (inputs.count + 1))
+                    name = ""
+                    channelAddStrip.slideToEnd()
+                }
+
+                onAddAuxClicked: {
+                    root.model.addAuxChannel(name ? name : "Aux " + (inputs.count + 1))
+                    name = ""
+                    channelAddStrip.slideToEnd()
+                }
             }
+
+            function slideToEnd() {
+                // Behavior will animate if value actually changes
+                inputs.contentX = Math.max(0, inputs.contentWidth + channelAddStrip.width - inputs.width);
+            }
+        }
+
+        Behavior on contentX {
+            NumberAnimation { duration: 400; easing.type: Easing.InOutQuad }
         }
     }
 
     Rectangle {
-        id: channelsSeparator
-
         width: 4
 
         anchors.right: mainChannelStrip.left
@@ -120,10 +152,7 @@ ViewPane {
         anchors.bottom: parent.bottom
         anchors.margins: 8
 
-        perform: root.model.mainChannel.perform
-        edit: root.model.mainChannel.edit
-        fx: root.model.mainChannel.fx
-        auxSend: root.model.mainChannel.auxSend
+        model: root.model.mainChannel
 
         deletable: false
     }

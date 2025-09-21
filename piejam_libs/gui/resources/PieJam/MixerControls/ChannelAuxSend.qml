@@ -27,6 +27,8 @@ ChannelStripBase {
         }
 
         ListView {
+            id: auxSends
+
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -43,6 +45,23 @@ ChannelStripBase {
                 anchors.right: parent ? parent.right : undefined
 
                 model: item
+
+                onExpanded: auxSends.slideToIndex(index)
+            }
+
+            Behavior on contentY {
+                NumberAnimation { duration: 400; easing.type: Easing.InOutQuad }
+            }
+
+            function slideToIndex(idx) {
+                // Force delegate creation & correct geometry
+                auxSends.positionViewAtIndex(idx, ListView.Contain);
+
+                // Animate to its Y position
+                var item = itemAtIndex(idx);
+                if (item) {
+                    contentY = item.y;
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
+import PieJam.Controls 1.0 as PJControls
 import PieJam.Models 1.0 as PJModels
 import PieJam.ParameterControls 1.0
 
@@ -15,62 +16,110 @@ import ".."
 SubscribableItem {
     id: root
 
-    implicitHeight: 96
+    signal expanded()
 
-    Frame {
+    implicitHeight: private_.expanded ? 364 : 72
+
+    QtObject {
+        id: private_
+
+        property bool expanded: false
+
+        onExpandedChanged: {
+            if (expanded)
+                root.expanded()
+        }
+    }
+
+    Rectangle {
         anchors.fill: parent
 
-        spacing: 0
-        padding: 4
-        topPadding: 2
-        bottomPadding: 0
+        border.color: root.model && root.model.enabled ? Material.primaryColor : Material.frameColor
+        border.width: 2
+        color: Material.backgroundColor
+        radius: 4
 
         ColumnLayout {
             anchors.fill: parent
+            anchors.leftMargin: 4
+            anchors.rightMargin: 4
 
-            Label {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 24
-
-                text: root.model ? root.model.name : ""
-            }
-
-            FloatSlider {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                model: root.model ? root.model.volume : null
-            }
+            spacing: 0
 
             RowLayout {
                 Layout.fillWidth: true
-                Layout.fillHeight: true
+                Layout.preferredHeight: 40
 
-                Button {
+                Label {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
 
-                    text: root.model && root.model.faderTap === PJModels.AuxSend.FaderTap.Pre ? "PRE" : "POST"
+                    leftPadding: 8
+                    verticalAlignment: Text.AlignVCenter
 
-                    enabled: root.model
-
-                    onClicked: root.model.toggleFaderTap()
+                    text: root.model ? root.model.name : "name"
+                    font.bold:  true
+                    color: root.model && root.model.enabled ? Material.primaryTextColor : Material.secondaryTextColor
                 }
 
                 Button {
-                    Layout.preferredWidth: 40
+                    Layout.preferredWidth: 32
                     Layout.preferredHeight: 40
-
 
                     icon.source: (!root.model || root.model.canToggle)
                                  ? "qrc:///images/icons/power.svg"
                                  : "qrc:///images/icons/cycle_arrows.svg"
-                    checkable: true
-                    checked: root.model && root.model.enabled
+
+                    icon.color: root.model && root.model.enabled
+                            ? Material.primaryColor
+                            : (root.model && root.model.canToggle ? Material.primaryTextColor : Material.secondaryTextColor)
+
+                    flat: true
                     enabled: root.model && root.model.canToggle
 
                     onClicked: root.model.toggleEnabled()
                 }
+            }
+
+            ValueLabel {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 32
+
+                model: root.model ? root.model.volume : null
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
+                color: root.model && root.model.enabled ? Material.primaryTextColor : Material.secondaryTextColor
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: private_.expanded = !private_.expanded
+                }
+            }
+
+            VolumeFader {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                visible: root.model && root.model.volume && private_.expanded
+
+                model: root.model ? root.model.volume : null
+                muted: !root.model || !root.model.enabled
+
+                scaleData: PJModels.MixerDbScales.sendFaderScale
+            }
+
+            PJControls.ComboBox {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
+
+                visible: root.model && root.model.volume && private_.expanded
+
+                model: ["AUTO", "PRE", "POST"]
+
+                textHorizontalAlignment: Text.AlignHCenter
             }
         }
     }

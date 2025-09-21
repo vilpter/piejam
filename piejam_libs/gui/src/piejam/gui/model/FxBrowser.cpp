@@ -113,10 +113,9 @@ FxBrowser::showMixer()
 void
 FxBrowser::onSubscribe()
 {
-    m_impl->bus_type_filter = observe_once(
-            runtime::selectors::make_mixer_channel_bus_type_selector(
-                    observe_once(
-                            runtime::selectors::select_fx_browser_fx_chain)));
+    m_impl->bus_type_filter = to_bus_type(observe_once(
+            runtime::selectors::make_mixer_channel_type_selector(observe_once(
+                    runtime::selectors::select_fx_browser_fx_chain))));
     m_impl->fx_registry = observe_once(runtime::selectors::select_fx_registry);
     m_impl->updateEntries(dispatch(), state_change_subscriber());
 }

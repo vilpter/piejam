@@ -101,7 +101,7 @@ auto add_external_audio_device(
         audio::bus_type,
         channel_index_pair const&) -> external_audio::device_id;
 
-auto add_mixer_channel(state&, audio::bus_type, std::string name)
+auto add_mixer_channel(state&, mixer::channel_type, std::string name)
         -> mixer::channel_id;
 
 void remove_mixer_channel(state&, mixer::channel_id);

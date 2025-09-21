@@ -90,17 +90,17 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
 
             BOOST_ASSERT(unavail.plugin_id == ladspa_instance.plugin_desc.id);
             BOOST_ASSERT(
-                    audio::num_channels(mixer_channel.bus_type) ==
+                    num_channels(to_bus_type(mixer_channel.type)) ==
                     ladspa_instance.plugin_desc.num_inputs);
             BOOST_ASSERT(
-                    audio::num_channels(mixer_channel.bus_type) ==
+                    num_channels(to_bus_type(mixer_channel.type)) ==
                     ladspa_instance.plugin_desc.num_outputs);
 
             auto const fx_mod_id = fx_modules.emplace(
                     ladspa_fx::make_module(
                             ladspa_instance.instance_id,
                             ladspa_instance.plugin_desc.name,
-                            mixer_channel.bus_type,
+                            to_bus_type(mixer_channel.type),
                             ladspa_instance.control_inputs,
                             st.params));
 

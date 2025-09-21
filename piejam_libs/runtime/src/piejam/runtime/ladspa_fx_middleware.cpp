@@ -170,8 +170,8 @@ ladspa_fx_middleware::process_ladspa_fx_action(
                             unavail.plugin_id);
                     plugin_desc)
                 {
-                    auto const num_channels =
-                            audio::num_channels(mixer_channel.bus_type);
+                    auto const num_channels = audio::num_channels(
+                            to_bus_type(mixer_channel.type));
                     if (num_channels != plugin_desc->num_inputs ||
                         num_channels != plugin_desc->num_outputs)
                     {

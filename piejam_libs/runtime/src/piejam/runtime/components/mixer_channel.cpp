@@ -62,7 +62,7 @@ public:
                   format_name(channel_name, "volume")))
         , m_pan_balance_input_proc(param_procs.find_or_make_processor(
                   mixer_channel.pan_balance,
-                  mixer_channel.bus_type == audio::bus_type::mono
+                  to_bus_type(mixer_channel.type) == audio::bus_type::mono
                           ? format_name(channel_name, "pan")
                           : format_name(channel_name, "balance")))
         , m_solo_input_proc(param_procs.find_or_make_processor(
@@ -72,9 +72,9 @@ public:
                   mixer_channel.mute,
                   format_name(channel_name, "mute")))
         , m_input(audio::components::make_identity(
-                  audio::num_channels(mixer_channel.bus_type)))
+                  num_channels(to_bus_type(mixer_channel.type))))
         , m_volume_pan_balance{make_volume_pan_balance_component(
-                  mixer_channel.bus_type,
+                  to_bus_type(mixer_channel.type),
                   channel_name)}
         , m_mute_solo(components::make_mute_solo(channel_name))
         , m_out_stream{stream_procs.make_processor(
@@ -87,11 +87,11 @@ public:
         m_outputs.push_back(m_mute_solo->outputs()[0]); // post L
         m_outputs.push_back(m_mute_solo->outputs()[1]); // post R
         m_outputs.push_back(m_input->outputs()[bool_enum_to(
-                mixer_channel.bus_type,
+                to_bus_type(mixer_channel.type),
                 0,
                 0)]); // pre L
         m_outputs.push_back(m_input->outputs()[bool_enum_to(
-                mixer_channel.bus_type,
+                to_bus_type(mixer_channel.type),
                 0,
                 1)]); // pre R
     }
@@ -235,7 +235,7 @@ make_mixer_channel_input(mixer::channel const& mixer_channel)
         -> std::unique_ptr<audio::engine::component>
 {
     return audio::components::make_identity(
-            audio::num_channels(mixer_channel.bus_type));
+            num_channels(to_bus_type(mixer_channel.type)));
 }
 
 auto

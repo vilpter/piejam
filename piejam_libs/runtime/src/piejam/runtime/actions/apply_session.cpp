@@ -233,7 +233,7 @@ apply_session::reduce(state& st) const
     {
         auto added_channel_id = runtime::add_mixer_channel(
                 st,
-                channel_data.bus_type,
+                channel_data.channel_type,
                 channel_data.name);
         auto& added_channel = st.mixer_state.channels[added_channel_id];
         st.material_colors.set(added_channel.color, channel_data.color);

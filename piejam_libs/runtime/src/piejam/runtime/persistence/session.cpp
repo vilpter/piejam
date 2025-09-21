@@ -78,8 +78,19 @@ namespace mixer
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
+        channel_type,
+        {
+                {channel_type::mono, "mono"},
+                {channel_type::stereo, "stereo"},
+                {channel_type::aux, "aux"},
+        })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
         fader_tap,
-        {{fader_tap::pre, "pre"}, {fader_tap::post, "post"}})
+        {
+                {fader_tap::pre, "pre"},
+                {fader_tap::post, "post"},
+        })
 
 } // namespace mixer
 
@@ -238,7 +249,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         session::mixer_channel,
         name,
         color,
-        bus_type,
+        channel_type,
         parameter,
         midi,
         fx_chain,

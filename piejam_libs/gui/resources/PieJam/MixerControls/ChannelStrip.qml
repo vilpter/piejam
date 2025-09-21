@@ -10,10 +10,7 @@ import PieJam.Controls 1.0
 Item {
     id: root
 
-    property alias perform: performStrip.model
-    property var edit: null
-    property alias fx: fxStrip.model
-    property alias auxSend: auxSendStrip.model
+    property var model: null
 
     property bool deletable: true
 
@@ -26,23 +23,21 @@ Item {
         currentIndex: MixerViewSettings.mode
 
         ChannelPerformStrip {
-            id: performStrip
+            model: root.model ? root.model.perform : null
         }
 
-        BusyLoader {
-            sourceComponent: ChannelEditStrip {
-                model: root.edit
+        ChannelEditStrip {
+            model: root.model ? root.model.edit : null
 
-                deletable: root.deletable
-            }
+            deletable: root.deletable
         }
 
         ChannelFxStrip {
-            id: fxStrip
+            model: root.model ? root.model.fx : null
         }
 
         ChannelAuxSend {
-            id: auxSendStrip
+            model: root.model ? root.model.auxSend : null
         }
     }
 }

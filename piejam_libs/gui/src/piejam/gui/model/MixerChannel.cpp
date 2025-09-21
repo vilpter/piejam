@@ -9,6 +9,29 @@
 namespace piejam::gui::model
 {
 
+namespace
+{
+
+constexpr auto
+toChannelType(runtime::mixer::channel_type t) -> ChannelType
+{
+    switch (t)
+    {
+        case runtime::mixer::channel_type::mono:
+            return ChannelType::Mono;
+
+        case runtime::mixer::channel_type::stereo:
+            return ChannelType::Stereo;
+
+        case runtime::mixer::channel_type::aux:
+            return ChannelType::Aux;
+    }
+
+    return ChannelType::Mono;
+}
+
+} // namespace
+
 MixerChannel::MixerChannel(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
@@ -17,12 +40,20 @@ MixerChannel::MixerChannel(
     , m_color{static_cast<MaterialColor>(observe_once(
               runtime::selectors::make_mixer_channel_color_selector(id)))}
     , m_channel_id{id}
-    , m_busType{bool_enum_to<BusType>(observe_once(
-              runtime::selectors::make_mixer_channel_bus_type_selector(id)))}
+    , m_channelType{toChannelType(observe_once(
+              runtime::selectors::make_mixer_channel_type_selector(id)))}
+    , m_busType{bool_enum_to<BusType>(to_bus_type(observe_once(
+              runtime::selectors::make_mixer_channel_type_selector(id))))}
 {
 }
 
 MixerChannel::~MixerChannel() = default;
+
+auto
+MixerChannel::channelType() const noexcept -> ChannelType
+{
+    return m_channelType;
+}
 
 auto
 MixerChannel::busType() const noexcept -> BusType
