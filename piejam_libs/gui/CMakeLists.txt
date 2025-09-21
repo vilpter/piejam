@@ -40,6 +40,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/AudioRoutingSelection.h
     include/piejam/gui/model/AudioStream.h
     include/piejam/gui/model/AudioStreamProvider.h
+    include/piejam/gui/model/AuxSend.h
     include/piejam/gui/model/BoolParameter.h
     include/piejam/gui/model/DbScaleData.h
     include/piejam/gui/model/DbScaleTick.h
@@ -81,6 +82,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/RootView.h
     include/piejam/gui/model/ScopeGenerator.h
     include/piejam/gui/model/ScopeSlot.h
+    include/piejam/gui/model/SoundCardInfo.h
     include/piejam/gui/model/SpectrumDataPoint.h
     include/piejam/gui/model/SpectrumGenerator.h
     include/piejam/gui/model/SpectrumSlot.h
@@ -110,6 +112,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/AudioInputOutputSettings.cpp
     src/piejam/gui/model/AudioRouting.cpp
     src/piejam/gui/model/AudioRoutingSelection.cpp
+    src/piejam/gui/model/AuxSend.cpp
     src/piejam/gui/model/BoolParameter.cpp
     src/piejam/gui/model/DbScaleData.cpp
     src/piejam/gui/model/EnumParameter.cpp
@@ -145,7 +148,6 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/SpectrumGenerator.cpp
     src/piejam/gui/model/String.cpp
     src/piejam/gui/qt_log.cpp
-    include/piejam/gui/model/SoundCardInfo.h
 )
 
 target_include_directories(piejam_gui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

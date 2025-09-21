@@ -70,23 +70,12 @@ struct set_mixer_channel_route final
 extern template struct set_mixer_channel_route<mixer::io_socket::in>;
 extern template struct set_mixer_channel_route<mixer::io_socket::out>;
 
-template <>
-struct set_mixer_channel_route<mixer::io_socket::aux> final
-    : ui::cloneable_action<
-              set_mixer_channel_route<mixer::io_socket::aux>,
-              reducible_action>
-{
-    mixer::channel_id channel_id;
-    mixer::io_address_t route;
-
-    void reduce(state&) const override;
-};
-
 struct enable_mixer_channel_aux_route final
     : ui::cloneable_action<enable_mixer_channel_aux_route, reducible_action>
     , visitable_audio_engine_action<enable_mixer_channel_aux_route>
 {
     mixer::channel_id channel_id;
+    mixer::channel_id aux_id;
     bool enabled;
 
     void reduce(state&) const override;
@@ -97,6 +86,7 @@ struct toggle_mixer_channel_aux_fader_tap final
     , visitable_audio_engine_action<toggle_mixer_channel_aux_fader_tap>
 {
     mixer::channel_id channel_id;
+    mixer::channel_id aux_id;
 
     void reduce(state&) const override;
 };

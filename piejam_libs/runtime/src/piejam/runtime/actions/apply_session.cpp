@@ -120,19 +120,19 @@ apply_mixer_parameters(
 auto
 find_mixer_channel_route(
         mixer::state const& mixer_state,
-        std::size_t const& index)
+        std::size_t const& index) -> std::optional<mixer::channel_id>
 {
     if (index == 0)
     {
-        return mixer::io_address_t{mixer_state.main};
+        return {mixer_state.main};
     }
     else if ((index - 1) < mixer_state.inputs->size())
     {
-        return mixer::io_address_t{(*mixer_state.inputs)[index - 1]};
+        return {(*mixer_state.inputs)[index - 1]};
     }
     else
     {
-        return mixer::io_address_t{invalid_t{}};
+        return std::nullopt;
     }
 }
 
@@ -153,7 +153,6 @@ apply_mixer_io(
         mixer::channel_id const& channel_id,
         persistence::session::mixer_io const& in,
         persistence::session::mixer_io const& out,
-        persistence::session::mixer_io const& aux,
         std::vector<persistence::session::mixer_aux_send> const& aux_sends_data)
 {
     auto find_route = [&](auto const& mixer_io, io_direction io_dir) {
@@ -167,7 +166,14 @@ apply_mixer_io(
                         mixer_io.index);
 
             case persistence::session::mixer_io_type::channel:
-                return find_mixer_channel_route(mixer_state, mixer_io.index);
+                if (auto found_channel_id = find_mixer_channel_route(
+                            mixer_state,
+                            mixer_io.index))
+                {
+                    return mixer::io_address_t{*found_channel_id};
+                }
+
+                return mixer::io_address_t{invalid_t{}};
 
             case persistence::session::mixer_io_type::invalid:
                 return mixer::io_address_t{invalid_t{}};
@@ -180,17 +186,16 @@ apply_mixer_io(
     [&](mixer::channel& channel) {
         channel.in = find_route(in, io_direction::input);
         channel.out = find_route(out, io_direction::output);
-        channel.aux = find_route(aux, io_direction::output);
 
         auto aux_sends = channel.aux_sends.lock();
 
         for (auto const& aux_send_data : aux_sends_data)
         {
-            if (auto route =
-                        find_route(aux_send_data.route, io_direction::output);
-                !std::holds_alternative<default_t>(route))
+            if (auto route = find_mixer_channel_route(
+                        mixer_state,
+                        aux_send_data.channel_index))
             {
-                if (auto aux_send_it = aux_sends->find(route);
+                if (auto aux_send_it = aux_sends->find(*route);
                     aux_send_it != aux_sends->end())
                 {
                     params[aux_send_it->second.volume].value.set(
@@ -279,7 +284,6 @@ apply_session::reduce(state& st) const
                 channel_id,
                 channel_data.in,
                 channel_data.out,
-                channel_data.aux,
                 channel_data.aux_sends);
     }
 
@@ -290,7 +294,6 @@ apply_session::reduce(state& st) const
             st.mixer_state.main,
             session->main_mixer_channel.in,
             session->main_mixer_channel.out,
-            session->main_mixer_channel.aux,
             session->main_mixer_channel.aux_sends);
 }
 

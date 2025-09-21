@@ -77,17 +77,11 @@ template struct set_mixer_channel_route<mixer::io_socket::in>;
 template struct set_mixer_channel_route<mixer::io_socket::out>;
 
 void
-set_mixer_channel_route<mixer::io_socket::aux>::reduce(state& st) const
-{
-    st.mixer_state.channels.lock()[channel_id].aux = route;
-}
-
-void
 enable_mixer_channel_aux_route::reduce(state& st) const
 {
     [this](mixer::channel& mixer_channel) {
         auto aux_sends = mixer_channel.aux_sends.lock();
-        auto it = aux_sends->find(mixer_channel.aux);
+        auto it = aux_sends->find(aux_id);
         BOOST_ASSERT(it != aux_sends->end());
         it->second.enabled = enabled;
     }(st.mixer_state.channels.lock()[channel_id]);
@@ -96,9 +90,9 @@ enable_mixer_channel_aux_route::reduce(state& st) const
 void
 toggle_mixer_channel_aux_fader_tap::reduce(state& st) const
 {
-    [](mixer::channel& mixer_channel) {
+    [this](mixer::channel& mixer_channel) {
         auto aux_sends = mixer_channel.aux_sends.lock();
-        auto it = aux_sends->find(mixer_channel.aux);
+        auto it = aux_sends->find(aux_id);
         BOOST_ASSERT(it != aux_sends->end());
         toggle_bool_enum_in_place(it->second.tap);
     }(st.mixer_state.channels.lock()[channel_id]);

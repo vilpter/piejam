@@ -5,13 +5,10 @@
 #include <piejam/gui/model/MixerChannelAuxSend.h>
 
 #include <piejam/gui/generic_list_model_edit_script_executor.h>
-#include <piejam/gui/model/AudioRouting.h>
-#include <piejam/gui/model/FloatParameter.h>
+#include <piejam/gui/model/AuxSend.h>
 #include <piejam/gui/model/GenericListModel.h>
-#include <piejam/gui/model/String.h>
 
 #include <piejam/algorithm/edit_script.h>
-#include <piejam/runtime/actions/mixer_actions.h>
 #include <piejam/runtime/selectors.h>
 
 namespace piejam::gui::model
@@ -19,21 +16,8 @@ namespace piejam::gui::model
 
 struct MixerChannelAuxSend::Impl
 {
-    Impl(runtime::store_dispatch store_dispatch,
-         runtime::subscriber& state_change_subscriber,
-         runtime::mixer::channel_id const id)
-        : aux{store_dispatch,
-              state_change_subscriber,
-              id,
-              runtime::mixer::io_socket::aux}
-    {
-    }
-
-    AudioRouting aux;
-
-    runtime::float_parameter_id volume_id;
-
-    std::unique_ptr<FloatParameter> volume;
+    box<runtime::mixer::channel_ids_t> aux_ids;
+    AuxSendsList auxSends;
 };
 
 MixerChannelAuxSend::MixerChannelAuxSend(
@@ -41,20 +25,14 @@ MixerChannelAuxSend::MixerChannelAuxSend(
         runtime::subscriber& state_change_subscriber,
         runtime::mixer::channel_id const id)
     : MixerChannel{store_dispatch, state_change_subscriber, id}
-    , m_impl{make_pimpl<Impl>(store_dispatch, state_change_subscriber, id)}
+    , m_impl{make_pimpl<Impl>()}
 {
 }
 
 auto
-MixerChannelAuxSend::aux() const noexcept -> AudioRouting*
+MixerChannelAuxSend::auxSends() const noexcept -> auxSends_property_t
 {
-    return &m_impl->aux;
-}
-
-auto
-MixerChannelAuxSend::volume() const noexcept -> FloatParameter*
-{
-    return m_impl->volume.get();
+    return &m_impl->auxSends;
 }
 
 void
@@ -62,54 +40,23 @@ MixerChannelAuxSend::onSubscribe()
 {
     MixerChannel::onSubscribe();
 
-    observe(runtime::selectors::make_mixer_channel_aux_enabled_selector(
+    observe(runtime::selectors::make_mixer_channel_aux_sends_selector(
                     channel_id()),
-            [this](bool const enabled) { setEnabled(enabled); });
+            [this](box<runtime::mixer::channel_ids_t> const& aux_ids) {
+                algorithm::apply_edit_script(
+                        algorithm::edit_script(*m_impl->aux_ids, *aux_ids),
+                        piejam::gui::generic_list_model_edit_script_executor{
+                                m_impl->auxSends,
+                                [this](auto const& aux_id) {
+                                    return std::make_unique<AuxSend>(
+                                            dispatch(),
+                                            state_change_subscriber(),
+                                            channel_id(),
+                                            aux_id);
+                                }});
 
-    observe(runtime::selectors::make_mixer_channel_aux_fader_tap_selector(
-                    channel_id()),
-            [this](runtime::mixer::fader_tap tap) {
-                setFaderTap(bool_enum_to<FaderTap>(tap));
+                m_impl->aux_ids = aux_ids;
             });
-
-    observe(runtime::selectors::make_mixer_channel_can_toggle_aux_selector(
-                    channel_id()),
-            [this](bool const x) { setCanToggle(x); });
-
-    observe(runtime::selectors::
-                    make_mixer_channel_aux_volume_parameter_selector(
-                            channel_id()),
-            [this](runtime::float_parameter_id const volume_id) {
-                if (m_impl->volume_id != volume_id)
-                {
-                    auto volume = volume_id.valid()
-                                          ? std::make_unique<FloatParameter>(
-                                                    dispatch(),
-                                                    state_change_subscriber(),
-                                                    volume_id)
-                                          : nullptr;
-                    m_impl->volume_id = volume_id;
-                    std::swap(m_impl->volume, volume);
-                    emit volumeChanged();
-                }
-            });
-}
-
-void
-MixerChannelAuxSend::toggleEnabled()
-{
-    runtime::actions::enable_mixer_channel_aux_route action;
-    action.channel_id = channel_id();
-    action.enabled = !m_enabled;
-    dispatch(action);
-}
-
-void
-MixerChannelAuxSend::toggleFaderTap()
-{
-    runtime::actions::toggle_mixer_channel_aux_fader_tap action;
-    action.channel_id = channel_id();
-    dispatch(action);
 }
 
 } // namespace piejam::gui::model

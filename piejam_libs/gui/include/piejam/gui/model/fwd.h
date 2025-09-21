@@ -40,6 +40,8 @@ class MixerChannelAuxSend;
 class DbScaleData;
 class AudioRouting;
 class AudioRoutingSelection;
+class AuxSend;
+using AuxSendsList = GenericListModel<AuxSend>;
 
 class ExternalAudioDeviceConfig;
 using ExternalAudioDeviceConfigList =

@@ -361,7 +361,7 @@ template <class ParameterFactory>
 static auto
 make_aux_send(
         mixer::aux_sends_t& aux_sends,
-        mixer::io_address_t const& route,
+        mixer::channel_id const& route,
         ParameterFactory& ui_params_factory)
 {
     aux_sends.emplace(
@@ -375,7 +375,6 @@ template <class ParameterFactory>
 static auto
 make_aux_sends(
         mixer::channels_t const& channels,
-        external_audio::device_ids_t const& output_devices,
         ParameterFactory& ui_params_factory)
 {
     mixer::aux_sends_t result;
@@ -387,12 +386,6 @@ make_aux_sends(
         }
     }
 
-    // output device must be stereo
-    for (auto const device_id : output_devices)
-    {
-        make_aux_send(result, device_id, ui_params_factory);
-    }
-
     return result;
 }
 
@@ -400,7 +393,7 @@ static auto
 remove_aux_send(
         state& st,
         mixer::aux_sends_t& aux_sends,
-        mixer::io_address_t const& route)
+        mixer::channel_id const& route)
 {
     if (auto it = aux_sends.find(route); it != aux_sends.end())
     {
@@ -434,18 +427,6 @@ add_external_audio_device(
                                 : st.external_audio_state.outputs;
 
     emplace_back(devices_ids, id);
-
-    parameter_factory params_factory{st.params};
-
-    if (io_dir == io_direction::output)
-    {
-        auto mixer_channels = st.mixer_state.channels.lock();
-
-        for (auto& [_, mixer_channel] : mixer_channels)
-        {
-            make_aux_send(*mixer_channel.aux_sends.lock(), id, params_factory);
-        }
-    }
 
     return id;
 }
@@ -507,10 +488,8 @@ add_mixer_channel(state& st, audio::bus_type bus_type, std::string name)
             .out_stream = make_stream(st.streams, 2),
             .in = {},
             .out = st.mixer_state.main,
-            .aux_sends = box(make_aux_sends(
-                    st.mixer_state.channels,
-                    st.external_audio_state.outputs,
-                    params_factory)),
+            .aux_sends = box(
+                    make_aux_sends(st.mixer_state.channels, params_factory)),
     });
     emplace_back(st.mixer_state.inputs, channel_id);
 
@@ -557,10 +536,9 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     auto mixer_channels = st.mixer_state.channels.lock();
 
     // remove itself as aux_send from other channels
-    auto const addr = mixer::io_address_t{mixer_channel_id};
     for (auto& [id, channel] : mixer_channels)
     {
-        remove_aux_send(st, *channel.aux_sends.lock(), addr);
+        remove_aux_send(st, *channel.aux_sends.lock(), mixer_channel_id);
     }
 
     for (auto fx_mod_id :
@@ -586,6 +564,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
 
     st.streams.erase(mixer_channel.out_stream);
 
+    auto const addr = mixer::io_address_t{mixer_channel_id};
     auto const equal_to_mixer_channel = equal_to(addr);
     for (auto& [_, channel] : mixer_channels)
     {
@@ -595,7 +574,6 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
                        ? mixer::io_address_t{invalid_t{}}
                        : mixer::io_address_t{default_t{}});
         set_if(channel.out, equal_to_mixer_channel, default_t{});
-        set_if(channel.aux, equal_to_mixer_channel, default_t{});
     }
 
     st.mixer_state.fx_chains.erase(mixer_channel_id);
@@ -625,7 +603,6 @@ remove_external_audio_device(
                            ? mixer::io_address_t{invalid_t{}}
                            : mixer::io_address_t{default_t{}});
             set_if(mixer_channel.out, equal_to_device, default_t{});
-            set_if(mixer_channel.aux, equal_to_device, default_t{});
         }
     }
 
@@ -642,12 +619,6 @@ remove_external_audio_device(
                         *st.external_audio_state.outputs,
                         device_id));
         remove_erase(st.external_audio_state.outputs, device_id);
-
-        auto const addr = mixer::io_address_t{device_id};
-        for (auto& [_, mixer_channel] : mixer_channels)
-        {
-            remove_aux_send(st, *mixer_channel.aux_sends.lock(), addr);
-        }
     }
 }
 

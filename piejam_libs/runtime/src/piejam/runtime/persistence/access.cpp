@@ -300,7 +300,13 @@ export_mixer_aux_sends(state const& st, mixer::aux_sends_t const& aux_sends)
     {
         result.emplace_back(
                 session::mixer_aux_send{
-                        .route = export_mixer_io(st, aux),
+                        .channel_index =
+                                aux == st.mixer_state.main
+                                        ? 0
+                                        : algorithm::index_of(
+                                                  *st.mixer_state.inputs,
+                                                  aux) +
+                                                  1,
                         .enabled = aux_send.enabled,
                         .tap = aux_send.tap,
                         .volume = st.params[aux_send.volume].value.get(),
@@ -326,7 +332,6 @@ export_mixer_channel(
     result.parameter = export_mixer_parameters(st, channel);
     result.in = export_mixer_io(st, channel.in);
     result.out = export_mixer_io(st, channel.out);
-    result.aux = export_mixer_io(st, channel.aux);
     result.aux_sends = export_mixer_aux_sends(st, channel.aux_sends);
     return result;
 }

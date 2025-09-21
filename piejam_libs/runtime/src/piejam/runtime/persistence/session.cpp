@@ -229,7 +229,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(session::mixer_io, type, index);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         session::mixer_aux_send,
-        route,
+        channel_index,
         enabled,
         tap,
         volume);
@@ -244,7 +244,6 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         fx_chain,
         in,
         out,
-        aux,
         aux_sends);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(

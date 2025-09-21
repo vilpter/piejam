@@ -30,7 +30,7 @@ struct aux_send
     float_parameter_id volume{};
 };
 
-using aux_sends_t = std::map<io_address_t, aux_send>;
+using aux_sends_t = std::map<channel_id, aux_send>;
 
 struct channel
 {
@@ -49,7 +49,6 @@ struct channel
 
     io_address_t in{};
     io_address_t out{};
-    io_address_t aux{}; // currently selected aux route
 
     box<aux_sends_t> aux_sends{};
 
@@ -69,7 +68,7 @@ struct state
 
 auto is_default_source_valid(channels_t const&, channel_id) -> bool;
 
-auto can_toggle_aux(channels_t const&, channel_id) -> bool;
+auto can_toggle_aux(channels_t const&, channel_id, channel_id aux_id) -> bool;
 
 auto valid_channels(io_socket, channels_t const&, channel_id)
         -> std::vector<channel_id>;

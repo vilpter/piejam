@@ -93,12 +93,12 @@ struct session
     struct mixer_io
     {
         mixer_io_type type;
-        std::size_t index;
+        std::size_t index; // ch or external device
     };
 
     struct mixer_aux_send
     {
-        mixer_io route;
+        std::size_t channel_index;
         bool enabled;
         mixer::fader_tap tap;
         float volume;
@@ -114,7 +114,6 @@ struct session
         fx_chain_t fx_chain;
         mixer_io in;
         mixer_io out;
-        mixer_io aux;
         std::vector<mixer_aux_send> aux_sends;
     };
 

@@ -17,7 +17,7 @@ ChannelStripBase {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 0
+        spacing: 2
 
         HeaderLabel {
             Layout.fillWidth: true
@@ -26,72 +26,23 @@ ChannelStripBase {
             text: root.model ? root.model.name : ""
         }
 
-        AudioRoutingComboBox {
-            Layout.fillWidth: true
-
-            hasSelectableDefault: false
-            defaultText: "Send..."
-            model: root.model ? root.model.aux : null
-        }
-
-        Item {
+        ListView {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 0
+            spacing: 2
 
-                VolumeFader {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            boundsMovement: Flickable.StopAtBounds
 
-                    visible: root.model && root.model.volume
+            model: root.model ? root.model.auxSends : null
 
-                    model: root.model ? root.model.volume : null
+            delegate: AuxSend {
+                anchors.left: parent ? parent.left : undefined
+                anchors.right: parent ? parent.right : undefined
 
-                    scaleData: PJModels.MixerDbScales.sendFaderScale
-
-                    onMoved: {
-                        if (root.model && root.model.canToggle && !root.model.enabled)
-                        {
-                            root.model.toggleEnabled()
-                        }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
-
-                    visible: root.model && root.model.volume
-
-                    Button {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-
-                        text: root.model && root.model.faderTap === PJModels.MixerChannelAuxSend.FaderTap.Pre ? "PRE" : "POST"
-
-                        enabled: root.model
-
-                        onClicked: root.model.toggleFaderTap()
-                    }
-
-                    Button {
-                        Layout.preferredWidth: 40
-                        Layout.preferredHeight: 40
-
-
-                        icon.source: (!root.model || root.model.canToggle)
-                                     ? "qrc:///images/icons/power.svg"
-                                     : "qrc:///images/icons/cycle_arrows.svg"
-                        checkable: true
-                        checked: root.model && root.model.enabled
-                        enabled: root.model && root.model.canToggle
-
-                        onClicked: root.model.toggleEnabled()
-                    }
-                }
+                model: item
             }
         }
     }

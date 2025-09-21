@@ -26,7 +26,6 @@ enum class io_socket
 {
     in,
     out,
-    aux,
 };
 
 enum class fader_tap : bool

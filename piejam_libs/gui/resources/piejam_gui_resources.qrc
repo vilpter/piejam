@@ -99,5 +99,8 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/FxChainControls/SpectrumGrid.qml</file>
         <file>PieJam/Controls/StringTextField.qml</file>
         <file>PieJam/MixerControls/ChannelStripBase.qml</file>
+        <file>PieJam/MixerControls/AuxSend.qml</file>
+        <file>PieJam/ParameterControls/FloatSlider.qml</file>
+        <file>PieJam/ParameterControls/qmldir</file>
     </qresource>
 </RCC>

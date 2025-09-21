@@ -152,11 +152,6 @@ dispatch_set_mixer_channel_route_action(
             dispatch_set_mixer_channel_route_action<
                     runtime::mixer::io_socket::out>(dispatch, channel_id, addr);
             return;
-
-        case runtime::mixer::io_socket::aux:
-            dispatch_set_mixer_channel_route_action<
-                    runtime::mixer::io_socket::aux>(dispatch, channel_id, addr);
-            return;
     }
 }
 

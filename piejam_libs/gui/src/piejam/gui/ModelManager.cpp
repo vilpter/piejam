@@ -15,6 +15,7 @@
 #include <piejam/gui/model/AudioRouting.h>
 #include <piejam/gui/model/AudioRoutingSelection.h>
 #include <piejam/gui/model/AudioStreamProvider.h>
+#include <piejam/gui/model/AuxSend.h>
 #include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/DbScaleData.h>
 #include <piejam/gui/model/EnumListModel.h>
@@ -70,6 +71,7 @@ runRegistration()
     qRegisterMetaType<piejam::gui::model::AudioRouting*>();
     qRegisterMetaType<piejam::gui::model::AudioRoutingSelection*>();
     qRegisterMetaType<piejam::gui::model::AudioStreamProvider*>();
+    qRegisterMetaType<piejam::gui::model::AuxSend*>();
     qRegisterMetaType<piejam::gui::model::BoolParameter*>();
     qRegisterMetaType<piejam::gui::model::DbScaleData*>();
     qRegisterMetaType<piejam::gui::model::EnumListModel*>();
@@ -114,11 +116,11 @@ runRegistration()
             "FxModule",
             "Not createable");
 
-    qmlRegisterUncreatableType<piejam::gui::model::MixerChannelAuxSend>(
+    qmlRegisterUncreatableType<piejam::gui::model::AuxSend>(
             "PieJam.Models",
             1,
             0,
-            "MixerChannelAuxSend",
+            "AuxSend",
             "Not creatable");
 
     qmlRegisterUncreatableType<piejam::gui::model::Parameter>(
@@ -190,30 +192,37 @@ ModelManager::ModelManager(
         runtime::subscriber& state_change_subscriber)
     : m_store_dispatch(dispatch)
     , m_state_change_subscriber(state_change_subscriber)
-    , m_audioDeviceSettings(std::make_unique<model::AudioDeviceSettings>(
-              dispatch,
-              state_change_subscriber))
-    , m_audioInputSettings(std::make_unique<model::AudioInputSettings>(
-              dispatch,
-              state_change_subscriber))
-    , m_audioOutputSettings(std::make_unique<model::AudioOutputSettings>(
-              dispatch,
-              state_change_subscriber))
-    , m_midiInputSettings(std::make_unique<model::MidiInputSettings>(
-              dispatch,
-              state_change_subscriber))
+    , m_audioDeviceSettings(
+              std::make_unique<model::AudioDeviceSettings>(
+                      dispatch,
+                      state_change_subscriber))
+    , m_audioInputSettings(
+              std::make_unique<model::AudioInputSettings>(
+                      dispatch,
+                      state_change_subscriber))
+    , m_audioOutputSettings(
+              std::make_unique<model::AudioOutputSettings>(
+                      dispatch,
+                      state_change_subscriber))
+    , m_midiInputSettings(
+              std::make_unique<model::MidiInputSettings>(
+                      dispatch,
+                      state_change_subscriber))
     , m_mixer(std::make_unique<model::Mixer>(dispatch, state_change_subscriber))
     , m_info(std::make_unique<model::Info>(dispatch, state_change_subscriber))
     , m_log(std::make_unique<model::Log>(dispatch, state_change_subscriber))
-    , m_fxBrowser(std::make_unique<model::FxBrowser>(
-              dispatch,
-              state_change_subscriber))
-    , m_fxModule(std::make_unique<model::FxModuleView>(
-              dispatch,
-              state_change_subscriber))
-    , m_rootView(std::make_unique<model::RootView>(
-              dispatch,
-              state_change_subscriber))
+    , m_fxBrowser(
+              std::make_unique<model::FxBrowser>(
+                      dispatch,
+                      state_change_subscriber))
+    , m_fxModule(
+              std::make_unique<model::FxModuleView>(
+                      dispatch,
+                      state_change_subscriber))
+    , m_rootView(
+              std::make_unique<model::RootView>(
+                      dispatch,
+                      state_change_subscriber))
 {
     static std::once_flag s_registered;
     std::call_once(s_registered, &runRegistration);
