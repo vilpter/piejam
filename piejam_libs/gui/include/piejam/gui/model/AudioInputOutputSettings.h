@@ -25,13 +25,12 @@ class AudioInputOutputSettings : public Subscribable<SubscribableModel>
     M_PIEJAM_GUI_PROPERTY(QStringList, channels, setChannels)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, deviceConfigs)
 
-protected:
+public:
     AudioInputOutputSettings(
             runtime::store_dispatch,
             runtime::subscriber&,
             io_direction);
 
-public:
     Q_INVOKABLE void addMonoDevice();
     Q_INVOKABLE void addStereoDevice();
 
@@ -40,24 +39,6 @@ private:
 
     struct Impl;
     pimpl<Impl> m_impl;
-};
-
-class AudioInputSettings final : public AudioInputOutputSettings
-{
-public:
-    AudioInputSettings(runtime::store_dispatch st, runtime::subscriber& subs)
-        : AudioInputOutputSettings(st, subs, io_direction::input)
-    {
-    }
-};
-
-class AudioOutputSettings final : public AudioInputOutputSettings
-{
-public:
-    AudioOutputSettings(runtime::store_dispatch st, runtime::subscriber& subs)
-        : AudioInputOutputSettings(st, subs, io_direction::output)
-    {
-    }
 };
 
 } // namespace piejam::gui::model

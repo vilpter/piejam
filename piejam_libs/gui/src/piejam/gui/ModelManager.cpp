@@ -197,13 +197,15 @@ ModelManager::ModelManager(
                       dispatch,
                       state_change_subscriber))
     , m_audioInputSettings(
-              std::make_unique<model::AudioInputSettings>(
+              std::make_unique<model::AudioInputOutputSettings>(
                       dispatch,
-                      state_change_subscriber))
+                      state_change_subscriber,
+                      io_direction::input))
     , m_audioOutputSettings(
-              std::make_unique<model::AudioOutputSettings>(
+              std::make_unique<model::AudioInputOutputSettings>(
                       dispatch,
-                      state_change_subscriber))
+                      state_change_subscriber,
+                      io_direction::output))
     , m_midiInputSettings(
               std::make_unique<model::MidiInputSettings>(
                       dispatch,
