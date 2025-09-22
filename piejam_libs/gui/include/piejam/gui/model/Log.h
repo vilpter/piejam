@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
 #include <QList>
@@ -13,12 +12,13 @@
 namespace piejam::gui::model
 {
 
-class Log final : public Subscribable<SubscribableModel>
+class Log final : public SubscribableModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(QStringList logMessages READ logMessages NOTIFY
-                       logMessagesChanged FINAL)
+    Q_PROPERTY(
+            QStringList logMessages READ logMessages NOTIFY logMessagesChanged
+                    FINAL)
 
 public:
     Log(runtime::store_dispatch, runtime::subscriber&);

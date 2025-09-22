@@ -15,7 +15,7 @@ MidiDeviceConfig::MidiDeviceConfig(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         midi::device_id_t device_id)
-    : Subscribable(store_dispatch, state_change_subscriber)
+    : SubscribableModel(store_dispatch, state_change_subscriber)
     , m_device_id(std::move(device_id))
 {
 }

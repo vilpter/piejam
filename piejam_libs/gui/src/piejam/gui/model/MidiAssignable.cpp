@@ -30,7 +30,7 @@ MidiAssignable::MidiAssignable(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         runtime::midi_assignment_id const& assignment_id)
-    : Subscribable(store_dispatch, state_change_subscriber)
+    : SubscribableModel(store_dispatch, state_change_subscriber)
     , m_assignment_id(assignment_id)
 {
     BOOST_ASSERT(runtime::is_valid_midi_assignment_id(m_assignment_id));

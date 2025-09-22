@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -19,7 +18,7 @@ class QAbstractListModel;
 namespace piejam::gui::model
 {
 
-class AudioRouting final : public Subscribable<SubscribableModel>
+class AudioRouting final : public SubscribableModel
 {
     Q_OBJECT
 

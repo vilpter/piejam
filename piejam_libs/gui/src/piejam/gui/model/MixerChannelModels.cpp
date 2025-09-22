@@ -34,7 +34,7 @@ MixerChannelModels::MixerChannelModels(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         runtime::mixer::channel_id const id)
-    : Subscribable(store_dispatch, state_change_subscriber)
+    : SubscribableModel(store_dispatch, state_change_subscriber)
     , m_impl{make_pimpl<Impl>(store_dispatch, state_change_subscriber, id)}
 {
 }

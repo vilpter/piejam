@@ -6,7 +6,6 @@
 
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/ParameterId.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -15,7 +14,7 @@
 namespace piejam::gui::model
 {
 
-class Parameter : public Subscribable<SubscribableModel>
+class Parameter : public SubscribableModel
 {
     Q_OBJECT
 

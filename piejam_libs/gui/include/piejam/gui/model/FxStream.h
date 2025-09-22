@@ -6,14 +6,13 @@
 
 #include <piejam/gui/model/AudioStreamProvider.h>
 #include <piejam/gui/model/StreamId.h>
-#include <piejam/gui/model/Subscribable.h>
 
 #include <piejam/pimpl.h>
 
 namespace piejam::gui::model
 {
 
-class FxStream final : public Subscribable<AudioStreamProvider>
+class FxStream final : public AudioStreamProvider
 {
 public:
     FxStream(runtime::store_dispatch, runtime::subscriber&, StreamId const&);

@@ -6,7 +6,6 @@
 
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/GenericListModel.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/Types.h>
 #include <piejam/gui/model/fwd.h>
@@ -16,7 +15,7 @@
 namespace piejam::gui::model
 {
 
-class FxBrowser final : public Subscribable<SubscribableModel>
+class FxBrowser final : public SubscribableModel
 {
     Q_OBJECT
 

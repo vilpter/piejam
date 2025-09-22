@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -15,7 +14,7 @@
 namespace piejam::gui::model
 {
 
-class ExternalAudioDeviceConfig final : public Subscribable<SubscribableModel>
+class ExternalAudioDeviceConfig final : public SubscribableModel
 {
     Q_OBJECT
 

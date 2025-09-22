@@ -14,7 +14,7 @@ String::String(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         runtime::string_id string_id)
-    : Subscribable{store_dispatch, state_change_subscriber}
+    : SubscribableModel{store_dispatch, state_change_subscriber}
     , m_string_id{string_id}
 {
 }

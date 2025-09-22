@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
 #include <piejam/runtime/mixer_fwd.h>
@@ -13,7 +12,7 @@
 namespace piejam::gui::model
 {
 
-class FxBrowserEntry : public Subscribable<SubscribableModel>
+class FxBrowserEntry : public SubscribableModel
 {
     Q_OBJECT
 
@@ -23,7 +22,7 @@ class FxBrowserEntry : public Subscribable<SubscribableModel>
     M_PIEJAM_GUI_PROPERTY(QString, author, setAuthor)
 
 public:
-    using Subscribable<SubscribableModel>::Subscribable;
+    using SubscribableModel::SubscribableModel;
 
     Q_INVOKABLE virtual void appendModule() = 0;
 };

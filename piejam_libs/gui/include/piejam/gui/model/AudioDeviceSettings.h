@@ -6,7 +6,6 @@
 
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/SoundCardInfo.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -17,7 +16,7 @@
 namespace piejam::gui::model
 {
 
-class AudioDeviceSettings final : public Subscribable<SubscribableModel>
+class AudioDeviceSettings final : public SubscribableModel
 {
     Q_OBJECT
 

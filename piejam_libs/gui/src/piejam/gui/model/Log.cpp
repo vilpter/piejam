@@ -16,7 +16,7 @@ namespace piejam::gui::model
 Log::Log(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber)
-    : Subscribable(store_dispatch, state_change_subscriber)
+    : SubscribableModel(store_dispatch, state_change_subscriber)
 {
     spdlog::default_logger()->sinks().push_back(
             std::make_shared<log::generic_log_sink_mt>(

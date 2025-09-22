@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
 #include <QList>
@@ -14,7 +13,7 @@
 namespace piejam::gui::model
 {
 
-class Info final : public Subscribable<SubscribableModel>
+class Info final : public SubscribableModel
 {
     Q_OBJECT
 

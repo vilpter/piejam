@@ -6,7 +6,6 @@
 
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/GenericListModel.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -18,7 +17,7 @@
 namespace piejam::gui::model
 {
 
-class AudioInputOutputSettings : public Subscribable<SubscribableModel>
+class AudioInputOutputSettings : public SubscribableModel
 {
     Q_OBJECT
 

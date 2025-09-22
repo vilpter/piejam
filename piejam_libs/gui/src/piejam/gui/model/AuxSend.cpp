@@ -29,7 +29,7 @@ AuxSend::AuxSend(
         runtime::subscriber& state_change_subscriber,
         runtime::mixer::channel_id ch_id,
         runtime::mixer::channel_id aux_id)
-    : Subscribable<SubscribableModel>{store_dispatch, state_change_subscriber}
+    : SubscribableModel{store_dispatch, state_change_subscriber}
     , m_channel_id{ch_id}
     , m_aux_id{aux_id}
     , m_impl{make_pimpl<Impl>(

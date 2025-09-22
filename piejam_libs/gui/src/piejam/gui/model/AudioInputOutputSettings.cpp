@@ -27,7 +27,7 @@ AudioInputOutputSettings::AudioInputOutputSettings(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         io_direction const settings_type)
-    : Subscribable(store_dispatch, state_change_subscriber)
+    : SubscribableModel(store_dispatch, state_change_subscriber)
     , m_impl{make_pimpl<Impl>(settings_type)}
 {
 }

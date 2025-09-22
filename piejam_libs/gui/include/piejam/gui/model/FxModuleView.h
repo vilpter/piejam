@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -16,7 +15,7 @@
 namespace piejam::gui::model
 {
 
-class FxModuleView : public Subscribable<SubscribableModel>
+class FxModuleView : public SubscribableModel
 {
     Q_OBJECT
 
@@ -25,8 +24,9 @@ class FxModuleView : public Subscribable<SubscribableModel>
     M_PIEJAM_GUI_PROPERTY(QString, name, setName)
     M_PIEJAM_GUI_PROPERTY(bool, bypassed, setBypassed)
 
-    Q_PROPERTY(piejam::gui::model::FxModule* content READ content NOTIFY
-                       contentChanged FINAL)
+    Q_PROPERTY(
+            piejam::gui::model::FxModule* content READ content NOTIFY
+                    contentChanged FINAL)
 
 public:
     FxModuleView(runtime::store_dispatch, runtime::subscriber&);

@@ -17,6 +17,9 @@ class AudioStreamProvider : public SubscribableModel
 {
     Q_OBJECT
 
+protected:
+    using SubscribableModel::SubscribableModel;
+
 signals:
     void captured(piejam::gui::model::AudioStream);
 };

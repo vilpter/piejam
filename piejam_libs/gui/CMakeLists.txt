@@ -92,7 +92,6 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/StreamSamplesCache.h
     include/piejam/gui/model/String.h
     include/piejam/gui/model/StringList.h
-    include/piejam/gui/model/Subscribable.h
     include/piejam/gui/model/SubscribableModel.h
     include/piejam/gui/model/Types.h
     include/piejam/gui/model/Waveform.h

@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -18,7 +17,7 @@ class QAbstractListModel;
 namespace piejam::gui::model
 {
 
-class Mixer final : public Subscribable<SubscribableModel>
+class Mixer final : public SubscribableModel
 {
     Q_OBJECT
 

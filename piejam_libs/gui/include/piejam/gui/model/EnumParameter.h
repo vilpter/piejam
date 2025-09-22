@@ -7,8 +7,6 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/EnumListModel.h>
 #include <piejam/gui/model/IntParameter.h>
-#include <piejam/gui/model/Subscribable.h>
-#include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/pimpl.h>
@@ -36,8 +34,9 @@ public:
     }
 
     template <class E>
-        requires(std::is_enum_v<E> &&
-                 std::is_same_v<std::underlying_type_t<E>, int>)
+        requires(
+                std::is_enum_v<E> &&
+                std::is_same_v<std::underlying_type_t<E>, int>)
     auto as() const noexcept -> E
     {
         return static_cast<E>(value());

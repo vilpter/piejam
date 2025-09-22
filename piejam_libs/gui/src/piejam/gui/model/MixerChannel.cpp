@@ -36,7 +36,7 @@ MixerChannel::MixerChannel(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         runtime::mixer::channel_id const id)
-    : Subscribable{store_dispatch, state_change_subscriber}
+    : SubscribableModel{store_dispatch, state_change_subscriber}
     , m_color{static_cast<MaterialColor>(observe_once(
               runtime::selectors::make_mixer_channel_color_selector(id)))}
     , m_channel_id{id}

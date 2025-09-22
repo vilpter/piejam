@@ -7,7 +7,7 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/FxModule.h>
 #include <piejam/gui/model/ScopeSlot.h>
-#include <piejam/gui/model/Subscribable.h>
+#include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/Types.h>
 #include <piejam/gui/model/WaveformSlot.h>
 #include <piejam/gui/model/fwd.h>

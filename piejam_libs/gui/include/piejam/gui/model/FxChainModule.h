@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -16,7 +15,7 @@
 namespace piejam::gui::model
 {
 
-class FxChainModule : public Subscribable<SubscribableModel>
+class FxChainModule : public SubscribableModel
 {
     Q_OBJECT
 

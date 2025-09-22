@@ -16,7 +16,7 @@ ExternalAudioDeviceConfig::ExternalAudioDeviceConfig(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         runtime::external_audio::device_id const device_id)
-    : Subscribable(store_dispatch, state_change_subscriber)
+    : SubscribableModel(store_dispatch, state_change_subscriber)
     , m_device_id{device_id}
     , m_string{make_pimpl<String>(
               store_dispatch,

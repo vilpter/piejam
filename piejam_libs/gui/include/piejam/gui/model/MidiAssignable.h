@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
 #include <piejam/runtime/midi_assignment_id.h>
@@ -11,7 +10,7 @@
 namespace piejam::gui::model
 {
 
-class MidiAssignable final : public Subscribable<SubscribableModel>
+class MidiAssignable final : public SubscribableModel
 {
     Q_OBJECT
 

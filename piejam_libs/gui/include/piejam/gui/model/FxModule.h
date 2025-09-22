@@ -6,7 +6,6 @@
 
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/FxModuleType.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/Types.h>
 #include <piejam/gui/model/fwd.h>
@@ -17,7 +16,7 @@
 namespace piejam::gui::model
 {
 
-class FxModule : public Subscribable<SubscribableModel>
+class FxModule : public SubscribableModel
 {
     Q_OBJECT
 

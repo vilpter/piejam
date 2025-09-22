@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/Subscribable.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
 #include <piejam/midi/device_id.h>
@@ -13,7 +12,7 @@
 namespace piejam::gui::model
 {
 
-class MidiDeviceConfig final : public Subscribable<SubscribableModel>
+class MidiDeviceConfig final : public SubscribableModel
 {
     Q_OBJECT
 
