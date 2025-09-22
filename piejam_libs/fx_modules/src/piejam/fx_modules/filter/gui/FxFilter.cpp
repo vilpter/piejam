@@ -10,7 +10,6 @@
 #include <piejam/gui/model/AudioStreamProvider.h>
 #include <piejam/gui/model/EnumParameter.h>
 #include <piejam/gui/model/FloatParameter.h>
-#include <piejam/gui/model/FxStream.h>
 #include <piejam/gui/model/SpectrumGenerator.h>
 #include <piejam/gui/model/SpectrumSlot.h>
 #include <piejam/renew.h>
@@ -44,7 +43,7 @@ struct FxFilter::Impl
     std::unique_ptr<EnumParameter> filterTypeParam;
     std::unique_ptr<FloatParameter> cutoffParam;
     std::unique_ptr<FloatParameter> resonanceParam;
-    std::unique_ptr<FxStream> inOutStream;
+    std::unique_ptr<AudioStreamProvider> inOutStream;
 
     void updateSampleRate(audio::sample_rate sr)
     {
@@ -81,9 +80,8 @@ FxFilter::FxFilter(
             parameters.at(std::to_underlying(parameter_key::resonance)));
 
     makeStream(
-            std::to_underlying(stream_key::in_out),
             m_impl->inOutStream,
-            streams());
+            streams().at(std::to_underlying(stream_key::in_out)));
 
     if (m_impl->busType == BusType::Mono)
     {

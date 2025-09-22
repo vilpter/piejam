@@ -60,7 +60,6 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/FxModuleRegistry.h
     include/piejam/gui/model/FxModuleType.h
     include/piejam/gui/model/FxModuleView.h
-    include/piejam/gui/model/FxStream.h
     include/piejam/gui/model/GenericListModel.h
     include/piejam/gui/model/Info.h
     include/piejam/gui/model/IntParameter.h
@@ -87,7 +86,6 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/SpectrumGenerator.h
     include/piejam/gui/model/SpectrumSlot.h
     include/piejam/gui/model/StereoLevel.h
-    include/piejam/gui/model/StreamId.h
     include/piejam/gui/model/StreamProcessor.h
     include/piejam/gui/model/StreamSamplesCache.h
     include/piejam/gui/model/String.h
@@ -111,6 +109,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/AudioInputOutputSettings.cpp
     src/piejam/gui/model/AudioRouting.cpp
     src/piejam/gui/model/AudioRoutingSelection.cpp
+    src/piejam/gui/model/AudioStreamProvider.cpp
     src/piejam/gui/model/AuxSend.cpp
     src/piejam/gui/model/BoolParameter.cpp
     src/piejam/gui/model/DbScaleData.cpp
@@ -125,7 +124,6 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/FxModule.cpp
     src/piejam/gui/model/FxModuleRegistry.cpp
     src/piejam/gui/model/FxModuleView.cpp
-    src/piejam/gui/model/FxStream.cpp
     src/piejam/gui/model/Info.cpp
     src/piejam/gui/model/IntParameter.cpp
     src/piejam/gui/model/Log.cpp

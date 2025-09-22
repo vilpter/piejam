@@ -8,7 +8,7 @@
 #include <piejam/fx_modules/tuner/tuner_module.h>
 
 #include <piejam/audio/pitch.h>
-#include <piejam/gui/model/FxStream.h>
+#include <piejam/gui/model/AudioStreamProvider.h>
 #include <piejam/gui/model/PitchGenerator.h>
 #include <piejam/renew.h>
 #include <piejam/runtime/selectors.h>
@@ -31,7 +31,7 @@ struct FxTuner::Impl
 
     PitchGenerator pitchGenerator{sample_rate};
 
-    std::unique_ptr<FxStream> stream{};
+    std::unique_ptr<AudioStreamProvider> stream{};
 
     void updateSampleRate(audio::sample_rate sr)
     {
@@ -51,9 +51,8 @@ FxTuner::FxTuner(
     , m_impl{make_pimpl<Impl>(busType())}
 {
     makeStream(
-            std::to_underlying(stream_key::input),
             m_impl->stream,
-            streams());
+            streams().at(std::to_underlying(stream_key::input)));
 
     QObject::connect(
             m_impl->stream.get(),

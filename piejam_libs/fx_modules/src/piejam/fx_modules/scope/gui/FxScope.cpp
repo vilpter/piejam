@@ -8,10 +8,10 @@
 #include <piejam/fx_modules/scope/scope_module.h>
 
 #include <piejam/audio/types.h>
+#include <piejam/gui/model/AudioStreamProvider.h>
 #include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/EnumParameter.h>
 #include <piejam/gui/model/FloatParameter.h>
-#include <piejam/gui/model/FxStream.h>
 #include <piejam/gui/model/ScopeGenerator.h>
 #include <piejam/gui/model/StreamProcessor.h>
 #include <piejam/gui/model/StreamSamplesCache.h>
@@ -75,7 +75,7 @@ struct FxScope::Impl
     std::unique_ptr<IntParameter> waveformResolution;
     std::unique_ptr<IntParameter> scopeResolution;
     std::unique_ptr<BoolParameter> freeze;
-    std::unique_ptr<FxStream> stream;
+    std::unique_ptr<AudioStreamProvider> stream;
 
     std::pair<ScopeStreamProcessor, ScopeStreamProcessor> streamProcessor;
     ScopeGenerator scopeGenerator;
@@ -198,9 +198,8 @@ FxScope::FxScope(
             parameters.at(std::to_underlying(parameter_key::freeze)));
 
     makeStream(
-            std::to_underlying(stream_key::input),
             m_impl->stream,
-            streams());
+            streams().at(std::to_underlying(stream_key::input)));
 
     auto clear_fn = [this]() { clear(); };
 

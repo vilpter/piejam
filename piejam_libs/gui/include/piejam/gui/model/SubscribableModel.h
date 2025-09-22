@@ -146,16 +146,13 @@ protected:
                 param_id);
     }
 
-    template <class StreamT, class Streams>
-    void makeStream(
-            std::size_t key,
-            std::unique_ptr<StreamT>& stream,
-            Streams const& streams)
+    template <class StreamT, class StreamIdT>
+    void makeStream(std::unique_ptr<StreamT>& stream, StreamIdT const stream_id)
     {
         stream = std::make_unique<StreamT>(
                 dispatch(),
                 this->state_change_subscriber(),
-                streams.at(key));
+                stream_id);
         connectSubscribableChild(*stream);
     }
 

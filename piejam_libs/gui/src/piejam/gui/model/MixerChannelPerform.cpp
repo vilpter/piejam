@@ -4,9 +4,9 @@
 
 #include <piejam/gui/model/MixerChannelPerform.h>
 
+#include <piejam/gui/model/AudioStreamProvider.h>
 #include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/FloatParameter.h>
-#include <piejam/gui/model/FxStream.h>
 #include <piejam/gui/model/StereoLevel.h>
 
 #include <piejam/audio/pair.h>
@@ -77,7 +77,7 @@ struct MixerChannelPerform::Impl
 
     StereoLevel peakLevel;
     StereoLevel rmsLevel;
-    std::unique_ptr<FxStream> outStream;
+    std::unique_ptr<AudioStreamProvider> outStream;
 
     std::unique_ptr<FloatParameter> volume;
     std::unique_ptr<FloatParameter> panBalance;
@@ -125,13 +125,11 @@ MixerChannelPerform::MixerChannelPerform(
     : MixerChannel{store_dispatch, state_change_subscriber, id}
     , m_impl{make_pimpl<Impl>()}
 {
-    m_impl->outStream = std::make_unique<FxStream>(
-            dispatch(),
-            this->state_change_subscriber(),
+    makeStream(
+            m_impl->outStream,
             observe_once(
                     runtime::selectors::make_mixer_channel_out_stream_selector(
                             id)));
-    MixerChannel::connectSubscribableChild(*m_impl->outStream);
 
     QObject::connect(
             m_impl->outStream.get(),

@@ -2,32 +2,27 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/gui/model/FxStream.h>
+#include <piejam/gui/model/AudioStreamProvider.h>
 
-#include <piejam/audio/multichannel_buffer.h>
+#include <piejam/runtime/audio_stream.h>
 #include <piejam/runtime/selectors.h>
 
 namespace piejam::gui::model
 {
 
-struct FxStream::Impl
-{
-    StreamId streamId;
-};
-
-FxStream::FxStream(
+AudioStreamProvider::AudioStreamProvider(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
-        StreamId const& streamId)
-    : AudioStreamProvider(store_dispatch, state_change_subscriber)
-    , m_impl{make_pimpl<Impl>(streamId)}
+        runtime::audio_stream_id stream_id)
+    : SubscribableModel(store_dispatch, state_change_subscriber)
+    , m_stream_id{stream_id}
 {
 }
 
 void
-FxStream::onSubscribe()
+AudioStreamProvider::onSubscribe()
 {
-    observe(runtime::selectors::make_audio_stream_selector(m_impl->streamId),
+    observe(runtime::selectors::make_audio_stream_selector(m_stream_id),
             [this](runtime::audio_stream_buffer const& buf) {
                 if (!buf->empty())
                 {

@@ -8,10 +8,10 @@
 #include <piejam/fx_modules/spectrum/spectrum_module.h>
 
 #include <piejam/functional/operators.h>
+#include <piejam/gui/model/AudioStreamProvider.h>
 #include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/EnumParameter.h>
 #include <piejam/gui/model/FloatParameter.h>
-#include <piejam/gui/model/FxStream.h>
 #include <piejam/gui/model/SpectrumGenerator.h>
 #include <piejam/gui/model/StreamProcessor.h>
 #include <piejam/renew.h>
@@ -68,7 +68,7 @@ struct FxSpectrum::Impl
     std::pair<SpectrumProcessor, SpectrumProcessor> spectrumProcessor;
 
     std::unique_ptr<BoolParameter> freeze;
-    std::unique_ptr<FxStream> stream;
+    std::unique_ptr<AudioStreamProvider> stream;
 
     void updateSampleRate(audio::sample_rate sr)
     {
@@ -115,9 +115,8 @@ FxSpectrum::FxSpectrum(
             parameters.at(std::to_underlying(parameter_key::freeze)));
 
     makeStream(
-            std::to_underlying(stream_key::input),
             m_impl->stream,
-            streams());
+            streams().at(std::to_underlying(stream_key::input)));
 
     if (m_impl->busType == BusType::Mono)
     {

@@ -8,7 +8,7 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <QPointer>
+#include <piejam/runtime/audio_stream_id.h>
 
 namespace piejam::gui::model
 {
@@ -17,11 +17,19 @@ class AudioStreamProvider : public SubscribableModel
 {
     Q_OBJECT
 
-protected:
-    using SubscribableModel::SubscribableModel;
+public:
+    AudioStreamProvider(
+            runtime::store_dispatch,
+            runtime::subscriber&,
+            runtime::audio_stream_id);
 
 signals:
     void captured(piejam::gui::model::AudioStream);
+
+private:
+    void onSubscribe() override;
+
+    runtime::audio_stream_id m_stream_id;
 };
 
 } // namespace piejam::gui::model
