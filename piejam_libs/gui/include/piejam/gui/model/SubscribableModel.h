@@ -5,6 +5,7 @@
 #pragma once
 
 #include <piejam/entity_id_hash.h>
+#include <piejam/pimpl.h>
 #include <piejam/redux/subscriptions_manager.h>
 #include <piejam/runtime/store_dispatch.h>
 #include <piejam/runtime/subscriber.h>
@@ -133,6 +134,23 @@ protected:
                 &SubscribableModel::subscribedChanged,
                 &child,
                 [this, &child]() { child.setSubscribed(subscribed()); });
+    }
+
+    template <class Model, class... Args>
+    auto makeModel(Args&&... args)
+    {
+        return make_pimpl<Model>(
+                dispatch(),
+                state_change_subscriber(),
+                std::forward<Args>(args)...);
+    }
+
+    template <class Model, class... Args>
+    auto makeChildModel(Args&&... args)
+    {
+        auto child = makeModel<Model>(std::forward<Args>(args)...);
+        connectSubscribableChild(*child);
+        return child;
     }
 
     template <class ParameterT, class ParameterIdT>

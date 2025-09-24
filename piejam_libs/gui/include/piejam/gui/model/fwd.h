@@ -52,6 +52,7 @@ using FxParametersList = GenericListModel<Parameter>;
 class BoolParameter;
 class IntParameter;
 class EnumParameter;
+class EnumListModel;
 class FloatParameter;
 class StereoLevel;
 

@@ -49,8 +49,8 @@ protected:
     void onSubscribe() override;
 
 private:
-    struct Impl;
-    pimpl<Impl> m_impl;
+    ParameterId m_paramId;
+    pimpl<MidiAssignable> m_midi;
 };
 
 auto makeParameter(

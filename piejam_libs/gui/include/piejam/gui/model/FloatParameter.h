@@ -6,9 +6,6 @@
 
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/Parameter.h>
-#include <piejam/gui/model/fwd.h>
-
-#include <piejam/pimpl.h>
 
 namespace piejam::gui::model
 {
@@ -45,8 +42,7 @@ public:
 private:
     void onSubscribe() override;
 
-    struct Impl;
-    pimpl<Impl> m_impl;
+    auto paramId() const -> runtime::float_parameter_id;
 };
 
 } // namespace piejam::gui::model

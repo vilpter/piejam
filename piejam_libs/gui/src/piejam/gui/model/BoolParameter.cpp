@@ -4,7 +4,6 @@
 
 #include <piejam/gui/model/BoolParameter.h>
 
-#include <piejam/gui/model/MidiAssignable.h>
 #include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
@@ -12,18 +11,18 @@
 namespace piejam::gui::model
 {
 
-struct BoolParameter::Impl
-{
-    runtime::bool_parameter_id param_id;
-};
-
 BoolParameter::BoolParameter(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         runtime::parameter_id param_id)
     : Parameter(store_dispatch, state_change_subscriber, param_id)
-    , m_impl{make_pimpl<Impl>(std::get<runtime::bool_parameter_id>(param_id))}
 {
+}
+
+auto
+BoolParameter::paramId() const -> runtime::bool_parameter_id
+{
+    return std::get<runtime::bool_parameter_id>(Parameter::paramId());
 }
 
 void
@@ -31,15 +30,14 @@ BoolParameter::onSubscribe()
 {
     Parameter::onSubscribe();
 
-    observe(runtime::selectors::make_bool_parameter_value_selector(
-                    m_impl->param_id),
+    observe(runtime::selectors::make_bool_parameter_value_selector(paramId()),
             [this](bool const value) { setValue(value); });
 }
 
 void
 BoolParameter::changeValue(bool value)
 {
-    dispatch(runtime::actions::set_bool_parameter(m_impl->param_id, value));
+    dispatch(runtime::actions::set_bool_parameter(paramId(), value));
 }
 
 } // namespace piejam::gui::model

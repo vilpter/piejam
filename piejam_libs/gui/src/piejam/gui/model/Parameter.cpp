@@ -32,26 +32,19 @@ using parameter_id_to_FxParameter = boost::mp11::mp_list<
 
 } // namespace
 
-struct Parameter::Impl
-{
-    ParameterId param;
-    std::unique_ptr<MidiAssignable> midi;
-};
-
 Parameter::Parameter(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
-        ParameterId const& param)
+        ParameterId const& paramId)
     : SubscribableModel(store_dispatch, state_change_subscriber)
-    , m_impl(make_pimpl<Impl>(
-              param,
-              std::make_unique<MidiAssignable>(
-                      store_dispatch,
-                      state_change_subscriber,
-                      param)))
+    , m_paramId{paramId}
+    , m_midi{make_pimpl<MidiAssignable>(
+              store_dispatch,
+              state_change_subscriber,
+              paramId)}
 {
     setName(QString::fromStdString(observe_once(
-            runtime::selectors::make_fx_parameter_name_selector(param))));
+            runtime::selectors::make_fx_parameter_name_selector(m_paramId))));
 }
 
 auto
@@ -64,14 +57,14 @@ Parameter::type() const noexcept -> Type
                                 mp_map_find<parameter_id_to_FxParameter, T>,
                         1>::StaticType;
             },
-            m_impl->param);
+            m_paramId);
 }
 
 void
 Parameter::onSubscribe()
 {
     observe(runtime::selectors::make_fx_parameter_value_string_selector(
-                    m_impl->param),
+                    m_paramId),
             [this](std::string const& text) {
                 setValueString(QString::fromStdString(text));
             });
@@ -80,21 +73,19 @@ Parameter::onSubscribe()
 auto
 Parameter::midi() const noexcept -> MidiAssignable*
 {
-    return m_impl->midi.get();
+    return m_midi.get();
 }
 
 void
 Parameter::resetToDefault()
 {
-    dispatch(
-            runtime::actions::reset_fx_parameter_to_default_value(
-                    m_impl->param));
+    dispatch(runtime::actions::reset_fx_parameter_to_default_value(m_paramId));
 }
 
 auto
 Parameter::paramId() const -> ParameterId
 {
-    return m_impl->param;
+    return m_paramId;
 }
 
 auto

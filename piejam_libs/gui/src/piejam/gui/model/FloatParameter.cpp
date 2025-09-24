@@ -4,7 +4,6 @@
 
 #include <piejam/gui/model/FloatParameter.h>
 
-#include <piejam/gui/model/MidiAssignable.h>
 #include <piejam/runtime/actions/set_float_parameter_normalized.h>
 #include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/selectors.h>
@@ -13,21 +12,21 @@
 namespace piejam::gui::model
 {
 
-struct FloatParameter::Impl
-{
-    runtime::float_parameter_id param_id;
-};
-
 FloatParameter::FloatParameter(
         runtime::store_dispatch store_dispatch,
         runtime::subscriber& state_change_subscriber,
         runtime::parameter_id param_id)
     : Parameter{store_dispatch, state_change_subscriber, param_id}
-    , m_impl{make_pimpl<Impl>(std::get<runtime::float_parameter_id>(param_id))}
 {
     setBipolar(observe_once(
             runtime::selectors::make_float_parameter_bipolar_selector(
-                    m_impl->param_id)));
+                    paramId())));
+}
+
+auto
+FloatParameter::paramId() const -> runtime::float_parameter_id
+{
+    return std::get<runtime::float_parameter_id>(Parameter::paramId());
 }
 
 void
@@ -35,12 +34,14 @@ FloatParameter::onSubscribe()
 {
     Parameter::onSubscribe();
 
+    auto const float_param_id = paramId();
+
     observe(runtime::selectors::make_float_parameter_value_selector(
-                    m_impl->param_id),
+                    float_param_id),
             [this](float const value) { setValue(value); });
 
     observe(runtime::selectors::make_float_parameter_normalized_value_selector(
-                    m_impl->param_id),
+                    float_param_id),
             [this](float const value) { setNormalizedValue(value); });
 }
 
@@ -49,7 +50,7 @@ FloatParameter::changeValue(double value)
 {
     dispatch(
             runtime::actions::set_float_parameter(
-                    m_impl->param_id,
+                    paramId(),
                     static_cast<float>(value)));
 }
 
@@ -58,7 +59,7 @@ FloatParameter::changeNormalizedValue(double value)
 {
     dispatch(
             runtime::actions::set_float_parameter_normalized(
-                    m_impl->param_id,
+                    paramId(),
                     static_cast<float>(value)));
 }
 

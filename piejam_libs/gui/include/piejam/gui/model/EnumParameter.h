@@ -5,11 +5,12 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/EnumListModel.h>
 #include <piejam/gui/model/IntParameter.h>
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/pimpl.h>
+
+class QAbstractListModel;
 
 namespace piejam::gui::model
 {
@@ -43,8 +44,7 @@ public:
     }
 
 private:
-    struct Impl;
-    pimpl<Impl> m_impl;
+    pimpl<EnumListModel> m_values;
 };
 
 } // namespace piejam::gui::model
