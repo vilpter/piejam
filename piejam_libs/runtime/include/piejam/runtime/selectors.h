@@ -139,9 +139,25 @@ auto make_mixer_channel_default_route_is_valid_selector(
         mixer::channel_id,
         mixer::io_socket) -> selector<bool>;
 
+struct selected_route
+{
+    bool is_default{};
+
+    enum class state_t
+    {
+        valid,
+        invalid,
+        not_mixed,
+    } state;
+
+    boxed_string name;
+
+    auto operator==(selected_route const&) const noexcept -> bool = default;
+};
+
 auto make_mixer_channel_selected_route_selector(
         mixer::channel_id,
-        mixer::io_socket) -> selector<mixer::io_address_t>;
+        mixer::io_socket) -> selector<selected_route>;
 
 auto make_mixer_device_routes_selector(mixer::channel_type, mixer::io_socket)
         -> selector<boxed_vector<mixer_device_route>>;

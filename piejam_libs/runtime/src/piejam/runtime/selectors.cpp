@@ -443,23 +443,99 @@ make_mixer_channel_default_route_is_valid_selector(
     }
 }
 
+static auto
+make_route_state_selector(mixer::io_address_t addr, mixer::io_socket io_socket)
+        -> selector<selected_route::state_t>
+{
+    return std::visit(
+            boost::hof::match(
+                    [](default_t) -> selector<selected_route::state_t> {
+                        return boost::hof::always(
+                                selected_route::state_t::valid);
+                    },
+                    [](invalid_t) -> selector<selected_route::state_t> {
+                        return boost::hof::always(
+                                selected_route::state_t::invalid);
+                    },
+                    [](external_audio::device_id)
+                            -> selector<selected_route::state_t> {
+                        return boost::hof::always(
+                                selected_route::state_t::valid);
+                    },
+                    [io_socket](mixer::channel_id id)
+                            -> selector<selected_route::state_t> {
+                        if (io_socket == mixer::io_socket::in)
+                        {
+                            return boost::hof::always(
+                                    selected_route::state_t::valid);
+                        }
+                        else
+                        {
+                            return [get_addr =
+                                            make_mixer_channel_member_selector<
+                                                    &mixer::channel::in>(id)](
+                                           state const& st) {
+                                auto addr = get_addr(st);
+                                return std::holds_alternative<default_t>(addr)
+                                               ? selected_route::state_t::valid
+                                               : selected_route::state_t::
+                                                         not_mixed;
+                            };
+                        }
+                    }),
+            addr);
+}
+
+static auto
+make_route_name_selector(mixer::io_address_t addr) -> selector<boxed_string>
+{
+    return std::visit(
+            boost::hof::match(
+                    [](default_t) -> selector<boxed_string> {
+                        return boost::hof::always(boxed_string{});
+                    },
+                    [](invalid_t) -> selector<boxed_string> {
+                        return boost::hof::always(boxed_string{});
+                    },
+                    [](external_audio::device_id id) -> selector<boxed_string> {
+                        return make_external_audio_device_name_string_selector(
+                                id);
+                    },
+                    [](mixer::channel_id id) -> selector<boxed_string> {
+                        return make_mixer_channel_name_string_selector(id);
+                    }),
+            addr);
+}
+
 auto
 make_mixer_channel_selected_route_selector(
         mixer::channel_id const channel_id,
-        mixer::io_socket const io_socket) -> selector<mixer::io_address_t>
+        mixer::io_socket const io_socket) -> selector<selected_route>
 {
-    switch (io_socket)
-    {
-        case mixer::io_socket::in:
-            return make_mixer_channel_member_selector<&mixer::channel::in>(
-                    channel_id);
+    auto get_addr =
+            io_socket == mixer::io_socket::in
+                    ? selector<
+                              mixer::io_address_t>{make_mixer_channel_member_selector<
+                              &mixer::channel::in>(channel_id)}
+                    : selector<mixer::io_address_t>{
+                              make_mixer_channel_member_selector<
+                                      &mixer::channel::out>(channel_id)};
 
-        case mixer::io_socket::out:
-            return make_mixer_channel_member_selector<&mixer::channel::out>(
-                    channel_id);
-    }
+    return [io_socket,
+            get_addr = std::move(get_addr),
+            get_state = memo(&make_route_state_selector),
+            get_name = memo(&make_route_name_selector)](state const& st) {
+        auto addr = get_addr(st);
 
-    return boost::hof::always(mixer::io_address_t{});
+        selected_route result;
+
+        result.is_default = std::holds_alternative<default_t>(addr) ||
+                            std::holds_alternative<invalid_t>(addr);
+        result.state = get_state(addr, io_socket)(st);
+        result.name = get_name(addr)(st);
+
+        return result;
+    };
 }
 
 auto

@@ -49,7 +49,7 @@ Item {
 
             text: comboBox.displayText
             font: comboBox.font
-            color: root.enabled ? Material.primaryTextColor : Material.secondaryTextColor
+            color: root.enabled ? root.Material.foreground : root.Material.secondaryTextColor
             verticalAlignment: Text.AlignVCenter
             elide: root.elideMode
             padding: 6
