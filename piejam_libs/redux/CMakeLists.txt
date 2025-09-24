@@ -14,7 +14,6 @@ add_library(piejam_redux INTERFACE
     include/piejam/redux/store.h
     include/piejam/redux/subscriber.h
     include/piejam/redux/subscription.h
-    include/piejam/redux/subscriptions_manager.h
     include/piejam/redux/thread_delegate_middleware.h
     include/piejam/redux/thunk_middleware.h
 )

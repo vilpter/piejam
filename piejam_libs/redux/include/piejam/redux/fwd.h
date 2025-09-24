@@ -19,7 +19,4 @@ class selector;
 template <class State>
 class subscriber;
 
-template <class Id>
-class subscriptions_manager;
-
 } // namespace piejam::redux

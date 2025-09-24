@@ -4,7 +4,6 @@
 
 #include <piejam/gui/model/Info.h>
 
-#include <piejam/redux/subscriptions_manager.h>
 #include <piejam/runtime/actions/recording.h>
 #include <piejam/runtime/actions/request_info_update.h>
 #include <piejam/runtime/selectors.h>

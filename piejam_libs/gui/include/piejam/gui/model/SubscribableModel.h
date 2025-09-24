@@ -6,7 +6,7 @@
 
 #include <piejam/entity_id_hash.h>
 #include <piejam/pimpl.h>
-#include <piejam/redux/subscriptions_manager.h>
+#include <piejam/redux/subscriber.h>
 #include <piejam/runtime/store_dispatch.h>
 #include <piejam/runtime/subscriber.h>
 
@@ -90,25 +90,9 @@ protected:
     template <class Value, class Handler>
     void observe(runtime::selector<Value> sel, Handler&& h)
     {
-        observe(m_subs_id, std::move(sel), std::forward<Handler>(h));
-    }
-
-    template <class Value, class Handler>
-    void
-    observe(runtime::subscription_id subs_id,
-            runtime::selector<Value> sel,
-            Handler&& h)
-    {
-        m_subs.observe(
-                subs_id,
-                m_state_change_subscriber,
+        m_subs.emplace_back(m_state_change_subscriber.observe(
                 std::move(sel),
-                std::forward<Handler>(h));
-    }
-
-    void unobserve(runtime::subscription_id subs_id)
-    {
-        m_subs.erase(subs_id);
+                std::forward<Handler>(h)));
     }
 
     template <class F>
@@ -197,9 +181,7 @@ private:
 
     runtime::store_dispatch m_store_dispatch;
     runtime::subscriber& m_state_change_subscriber;
-    runtime::subscriptions_manager m_subs;
-    runtime::subscription_id const m_subs_id{
-            runtime::subscription_id::generate()};
+    std::vector<redux::subscription> m_subs;
 
     int m_updateTimerId{};
     std::function<void()> m_requestUpdate;
