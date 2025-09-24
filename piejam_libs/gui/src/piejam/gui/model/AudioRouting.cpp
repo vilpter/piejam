@@ -49,7 +49,7 @@ AudioRouting::AudioRouting(
                       id,
                       io_socket))}
 {
-    connectSubscribableChild(*m_impl->selected);
+    attachChildModel(*m_impl->selected);
 }
 
 auto

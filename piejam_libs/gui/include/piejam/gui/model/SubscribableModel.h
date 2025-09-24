@@ -119,15 +119,9 @@ protected:
         m_updateTimerId = QObject::startTimer(t);
     }
 
-    virtual void onSubscribe()
-    {
-    }
+    virtual void onSubscribe() = 0;
 
-    virtual void onUnsubscribe()
-    {
-    }
-
-    auto connectSubscribableChild(SubscribableModel& child)
+    auto attachChildModel(SubscribableModel& child)
     {
         return QObject::connect(
                 this,
@@ -149,7 +143,7 @@ protected:
     auto makeChildModel(Args&&... args)
     {
         auto child = makeModel<Model>(std::forward<Args>(args)...);
-        connectSubscribableChild(*child);
+        attachChildModel(*child);
         return child;
     }
 
@@ -171,7 +165,7 @@ protected:
                 dispatch(),
                 this->state_change_subscriber(),
                 stream_id);
-        connectSubscribableChild(*stream);
+        attachChildModel(*stream);
     }
 
 private:
@@ -182,8 +176,6 @@ private:
 
     void unsubscribe()
     {
-        onUnsubscribe();
-
         m_subs.clear();
 
         if (m_updateTimerId != 0)
