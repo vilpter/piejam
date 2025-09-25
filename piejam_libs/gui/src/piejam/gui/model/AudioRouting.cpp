@@ -4,9 +4,9 @@
 
 #include <piejam/gui/model/AudioRouting.h>
 
-#include <piejam/gui/generic_list_model_edit_script_executor.h>
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 #include <piejam/gui/model/AudioRoutingSelection.h>
-#include <piejam/gui/model/GenericListModel.h>
+#include <piejam/gui/model/ObjectListModel.h>
 #include <piejam/gui/model/String.h>
 
 #include <piejam/algorithm/edit_script.h>
@@ -84,7 +84,7 @@ AudioRouting::onSubscribe()
                            devices) {
                 algorithm::apply_edit_script(
                         algorithm::edit_script(*m_impl->devices, *devices),
-                        piejam::gui::generic_list_model_edit_script_executor{
+                        ListModelEditScriptProcessor{
                                 m_impl->devicesList,
                                 [this](auto const& route) {
                                     return std::make_unique<String>(
@@ -102,7 +102,7 @@ AudioRouting::onSubscribe()
                            channels) {
                 algorithm::apply_edit_script(
                         algorithm::edit_script(*m_impl->channels, *channels),
-                        piejam::gui::generic_list_model_edit_script_executor{
+                        ListModelEditScriptProcessor{
                                 m_impl->channelsList,
                                 [this](auto const& route) {
                                     return std::make_unique<String>(

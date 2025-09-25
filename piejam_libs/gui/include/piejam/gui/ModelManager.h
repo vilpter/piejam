@@ -4,13 +4,14 @@
 
 #pragma once
 
+#include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/fwd.h>
+
+#include <piejam/pimpl.h>
 #include <piejam/runtime/state_access.h>
 #include <piejam/runtime/subscriber.h>
 
 #include <QObject>
-
-#include <memory>
 
 namespace piejam::gui
 {
@@ -19,97 +20,36 @@ class ModelManager final : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(
-            piejam::gui::model::AudioDeviceSettings* audioDeviceSettings READ
-                    audioDeviceSettings CONSTANT)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+            piejam::gui::model::AudioDeviceSettings*,
+            audioDeviceSettings)
 
-    Q_PROPERTY(
-            piejam::gui::model::AudioInputOutputSettings* audioInputSettings
-                    READ audioInputSettings CONSTANT)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+            piejam::gui::model::AudioInputOutputSettings*,
+            audioInputSettings)
 
-    Q_PROPERTY(
-            piejam::gui::model::AudioInputOutputSettings* audioOutputSettings
-                    READ audioOutputSettings CONSTANT)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+            piejam::gui::model::AudioInputOutputSettings*,
+            audioOutputSettings)
 
-    Q_PROPERTY(
-            piejam::gui::model::MidiInputSettings* midiInputSettings READ
-                    midiInputSettings CONSTANT)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+            piejam::gui::model::MidiInputSettings*,
+            midiInputSettings)
 
-    Q_PROPERTY(piejam::gui::model::Mixer* mixer READ mixer CONSTANT)
-    Q_PROPERTY(piejam::gui::model::Info* info READ info CONSTANT)
-    Q_PROPERTY(piejam::gui::model::Log* log READ log CONSTANT)
-    Q_PROPERTY(piejam::gui::model::FxBrowser* fxBrowser READ fxBrowser CONSTANT)
-    Q_PROPERTY(
-            piejam::gui::model::FxModuleView* fxModule READ fxModule CONSTANT)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Mixer*, mixer)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Info*, info)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Log*, log)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FxBrowser*, fxBrowser)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FxModuleView*, fxModule)
 
-    Q_PROPERTY(piejam::gui::model::RootView* rootView READ rootView CONSTANT)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::RootView*, rootView)
 
 public:
-    ModelManager(runtime::state_access const&);
-    ~ModelManager() override;
-
-    auto audioDeviceSettings() const -> model::AudioDeviceSettings*
-    {
-        return m_audioDeviceSettings.get();
-    }
-
-    auto audioInputSettings() const -> model::AudioInputOutputSettings*
-    {
-        return m_audioInputSettings.get();
-    }
-
-    auto audioOutputSettings() const -> model::AudioInputOutputSettings*
-    {
-        return m_audioOutputSettings.get();
-    }
-
-    auto midiInputSettings() const -> model::MidiInputSettings*
-    {
-        return m_midiInputSettings.get();
-    }
-
-    auto mixer() const -> model::Mixer*
-    {
-        return m_mixer.get();
-    }
-
-    auto info() const -> model::Info*
-    {
-        return m_info.get();
-    }
-
-    auto log() const -> model::Log*
-    {
-        return m_log.get();
-    }
-
-    auto fxBrowser() const -> model::FxBrowser*
-    {
-        return m_fxBrowser.get();
-    }
-
-    auto fxModule() const -> model::FxModuleView*
-    {
-        return m_fxModule.get();
-    }
-
-    auto rootView() const -> model::RootView*
-    {
-        return m_rootView.get();
-    }
+    explicit ModelManager(runtime::state_access const&);
 
 private:
-    std::unique_ptr<model::AudioDeviceSettings> m_audioDeviceSettings;
-    std::unique_ptr<model::AudioInputOutputSettings> m_audioInputSettings;
-    std::unique_ptr<model::AudioInputOutputSettings> m_audioOutputSettings;
-    std::unique_ptr<model::MidiInputSettings> m_midiInputSettings;
-    std::unique_ptr<model::Mixer> m_mixer;
-    std::unique_ptr<model::Info> m_info;
-    std::unique_ptr<model::Log> m_log;
-    std::unique_ptr<model::FxBrowser> m_fxBrowser;
-    std::unique_ptr<model::FxModuleView> m_fxModule;
-
-    std::unique_ptr<model::RootView> m_rootView;
+    struct Impl;
+    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui

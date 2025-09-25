@@ -4,8 +4,9 @@
 
 #include <piejam/gui/model/MixerChannelFx.h>
 
-#include <piejam/gui/generic_list_model_edit_script_executor.h>
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 #include <piejam/gui/model/FxChainModule.h>
+#include <piejam/gui/model/ObjectListModel.h>
 
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/runtime/actions/fwd.h>
@@ -83,7 +84,7 @@ MixerChannelFx::onSubscribe()
             [this](auto const& fx_chain) {
                 algorithm::apply_edit_script(
                         algorithm::edit_script(*m_impl->fx_chain, *fx_chain),
-                        piejam::gui::generic_list_model_edit_script_executor{
+                        ListModelEditScriptProcessor{
                                 m_impl->modules,
                                 [this](runtime::fx::module_id const&
                                                fx_mod_id) {

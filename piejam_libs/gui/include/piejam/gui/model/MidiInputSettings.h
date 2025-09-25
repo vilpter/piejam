@@ -10,7 +10,7 @@
 
 #include <piejam/pimpl.h>
 
-#include <QAbstractListModel>
+class QAbstractListModel;
 
 namespace piejam::gui::model
 {

@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/GenericListModel.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
@@ -13,6 +12,8 @@
 #include <piejam/pimpl.h>
 
 #include <QStringList>
+
+class QAbstractListModel;
 
 namespace piejam::gui::model
 {

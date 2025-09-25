@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <piejam/entity_id.h>
 #include <piejam/gui/model/fwd.h>
+
+#include <piejam/entity_id.h>
 #include <piejam/registry_map.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/fx/fwd.h>

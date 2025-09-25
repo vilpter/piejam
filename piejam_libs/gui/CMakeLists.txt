@@ -24,9 +24,9 @@ set(PIEJAM_QML_IMPORT_PATHS ${PIEJAM_QML_IMPORT_PATHS} PARENT_SCOPE)
 
 add_library(piejam_gui STATIC
     ${RESOURCES}
+    include/piejam/gui/ListModelEditScriptProcessor.h
     include/piejam/gui/ModelManager.h
     include/piejam/gui/PropertyMacros.h
-    include/piejam/gui/generic_list_model_edit_script_executor.h
     include/piejam/gui/init.h
     include/piejam/gui/item/DbScale.h
     include/piejam/gui/item/FixedLinearScaleGrid.h
@@ -60,7 +60,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/FxModuleRegistry.h
     include/piejam/gui/model/FxModuleType.h
     include/piejam/gui/model/FxModuleView.h
-    include/piejam/gui/model/GenericListModel.h
+    include/piejam/gui/model/ObjectListModel.h
     include/piejam/gui/model/Info.h
     include/piejam/gui/model/IntParameter.h
     include/piejam/gui/model/Log.h

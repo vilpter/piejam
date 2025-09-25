@@ -11,8 +11,6 @@
 
 #include <piejam/pimpl.h>
 
-#include <QStringList>
-
 namespace piejam::gui::model
 {
 

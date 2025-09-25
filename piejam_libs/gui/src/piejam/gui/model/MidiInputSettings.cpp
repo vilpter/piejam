@@ -4,9 +4,9 @@
 
 #include <piejam/gui/model/MidiInputSettings.h>
 
-#include <piejam/gui/generic_list_model_edit_script_executor.h>
-#include <piejam/gui/model/GenericListModel.h>
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 #include <piejam/gui/model/MidiDeviceConfig.h>
+#include <piejam/gui/model/ObjectListModel.h>
 
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/runtime/selectors.h>
@@ -39,7 +39,7 @@ MidiInputSettings::onSubscribe()
             [this](auto const& devs) {
                 algorithm::apply_edit_script(
                         algorithm::edit_script(*m_impl->device_ids, *devs),
-                        piejam::gui::generic_list_model_edit_script_executor{
+                        ListModelEditScriptProcessor{
                                 m_impl->devices,
                                 [this](midi::device_id_t device_id) {
                                     return std::make_unique<MidiDeviceConfig>(

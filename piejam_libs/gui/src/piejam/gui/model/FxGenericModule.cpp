@@ -4,6 +4,7 @@
 
 #include <piejam/gui/model/FxGenericModule.h>
 
+#include <piejam/gui/model/ObjectListModel.h>
 #include <piejam/gui/model/Parameter.h>
 #include <piejam/gui/model/ParameterId.h>
 

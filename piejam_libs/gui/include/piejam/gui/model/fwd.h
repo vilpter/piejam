@@ -8,13 +8,13 @@ namespace piejam::gui::model
 {
 
 template <class ListItem>
-class GenericListModel;
+class ObjectListModel;
 
 class EnumListModel;
 class StringList;
 
 class String;
-using Strings = GenericListModel<String>;
+using Strings = ObjectListModel<String>;
 
 using MaterialColor = int;
 
@@ -23,7 +23,7 @@ class SoundCardInfo;
 class AudioInputOutputSettings;
 
 class FxChainModule;
-using FxChainModulesList = GenericListModel<FxChainModule>;
+using FxChainModulesList = ObjectListModel<FxChainModule>;
 class FxModuleView;
 class FxModule;
 
@@ -32,7 +32,7 @@ class Log;
 
 class Mixer;
 class MixerChannelModels;
-using MixerChannelsList = GenericListModel<MixerChannelModels>;
+using MixerChannelsList = ObjectListModel<MixerChannelModels>;
 class MixerChannelPerform;
 class MixerChannelEdit;
 class MixerChannelFx;
@@ -41,14 +41,14 @@ class DbScaleData;
 class AudioRouting;
 class AudioRoutingSelection;
 class AuxSend;
-using AuxSendsList = GenericListModel<AuxSend>;
+using AuxSendsList = ObjectListModel<AuxSend>;
 
 class ExternalAudioDeviceConfig;
 using ExternalAudioDeviceConfigList =
-        GenericListModel<ExternalAudioDeviceConfig>;
+        ObjectListModel<ExternalAudioDeviceConfig>;
 
 class Parameter;
-using FxParametersList = GenericListModel<Parameter>;
+using FxParametersList = ObjectListModel<Parameter>;
 class BoolParameter;
 class IntParameter;
 class EnumParameter;
@@ -58,10 +58,10 @@ class StereoLevel;
 
 class FxBrowser;
 class FxBrowserEntry;
-using FxBrowserList = GenericListModel<FxBrowserEntry>;
+using FxBrowserList = ObjectListModel<FxBrowserEntry>;
 
 class AudioStreamProvider;
-using AudioStreamProviderList = GenericListModel<AudioStreamProvider>;
+using AudioStreamProviderList = ObjectListModel<AudioStreamProvider>;
 
 class WaveformSlot;
 class Waveform;
@@ -72,7 +72,7 @@ class SpectrumSlot;
 class ScopeSlot;
 
 class MidiDeviceConfig;
-using MidiDeviceList = GenericListModel<MidiDeviceConfig>;
+using MidiDeviceList = ObjectListModel<MidiDeviceConfig>;
 
 class MidiInputSettings;
 

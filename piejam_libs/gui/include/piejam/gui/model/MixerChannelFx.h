@@ -5,13 +5,13 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/GenericListModel.h>
 #include <piejam/gui/model/MixerChannel.h>
-#include <piejam/gui/model/StringList.h>
 
 #include <piejam/audio/types.h>
 #include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
+
+class QAbstractListModel;
 
 namespace piejam::gui::model
 {

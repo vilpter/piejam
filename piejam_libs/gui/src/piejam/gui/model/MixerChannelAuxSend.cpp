@@ -4,9 +4,9 @@
 
 #include <piejam/gui/model/MixerChannelAuxSend.h>
 
-#include <piejam/gui/generic_list_model_edit_script_executor.h>
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 #include <piejam/gui/model/AuxSend.h>
-#include <piejam/gui/model/GenericListModel.h>
+#include <piejam/gui/model/ObjectListModel.h>
 
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/runtime/selectors.h>
@@ -44,7 +44,7 @@ MixerChannelAuxSend::onSubscribe()
             [this](box<runtime::mixer::channel_ids_t> const& aux_ids) {
                 algorithm::apply_edit_script(
                         algorithm::edit_script(*m_impl->aux_ids, *aux_ids),
-                        piejam::gui::generic_list_model_edit_script_executor{
+                        ListModelEditScriptProcessor{
                                 m_impl->auxSends,
                                 [this](auto const& aux_id) {
                                     return std::make_unique<AuxSend>(

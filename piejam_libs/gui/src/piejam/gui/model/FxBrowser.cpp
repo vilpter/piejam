@@ -4,10 +4,10 @@
 
 #include <piejam/gui/model/FxBrowser.h>
 
-#include <piejam/gui/generic_list_model_edit_script_executor.h>
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 #include <piejam/gui/model/FxBrowserEntryInternal.h>
 #include <piejam/gui/model/FxBrowserEntryLADSPA.h>
-#include <piejam/gui/model/GenericListModel.h>
+#include <piejam/gui/model/ObjectListModel.h>
 
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/runtime/actions/root_view_actions.h>
@@ -56,7 +56,7 @@ struct FxBrowser::Impl
 
         algorithm::apply_edit_script(
                 algorithm::edit_script(filtered_fx_registry, new_entries),
-                piejam::gui::generic_list_model_edit_script_executor{
+                ListModelEditScriptProcessor{
                         entries,
                         [&](auto const& item) {
                             return std::visit(

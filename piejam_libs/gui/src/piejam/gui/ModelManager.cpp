@@ -187,30 +187,102 @@ runRegistration()
             &model::fxModuleRegistrySingleton());
 }
 
+struct ModelManager::Impl
+{
+    Impl(runtime::state_access const& state_access)
+        : audioDeviceSettings{state_access}
+        , audioInputSettings{state_access, io_direction::input}
+        , audioOutputSettings{state_access, io_direction::output}
+        , midiInputSettings{state_access}
+        , mixer{state_access}
+        , info{state_access}
+        , log{state_access}
+        , fxBrowser{state_access}
+        , fxModule{state_access}
+        , rootView{state_access}
+    {
+    }
+
+    model::AudioDeviceSettings audioDeviceSettings;
+    model::AudioInputOutputSettings audioInputSettings;
+    model::AudioInputOutputSettings audioOutputSettings;
+    model::MidiInputSettings midiInputSettings;
+    model::Mixer mixer;
+    model::Info info;
+    model::Log log;
+    model::FxBrowser fxBrowser;
+    model::FxModuleView fxModule;
+    model::RootView rootView;
+};
+
 ModelManager::ModelManager(runtime::state_access const& state_access)
-    : m_audioDeviceSettings(
-              std::make_unique<model::AudioDeviceSettings>(state_access))
-    , m_audioInputSettings(
-              std::make_unique<model::AudioInputOutputSettings>(
-                      state_access,
-                      io_direction::input))
-    , m_audioOutputSettings(
-              std::make_unique<model::AudioInputOutputSettings>(
-                      state_access,
-                      io_direction::output))
-    , m_midiInputSettings(
-              std::make_unique<model::MidiInputSettings>(state_access))
-    , m_mixer(std::make_unique<model::Mixer>(state_access))
-    , m_info(std::make_unique<model::Info>(state_access))
-    , m_log(std::make_unique<model::Log>(state_access))
-    , m_fxBrowser(std::make_unique<model::FxBrowser>(state_access))
-    , m_fxModule(std::make_unique<model::FxModuleView>(state_access))
-    , m_rootView(std::make_unique<model::RootView>(state_access))
+    : m_impl{make_pimpl<Impl>(state_access)}
 {
     static std::once_flag s_registered;
     std::call_once(s_registered, &runRegistration);
 }
 
-ModelManager::~ModelManager() = default;
+auto
+ModelManager::audioDeviceSettings() const noexcept
+        -> model::AudioDeviceSettings*
+{
+    return &m_impl->audioDeviceSettings;
+}
+
+auto
+ModelManager::audioInputSettings() const noexcept
+        -> model::AudioInputOutputSettings*
+{
+    return &m_impl->audioInputSettings;
+}
+
+auto
+ModelManager::audioOutputSettings() const noexcept
+        -> model::AudioInputOutputSettings*
+{
+    return &m_impl->audioOutputSettings;
+}
+
+auto
+ModelManager::midiInputSettings() const noexcept -> model::MidiInputSettings*
+{
+    return &m_impl->midiInputSettings;
+}
+
+auto
+ModelManager::mixer() const noexcept -> model::Mixer*
+{
+    return &m_impl->mixer;
+}
+
+auto
+ModelManager::info() const noexcept -> model::Info*
+{
+    return &m_impl->info;
+}
+
+auto
+ModelManager::log() const noexcept -> model::Log*
+{
+    return &m_impl->log;
+}
+
+auto
+ModelManager::fxBrowser() const noexcept -> model::FxBrowser*
+{
+    return &m_impl->fxBrowser;
+}
+
+auto
+ModelManager::fxModule() const noexcept -> model::FxModuleView*
+{
+    return &m_impl->fxModule;
+}
+
+auto
+ModelManager::rootView() const noexcept -> model::RootView*
+{
+    return &m_impl->rootView;
+}
 
 } // namespace piejam::gui

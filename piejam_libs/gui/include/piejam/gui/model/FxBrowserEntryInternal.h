@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <piejam/entity_id.h>
 #include <piejam/gui/model/FxBrowserEntry.h>
+
+#include <piejam/entity_id.h>
 #include <piejam/runtime/fx/fwd.h>
 
 namespace piejam::gui::model

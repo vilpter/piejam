@@ -17,7 +17,7 @@ namespace piejam::gui::model
 {
 
 template <class ListItem>
-class GenericListModel : public QAbstractListModel
+class ObjectListModel : public QAbstractListModel
 {
 public:
     enum Roles : int

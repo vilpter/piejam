@@ -4,9 +4,9 @@
 
 #include <piejam/gui/model/Mixer.h>
 
-#include <piejam/gui/generic_list_model_edit_script_executor.h>
-#include <piejam/gui/model/GenericListModel.h>
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 #include <piejam/gui/model/MixerChannelModels.h>
+#include <piejam/gui/model/ObjectListModel.h>
 
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/audio/types.h>
@@ -59,7 +59,7 @@ Mixer::onSubscribe()
                         algorithm::edit_script(
                                 *m_impl->user_channel_ids,
                                 *user_channel_ids),
-                        piejam::gui::generic_list_model_edit_script_executor{
+                        ListModelEditScriptProcessor{
                                 m_impl->userChannels,
                                 [this](auto const& channel_id) {
                                     return std::make_unique<MixerChannelModels>(

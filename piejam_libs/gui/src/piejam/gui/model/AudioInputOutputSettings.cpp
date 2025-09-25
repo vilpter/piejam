@@ -4,11 +4,12 @@
 
 #include <piejam/gui/model/AudioInputOutputSettings.h>
 
+#include <piejam/gui/model/ExternalAudioDeviceConfig.h>
+#include <piejam/gui/model/ObjectListModel.h>
+
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/audio/types.h>
-#include <piejam/gui/generic_list_model_edit_script_executor.h>
-#include <piejam/gui/model/ExternalAudioDeviceConfig.h>
-#include <piejam/gui/model/GenericListModel.h>
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 #include <piejam/runtime/actions/external_audio_device_actions.h>
 #include <piejam/runtime/selectors.h>
 
@@ -61,7 +62,7 @@ AudioInputOutputSettings::onSubscribe()
                         algorithm::edit_script(
                                 *m_impl->device_ids,
                                 *device_ids),
-                        piejam::gui::generic_list_model_edit_script_executor{
+                        ListModelEditScriptProcessor{
                                 m_impl->deviceConfigs,
                                 [this](runtime::external_audio::device_id
                                                device_id) {
