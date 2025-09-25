@@ -22,7 +22,7 @@ class FxBrowser final : public SubscribableModel
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, entries)
 
 public:
-    FxBrowser(runtime::store_dispatch, runtime::subscriber&);
+    FxBrowser(runtime::state_access const&);
 
     Q_INVOKABLE void showMixer();
 

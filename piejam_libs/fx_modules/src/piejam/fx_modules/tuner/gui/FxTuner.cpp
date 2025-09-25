@@ -44,10 +44,9 @@ struct FxTuner::Impl
 };
 
 FxTuner::FxTuner(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::fx::module_id const fx_mod_id)
-    : FxModule{store_dispatch, state_change_subscriber, fx_mod_id}
+    : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
     makeStream(

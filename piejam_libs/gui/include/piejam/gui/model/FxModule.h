@@ -24,10 +24,7 @@ class FxModule : public SubscribableModel
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BusType, busType)
 
 public:
-    FxModule(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::fx::module_id);
+    FxModule(runtime::state_access const&, runtime::fx::module_id);
 
     virtual auto type() const noexcept -> FxModuleType = 0;
 

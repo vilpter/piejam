@@ -37,8 +37,7 @@ private:
 
 public:
     AudioRoutingSelection(
-            runtime::store_dispatch,
-            runtime::subscriber&,
+            runtime::state_access const&,
             runtime::mixer::channel_id,
             runtime::mixer::io_socket);
 

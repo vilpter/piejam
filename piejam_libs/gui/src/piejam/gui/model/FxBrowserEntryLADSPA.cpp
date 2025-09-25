@@ -15,10 +15,9 @@ namespace piejam::gui::model
 {
 
 FxBrowserEntryLADSPA::FxBrowserEntryLADSPA(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         ladspa::plugin_descriptor const& plugin_desc)
-    : FxBrowserEntry(store_dispatch, state_change_subscriber)
+    : FxBrowserEntry(state_access)
     , m_pd(plugin_desc)
 {
     static QString s_section_ladspa{tr("LADSPA")};

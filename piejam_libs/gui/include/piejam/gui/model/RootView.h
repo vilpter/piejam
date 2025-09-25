@@ -34,7 +34,7 @@ private:
     M_PIEJAM_GUI_PROPERTY(Mode, mode, setMode)
 
 public:
-    RootView(runtime::store_dispatch, runtime::subscriber&);
+    RootView(runtime::state_access const&);
     ~RootView() override;
 
     Q_INVOKABLE void showMixer();

@@ -33,19 +33,17 @@ struct AudioRouting::Impl
 };
 
 AudioRouting::AudioRouting(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id const id,
         runtime::mixer::io_socket const io_socket)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(
               id,
               io_socket,
               observe_once(
                       runtime::selectors::make_mixer_channel_type_selector(id)),
               std::make_unique<AudioRoutingSelection>(
-                      store_dispatch,
-                      state_change_subscriber,
+                      state_access,
                       id,
                       io_socket))}
 {
@@ -90,8 +88,7 @@ AudioRouting::onSubscribe()
                                 m_impl->devicesList,
                                 [this](auto const& route) {
                                     return std::make_unique<String>(
-                                            dispatch(),
-                                            state_change_subscriber(),
+                                            state_access(),
                                             route.name);
                                 }});
 
@@ -109,8 +106,7 @@ AudioRouting::onSubscribe()
                                 m_impl->channelsList,
                                 [this](auto const& route) {
                                     return std::make_unique<String>(
-                                            dispatch(),
-                                            state_change_subscriber(),
+                                            state_access(),
                                             route.name);
                                 }});
 
@@ -121,19 +117,19 @@ AudioRouting::onSubscribe()
 template <runtime::mixer::io_socket IOSocket>
 static void
 dispatch_set_mixer_channel_route_action(
-        runtime::store_dispatch dispatch,
+        runtime::state_access state_access,
         runtime::mixer::channel_id channel_id,
         runtime::mixer::io_address_t addr)
 {
     runtime::actions::set_mixer_channel_route<IOSocket> action;
     action.channel_id = channel_id;
     action.route = std::move(addr);
-    dispatch(action);
+    state_access.dispatch(action);
 }
 
 static void
 dispatch_set_mixer_channel_route_action(
-        runtime::store_dispatch dispatch,
+        runtime::state_access state_access,
         runtime::mixer::io_socket io_socket,
         runtime::mixer::channel_id channel_id,
         runtime::mixer::io_address_t addr)
@@ -142,12 +138,18 @@ dispatch_set_mixer_channel_route_action(
     {
         case runtime::mixer::io_socket::in:
             dispatch_set_mixer_channel_route_action<
-                    runtime::mixer::io_socket::in>(dispatch, channel_id, addr);
+                    runtime::mixer::io_socket::in>(
+                    state_access,
+                    channel_id,
+                    addr);
             return;
 
         case runtime::mixer::io_socket::out:
             dispatch_set_mixer_channel_route_action<
-                    runtime::mixer::io_socket::out>(dispatch, channel_id, addr);
+                    runtime::mixer::io_socket::out>(
+                    state_access,
+                    channel_id,
+                    addr);
             return;
     }
 }
@@ -156,7 +158,7 @@ void
 AudioRouting::changeToDefault()
 {
     dispatch_set_mixer_channel_route_action(
-            dispatch(),
+            state_access(),
             m_impl->io_socket,
             m_impl->mixer_channel_id,
             default_t{});
@@ -168,7 +170,7 @@ AudioRouting::changeToDevice(unsigned index)
     BOOST_ASSERT(index < m_impl->devices->size());
 
     dispatch_set_mixer_channel_route_action(
-            dispatch(),
+            state_access(),
             m_impl->io_socket,
             m_impl->mixer_channel_id,
             (*m_impl->devices)[index].device_id);
@@ -180,7 +182,7 @@ AudioRouting::changeToChannel(unsigned index)
     BOOST_ASSERT(index < m_impl->channels->size());
 
     dispatch_set_mixer_channel_route_action(
-            dispatch(),
+            state_access(),
             m_impl->io_socket,
             m_impl->mixer_channel_id,
             (*m_impl->channels)[index].channel_id);

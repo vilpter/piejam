@@ -12,10 +12,9 @@ namespace piejam::gui::model
 {
 
 MidiDeviceConfig::MidiDeviceConfig(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         midi::device_id_t device_id)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_device_id(std::move(device_id))
 {
 }

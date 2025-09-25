@@ -33,10 +33,9 @@ toChannelType(runtime::mixer::channel_type t) -> ChannelType
 } // namespace
 
 MixerChannel::MixerChannel(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id const id)
-    : SubscribableModel{store_dispatch, state_change_subscriber}
+    : SubscribableModel{state_access}
     , m_color{static_cast<MaterialColor>(observe_once(
               runtime::selectors::make_mixer_channel_color_selector(id)))}
     , m_channel_id{id}

@@ -29,7 +29,7 @@ class FxModuleView : public SubscribableModel
                     contentChanged FINAL)
 
 public:
-    FxModuleView(runtime::store_dispatch, runtime::subscriber&);
+    FxModuleView(runtime::state_access const&);
 
     auto content() noexcept -> FxModule*;
 

@@ -23,11 +23,10 @@ struct FxChainModule::Impl
 };
 
 FxChainModule::FxChainModule(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id const fx_chain_id,
         runtime::fx::module_id const fx_mod_id)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_impl(make_pimpl<Impl>(fx_chain_id, fx_mod_id))
 {
 }

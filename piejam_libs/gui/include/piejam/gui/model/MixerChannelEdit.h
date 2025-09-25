@@ -26,10 +26,7 @@ class MixerChannelEdit final : public MixerChannel
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AudioRouting*, out)
 
 public:
-    MixerChannelEdit(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::mixer::channel_id);
+    MixerChannelEdit(runtime::state_access const&, runtime::mixer::channel_id);
 
     Q_INVOKABLE void changeName(QString const&);
     Q_INVOKABLE void changeColor(MaterialColor);

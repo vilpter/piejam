@@ -25,10 +25,7 @@ class AudioInputOutputSettings : public SubscribableModel
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, deviceConfigs)
 
 public:
-    AudioInputOutputSettings(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            io_direction);
+    AudioInputOutputSettings(runtime::state_access const&, io_direction);
 
     Q_INVOKABLE void addMonoDevice();
     Q_INVOKABLE void addStereoDevice();

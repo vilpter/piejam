@@ -11,10 +11,8 @@
 namespace piejam::gui::model
 {
 
-Info::Info(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+Info::Info(runtime::state_access const& state_access)
+    : SubscribableModel(state_access)
 {
 }
 

@@ -27,7 +27,7 @@ class Mixer final : public SubscribableModel
             mainChannel)
 
 public:
-    Mixer(runtime::store_dispatch, runtime::subscriber&);
+    Mixer(runtime::state_access const&);
 
     Q_INVOKABLE void addMonoChannel(QString const& newChannelName);
     Q_INVOKABLE void addStereoChannel(QString const& newChannelName);

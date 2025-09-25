@@ -53,9 +53,7 @@ class FxScope final : public piejam::gui::model::FxModule
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::ScopeSlot*, scopeB)
 
 public:
-    FxScope(runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::fx::module_id);
+    FxScope(runtime::state_access const&, runtime::fx::module_id);
 
     auto type() const noexcept -> piejam::gui::model::FxModuleType override;
 

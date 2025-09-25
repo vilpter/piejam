@@ -21,10 +21,7 @@ class FxGenericModule : public FxModule
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, parametersList)
 
 public:
-    FxGenericModule(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::fx::module_id);
+    FxGenericModule(runtime::state_access const&, runtime::fx::module_id);
 
     auto type() const noexcept -> FxModuleType override
     {

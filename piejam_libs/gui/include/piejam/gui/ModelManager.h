@@ -5,7 +5,7 @@
 #pragma once
 
 #include <piejam/gui/model/fwd.h>
-#include <piejam/runtime/store_dispatch.h>
+#include <piejam/runtime/state_access.h>
 #include <piejam/runtime/subscriber.h>
 
 #include <QObject>
@@ -19,17 +19,21 @@ class ModelManager final : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(piejam::gui::model::AudioDeviceSettings* audioDeviceSettings READ
-                       audioDeviceSettings CONSTANT)
+    Q_PROPERTY(
+            piejam::gui::model::AudioDeviceSettings* audioDeviceSettings READ
+                    audioDeviceSettings CONSTANT)
 
-    Q_PROPERTY(piejam::gui::model::AudioInputOutputSettings* audioInputSettings
-                       READ audioInputSettings CONSTANT)
+    Q_PROPERTY(
+            piejam::gui::model::AudioInputOutputSettings* audioInputSettings
+                    READ audioInputSettings CONSTANT)
 
-    Q_PROPERTY(piejam::gui::model::AudioInputOutputSettings* audioOutputSettings
-                       READ audioOutputSettings CONSTANT)
+    Q_PROPERTY(
+            piejam::gui::model::AudioInputOutputSettings* audioOutputSettings
+                    READ audioOutputSettings CONSTANT)
 
-    Q_PROPERTY(piejam::gui::model::MidiInputSettings* midiInputSettings READ
-                       midiInputSettings CONSTANT)
+    Q_PROPERTY(
+            piejam::gui::model::MidiInputSettings* midiInputSettings READ
+                    midiInputSettings CONSTANT)
 
     Q_PROPERTY(piejam::gui::model::Mixer* mixer READ mixer CONSTANT)
     Q_PROPERTY(piejam::gui::model::Info* info READ info CONSTANT)
@@ -41,7 +45,7 @@ class ModelManager final : public QObject
     Q_PROPERTY(piejam::gui::model::RootView* rootView READ rootView CONSTANT)
 
 public:
-    ModelManager(runtime::store_dispatch, runtime::subscriber&);
+    ModelManager(runtime::state_access const&);
     ~ModelManager() override;
 
     auto audioDeviceSettings() const -> model::AudioDeviceSettings*
@@ -95,9 +99,6 @@ public:
     }
 
 private:
-    runtime::store_dispatch m_store_dispatch;
-    runtime::subscriber& m_state_change_subscriber;
-
     std::unique_ptr<model::AudioDeviceSettings> m_audioDeviceSettings;
     std::unique_ptr<model::AudioInputOutputSettings> m_audioInputSettings;
     std::unique_ptr<model::AudioInputOutputSettings> m_audioOutputSettings;

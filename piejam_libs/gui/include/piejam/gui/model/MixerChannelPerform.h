@@ -33,8 +33,7 @@ class MixerChannelPerform final : public MixerChannel
 
 public:
     MixerChannelPerform(
-            runtime::store_dispatch,
-            runtime::subscriber&,
+            runtime::state_access const&,
             runtime::mixer::channel_id);
 
 private:

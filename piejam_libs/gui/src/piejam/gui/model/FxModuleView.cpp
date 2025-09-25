@@ -25,35 +25,29 @@ struct FxModuleView::Impl
 
 auto
 makeModuleContent(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::fx::module_id const fx_mod_id) -> std::unique_ptr<FxModule>
 {
-    auto const fx_instance_id = state_change_subscriber.observe_once(
+    auto const fx_instance_id = state_access.observe_once(
             runtime::selectors::make_fx_module_instance_id_selector(fx_mod_id));
 
     return std::visit(
             boost::hof::match(
                     [&](runtime::fx::internal_id fx_type)
                             -> std::unique_ptr<FxModule> {
-                        return FxModuleFactories::lookup(fx_type)(
-                                store_dispatch,
-                                state_change_subscriber,
-                                fx_mod_id);
+                        return FxModuleFactories::lookup(
+                                fx_type)(state_access, fx_mod_id);
                     },
                     [&](auto const&) -> std::unique_ptr<FxModule> {
                         return std::make_unique<FxGenericModule>(
-                                store_dispatch,
-                                state_change_subscriber,
+                                state_access,
                                 fx_mod_id);
                     }),
             fx_instance_id);
 }
 
-FxModuleView::FxModuleView(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+FxModuleView::FxModuleView(runtime::state_access const& state_access)
+    : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>()}
 {
 }
@@ -67,13 +61,16 @@ FxModuleView::content() noexcept -> FxModule*
 void
 FxModuleView::onSubscribe()
 {
-    setColor(static_cast<MaterialColor>(
-            observe_once(runtime::selectors::select_focused_fx_module_color)));
+    setColor(
+            static_cast<MaterialColor>(observe_once(
+                    runtime::selectors::select_focused_fx_module_color)));
 
-    setChainName(QString::fromStdString(observe_once(
-            runtime::selectors::make_mixer_channel_name_string_selector(
-                    observe_once(
-                            runtime::selectors::select_focused_fx_chain)))));
+    setChainName(
+            QString::fromStdString(observe_once(
+                    runtime::selectors::make_mixer_channel_name_string_selector(
+                            observe_once(
+                                    runtime::selectors::
+                                            select_focused_fx_chain)))));
 
     setName(QString::fromStdString(
             *observe_once(runtime::selectors::select_focused_fx_module_name)));
@@ -87,10 +84,7 @@ FxModuleView::onSubscribe()
                 {
                     m_impl->fx_mod_id = fx_mod_id;
 
-                    auto content = makeModuleContent(
-                            dispatch(),
-                            state_change_subscriber(),
-                            fx_mod_id);
+                    auto content = makeModuleContent(state_access(), fx_mod_id);
 
                     std::swap(m_impl->content, content);
 

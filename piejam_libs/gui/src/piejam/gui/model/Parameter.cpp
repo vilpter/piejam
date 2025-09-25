@@ -33,15 +33,11 @@ using parameter_id_to_FxParameter = boost::mp11::mp_list<
 } // namespace
 
 Parameter::Parameter(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         ParameterId const& paramId)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_paramId{paramId}
-    , m_midi{make_pimpl<MidiAssignable>(
-              store_dispatch,
-              state_change_subscriber,
-              paramId)}
+    , m_midi{make_pimpl<MidiAssignable>(state_access, paramId)}
 {
     setName(QString::fromStdString(observe_once(
             runtime::selectors::make_fx_parameter_name_selector(m_paramId))));
@@ -90,8 +86,7 @@ Parameter::paramId() const -> ParameterId
 
 auto
 makeParameter(
-        runtime::store_dispatch dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         piejam::gui::model::ParameterId const& paramId)
         -> std::unique_ptr<Parameter>
 {
@@ -104,8 +99,7 @@ makeParameter(
                                 ParamId>,
                         1>;
                 return std::make_unique<FxParameterType>(
-                        dispatch,
-                        state_change_subscriber,
+                        state_access,
                         typed_param_id);
             },
             paramId);

@@ -11,10 +11,9 @@ namespace piejam::gui::model
 {
 
 String::String(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::string_id string_id)
-    : SubscribableModel{store_dispatch, state_change_subscriber}
+    : SubscribableModel{state_access}
     , m_string_id{string_id}
 {
 }

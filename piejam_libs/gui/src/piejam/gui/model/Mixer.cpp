@@ -18,10 +18,9 @@ namespace piejam::gui::model
 
 struct Mixer::Impl
 {
-    Impl(runtime::store_dispatch store_dispatch,
-         runtime::subscriber& state_change_subscriber,
+    Impl(runtime::state_access const& state_access,
          runtime::mixer::channel_id main_channel)
-        : mainChannel{store_dispatch, state_change_subscriber, main_channel}
+        : mainChannel{state_access, main_channel}
     {
     }
 
@@ -31,13 +30,10 @@ struct Mixer::Impl
     MixerChannelsList userChannels;
 };
 
-Mixer::Mixer(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber)
-    : SubscribableModel{store_dispatch, state_change_subscriber}
+Mixer::Mixer(runtime::state_access const& state_access)
+    : SubscribableModel{state_access}
     , m_impl{make_pimpl<Impl>(
-              store_dispatch,
-              state_change_subscriber,
+              state_access,
               observe_once(runtime::selectors::select_mixer_main_channel))}
 {
 }
@@ -67,8 +63,7 @@ Mixer::onSubscribe()
                                 m_impl->userChannels,
                                 [this](auto const& channel_id) {
                                     return std::make_unique<MixerChannelModels>(
-                                            dispatch(),
-                                            state_change_subscriber(),
+                                            state_access(),
                                             channel_id);
                                 }});
 

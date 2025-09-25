@@ -13,14 +13,12 @@ namespace piejam::gui::model
 {
 
 ExternalAudioDeviceConfig::ExternalAudioDeviceConfig(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::external_audio::device_id const device_id)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_device_id{device_id}
     , m_string{make_pimpl<String>(
-              store_dispatch,
-              state_change_subscriber,
+              state_access,
               observe_once(
                       runtime::selectors::
                               make_external_audio_device_name_selector(
@@ -65,7 +63,7 @@ ExternalAudioDeviceConfig::onSubscribe()
 
 static void
 changeChannel(
-        runtime::store_dispatch dispatch,
+        runtime::state_access state_access,
         runtime::external_audio::device_id const device_id,
         audio::bus_channel const bus_channel,
         unsigned const channel_index)
@@ -74,28 +72,28 @@ changeChannel(
     action.device_id = device_id;
     action.channel_selector = bus_channel;
     action.channel_index = static_cast<std::size_t>(channel_index) - 1;
-    dispatch(action);
+    state_access.dispatch(action);
 }
 
 void
 ExternalAudioDeviceConfig::changeMonoChannel(unsigned const ch)
 {
     Q_ASSERT(m_mono);
-    changeChannel(dispatch(), m_device_id, audio::bus_channel::mono, ch);
+    changeChannel(state_access(), m_device_id, audio::bus_channel::mono, ch);
 }
 
 void
 ExternalAudioDeviceConfig::changeStereoLeftChannel(unsigned const ch)
 {
     Q_ASSERT(!m_mono);
-    changeChannel(dispatch(), m_device_id, audio::bus_channel::left, ch);
+    changeChannel(state_access(), m_device_id, audio::bus_channel::left, ch);
 }
 
 void
 ExternalAudioDeviceConfig::changeStereoRightChannel(unsigned const ch)
 {
     Q_ASSERT(!m_mono);
-    changeChannel(dispatch(), m_device_id, audio::bus_channel::right, ch);
+    changeChannel(state_access(), m_device_id, audio::bus_channel::right, ch);
 }
 
 void

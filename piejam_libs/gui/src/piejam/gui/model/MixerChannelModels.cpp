@@ -14,13 +14,12 @@ namespace piejam::gui::model
 
 struct MixerChannelModels::Impl
 {
-    Impl(runtime::store_dispatch store_dispatch,
-         runtime::subscriber& state_change_subscriber,
+    Impl(runtime::state_access const& state_access,
          runtime::mixer::channel_id const id)
-        : m_perform{store_dispatch, state_change_subscriber, id}
-        , m_edit{store_dispatch, state_change_subscriber, id}
-        , m_fx{store_dispatch, state_change_subscriber, id}
-        , m_auxSend{store_dispatch, state_change_subscriber, id}
+        : m_perform{state_access, id}
+        , m_edit{state_access, id}
+        , m_fx{state_access, id}
+        , m_auxSend{state_access, id}
     {
     }
 
@@ -31,11 +30,10 @@ struct MixerChannelModels::Impl
 };
 
 MixerChannelModels::MixerChannelModels(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id const id)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
-    , m_impl{make_pimpl<Impl>(store_dispatch, state_change_subscriber, id)}
+    : SubscribableModel(state_access)
+    , m_impl{make_pimpl<Impl>(state_access, id)}
 {
 }
 

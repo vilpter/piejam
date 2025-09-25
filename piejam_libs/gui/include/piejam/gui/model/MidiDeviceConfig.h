@@ -20,10 +20,7 @@ class MidiDeviceConfig final : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(bool, enabled, setEnabled)
 
 public:
-    MidiDeviceConfig(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            midi::device_id_t);
+    MidiDeviceConfig(runtime::state_access const&, midi::device_id_t);
 
     Q_INVOKABLE void changeEnabled(bool x);
 

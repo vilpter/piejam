@@ -35,10 +35,7 @@ class FxFilter final : public piejam::gui::model::FxModule
             resonance)
 
 public:
-    FxFilter(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::fx::module_id);
+    FxFilter(runtime::state_access const&, runtime::fx::module_id);
 
     auto type() const noexcept -> piejam::gui::model::FxModuleType override;
 

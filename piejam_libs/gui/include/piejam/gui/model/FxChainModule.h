@@ -24,8 +24,7 @@ class FxChainModule : public SubscribableModel
 
 public:
     FxChainModule(
-            runtime::store_dispatch,
-            runtime::subscriber&,
+            runtime::state_access const&,
             runtime::mixer::channel_id fx_chain_id,
             runtime::fx::module_id);
 

@@ -16,10 +16,9 @@ struct FxModule::Impl
 };
 
 FxModule::FxModule(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::fx::module_id const fx_mod_id)
-    : SubscribableModel{store_dispatch, state_change_subscriber}
+    : SubscribableModel{state_access}
     , m_impl{make_pimpl<Impl>(
               observe_once(
                       runtime::selectors::make_fx_module_parameters_selector(

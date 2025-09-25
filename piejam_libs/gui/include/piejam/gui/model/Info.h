@@ -26,7 +26,7 @@ class Info final : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(int, diskUsage, setDiskUsage)
 
 public:
-    Info(runtime::store_dispatch, runtime::subscriber&);
+    Info(runtime::state_access const&);
 
     Q_INVOKABLE void changeRecording(bool);
 

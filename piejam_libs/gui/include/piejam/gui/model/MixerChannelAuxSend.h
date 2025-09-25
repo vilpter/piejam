@@ -23,8 +23,7 @@ class MixerChannelAuxSend final : public MixerChannel
 
 public:
     MixerChannelAuxSend(
-            runtime::store_dispatch,
-            runtime::subscriber&,
+            runtime::state_access const&,
             runtime::mixer::channel_id);
 
 private:

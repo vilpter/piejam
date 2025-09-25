@@ -11,10 +11,9 @@ namespace piejam::gui::model
 {
 
 AudioStreamProvider::AudioStreamProvider(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::audio_stream_id stream_id)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_stream_id{stream_id}
 {
 }

@@ -18,10 +18,7 @@ class AudioStreamProvider : public SubscribableModel
     Q_OBJECT
 
 public:
-    AudioStreamProvider(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::audio_stream_id);
+    AudioStreamProvider(runtime::state_access const&, runtime::audio_stream_id);
 
 signals:
     void captured(piejam::gui::model::AudioStream);

@@ -13,10 +13,9 @@ namespace piejam::gui::model
 {
 
 FxBrowserEntryInternal::FxBrowserEntryInternal(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::fx::internal_id const fx_type)
-    : FxBrowserEntry(store_dispatch, state_change_subscriber)
+    : FxBrowserEntry(state_access)
     , m_fx_type(fx_type)
 {
     static QString s_section_internal{tr("Internal")};

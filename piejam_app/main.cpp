@@ -232,7 +232,8 @@ main(int argc, char* argv[]) -> int
 
     store.dispatch(runtime::actions::scan_ladspa_fx_plugins("/usr/lib/ladspa"));
 
-    gui::ModelManager modelManager(store, state_change_subscriber);
+    gui::ModelManager modelManager(
+            runtime::state_access{store, state_change_subscriber});
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");

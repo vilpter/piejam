@@ -7,7 +7,7 @@
 #include <piejam/entity_id_hash.h>
 #include <piejam/pimpl.h>
 #include <piejam/redux/subscriber.h>
-#include <piejam/runtime/store_dispatch.h>
+#include <piejam/runtime/state_access.h>
 #include <piejam/runtime/subscriber.h>
 
 #include <QObject>
@@ -58,39 +58,31 @@ signals:
     void subscribedChanged();
 
 protected:
-    SubscribableModel(
-            runtime::store_dispatch store_dispatch,
-            runtime::subscriber& state_change_subscriber)
-        : m_store_dispatch(store_dispatch)
-        , m_state_change_subscriber(state_change_subscriber)
+    SubscribableModel(runtime::state_access state_access)
+        : m_state_access(state_access)
     {
     }
 
-    auto state_change_subscriber() const noexcept -> runtime::subscriber&
+    auto state_access() const noexcept -> runtime::state_access const&
     {
-        return m_state_change_subscriber;
-    }
-
-    auto dispatch() const noexcept -> runtime::store_dispatch
-    {
-        return m_store_dispatch;
+        return m_state_access;
     }
 
     auto dispatch(runtime::action const& a) const
     {
-        m_store_dispatch(a);
+        m_state_access.dispatch(a);
     }
 
     template <class Value>
     auto observe_once(runtime::selector<Value> const& sel)
     {
-        return m_state_change_subscriber.observe_once(sel);
+        return m_state_access.observe_once(sel);
     }
 
     template <class Value, class Handler>
     void observe(runtime::selector<Value> sel, Handler&& h)
     {
-        m_subs.emplace_back(m_state_change_subscriber.observe(
+        m_subs.emplace_back(m_state_access.observe(
                 std::move(sel),
                 std::forward<Handler>(h)));
     }
@@ -117,10 +109,7 @@ protected:
     template <class Model, class... Args>
     auto makeModel(Args&&... args)
     {
-        return make_pimpl<Model>(
-                dispatch(),
-                state_change_subscriber(),
-                std::forward<Args>(args)...);
+        return make_pimpl<Model>(m_state_access, std::forward<Args>(args)...);
     }
 
     template <class Model, class... Args>
@@ -136,19 +125,13 @@ protected:
             std::unique_ptr<ParameterT>& param,
             ParameterIdT const param_id)
     {
-        param = std::make_unique<ParameterT>(
-                dispatch(),
-                this->state_change_subscriber(),
-                param_id);
+        param = std::make_unique<ParameterT>(m_state_access, param_id);
     }
 
     template <class StreamT, class StreamIdT>
     void makeStream(std::unique_ptr<StreamT>& stream, StreamIdT const stream_id)
     {
-        stream = std::make_unique<StreamT>(
-                dispatch(),
-                this->state_change_subscriber(),
-                stream_id);
+        stream = std::make_unique<StreamT>(m_state_access, stream_id);
         attachChildModel(*stream);
     }
 
@@ -179,8 +162,7 @@ private:
 
     bool m_subscribed{};
 
-    runtime::store_dispatch m_store_dispatch;
-    runtime::subscriber& m_state_change_subscriber;
+    runtime::state_access m_state_access;
     std::vector<redux::subscription> m_subs;
 
     int m_updateTimerId{};

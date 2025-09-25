@@ -17,10 +17,7 @@ class BoolParameter final : public Parameter
     M_PIEJAM_GUI_PROPERTY(bool, value, setValue)
 
 public:
-    BoolParameter(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::parameter_id);
+    BoolParameter(runtime::state_access const&, runtime::parameter_id);
 
     static constexpr auto StaticType = Type::Bool;
 

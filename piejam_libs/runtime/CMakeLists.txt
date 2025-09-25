@@ -35,6 +35,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/actions/root_view_actions.h
     include/piejam/runtime/actions/save_app_config.h
     include/piejam/runtime/actions/save_session.h
+    include/piejam/runtime/actions/scan_for_sound_cards.h
     include/piejam/runtime/actions/scan_ladspa_fx_plugins.h
     include/piejam/runtime/actions/select_period_size.h
     include/piejam/runtime/actions/select_sample_rate.h
@@ -115,8 +116,8 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/selectors.h
     include/piejam/runtime/solo_group.h
     include/piejam/runtime/state.h
+    include/piejam/runtime/state_access.h
     include/piejam/runtime/store.h
-    include/piejam/runtime/store_dispatch.h
     include/piejam/runtime/string_id.h
     include/piejam/runtime/subscriber.h
     include/piejam/runtime/ui/action.h
@@ -141,6 +142,7 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/actions/move_fx_module.cpp
     src/piejam/runtime/actions/reset_fx_parameter_to_default_value.cpp
     src/piejam/runtime/actions/root_view_actions.cpp
+    src/piejam/runtime/actions/scan_for_sound_cards.cpp
     src/piejam/runtime/actions/scan_ladspa_fx_plugins.cpp
     src/piejam/runtime/actions/set_float_parameter_normalized.cpp
     src/piejam/runtime/actions/set_parameter_value.cpp
@@ -175,10 +177,8 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/selectors.cpp
     src/piejam/runtime/solo_group.cpp
     src/piejam/runtime/state.cpp
-    src/piejam/runtime/store_dispatch.cpp
+    src/piejam/runtime/state_access.cpp
     src/piejam/runtime/thunk_action.cpp
-    include/piejam/runtime/actions/scan_for_sound_cards.h
-    src/piejam/runtime/actions/scan_for_sound_cards.cpp
 )
 
 find_package(nlohmann_json REQUIRED)

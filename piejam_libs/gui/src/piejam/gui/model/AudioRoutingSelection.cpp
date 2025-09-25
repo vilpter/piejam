@@ -16,11 +16,10 @@ struct AudioRoutingSelection::Impl
 };
 
 AudioRoutingSelection::AudioRoutingSelection(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id const id,
         runtime::mixer::io_socket const io_socket)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(id, io_socket)}
 {
 }

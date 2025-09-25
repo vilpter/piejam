@@ -20,7 +20,7 @@ class String final : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(QString, value, setValue)
 
 public:
-    String(runtime::store_dispatch, runtime::subscriber&, runtime::string_id);
+    String(runtime::state_access const&, runtime::string_id);
 
     Q_INVOKABLE void changeValue(QString);
 

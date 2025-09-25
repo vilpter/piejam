@@ -20,10 +20,8 @@ struct MidiInputSettings::Impl
     MidiDeviceList devices;
 };
 
-MidiInputSettings::MidiInputSettings(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+MidiInputSettings::MidiInputSettings(runtime::state_access const& state_access)
+    : SubscribableModel(state_access)
     , m_impl(make_pimpl<Impl>())
 {
 }
@@ -45,8 +43,7 @@ MidiInputSettings::onSubscribe()
                                 m_impl->devices,
                                 [this](midi::device_id_t device_id) {
                                     return std::make_unique<MidiDeviceConfig>(
-                                            dispatch(),
-                                            state_change_subscriber(),
+                                            state_access(),
                                             device_id);
                                 }});
 

@@ -12,10 +12,9 @@ namespace piejam::gui::model
 {
 
 IntParameter::IntParameter(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::parameter_id param_id)
-    : Parameter{store_dispatch, state_change_subscriber, param_id}
+    : Parameter{state_access, param_id}
 
 {
     auto const int_param_id = paramId();

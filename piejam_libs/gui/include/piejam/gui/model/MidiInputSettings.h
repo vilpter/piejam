@@ -22,7 +22,7 @@ class MidiInputSettings final : public SubscribableModel
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, devices)
 
 public:
-    MidiInputSettings(runtime::store_dispatch, runtime::subscriber&);
+    MidiInputSettings(runtime::state_access const&);
 
 private:
     void onSubscribe() override;

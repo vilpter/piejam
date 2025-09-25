@@ -35,8 +35,7 @@ private:
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, volume)
 
 public:
-    AuxSend(runtime::store_dispatch,
-            runtime::subscriber&,
+    AuxSend(runtime::state_access const&,
             runtime::mixer::channel_id ch_id,
             runtime::mixer::channel_id aux_id);
 

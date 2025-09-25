@@ -57,10 +57,9 @@ struct FxFilter::Impl
 };
 
 FxFilter::FxFilter(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::fx::module_id const fx_mod_id)
-    : FxModule{store_dispatch, state_change_subscriber, fx_mod_id}
+    : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(bool_enum_to<BusType>(observe_once(
               runtime::selectors::make_fx_module_bus_type_selector(
                       fx_mod_id))))}

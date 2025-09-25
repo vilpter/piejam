@@ -187,44 +187,25 @@ runRegistration()
             &model::fxModuleRegistrySingleton());
 }
 
-ModelManager::ModelManager(
-        runtime::store_dispatch dispatch,
-        runtime::subscriber& state_change_subscriber)
-    : m_store_dispatch(dispatch)
-    , m_state_change_subscriber(state_change_subscriber)
-    , m_audioDeviceSettings(
-              std::make_unique<model::AudioDeviceSettings>(
-                      dispatch,
-                      state_change_subscriber))
+ModelManager::ModelManager(runtime::state_access const& state_access)
+    : m_audioDeviceSettings(
+              std::make_unique<model::AudioDeviceSettings>(state_access))
     , m_audioInputSettings(
               std::make_unique<model::AudioInputOutputSettings>(
-                      dispatch,
-                      state_change_subscriber,
+                      state_access,
                       io_direction::input))
     , m_audioOutputSettings(
               std::make_unique<model::AudioInputOutputSettings>(
-                      dispatch,
-                      state_change_subscriber,
+                      state_access,
                       io_direction::output))
     , m_midiInputSettings(
-              std::make_unique<model::MidiInputSettings>(
-                      dispatch,
-                      state_change_subscriber))
-    , m_mixer(std::make_unique<model::Mixer>(dispatch, state_change_subscriber))
-    , m_info(std::make_unique<model::Info>(dispatch, state_change_subscriber))
-    , m_log(std::make_unique<model::Log>(dispatch, state_change_subscriber))
-    , m_fxBrowser(
-              std::make_unique<model::FxBrowser>(
-                      dispatch,
-                      state_change_subscriber))
-    , m_fxModule(
-              std::make_unique<model::FxModuleView>(
-                      dispatch,
-                      state_change_subscriber))
-    , m_rootView(
-              std::make_unique<model::RootView>(
-                      dispatch,
-                      state_change_subscriber))
+              std::make_unique<model::MidiInputSettings>(state_access))
+    , m_mixer(std::make_unique<model::Mixer>(state_access))
+    , m_info(std::make_unique<model::Info>(state_access))
+    , m_log(std::make_unique<model::Log>(state_access))
+    , m_fxBrowser(std::make_unique<model::FxBrowser>(state_access))
+    , m_fxModule(std::make_unique<model::FxModuleView>(state_access))
+    , m_rootView(std::make_unique<model::RootView>(state_access))
 {
     static std::once_flag s_registered;
     std::call_once(s_registered, &runRegistration);

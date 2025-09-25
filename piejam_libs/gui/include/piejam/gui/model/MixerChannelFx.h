@@ -26,10 +26,7 @@ class MixerChannelFx final : public MixerChannel
     M_PIEJAM_GUI_PROPERTY(bool, canMoveDownFxModule, setCanMoveDownFxModule)
 
 public:
-    MixerChannelFx(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::mixer::channel_id);
+    MixerChannelFx(runtime::state_access const&, runtime::mixer::channel_id);
 
     Q_INVOKABLE void appendFxModule();
     Q_INVOKABLE void moveUpFxModule();

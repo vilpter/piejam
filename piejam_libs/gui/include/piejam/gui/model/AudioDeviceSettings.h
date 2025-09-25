@@ -33,7 +33,7 @@ class AudioDeviceSettings final : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(double, bufferLatency, setBufferLatency)
 
 public:
-    AudioDeviceSettings(runtime::store_dispatch, runtime::subscriber&);
+    AudioDeviceSettings(runtime::state_access const&);
 
     Q_INVOKABLE void selectSoundCard(unsigned index);
     Q_INVOKABLE void selectSampleRate(unsigned index);

@@ -119,10 +119,9 @@ struct MixerChannelPerform::Impl
 };
 
 MixerChannelPerform::MixerChannelPerform(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id const id)
-    : MixerChannel{store_dispatch, state_change_subscriber, id}
+    : MixerChannel{state_access, id}
     , m_impl{make_pimpl<Impl>()}
 {
     makeStream(

@@ -31,8 +31,7 @@ class MixerChannelModels final : public SubscribableModel
 
 public:
     MixerChannelModels(
-            runtime::store_dispatch,
-            runtime::subscriber&,
+            runtime::state_access const&,
             runtime::mixer::channel_id);
 
 private:

@@ -20,18 +20,14 @@ struct FxGenericModule::Impl
 };
 
 FxGenericModule::FxGenericModule(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::fx::module_id const fx_mod_id)
-    : FxModule{store_dispatch, state_change_subscriber, fx_mod_id}
+    : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>()}
 {
     for (auto const& [key, paramId] : parameters())
     {
-        auto param = model::makeParameter(
-                dispatch(),
-                state_change_subscriber,
-                paramId);
+        auto param = model::makeParameter(state_access, paramId);
         m_impl->parametersList.add(
                 m_impl->parametersList.size(),
                 std::move(param));

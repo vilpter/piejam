@@ -24,10 +24,9 @@ struct AudioInputOutputSettings::Impl
 };
 
 AudioInputOutputSettings::AudioInputOutputSettings(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         io_direction const settings_type)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+    : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(settings_type)}
 {
 }
@@ -68,8 +67,7 @@ AudioInputOutputSettings::onSubscribe()
                                                device_id) {
                                     return std::make_unique<
                                             ExternalAudioDeviceConfig>(
-                                            dispatch(),
-                                            state_change_subscriber(),
+                                            state_access(),
                                             device_id);
                                 }});
 
@@ -79,26 +77,26 @@ AudioInputOutputSettings::onSubscribe()
 
 static void
 addDevice(
-        runtime::store_dispatch dispatch,
+        runtime::state_access state_access,
         io_direction direction,
         audio::bus_type bus_type)
 {
     runtime::actions::add_external_audio_device action;
     action.direction = direction;
     action.type = bus_type;
-    dispatch(action);
+    state_access.dispatch(action);
 }
 
 void
 AudioInputOutputSettings::addMonoDevice()
 {
-    addDevice(dispatch(), m_impl->io_dir, audio::bus_type::mono);
+    addDevice(state_access(), m_impl->io_dir, audio::bus_type::mono);
 }
 
 void
 AudioInputOutputSettings::addStereoDevice()
 {
-    addDevice(dispatch(), m_impl->io_dir, audio::bus_type::stereo);
+    addDevice(state_access(), m_impl->io_dir, audio::bus_type::stereo);
 }
 
 } // namespace piejam::gui::model

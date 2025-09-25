@@ -24,10 +24,7 @@ class MixerChannel : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(MaterialColor, color, setColor)
 
 public:
-    MixerChannel(
-            runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::mixer::channel_id);
+    MixerChannel(runtime::state_access const&, runtime::mixer::channel_id);
     ~MixerChannel() override;
 
 protected:

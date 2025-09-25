@@ -25,9 +25,7 @@ class FxTuner final : public piejam::gui::model::FxModule
     M_PIEJAM_GUI_PROPERTY(int, detectedCents, setDetectedCents)
 
 public:
-    FxTuner(runtime::store_dispatch,
-            runtime::subscriber&,
-            runtime::fx::module_id);
+    FxTuner(runtime::state_access const&, runtime::fx::module_id);
 
     auto type() const noexcept -> piejam::gui::model::FxModuleType override;
 

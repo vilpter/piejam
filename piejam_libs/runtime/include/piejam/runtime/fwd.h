@@ -18,7 +18,7 @@ namespace piejam::runtime
 class audio_engine;
 struct state;
 struct selected_sound_card;
-struct store_dispatch;
+class state_access;
 
 using action = ui::action;
 using reducible_action = ui::reducible_action<state>;

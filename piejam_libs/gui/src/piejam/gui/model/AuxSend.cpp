@@ -14,10 +14,9 @@ namespace piejam::gui::model
 
 struct AuxSend::Impl
 {
-    Impl(runtime::store_dispatch store_dispatch,
-         runtime::subscriber& state_change_subscriber,
+    Impl(runtime::state_access const& state_access,
          runtime::float_parameter_id volume_id)
-        : volume{store_dispatch, state_change_subscriber, volume_id}
+        : volume{state_access, volume_id}
     {
     }
 
@@ -25,16 +24,14 @@ struct AuxSend::Impl
 };
 
 AuxSend::AuxSend(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id ch_id,
         runtime::mixer::channel_id aux_id)
-    : SubscribableModel{store_dispatch, state_change_subscriber}
+    : SubscribableModel{state_access}
     , m_channel_id{ch_id}
     , m_aux_id{aux_id}
     , m_impl{make_pimpl<Impl>(
-              store_dispatch,
-              state_change_subscriber,
+              state_access,
               observe_once(
                       runtime::selectors::
                               make_mixer_channel_aux_volume_parameter_selector(

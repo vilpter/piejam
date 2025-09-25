@@ -21,7 +21,7 @@ class Log final : public SubscribableModel
                     FINAL)
 
 public:
-    Log(runtime::store_dispatch, runtime::subscriber&);
+    Log(runtime::state_access const&);
 
     auto logMessages() const -> QStringList
     {

@@ -25,8 +25,7 @@ class Parameter : public SubscribableModel
 
 public:
     Parameter(
-            runtime::store_dispatch,
-            runtime::subscriber&,
+            runtime::state_access const&,
             piejam::gui::model::ParameterId const&);
 
     auto paramId() const -> ParameterId;
@@ -54,8 +53,7 @@ private:
 };
 
 auto makeParameter(
-        runtime::store_dispatch,
-        runtime::subscriber&,
+        runtime::state_access const&,
         piejam::gui::model::ParameterId const&) -> std::unique_ptr<Parameter>;
 
 } // namespace piejam::gui::model

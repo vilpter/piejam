@@ -25,36 +25,26 @@ namespace
 [[nodiscard]]
 auto
 makeBrowserEntry(
-        runtime::store_dispatch dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::fx::internal_id fx_type) -> std::unique_ptr<FxBrowserEntry>
 {
-    return std::make_unique<FxBrowserEntryInternal>(
-            std::move(dispatch),
-            state_change_subscriber,
-            fx_type);
+    return std::make_unique<FxBrowserEntryInternal>(state_access, fx_type);
 }
 
 [[nodiscard]]
 auto
 makeBrowserEntry(
-        runtime::store_dispatch dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         ladspa::plugin_descriptor const& pd) -> std::unique_ptr<FxBrowserEntry>
 {
-    return std::make_unique<FxBrowserEntryLADSPA>(
-            std::move(dispatch),
-            state_change_subscriber,
-            pd);
+    return std::make_unique<FxBrowserEntryLADSPA>(state_access, pd);
 }
 
 } // namespace
 
 struct FxBrowser::Impl
 {
-    void updateEntries(
-            runtime::store_dispatch dispatch,
-            runtime::subscriber& state_change_subscriber)
+    void updateEntries(runtime::state_access const& state_access)
     {
         std::vector<runtime::fx::registry::item> new_entries;
         std::ranges::copy(
@@ -72,8 +62,7 @@ struct FxBrowser::Impl
                             return std::visit(
                                     [&](auto&& x) {
                                         return makeBrowserEntry(
-                                                dispatch,
-                                                state_change_subscriber,
+                                                state_access,
                                                 x);
                                     },
                                     item);
@@ -88,10 +77,8 @@ struct FxBrowser::Impl
     FxBrowserList entries;
 };
 
-FxBrowser::FxBrowser(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber)
-    : SubscribableModel(store_dispatch, state_change_subscriber)
+FxBrowser::FxBrowser(runtime::state_access const& state_access)
+    : SubscribableModel(state_access)
     , m_impl(make_pimpl<Impl>())
 {
 }
@@ -117,7 +104,7 @@ FxBrowser::onSubscribe()
             runtime::selectors::make_mixer_channel_type_selector(observe_once(
                     runtime::selectors::select_fx_browser_fx_chain))));
     m_impl->fx_registry = observe_once(runtime::selectors::select_fx_registry);
-    m_impl->updateEntries(dispatch(), state_change_subscriber());
+    m_impl->updateEntries(state_access());
 }
 
 } // namespace piejam::gui::model

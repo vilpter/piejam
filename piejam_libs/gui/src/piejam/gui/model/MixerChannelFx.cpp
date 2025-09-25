@@ -24,10 +24,9 @@ struct MixerChannelFx::Impl
 };
 
 MixerChannelFx::MixerChannelFx(
-        runtime::store_dispatch store_dispatch,
-        runtime::subscriber& state_change_subscriber,
+        runtime::state_access const& state_access,
         runtime::mixer::channel_id const mixer_channel_id)
-    : MixerChannel{store_dispatch, state_change_subscriber, mixer_channel_id}
+    : MixerChannel{state_access, mixer_channel_id}
     , m_impl{make_pimpl<Impl>()}
 {
 }
@@ -89,8 +88,7 @@ MixerChannelFx::onSubscribe()
                                 [this](runtime::fx::module_id const&
                                                fx_mod_id) {
                                     return std::make_unique<FxChainModule>(
-                                            dispatch(),
-                                            state_change_subscriber(),
+                                            state_access(),
                                             channel_id(),
                                             fx_mod_id);
                                 }});
