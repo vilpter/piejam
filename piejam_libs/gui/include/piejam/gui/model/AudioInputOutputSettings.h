@@ -11,8 +11,6 @@
 #include <piejam/io_direction.h>
 #include <piejam/pimpl.h>
 
-#include <QStringList>
-
 class QAbstractListModel;
 
 namespace piejam::gui::model
@@ -22,7 +20,7 @@ class AudioInputOutputSettings : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(QStringList, channels, setChannels)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, channels)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, deviceConfigs)
 
 public:

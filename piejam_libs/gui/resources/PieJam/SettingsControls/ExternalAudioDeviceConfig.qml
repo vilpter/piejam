@@ -13,7 +13,7 @@ import ".."
 SubscribableItem {
     id: root
 
-    property variant channels: [ "-" ]
+    property var channels: [ "-" ]
 
     RowLayout {
         anchors.fill: parent
@@ -40,7 +40,9 @@ SubscribableItem {
                 currentIndex: root.model ? root.model.monoChannel : -1
                 textHorizontalAlignment: Text.AlignHCenter
 
-                onActivated: if (root.model) root.model.changeMonoChannel(index)
+                textRole: "text"
+
+                onActivated: root.model.changeMonoChannel(index)
             }
 
             RowLayout {
@@ -55,7 +57,9 @@ SubscribableItem {
                     currentIndex: root.model ? root.model.stereoLeftChannel : -1
                     textHorizontalAlignment: Text.AlignHCenter
 
-                    onActivated: if (root.model) root.model.changeStereoLeftChannel(index)
+                    textRole: "text"
+
+                    onActivated: root.model.changeStereoLeftChannel(index)
                 }
 
                 PJControls.ComboBox {
@@ -66,7 +70,9 @@ SubscribableItem {
                     currentIndex: root.model ? root.model.stereoRightChannel : -1
                     textHorizontalAlignment: Text.AlignHCenter
 
-                    onActivated: if (root.model) root.model.changeStereoRightChannel(index)
+                    textRole: "text"
+
+                    onActivated: root.model.changeStereoRightChannel(index)
                 }
             }
         }

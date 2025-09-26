@@ -6,6 +6,7 @@
 
 #include <piejam/gui/model/ExternalAudioDeviceConfig.h>
 #include <piejam/gui/model/ObjectListModel.h>
+#include <piejam/gui/model/StringList.h>
 
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/audio/types.h>
@@ -21,6 +22,7 @@ struct AudioInputOutputSettings::Impl
     io_direction io_dir;
     box<runtime::external_audio::device_ids_t> device_ids{};
 
+    StringList channels{};
     ExternalAudioDeviceConfigList deviceConfigs{};
 };
 
@@ -30,6 +32,12 @@ AudioInputOutputSettings::AudioInputOutputSettings(
     : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(settings_type)}
 {
+}
+
+auto
+AudioInputOutputSettings::channels() const noexcept -> QAbstractListModel*
+{
+    return &m_impl->channels;
 }
 
 auto
@@ -45,14 +53,14 @@ AudioInputOutputSettings::onSubscribe()
 
     observe(selectors::make_num_device_channels_selector(m_impl->io_dir),
             [this](std::size_t const num_channels) {
-                QStringList channels;
+                std::vector<QString> channels;
                 channels.push_back("-");
                 for (std::size_t n = 0; n < num_channels; ++n)
                 {
                     channels.push_back(QString::number(n + 1));
                 }
 
-                setChannels(channels);
+                m_impl->channels.set(std::move(channels));
             });
 
     observe(selectors::make_external_audio_device_ids_selector(m_impl->io_dir),
