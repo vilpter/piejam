@@ -4,10 +4,14 @@
 
 #pragma once
 
+#include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
-#include <QList>
-#include <QStringList>
+#include <piejam/pimpl.h>
+
+#include <QObject>
+
+class QAbstractListModel;
 
 namespace piejam::gui::model
 {
@@ -16,32 +20,16 @@ class Log final : public SubscribableModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(
-            QStringList logMessages READ logMessages NOTIFY logMessagesChanged
-                    FINAL)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, logMessages)
 
 public:
     Log(runtime::state_access const&);
 
-    auto logMessages() const -> QStringList
-    {
-        return m_logMessages;
-    }
-
-    void addLogMessage(QString const& msg)
-    {
-        m_logMessages.push_back(msg);
-        emit logMessagesChanged();
-    }
-
-signals:
-
-    void logMessagesChanged();
-
 private:
     void onSubscribe() override;
 
-    QStringList m_logMessages;
+    struct Impl;
+    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

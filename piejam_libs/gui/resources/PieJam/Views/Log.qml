@@ -23,7 +23,7 @@ ViewPane {
             delegate: Label {
                 width: ListView.view.width
 
-                text: modelData
+                text: model.text
 
                 font.pixelSize: 18
 

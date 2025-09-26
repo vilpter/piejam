@@ -77,11 +77,11 @@ Item {
                     display: AbstractButton.IconOnly
 
                     onClicked: {
-                        lastMessagesCount = logMessages.length
+                        lastMessagesCount = logMessages.count
                         root.modelManager.rootView.showInfo()
                     }
 
-                    info: logMessages.length === lastMessagesCount ? "" : logMessages.length - lastMessagesCount
+                    info: logMessages.count === lastMessagesCount ? "" : logMessages.count - lastMessagesCount
                 }
 
                 ToolButton {

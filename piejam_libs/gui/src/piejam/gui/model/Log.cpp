@@ -4,30 +4,42 @@
 
 #include <piejam/gui/model/Log.h>
 
+#include <piejam/gui/model/StringList.h>
+
 #include <piejam/log/generic_log_sink.h>
-#include <piejam/runtime/selectors.h>
 
 #include <spdlog/spdlog.h>
 
 namespace piejam::gui::model
 {
 
+struct Log::Impl
+{
+    StringList messages{};
+};
+
 Log::Log(runtime::state_access const& state_access)
-    : SubscribableModel(state_access)
+    : SubscribableModel{state_access}
+    , m_impl{make_pimpl<Impl>()}
 {
     spdlog::default_logger()->sinks().push_back(
             std::make_shared<log::generic_log_sink_mt>(
                     [this](spdlog::details::log_msg const& msg) {
                         auto qtMsg = QString::fromStdString(
                                 std::format(
-                                        "[{}] [{:%H:%M:%S}] {}",
+                                        "[{}] {}",
                                         spdlog::level::to_string_view(
                                                 msg.level),
-                                        msg.time,
                                         msg.payload));
-                        addLogMessage(qtMsg);
+                        m_impl->messages.add(m_impl->messages.size(), qtMsg);
                     },
                     []() {}));
+}
+
+auto
+Log::logMessages() const noexcept -> logMessages_property_t
+{
+    return &m_impl->messages;
 }
 
 void
