@@ -5,8 +5,8 @@
 module PieJam.Controls
 BusyLoader 1.0 BusyLoader.qml
 Circle 1.0 Circle.qml
-ComboBox 1.0 ComboBox.qml
 ColorSelector 1.0 ColorSelector.qml
+ComboBox 1.0 ComboBox.qml
 HeaderLabel 1.0 HeaderLabel.qml
 InfoReadout 1.0 InfoReadout.qml
 InfoToolButton 1.0 InfoToolButton.qml

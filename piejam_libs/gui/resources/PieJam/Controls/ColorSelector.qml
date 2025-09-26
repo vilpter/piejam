@@ -12,7 +12,7 @@ Item {
 
     property int selectedColor: Material.Pink
 
-    readonly property var colors: [
+    property var colors: [
         Material.Pink,
         Material.DeepPurple,
         Material.Blue,
