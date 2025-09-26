@@ -84,4 +84,23 @@ TEST(entity_data_map, emplace)
     EXPECT_EQ(*cached, 5);
 }
 
+TEST(entity_data_map, iterators)
+{
+    entity_data_map<int_id_t, int> sut;
+    auto id = int_id_t::generate();
+
+    ASSERT_TRUE(sut.emplace(id, 5));
+
+    entity_data_map<int_id_t, int>::const_iterator it = sut.begin();
+
+    auto&& [key, value] = *it;
+    EXPECT_EQ(key, id);
+    EXPECT_EQ(value, 5);
+
+    static_assert(std::is_same_v<int const&, decltype(value)>);
+
+    EXPECT_EQ(it->first, id);
+    EXPECT_EQ(it->second, 5);
+}
+
 } // namespace piejam::test

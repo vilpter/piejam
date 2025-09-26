@@ -8,6 +8,7 @@
 
 #include <boost/assert.hpp>
 #include <boost/container/flat_map.hpp>
+#include <boost/stl_interfaces/iterator_interface.hpp>
 
 #include <memory>
 
@@ -20,9 +21,54 @@ using cached_entity_data_ptr = std::shared_ptr<Data const>;
 template <class Id, class Data>
 class entity_data_map
 {
+    using map_t = boost::container::flat_map<Id, std::shared_ptr<Data>>;
+
 public:
     using id_type = Id;
     using data_type = Data;
+
+    using base_iterator = typename map_t::const_iterator;
+    struct const_iterator
+        : public boost::stl_interfaces::proxy_iterator_interface<
+                  typename base_iterator::iterator_category,
+                  std::pair<id_type const&, data_type const&>>
+    {
+        using base_t = boost::stl_interfaces::proxy_iterator_interface<
+                typename base_iterator::iterator_category,
+                std::pair<id_type const&, data_type const&>>;
+
+        const_iterator() noexcept = default;
+
+        const_iterator(base_iterator it) noexcept
+            : m_it{std::move(it)}
+        {
+        }
+
+        auto operator->() const noexcept -> typename base_t::pointer
+        {
+            return typename base_t::pointer{*(*this)};
+        }
+
+        auto operator*() const noexcept -> typename base_t::reference
+        {
+            return {m_it->first, *m_it->second};
+        }
+
+    private:
+        friend boost::stl_interfaces::access;
+
+        auto base_reference() noexcept -> base_iterator&
+        {
+            return m_it;
+        }
+
+        auto base_reference() const noexcept -> base_iterator
+        {
+            return m_it;
+        }
+
+        base_iterator m_it;
+    };
 
     [[nodiscard]]
     auto empty() const noexcept
@@ -39,13 +85,13 @@ public:
     [[nodiscard]]
     auto begin() const noexcept
     {
-        return m_map.begin();
+        return const_iterator{m_map.begin()};
     }
 
     [[nodiscard]]
     auto end() const noexcept
     {
-        return m_map.end();
+        return const_iterator{m_map.end()};
     }
 
     [[nodiscard]]
@@ -75,6 +121,7 @@ public:
         BOOST_ASSERT(it != m_map.end());
         return *it->second;
     }
+
     auto operator==(entity_data_map const&) const noexcept -> bool = default;
 
     void set(id_type id, data_type value)
@@ -110,9 +157,6 @@ public:
     }
 
 private:
-    using map_t =
-            boost::container::flat_map<id_type, std::shared_ptr<data_type>>;
-
     map_t m_map;
 };
 
