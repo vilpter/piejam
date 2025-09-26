@@ -79,8 +79,5 @@ Item {
         }
 
         onActivated: root.activated(index)
-
-        // model change breaks the currentIndex binding, so we need to restore it
-        onModelChanged: currentIndex = Qt.binding(function () { return root.currentIndex } )
     }
 }
