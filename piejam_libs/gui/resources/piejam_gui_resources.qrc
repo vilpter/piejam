@@ -8,20 +8,27 @@ SPDX-License-Identifier: CC0-1.0
     <qresource prefix="/">
         <file>Main.qml</file>
         <file>PieJam/Controls/BusyLoader.qml</file>
+        <file>PieJam/Controls/ChoiceBox.qml</file>
         <file>PieJam/Controls/Circle.qml</file>
-        <file>PieJam/Controls/ComboBox.qml</file>
+        <file>PieJam/Controls/ColorSelector.qml</file>
         <file>PieJam/Controls/CpuLoadMeter.qml</file>
         <file>PieJam/Controls/DiskSpaceIndicator.qml</file>
         <file>PieJam/Controls/HeaderLabel.qml</file>
+        <file>PieJam/Controls/Info.qml</file>
         <file>PieJam/Controls/InfoReadout.qml</file>
         <file>PieJam/Controls/InfoToolButton.qml</file>
         <file>PieJam/Controls/MidiAssignArea.qml</file>
-        <file>PieJam/Controls/ParameterSymmetricBipolarSlider.qml</file>
-        <file>PieJam/Controls/ParameterToggleButton.qml</file>
+        <file>PieJam/Controls/MidiAssignable.qml</file>
+        <file>PieJam/Controls/MidiLearn.qml</file>
+        <file>PieJam/Controls/ModelSubscription.qml</file>
         <file>PieJam/Controls/QuickSpinBox.qml</file>
+        <file>PieJam/Controls/StringTextField.qml</file>
+        <file>PieJam/Controls/SubscribableItem.qml</file>
         <file>PieJam/Controls/SymmetricBipolarSlider.qml</file>
         <file>PieJam/Controls/Touchstrip.qml</file>
+        <file>PieJam/Controls/ValueIndicatorBar.qml</file>
         <file>PieJam/Controls/XYPad.qml</file>
+        <file>PieJam/Controls/qmldir</file>
         <file>PieJam/FxChainControls/EnumButtonGroup.qml</file>
         <file>PieJam/FxChainControls/EnumComboBox.qml</file>
         <file>PieJam/FxChainControls/IntSlider.qml</file>
@@ -31,13 +38,12 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/FxChainControls/ParameterTouchstrip.qml</file>
         <file>PieJam/FxChainControls/ParameterXYPad.qml</file>
         <file>PieJam/FxChainControls/ParametersListView.qml</file>
+        <file>PieJam/FxChainControls/SpectrumGrid.qml</file>
         <file>PieJam/FxChainControls/StereoChannelSelector.qml</file>
         <file>PieJam/FxChainControls/StreamSourceSettings.qml</file>
         <file>PieJam/FxChainControls/qmldir</file>
-        <file>PieJam/Info.qml</file>
-        <file>PieJam/MidiAssignable.qml</file>
-        <file>PieJam/MidiLearn.qml</file>
         <file>PieJam/MixerControls/AudioRoutingComboBox.qml</file>
+        <file>PieJam/MixerControls/AuxSend.qml</file>
         <file>PieJam/MixerControls/ChannelAddStrip.qml</file>
         <file>PieJam/MixerControls/ChannelAuxSend.qml</file>
         <file>PieJam/MixerControls/ChannelControls.qml</file>
@@ -45,13 +51,17 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/MixerControls/ChannelFxStrip.qml</file>
         <file>PieJam/MixerControls/ChannelPerformStrip.qml</file>
         <file>PieJam/MixerControls/ChannelStrip.qml</file>
+        <file>PieJam/MixerControls/ChannelStripBase.qml</file>
         <file>PieJam/MixerControls/LevelIndicator.qml</file>
         <file>PieJam/MixerControls/LevelMeterVolumeFader.qml</file>
         <file>PieJam/MixerControls/MixerViewSettings.qml</file>
         <file>PieJam/MixerControls/StereoLevelMeter.qml</file>
         <file>PieJam/MixerControls/VolumeFader.qml</file>
         <file>PieJam/MixerControls/qmldir</file>
-        <file>PieJam/ModelSubscription.qml</file>
+        <file>PieJam/ParameterControls/ParameterSymmetricBipolarSlider.qml</file>
+        <file>PieJam/ParameterControls/ParameterToggleButton.qml</file>
+        <file>PieJam/ParameterControls/ValueLabel.qml</file>
+        <file>PieJam/ParameterControls/qmldir</file>
         <file>PieJam/SettingsControls/AudioDeviceSettings.qml</file>
         <file>PieJam/SettingsControls/AudioInputOutputSettings.qml</file>
         <file>PieJam/SettingsControls/AudioSettings.qml</file>
@@ -59,10 +69,11 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/SettingsControls/ExternalAudioDeviceConfig.qml</file>
         <file>PieJam/SettingsControls/MidiDeviceConfig.qml</file>
         <file>PieJam/SettingsControls/MidiSettings.qml</file>
-        <file>PieJam/SubscribableItem.qml</file>
+        <file>PieJam/SettingsControls/qmldir</file>
         <file>PieJam/Util/ColorExt.js</file>
         <file>PieJam/Util/DbConvert.js</file>
         <file>PieJam/Util/MathExt.js</file>
+        <file>PieJam/Util/QmlExt.js</file>
         <file>PieJam/Util/qmldir</file>
         <file>PieJam/Views/FxBrowser.qml</file>
         <file>PieJam/Views/FxModule.qml</file>
@@ -77,7 +88,6 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/Views/ViewToolBar.qml</file>
         <file>PieJam/Views/ViewToolBarButton.qml</file>
         <file>PieJam/Views/qmldir</file>
-        <file>PieJam/qmldir</file>
         <file>images/icons/arrow-expand-vertical.svg</file>
         <file>images/icons/aux.svg</file>
         <file>images/icons/chevron-down.svg</file>
@@ -91,15 +101,5 @@ SPDX-License-Identifier: CC0-1.0
         <file>images/icons/power.svg</file>
         <file>images/icons/tune-vertical.svg</file>
         <file>qtquickcontrols2.conf</file>
-        <file>PieJam/Controls/ValueIndicatorBar.qml</file>
-        <file>PieJam/Controls/qmldir</file>
-        <file>PieJam/Controls/ColorSelector.qml</file>
-        <file>PieJam/Util/QmlExt.js</file>
-        <file>PieJam/FxChainControls/SpectrumGrid.qml</file>
-        <file>PieJam/Controls/StringTextField.qml</file>
-        <file>PieJam/MixerControls/ChannelStripBase.qml</file>
-        <file>PieJam/MixerControls/AuxSend.qml</file>
-        <file>PieJam/ParameterControls/qmldir</file>
-        <file>PieJam/ParameterControls/ValueLabel.qml</file>
     </qresource>
 </RCC>

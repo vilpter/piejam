@@ -6,29 +6,36 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
+import PieJam.Controls 1.0
 import PieJam.Models 1.0
-
-import ".."
-import "../Util/MathExt.js" as MathExt
 
 SubscribableItem {
     id: root
 
+    property bool flat: false
+    property alias text: button.text
+    property alias icon: button.icon
+
     QtObject {
         id: private_
 
-        readonly property var paramModel: root.model && root.model.type === Parameter.Type.Float ? root.model : null
-        readonly property real value: private_.paramModel ? MathExt.fromNormalized(private_.paramModel.normalizedValue, -1, 1) : 0
+        readonly property var paramModel: root.model && root.model.type === Parameter.Type.Bool ? root.model : null
+        readonly property bool value: private_.paramModel && private_.paramModel.value
     }
 
-    SymmetricBipolarSlider {
+    Button {
+        id: button
+
         anchors.fill: parent
 
-        value: private_.value
+        flat: root.flat
+        checkable: !root.flat
+        checked: !root.flat && private_.value
+        highlighted: root.flat && private_.value
 
-        onMoved: {
+        onClicked: {
             if (private_.paramModel) {
-                private_.paramModel.changeNormalizedValue(MathExt.toNormalized(newValue, -1, 1))
+                private_.paramModel.changeValue(!private_.value)
                 Info.showParameterValue(private_.paramModel)
             }
         }

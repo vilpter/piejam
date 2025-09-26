@@ -6,7 +6,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-import PieJam.Controls 1.0 as PJControls
+import PieJam.Controls 1.0
 
 Item {
 
@@ -50,7 +50,7 @@ Item {
                 font.pixelSize: 18
             }
 
-            PJControls.ComboBox {
+            ChoiceBox {
                 id: comboBox
 
                 Layout.fillWidth: true

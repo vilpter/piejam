@@ -9,9 +9,7 @@ import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
 import PieJam.Models 1.0
-
-import ".."
-import "../Util/MathExt.js" as MathExt
+import PieJam.Util 1.0
 
 SubscribableItem {
     id: root

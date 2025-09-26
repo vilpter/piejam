@@ -19,6 +19,6 @@ Item {
         target: root.target
         property: "subscribed"
         value: root.subscribed && !Qt.inputMethod.visible
-        restoreMode: Binding.RestoreBinding
+        restoreMode: Binding.RestoreBindingOrValue
     }
 }

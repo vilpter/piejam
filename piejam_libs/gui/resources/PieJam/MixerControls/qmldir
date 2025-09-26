@@ -4,3 +4,5 @@
 
 module PieJam.MixerControls
 singleton MixerViewSettings 1.0 MixerViewSettings.qml
+ChannelStrip 1.0 ChannelStrip.qml
+ChannelAddStrip 1.0 ChannelAddStrip.qml

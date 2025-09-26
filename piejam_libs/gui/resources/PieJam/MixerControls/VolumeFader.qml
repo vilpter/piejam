@@ -10,11 +10,7 @@ import QtQuick.Window 2.15
 
 import PieJam.Controls 1.0
 import PieJam.Items 1.0 as PJItems
-
-import ".."
-import "../Util/ColorExt.js" as ColorExt
-import "../Util/DbConvert.js" as DbConvert
-import "../Util/MathExt.js" as MathExt
+import PieJam.Util 1.0
 
 SubscribableItem {
     id: root

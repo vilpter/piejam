@@ -7,10 +7,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
-import PieJam.Controls 1.0 as PJControls
+import PieJam.Controls 1.0
 import PieJam.Models 1.0 as PJModels
-
-import ".."
 
 SubscribableItem {
     id: root
@@ -20,7 +18,7 @@ SubscribableItem {
 
     implicitHeight: comboBox.implicitHeight
 
-    PJControls.ComboBox {
+    ChoiceBox {
         id: comboBox
 
         anchors.fill: parent

@@ -6,9 +6,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-import PieJam.Controls 1.0 as PJControls
-
-import ".."
+import PieJam.Controls 1.0
 
 SubscribableItem {
     id: root
@@ -19,7 +17,7 @@ SubscribableItem {
         anchors.fill: parent
         anchors.margins: 4
 
-        PJControls.StringTextField {
+        StringTextField {
             Layout.fillWidth: true
 
             model: root.model ? root.model.name : null
@@ -32,7 +30,7 @@ SubscribableItem {
 
             currentIndex: root.model ? (root.model.mono ? 0 : 1) : -1
 
-            PJControls.ComboBox {
+            ChoiceBox {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
@@ -49,7 +47,7 @@ SubscribableItem {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                PJControls.ComboBox {
+                ChoiceBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
@@ -62,7 +60,7 @@ SubscribableItem {
                     onActivated: root.model.changeStereoLeftChannel(index)
                 }
 
-                PJControls.ComboBox {
+                ChoiceBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 

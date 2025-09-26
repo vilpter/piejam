@@ -4,7 +4,7 @@
 
 import QtQuick 2.15
 
-import "../Util/ColorExt.js" as ColorExt
+import PieJam.Util 1.0
 
 Item {
     id: root

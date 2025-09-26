@@ -8,10 +8,7 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Items 1.0 as PJItems
-
-import ".."
-import "../Util/MathExt.js" as MathExt
-import "../Util/DbConvert.js" as DbConvert
+import PieJam.Util 1.0
 
 Item {
     id: root

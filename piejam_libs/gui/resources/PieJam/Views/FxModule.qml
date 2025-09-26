@@ -11,9 +11,6 @@ import QtQml 2.15
 import PieJam.Controls 1.0
 import PieJam.Models 1.0
 
-import ".."
-import "../FxChainControls"
-
 ViewPane {
     id: root
 

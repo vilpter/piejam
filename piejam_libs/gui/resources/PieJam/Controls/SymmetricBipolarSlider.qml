@@ -6,8 +6,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
-import "../Util/ColorExt.js" as ColorExt
-import "../Util/MathExt.js" as MathExt
+import PieJam.Util 1.0
 
 Item {
     id: root

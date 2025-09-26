@@ -9,8 +9,6 @@ import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
 
-import ".."
-
 ViewPane {
     id: root
 

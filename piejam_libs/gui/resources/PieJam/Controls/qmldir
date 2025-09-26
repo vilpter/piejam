@@ -3,18 +3,21 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 module PieJam.Controls
+singleton Info 1.0 Info.qml
+singleton MidiLearn 1.0 MidiLearn.qml
 BusyLoader 1.0 BusyLoader.qml
 Circle 1.0 Circle.qml
 ColorSelector 1.0 ColorSelector.qml
-ComboBox 1.0 ComboBox.qml
+ChoiceBox 1.0 ChoiceBox.qml
 HeaderLabel 1.0 HeaderLabel.qml
 InfoReadout 1.0 InfoReadout.qml
 InfoToolButton 1.0 InfoToolButton.qml
 MidiAssignArea 1.0 MidiAssignArea.qml
-ParameterSymmetricBipolarSlider 1.0 ParameterSymmetricBipolarSlider.qml
-ParameterToggleButton 1.0 ParameterToggleButton.qml
+ModelSubscription 1.0 ModelSubscription.qml
 QuickSpinBox 1.0 QuickSpinBox.qml
 StringTextField 1.0 StringTextField.qml
+SubscribableItem 1.0 SubscribableItem.qml
+SymmetricBipolarSlider 1.0 SymmetricBipolarSlider.qml
 Touchstrip 1.0 Touchstrip.qml
 ValueIndicatorBar 1.0 ValueIndicatorBar.qml
 XYPad 1.0 XYPad.qml

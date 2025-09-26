@@ -6,37 +6,28 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
+import PieJam.Controls 1.0
 import PieJam.Models 1.0
-
-import ".."
+import PieJam.Util 1.0
 
 SubscribableItem {
     id: root
 
-    property bool flat: false
-    property alias text: button.text
-    property alias icon: button.icon
-
     QtObject {
         id: private_
 
-        readonly property var paramModel: root.model && root.model.type === Parameter.Type.Bool ? root.model : null
-        readonly property bool value: private_.paramModel && private_.paramModel.value
+        readonly property var paramModel: root.model && root.model.type === Parameter.Type.Float ? root.model : null
+        readonly property real value: private_.paramModel ? MathExt.fromNormalized(private_.paramModel.normalizedValue, -1, 1) : 0
     }
 
-    Button {
-        id: button
-
+    SymmetricBipolarSlider {
         anchors.fill: parent
 
-        flat: root.flat
-        checkable: !root.flat
-        checked: !root.flat && private_.value
-        highlighted: root.flat && private_.value
+        value: private_.value
 
-        onClicked: {
+        onMoved: {
             if (private_.paramModel) {
-                private_.paramModel.changeValue(!private_.value)
+                private_.paramModel.changeNormalizedValue(MathExt.toNormalized(newValue, -1, 1))
                 Info.showParameterValue(private_.paramModel)
             }
         }

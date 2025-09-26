@@ -1,8 +1,0 @@
-# SPDX-FileCopyrightText: 2020-2025 Dimitrij Kotrev
-#
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-module PieJam
-singleton Info 1.0 Info.qml
-singleton MidiLearn 1.0 MidiLearn.qml
-SubscribableItem 1.0 SubscribableItem.qml

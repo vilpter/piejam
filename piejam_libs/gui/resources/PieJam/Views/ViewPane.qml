@@ -5,7 +5,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
-import ".."
+import PieJam.Controls 1.0
 
 Pane {
     id: root

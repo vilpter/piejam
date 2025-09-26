@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
 import PieJam.Models 1.0 as PJModels
+import PieJam.ParameterControls 1.0
 
 Item {
     id: root
