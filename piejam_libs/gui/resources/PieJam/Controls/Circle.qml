@@ -7,16 +7,23 @@ import QtQuick 2.15
 Item {
     id: root
 
-    property alias radius: rect.radius
-    property alias color: rect.color
+    property int radius: 50
+    property color color: "white"
+
+    property real centerX: x + radius
+    property real centerY: y + radius
+
+    onCenterXChanged: x = centerX - radius
+    onCenterYChanged: y = centerY - radius
+    onXChanged: centerX = x + radius
+    onYChanged: centerY = y + radius
+
+    width: radius * 2
+    height: radius * 2
 
     Rectangle {
-        id: rect
-
-        x: -radius
-        y: -radius
-
-        width: radius * 2
-        height: radius * 2
+        anchors.fill: parent
+        color: root.color
+        radius: root.radius
     }
 }

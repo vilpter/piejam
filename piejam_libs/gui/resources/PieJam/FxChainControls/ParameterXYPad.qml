@@ -34,10 +34,12 @@ Item {
         posX: private_.valueX
         posY: private_.valueY
 
-        handleRadius: 6
-        handleColor: Material.color(Material.Yellow, Material.Shade400)
+        handle: Circle {
+            radius: 6
+            color: Material.color(Material.Yellow, Material.Shade400)
+        }
 
-        onChangePos: {
+        onMoved: {
             if (private_.paramModelX)
                 private_.paramModelX.changeNormalizedValue(x)
 
