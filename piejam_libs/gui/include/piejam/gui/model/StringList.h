@@ -4,19 +4,42 @@
 
 #pragma once
 
-#include <piejam/gui/PropertyMacros.h>
+#include <piejam/gui/model/ValueListModel.h>
 
 #include <QObject>
+#include <QString>
 
 namespace piejam::gui::model
 {
 
-class StringList final : public QObject
+class StringList final : public ValueListModel<QString>
 {
+    using Base = ValueListModel<QString>;
+
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(QStringList, elements, setElements)
-    M_PIEJAM_GUI_PROPERTY(int, focused, setFocused)
+    Q_PROPERTY(int count READ rowCount NOTIFY countChanged FINAL)
+
+public:
+    using Base::Base;
+
+    Q_INVOKABLE QVariant get(int index) const
+    {
+        return Base::get(index, Qt::DisplayRole);
+    }
+
+    Q_SIGNAL void countChanged();
+
+private:
+    void onSizeChanged() override
+    {
+        emit countChanged();
+    }
+
+    auto itemToString(QString const& item) const -> QString override
+    {
+        return item;
+    }
 };
 
 } // namespace piejam::gui::model

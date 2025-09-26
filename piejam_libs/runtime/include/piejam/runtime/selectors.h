@@ -60,6 +60,8 @@ struct sound_card_info
     std::string name;
     unsigned num_ins{};
     unsigned num_outs{};
+
+    auto operator==(sound_card_info const&) const -> bool = default;
 };
 
 using sound_card_choice =

@@ -29,9 +29,6 @@ SubscribableItem {
             delegate: ItemDelegate {
                 id: delegate
 
-                required property var modelData
-                required property int index
-
                 implicitHeight: 48
                 width: parent ? parent.width : undefined
 
@@ -50,28 +47,25 @@ SubscribableItem {
                             elide: Text.ElideRight
                             font.pixelSize: 16
                             verticalAlignment: Text.AlignVCenter
-                            text: delegate.modelData.name
+                            text: model.value.name
                         }
 
                         Text {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
 
-                            text: "Ins: " + delegate.modelData.numIns + " Outs: " + delegate.modelData.numOuts
+                            text: "Ins: " + model.value.numIns + " Outs: " + model.value.numOuts
                             font.pixelSize: 14
                             color: Material.hintTextColor
                         }
                     }
                 }
 
-                highlighted: root.model.selectedSoundCardIndex === delegate.index
+                highlighted: root.model.selectedSoundCardIndex === index
             }
 
             nameLabelText: qsTr("Device:")
             unselectedText: qsTr("Select...")
-            displayText: root.model.selectedSoundCardIndex !== -1
-                    ? root.model.soundCards[root.model.selectedSoundCardIndex].name
-                    : undefined
 
             onOptionSelected: root.model.selectSoundCard(index)
         }
@@ -81,8 +75,8 @@ SubscribableItem {
 
             visible: root.model.selectedSoundCardIndex !== -1
 
-            model: root.model.sampleRates.elements
-            currentIndex: root.model.sampleRates.focused
+            model: root.model.sampleRates
+            currentIndex: root.model.selectedSampleRate
 
             nameLabelText: qsTr("Sample rate:")
             unselectedText: qsTr("Select sample rate...")
@@ -119,9 +113,9 @@ SubscribableItem {
                         Layout.fillHeight: true
 
                         from: 0
-                        to: root.model.periodSizes.elements.length
+                        to: root.model.periodSizesCount
                         stepSize: 1
-                        value: root.model.periodSizes.focused
+                        value: root.model.selectedPeriodSizeIndex
 
                         onMoved: root.model.selectPeriodSize(value)
                     }
@@ -145,10 +139,10 @@ SubscribableItem {
                         textFormat: Text.PlainText
                         font.pixelSize: 18
 
-                        text: (root.model.periodSizes.focused === -1 ? "0" : root.model.periodSizes.elements[root.model.periodSizes.focused]) +
-                              qsTr(" Samples / ") +
+                        text: (root.model.selectedPeriodSizeIndex === -1 ? "0" : root.model.selectedPeriodSize) +
+                              " Samples / " +
                               root.model.bufferLatency.toFixed(2) +
-                              qsTr(" ms")
+                              " ms"
                     }
                 }
             }

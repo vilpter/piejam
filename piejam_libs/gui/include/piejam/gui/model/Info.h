@@ -8,7 +8,6 @@
 #include <piejam/gui/model/SubscribableModel.h>
 
 #include <QList>
-#include <QStringList>
 
 namespace piejam::gui::model
 {

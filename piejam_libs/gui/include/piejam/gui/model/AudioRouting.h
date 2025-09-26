@@ -11,8 +11,6 @@
 #include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
 
-#include <QStringList>
-
 class QAbstractListModel;
 
 namespace piejam::gui::model

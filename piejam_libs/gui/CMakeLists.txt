@@ -60,7 +60,6 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/FxModuleRegistry.h
     include/piejam/gui/model/FxModuleType.h
     include/piejam/gui/model/FxModuleView.h
-    include/piejam/gui/model/ObjectListModel.h
     include/piejam/gui/model/Info.h
     include/piejam/gui/model/IntParameter.h
     include/piejam/gui/model/Log.h
@@ -75,6 +74,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/MixerChannelModels.h
     include/piejam/gui/model/MixerChannelPerform.h
     include/piejam/gui/model/MixerDbScales.h
+    include/piejam/gui/model/ObjectListModel.h
     include/piejam/gui/model/Parameter.h
     include/piejam/gui/model/ParameterId.h
     include/piejam/gui/model/PitchGenerator.h
@@ -92,6 +92,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/StringList.h
     include/piejam/gui/model/SubscribableModel.h
     include/piejam/gui/model/Types.h
+    include/piejam/gui/model/ValueListModel.h
     include/piejam/gui/model/Waveform.h
     include/piejam/gui/model/WaveformGenerator.h
     include/piejam/gui/model/WaveformSlot.h

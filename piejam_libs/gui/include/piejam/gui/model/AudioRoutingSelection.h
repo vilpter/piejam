@@ -11,8 +11,6 @@
 #include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
 
-#include <QStringList>
-
 namespace piejam::gui::model
 {
 

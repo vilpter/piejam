@@ -4,11 +4,13 @@
 
 #include <piejam/gui/model/AudioDeviceSettings.h>
 
+#include <piejam/gui/model/SoundCardInfo.h>
 #include <piejam/gui/model/StringList.h>
+#include <piejam/gui/model/ValueListModel.h>
+
+#include <piejam/gui/ListModelEditScriptProcessor.h>
 
 #include <piejam/algorithm/index_of.h>
-#include <piejam/audio/sound_card_descriptor.h>
-#include <piejam/redux/store.h>
 #include <piejam/runtime/actions/initiate_sound_card_selection.h>
 #include <piejam/runtime/actions/scan_for_sound_cards.h>
 #include <piejam/runtime/actions/select_period_size.h>
@@ -16,37 +18,36 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
-#include <QAbstractListModel>
-
-#include <boost/hof/lift.hpp>
-
-#include <algorithm>
-#include <ranges>
-
 namespace piejam::gui::model
 {
 
 namespace
 {
 
-template <class Range, class F>
-auto
-to_QStringList(Range const& l, F&& f) -> QStringList
+class SoundCardInfoList : public ValueListModel<SoundCardInfo>
 {
-    QStringList result;
-    std::ranges::transform(l, std::back_inserter(result), std::forward<F>(f));
-    return result;
-}
+    using Base = ValueListModel<SoundCardInfo>;
 
-auto const QString_from_number = BOOST_HOF_LIFT(QString::number);
+public:
+    using Base::Base;
+
+private:
+    auto itemToString(SoundCardInfo const& item) const -> QString override
+    {
+        return item.name;
+    }
+};
 
 } // namespace
 
 struct AudioDeviceSettings::Impl
 {
-    QVector<SoundCardInfo> sound_cards;
-    StringList sample_rates;
-    StringList period_sizes;
+    audio::sample_rates_t sample_rates;
+    audio::period_sizes_t period_sizes;
+    std::vector<runtime::selectors::sound_card_info> sound_cards;
+
+    SoundCardInfoList soundCards;
+    StringList sampleRates;
 };
 
 AudioDeviceSettings::AudioDeviceSettings(
@@ -58,15 +59,15 @@ AudioDeviceSettings::AudioDeviceSettings(
 }
 
 auto
-AudioDeviceSettings::sampleRates() const noexcept -> sampleRates_property_t
+AudioDeviceSettings::soundCards() const noexcept -> soundCards_property_t
 {
-    return &m_impl->sample_rates;
+    return &m_impl->soundCards;
 }
 
 auto
-AudioDeviceSettings::periodSizes() const noexcept -> periodSizes_property_t
+AudioDeviceSettings::sampleRates() const noexcept -> sampleRates_property_t
 {
-    return &m_impl->period_sizes;
+    return &m_impl->sampleRates;
 }
 
 void
@@ -76,19 +77,24 @@ AudioDeviceSettings::onSubscribe()
 
     observe(selectors::select_sound_card,
             [this](selectors::sound_card_choice const& choice) {
-                QVector<SoundCardInfo> infos;
-                infos.reserve(choice.available.size());
-                std::ranges::transform(
-                        choice.available,
-                        std::back_inserter(infos),
-                        [](runtime::selectors::sound_card_info const& info) {
-                            SoundCardInfo result;
-                            result.name = QString::fromStdString(info.name);
-                            result.numIns = static_cast<int>(info.num_ins);
-                            result.numOuts = static_cast<int>(info.num_outs);
-                            return result;
-                        });
-                setSoundCards(std::move(infos));
+                algorithm::apply_edit_script(
+                        algorithm::edit_script(
+                                m_impl->sound_cards,
+                                choice.available),
+                        ListModelEditScriptProcessor{
+                                m_impl->soundCards,
+                                [](runtime::selectors::sound_card_info const&
+                                           info) {
+                                    return SoundCardInfo{
+                                            .name = QString::fromStdString(
+                                                    info.name),
+                                            .numIns = static_cast<int>(
+                                                    info.num_ins),
+                                            .numOuts = static_cast<int>(
+                                                    info.num_outs),
+                                    };
+                                }});
+                m_impl->sound_cards = choice.available;
                 setSelectedSoundCardIndex(static_cast<int>(choice.current));
             });
 
@@ -98,12 +104,18 @@ AudioDeviceSettings::onSubscribe()
                         sample_rate.available,
                         sample_rate.current);
 
-                sampleRates()->setElements(to_QStringList(
-                        sample_rate.available |
-                                std::views::transform(
-                                        &audio::sample_rate::value),
-                        QString_from_number));
-                sampleRates()->setFocused(static_cast<int>(index));
+                algorithm::apply_edit_script(
+                        algorithm::edit_script(
+                                m_impl->sample_rates,
+                                sample_rate.available),
+                        ListModelEditScriptProcessor{
+                                m_impl->sampleRates,
+                                [](auto const sr) {
+                                    return QString::number(sr.value());
+                                }});
+                m_impl->sample_rates = sample_rate.available;
+
+                setSelectedSampleRate(static_cast<int>(index));
             });
 
     observe(selectors::select_period_size,
@@ -111,13 +123,12 @@ AudioDeviceSettings::onSubscribe()
                 auto const index = algorithm::index_of(
                         period_size.available,
                         period_size.current);
-
-                periodSizes()->setElements(to_QStringList(
-                        period_size.available |
-                                std::views::transform(
-                                        &audio::period_size::value),
-                        QString_from_number));
-                periodSizes()->setFocused(static_cast<int>(index));
+                m_impl->period_sizes = period_size.available;
+                setPeriodSizesCount(
+                        static_cast<int>(period_size.available.size()));
+                setSelectedPeriodSizeIndex(static_cast<int>(index));
+                setSelectedPeriodSize(
+                        static_cast<int>(period_size.current.value()));
             });
 
     observe(selectors::select_buffer_latency, [this](float const x) {

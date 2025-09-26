@@ -64,6 +64,8 @@ Item {
                 enabled: comboBox.count !== 0
 
                 onActivated: root.optionSelected(index)
+
+                textRole: "text"
             }
         }
     }

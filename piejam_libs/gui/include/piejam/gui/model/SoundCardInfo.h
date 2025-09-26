@@ -21,7 +21,8 @@ public:
     int numIns{};
     int numOuts{};
 
-    constexpr bool operator==(SoundCardInfo const&) const noexcept = default;
+    constexpr auto operator==(SoundCardInfo const&) const noexcept
+            -> bool = default;
 };
 
 } // namespace piejam::gui::model

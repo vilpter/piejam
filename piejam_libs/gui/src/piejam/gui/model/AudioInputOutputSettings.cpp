@@ -44,10 +44,10 @@ AudioInputOutputSettings::onSubscribe()
     namespace selectors = runtime::selectors;
 
     observe(selectors::make_num_device_channels_selector(m_impl->io_dir),
-            [this](std::size_t const num_input_channels) {
+            [this](std::size_t const num_channels) {
                 QStringList channels;
                 channels.push_back("-");
-                for (std::size_t n = 0; n < num_input_channels; ++n)
+                for (std::size_t n = 0; n < num_channels; ++n)
                 {
                     channels.push_back(QString::number(n + 1));
                 }
