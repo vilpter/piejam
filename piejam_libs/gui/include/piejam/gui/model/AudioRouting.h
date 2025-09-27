@@ -20,7 +20,8 @@ class AudioRouting final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(bool, defaultIsValid, setDefaultIsValid)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(bool, mixIsAvailable)
+    M_PIEJAM_GUI_PROPERTY(bool, mixIsValid, setMixIsValid)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
             piejam::gui::model::AudioRoutingSelection*,
             selected)
@@ -33,7 +34,8 @@ public:
             runtime::mixer::channel_id,
             runtime::mixer::io_socket);
 
-    Q_INVOKABLE void changeToDefault();
+    Q_INVOKABLE void changeToNone();
+    Q_INVOKABLE void changeToMix();
     Q_INVOKABLE void changeToDevice(unsigned index);
     Q_INVOKABLE void changeToChannel(unsigned index);
 

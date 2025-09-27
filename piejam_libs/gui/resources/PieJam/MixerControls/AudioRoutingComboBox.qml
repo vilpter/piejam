@@ -14,7 +14,6 @@ SubscribableItem {
     id: root
 
     property bool hasSelectableDefault: true
-    property string defaultText: "-"
 
     implicitHeight: comboBox.implicitHeight
 
@@ -23,11 +22,7 @@ SubscribableItem {
 
         anchors.fill: parent
 
-        displayText: root.model
-                ? (root.model.selected.isDefault
-                    ? (root.model.selected.state === PJModels.AudioRoutingSelection.State.Valid ? root.defaultText : "???")
-                    : root.model.selected.label)
-                : "-"
+        displayText: root.model ? root.model.selected.label : "-"
         elideMode: Qt.ElideMiddle
 
         function selectedStateToColor(s) {
@@ -47,14 +42,25 @@ SubscribableItem {
 
         popup: Menu {
             MenuItem {
-                enabled: root.hasSelectableDefault && root.model && root.model.defaultIsValid
+                enabled: root.hasSelectableDefault
 
                 visible: root.hasSelectableDefault
                 height: visible ? implicitHeight : 0
 
-                text: root.defaultText
+                text: "None"
 
-                onClicked: root.model.changeToDefault()
+                onClicked: root.model.changeToNone()
+            }
+
+            MenuItem {
+                enabled: root.model && root.model.mixIsValid
+
+                visible: root.model && root.model.mixIsAvailable
+                height: visible ? implicitHeight : 0
+
+                text: "Mix"
+
+                onClicked: root.model.changeToMix()
             }
 
             Menu {
@@ -101,22 +107,6 @@ SubscribableItem {
                         }
                     }
                 }
-            }
-
-            MenuSeparator {
-                visible: !root.hasSelectableDefault && root.model
-                enabled: visible
-                height: visible ? implicitHeight : 0
-            }
-
-            MenuItem {
-                text: "[Clear Selection]"
-
-                visible: !root.hasSelectableDefault && root.model
-                enabled: visible
-                height: visible ? implicitHeight : 0
-
-                onClicked: root.model.changeToDefault()
             }
         }
     }

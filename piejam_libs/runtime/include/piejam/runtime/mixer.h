@@ -66,7 +66,7 @@ struct state
     fx_chains_t fx_chains;
 };
 
-auto is_default_source_valid(channels_t const&, channel_id) -> bool;
+auto is_mix_input_valid(channels_t const&, channel_id) -> bool;
 
 auto can_toggle_aux(channels_t const&, channel_id, channel_id aux_id) -> bool;
 

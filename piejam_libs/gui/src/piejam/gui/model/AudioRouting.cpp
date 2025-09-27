@@ -51,6 +51,13 @@ AudioRouting::AudioRouting(
 }
 
 auto
+AudioRouting::mixIsAvailable() const noexcept -> mixIsValid_property_t
+{
+    return m_impl->channel_type != runtime::mixer::channel_type::mono &&
+           m_impl->io_socket == runtime::mixer::io_socket::in;
+}
+
+auto
 AudioRouting::selected() const noexcept -> AudioRoutingSelection*
 {
     return m_impl->selected.get();
@@ -71,11 +78,13 @@ AudioRouting::channels() const noexcept -> QAbstractListModel*
 void
 AudioRouting::onSubscribe()
 {
-    observe(runtime::selectors::
-                    make_mixer_channel_default_route_is_valid_selector(
-                            m_impl->mixer_channel_id,
-                            m_impl->io_socket),
-            [this](bool const x) { setDefaultIsValid(x); });
+    if (mixIsAvailable())
+    {
+        observe(runtime::selectors::
+                        make_mixer_channel_mix_input_is_valid_selector(
+                                m_impl->mixer_channel_id),
+                [this](bool const x) { setMixIsValid(x); });
+    }
 
     observe(runtime::selectors::make_mixer_device_routes_selector(
                     m_impl->channel_type,
@@ -155,13 +164,24 @@ dispatch_set_mixer_channel_route_action(
 }
 
 void
-AudioRouting::changeToDefault()
+AudioRouting::changeToNone()
 {
     dispatch_set_mixer_channel_route_action(
             state_access(),
             m_impl->io_socket,
             m_impl->mixer_channel_id,
-            default_t{});
+            {});
+}
+
+void
+AudioRouting::changeToMix()
+{
+    BOOST_ASSERT(mixIsAvailable() && mixIsValid());
+    dispatch_set_mixer_channel_route_action(
+            state_access(),
+            m_impl->io_socket,
+            m_impl->mixer_channel_id,
+            runtime::mixer::mix_input{});
 }
 
 void

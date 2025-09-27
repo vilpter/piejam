@@ -142,7 +142,7 @@ find_external_audio_device_route(
         std::size_t const index)
 {
     return index < devices.size() ? mixer::io_address_t{devices[index]}
-                                  : mixer::io_address_t{invalid_t{}};
+                                  : mixer::io_address_t{};
 }
 
 void
@@ -173,10 +173,10 @@ apply_mixer_io(
                     return mixer::io_address_t{*found_channel_id};
                 }
 
-                return mixer::io_address_t{invalid_t{}};
+                return mixer::io_address_t{};
 
-            case persistence::session::mixer_io_type::invalid:
-                return mixer::io_address_t{invalid_t{}};
+            case persistence::session::mixer_io_type::mix:
+                return mixer::io_address_t{mixer::mix_input{}};
 
             default:
                 return mixer::io_address_t();

@@ -33,15 +33,11 @@ AudioRoutingSelection::onSubscribe()
                     m_impl->mixer_channel_id,
                     m_impl->io_socket),
             [this](selected_route const& sel_route) {
-                setDefault(sel_route.is_default);
                 setState([](selected_route::state_t state) {
                     switch (state)
                     {
                         case selected_route::state_t::valid:
                             return State::Valid;
-
-                        case selected_route::state_t::invalid:
-                            return State::Invalid;
 
                         case selected_route::state_t::not_mixed:
                             return State::NotMixed;

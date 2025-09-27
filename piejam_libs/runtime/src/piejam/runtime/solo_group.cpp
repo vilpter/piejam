@@ -39,7 +39,7 @@ gather_channel_infos(mixer::channels_t const& channels)
             auto const* const target_channel = channels.find(*target_id);
             BOOST_ASSERT(target_channel);
 
-            if (std::holds_alternative<default_t>(target_channel->in))
+            if (std::holds_alternative<mixer::mix_input>(target_channel->in))
             {
                 result[current].children.insert(*target_id);
                 result[*target_id].mixins.insert(current);

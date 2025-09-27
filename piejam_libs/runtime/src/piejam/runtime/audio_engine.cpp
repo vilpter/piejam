@@ -449,7 +449,8 @@ connect_mixer_output(
                         mixer::channel const& dst_channel =
                                 mixer_channels[dst_channel_id];
 
-                        if (std::holds_alternative<default_t>(dst_channel.in))
+                        if (std::holds_alternative<mixer::mix_input>(
+                                    dst_channel.in))
                         {
                             auto* const dst_mixer_channel_in_comp =
                                     comps.find(mixer_input_key{

@@ -80,9 +80,9 @@ make_initial_state() -> state
             add_mixer_channel(st, mixer::channel_type::stereo, "Main");
     // main doesn't belong into inputs
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
-    // reset the output to default back again
+    // reset the output to mix
     st.mixer_state.channels.lock()[st.mixer_state.main].out =
-            piejam::default_t{};
+            mixer::mix_input{};
     st.params[st.mixer_state.channels[st.mixer_state.main].record].value.set(
             true);
     return st;
@@ -479,7 +479,9 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                             .name = box("Solo"s),
                             .default_value = false}),
             .out_stream = make_stream(st.streams, 2),
-            .in = {},
+            .in = type == mixer::channel_type::aux
+                          ? mixer::io_address_t{mixer::mix_input{}}
+                          : mixer::io_address_t{},
             .out = st.mixer_state.main,
             .aux_sends = box(
                     make_aux_sends(st.mixer_state.channels, params_factory)),
@@ -567,11 +569,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     auto const equal_to_mixer_channel = equal_to(addr);
     for (auto& [_, channel] : mixer_channels)
     {
-        set_if(channel.in,
-               equal_to_mixer_channel,
-               channel.type == mixer::channel_type::stereo
-                       ? mixer::io_address_t{invalid_t{}}
-                       : mixer::io_address_t{default_t{}});
+        set_if(channel.in, equal_to_mixer_channel, default_t{});
         set_if(channel.out, equal_to_mixer_channel, default_t{});
     }
 
@@ -596,11 +594,7 @@ remove_external_audio_device(
 
         for (auto& [_, mixer_channel] : mixer_channels)
         {
-            set_if(mixer_channel.in,
-                   equal_to_device,
-                   mixer_channel.type == mixer::channel_type::stereo
-                           ? mixer::io_address_t{invalid_t{}}
-                           : mixer::io_address_t{default_t{}});
+            set_if(mixer_channel.in, equal_to_device, default_t{});
             set_if(mixer_channel.out, equal_to_device, default_t{});
         }
     }

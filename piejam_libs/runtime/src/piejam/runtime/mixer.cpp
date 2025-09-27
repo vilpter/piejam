@@ -113,7 +113,7 @@ make_channels_io_graph(channels_io_t const& channels_io) -> io_graph
         }
 
         auto add_out_child = [&](channel_id const& out_channel_id) {
-            if (std::holds_alternative<default_t>(
+            if (std::holds_alternative<mixer::mix_input>(
                         channels_io.at(out_channel_id).in))
             {
                 result[id].children.push_back(out_channel_id);
@@ -220,11 +220,11 @@ valid_io_channels(channels_t const& channels, channel_id const ch_id)
 } // namespace
 
 auto
-is_default_source_valid(channels_t const& channels, channel_id const ch_id)
-        -> bool
+is_mix_input_valid(channels_t const& channels, channel_id const ch_id) -> bool
 {
+    BOOST_ASSERT(channels[ch_id].type != mixer::channel_type::mono);
     auto channels_io = extract_channels_io(channels);
-    channels_io[ch_id].in = default_t{};
+    channels_io[ch_id].in = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));
 }
 

@@ -426,21 +426,13 @@ make_mixer_channel_aux_sends_selector(mixer::channel_id channel_id)
 }
 
 auto
-make_mixer_channel_default_route_is_valid_selector(
-        mixer::channel_id const channel_id,
-        mixer::io_socket const io_socket) -> selector<bool>
+make_mixer_channel_mix_input_is_valid_selector(
+        mixer::channel_id const channel_id) -> selector<bool>
 {
-    switch (io_socket)
-    {
-        case mixer::io_socket::in:
-            return [channel_id, get = memo(&mixer::is_default_source_valid)](
-                           state const& st) {
-                return get(st.mixer_state.channels, channel_id);
-            };
-
-        default:
-            return boost::hof::always(true);
-    }
+    return [channel_id,
+            get = memo(&mixer::is_mix_input_valid)](state const& st) {
+        return get(st.mixer_state.channels, channel_id);
+    };
 }
 
 static auto
@@ -449,19 +441,6 @@ make_route_state_selector(mixer::io_address_t addr, mixer::io_socket io_socket)
 {
     return std::visit(
             boost::hof::match(
-                    [](default_t) -> selector<selected_route::state_t> {
-                        return boost::hof::always(
-                                selected_route::state_t::valid);
-                    },
-                    [](invalid_t) -> selector<selected_route::state_t> {
-                        return boost::hof::always(
-                                selected_route::state_t::invalid);
-                    },
-                    [](external_audio::device_id)
-                            -> selector<selected_route::state_t> {
-                        return boost::hof::always(
-                                selected_route::state_t::valid);
-                    },
                     [io_socket](mixer::channel_id id)
                             -> selector<selected_route::state_t> {
                         if (io_socket == mixer::io_socket::in)
@@ -476,12 +455,17 @@ make_route_state_selector(mixer::io_address_t addr, mixer::io_socket io_socket)
                                                     &mixer::channel::in>(id)](
                                            state const& st) {
                                 auto addr = get_addr(st);
-                                return std::holds_alternative<default_t>(addr)
+                                return std::holds_alternative<mixer::mix_input>(
+                                               addr)
                                                ? selected_route::state_t::valid
                                                : selected_route::state_t::
                                                          not_mixed;
                             };
                         }
+                    },
+                    [](auto) -> selector<selected_route::state_t> {
+                        return boost::hof::always(
+                                selected_route::state_t::valid);
                     }),
             addr);
 }
@@ -489,13 +473,16 @@ make_route_state_selector(mixer::io_address_t addr, mixer::io_socket io_socket)
 static auto
 make_route_name_selector(mixer::io_address_t addr) -> selector<boxed_string>
 {
+    using namespace std::string_literals;
     return std::visit(
             boost::hof::match(
                     [](default_t) -> selector<boxed_string> {
-                        return boost::hof::always(boxed_string{});
+                        static boxed_string s_none{"None"s};
+                        return boost::hof::always(s_none);
                     },
-                    [](invalid_t) -> selector<boxed_string> {
-                        return boost::hof::always(boxed_string{});
+                    [](mixer::mix_input) -> selector<boxed_string> {
+                        static boxed_string s_mix{"Mix"s};
+                        return boost::hof::always(s_mix);
                     },
                     [](external_audio::device_id id) -> selector<boxed_string> {
                         return make_external_audio_device_name_string_selector(
@@ -529,8 +516,6 @@ make_mixer_channel_selected_route_selector(
 
         selected_route result;
 
-        result.is_default = std::holds_alternative<default_t>(addr) ||
-                            std::holds_alternative<invalid_t>(addr);
         result.state = get_state(addr, io_socket)(st);
         result.name = get_name(addr)(st);
 

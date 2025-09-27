@@ -84,8 +84,8 @@ struct session
 
     enum class mixer_io_type
     {
-        default_,
-        invalid,
+        none,
+        mix,
         device,
         channel
     };

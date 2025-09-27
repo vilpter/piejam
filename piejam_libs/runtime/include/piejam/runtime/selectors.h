@@ -137,18 +137,14 @@ struct mixer_channel_route
             -> bool = default;
 };
 
-auto make_mixer_channel_default_route_is_valid_selector(
-        mixer::channel_id,
-        mixer::io_socket) -> selector<bool>;
+auto make_mixer_channel_mix_input_is_valid_selector(mixer::channel_id)
+        -> selector<bool>;
 
 struct selected_route
 {
-    bool is_default{};
-
     enum class state_t
     {
         valid,
-        invalid,
         not_mixed,
     } state;
 

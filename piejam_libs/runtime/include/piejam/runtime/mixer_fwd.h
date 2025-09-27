@@ -9,7 +9,6 @@
 #include <piejam/audio/types.h>
 #include <piejam/default.h>
 #include <piejam/fwd.h>
-#include <piejam/invalid.h>
 
 #include <variant>
 #include <vector>
@@ -35,8 +34,14 @@ struct channel;
 using channel_id = entity_id<channel>;
 using channels_t = entity_map<channel>;
 
+struct mix_input
+{
+    constexpr auto operator==(mix_input const&) const noexcept
+            -> bool = default;
+};
+
 using io_address_t = std::
-        variant<default_t, invalid_t, external_audio::device_id, channel_id>;
+        variant<default_t, mix_input, external_audio::device_id, channel_id>;
 
 enum class io_socket : bool
 {
