@@ -30,7 +30,6 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/Controls/XYPad.qml</file>
         <file>PieJam/Controls/qmldir</file>
         <file>PieJam/FxChainControls/EnumButtonGroup.qml</file>
-        <file>PieJam/FxChainControls/EnumComboBox.qml</file>
         <file>PieJam/FxChainControls/IntSlider.qml</file>
         <file>PieJam/FxChainControls/ParameterControl.qml</file>
         <file>PieJam/FxChainControls/ParameterQuickSpinBox.qml</file>
@@ -104,5 +103,6 @@ SPDX-License-Identifier: CC0-1.0
         <file>images/icons/power.svg</file>
         <file>images/icons/tune-vertical.svg</file>
         <file>qtquickcontrols2.conf</file>
+        <file>PieJam/ParameterControls/EnumComboBox.qml</file>
     </qresource>
 </RCC>

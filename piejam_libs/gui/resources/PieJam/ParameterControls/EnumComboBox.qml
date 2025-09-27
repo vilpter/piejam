@@ -11,6 +11,9 @@ import PieJam.Models 1.0
 SubscribableItem {
     id: root
 
+    implicitWidth: comboBox.implicitWidth
+    implicitHeight: comboBox.implicitHeight
+
     QtObject {
         id: private_
 

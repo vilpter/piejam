@@ -14,6 +14,7 @@ import PieJam.FxChainControls 1.0
 import PieJam.FxModules.Models 1.0
 import PieJam.Items 1.0 as PJItems
 import PieJam.Models 1.0 as PJModels
+import PieJam.ParameterControls 1.0
 import PieJam.Util 1.0
 
 SubscribableItem {
