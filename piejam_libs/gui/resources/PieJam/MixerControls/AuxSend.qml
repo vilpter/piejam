@@ -14,9 +14,11 @@ import PieJam.ParameterControls 1.0
 SubscribableItem {
     id: root
 
+    property int expandedHeight: 362
+
     signal expanded()
 
-    implicitHeight: private_.expanded ? 364 : 72
+    implicitHeight: private_.expanded ? root.expandedHeight : 72
 
     QtObject {
         id: private_
