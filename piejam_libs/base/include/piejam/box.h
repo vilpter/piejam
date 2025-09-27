@@ -7,8 +7,9 @@
 #include <piejam/on_scope_exit.h>
 
 #include <boost/assert.hpp>
-#include <boost/callable_traits/args.hpp>
+#include <boost/hof/returns.hpp>
 
+#include <concepts>
 #include <memory>
 #include <utility>
 
@@ -22,21 +23,23 @@ namespace detail
 {
 
 template <class>
-struct is_box : std::false_type
-{
-};
+inline constexpr bool is_box_dispatch_v = false;
 
 template <class T>
-struct is_box<box<T>> : std::true_type
-{
-};
+inline constexpr bool is_box_dispatch_v<box<T>> = true;
 
-template <class B>
-constexpr bool is_box_v = is_box<B>::value;
+} // namespace detail
+
+template <class T>
+inline constexpr bool is_box_v =
+        detail::is_box_dispatch_v<std::remove_cvref_t<T>>;
+
+namespace detail
+{
 
 template <class From, class To>
 concept convertible_to_box_value =
-        std::is_convertible_v<From, To> && !is_box_v<std::remove_cvref_t<From>>;
+        std::convertible_to<From, To> && !is_box_v<From>;
 
 } // namespace detail
 
@@ -45,6 +48,10 @@ class box
 {
 public:
     using value_type = T;
+
+    static_assert(
+            std::is_same_v<T, std::remove_cvref_t<T>>,
+            "T must be a non-cv, non-reference type");
 
     class write_lock
     {
@@ -176,21 +183,28 @@ private:
 #endif
 };
 
-template <class T>
-auto
-operator==(box<T> const& lhs, T const& rhs) -> bool
-{
-    return lhs.get() == rhs;
-}
+template <class T, class U>
+    requires(!is_box_v<U> && std::equality_comparable_with<T, U>)
+auto operator==(box<T> const& lhs, U const& rhs)
+        BOOST_HOF_RETURNS(lhs.get() == rhs);
+
+template <class T, class U>
+    requires(!is_box_v<U> && std::equality_comparable_with<T, U>)
+auto operator==(U const& lhs, box<T> const& rhs)
+        BOOST_HOF_RETURNS(lhs == rhs.get());
+
+template <class T, class U>
+    requires(!is_box_v<U> && std::totally_ordered_with<T, U>)
+auto operator<=>(box<T> const& lhs, U const& rhs)
+        BOOST_HOF_RETURNS(lhs.get() <=> rhs);
+
+template <class T, class U>
+    requires(!is_box_v<U> && std::totally_ordered_with<T, U>)
+auto operator<=>(U const& lhs, box<T> const& rhs)
+        BOOST_HOF_RETURNS(lhs <=> rhs.get());
 
 template <class T>
-auto
-operator==(T const& lhs, box<T> const& rhs) -> bool
-{
-    return lhs == rhs.get();
-}
-
-template <class T, class = std::enable_if_t<!detail::is_box_v<T>>>
-box(T&& t) -> box<std::remove_cvref_t<T>>;
+    requires(!is_box_v<T>)
+box(T&&) -> box<std::remove_cvref_t<T>>;
 
 } // namespace piejam

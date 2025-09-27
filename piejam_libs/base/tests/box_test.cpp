@@ -161,4 +161,30 @@ TEST(box, assign_and_eq)
     EXPECT_EQ(v, w);
 }
 
+TEST(box, eq_vs_value)
+{
+    box<int> const b{5};
+
+    EXPECT_EQ(5, b);
+    EXPECT_EQ(b, 5);
+
+    EXPECT_NE(6, b);
+    EXPECT_NE(b, 6);
+}
+
+TEST(box, rel_ops_vs_value)
+{
+    box<int> const b{5};
+
+    EXPECT_LT(b, 6);
+
+    EXPECT_LE(b, 6);
+    EXPECT_LE(b, 5);
+
+    EXPECT_GT(b, 4);
+
+    EXPECT_GE(b, 4);
+    EXPECT_GE(b, 5);
+}
+
 } // namespace piejam::test
