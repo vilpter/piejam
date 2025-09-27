@@ -15,7 +15,8 @@ Item {
     property alias currentText: comboBox.currentText
     property alias delegate: comboBox.delegate
     property alias displayText: comboBox.displayText
-    property int elideMode: Qt.ElideNone
+    property alias elideMode: contentTextItem.elide
+    property alias font: comboBox.font
     property var model: null
     property alias popup: comboBox.popup
     property alias textHorizontalAlignment: contentTextItem.horizontalAlignment
@@ -33,12 +34,6 @@ Item {
 
         anchors.fill: parent
 
-        FontMetrics {
-            id: fontMetrics
-
-            font: comboBox.font
-        }
-
         model: root.model
         currentIndex: root.currentIndex
 
@@ -51,7 +46,6 @@ Item {
             font: comboBox.font
             color: root.enabled ? root.Material.foreground : root.Material.secondaryTextColor
             verticalAlignment: Text.AlignVCenter
-            elide: root.elideMode
             padding: 6
         }
 
