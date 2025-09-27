@@ -92,10 +92,26 @@ ChannelStripBase {
 
                 enabled: root.model && root.model.canMoveLeft
 
-                text: "<"
-                font.bold: true
+                icon.width: 24
+                icon.height: 24
+                icon.source: "qrc:///images/icons/chevron-left.svg"
 
                 onClicked: root.model.moveLeft()
+            }
+
+            Button {
+                visible: root.deletable
+                enabled: root.deletable
+
+                Layout.fillWidth: true
+
+                icon.width: 24
+                icon.height: 24
+                icon.source: "qrc:///images/icons/delete_forever.svg"
+
+                Material.background: Material.color(Material.Red, Material.Shade400)
+
+                onClicked: root.model.deleteChannel()
             }
 
             Button {
@@ -103,25 +119,12 @@ ChannelStripBase {
 
                 enabled: root.model && root.model.canMoveRight
 
-                text: ">"
-                font.bold: true
+                icon.width: 24
+                icon.height: 24
+                icon.source: "qrc:///images/icons/chevron-right.svg"
 
                 onClicked: root.model.moveRight()
             }
-        }
-
-        Button {
-            visible: root.deletable
-            enabled: root.deletable
-
-            Layout.fillWidth: true
-
-            text: qsTr("Delete")
-            font.bold: true
-
-            Material.background: Material.color(Material.Red, Material.Shade400)
-
-            onClicked: root.model.deleteChannel()
         }
     }
 }

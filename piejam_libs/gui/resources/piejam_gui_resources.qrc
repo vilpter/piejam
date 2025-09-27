@@ -91,9 +91,12 @@ SPDX-License-Identifier: CC0-1.0
         <file>images/icons/arrow-expand-vertical.svg</file>
         <file>images/icons/aux.svg</file>
         <file>images/icons/chevron-down.svg</file>
+        <file>images/icons/chevron-left.svg</file>
+        <file>images/icons/chevron-right.svg</file>
         <file>images/icons/chevron-up.svg</file>
         <file>images/icons/cog.svg</file>
         <file>images/icons/cycle_arrows.svg</file>
+        <file>images/icons/delete_forever.svg</file>
         <file>images/icons/info.svg</file>
         <file>images/icons/micro-sd.svg</file>
         <file>images/icons/midi-port.svg</file>
