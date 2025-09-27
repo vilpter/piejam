@@ -24,6 +24,8 @@ using bool_parameter_id = parameter::id_t<bool_parameter>;
 using int_parameter = parameter::int_descriptor;
 using int_parameter_id = parameter::id_t<int_parameter>;
 
+using enum_parameter_id = int_parameter_id;
+
 // Store the value type here, so we don't have to include the descriptor
 // headers.
 using parameters_t = boost::mp11::mp_list<
