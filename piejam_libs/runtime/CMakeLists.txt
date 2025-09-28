@@ -80,6 +80,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/mixer.h
     include/piejam/runtime/mixer_fwd.h
     include/piejam/runtime/parameter/assignment.h
+    include/piejam/runtime/parameter/bool_descriptor.h
     include/piejam/runtime/parameter/float_descriptor.h
     include/piejam/runtime/parameter/float_normalize.h
     include/piejam/runtime/parameter/fwd.h
