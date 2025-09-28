@@ -77,6 +77,6 @@ private:
     }
 };
 
-using parameters_map = parameter::map<parameter_map_slot>;
+using parameters_store = parameter::store<parameter_map_slot>;
 
 } // namespace piejam::runtime

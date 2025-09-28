@@ -116,7 +116,7 @@ void
 apply_parameter_values(
         std::vector<fx::parameter_value_assignment> const& values,
         fx::module const& fx_mod,
-        parameters_map& params)
+        parameters_store& params)
 {
     for (auto&& [key, value] : values)
     {

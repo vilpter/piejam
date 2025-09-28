@@ -702,7 +702,7 @@ struct muted_by_solo_state
 {
     muted_by_solo_state(
             mixer::channels_t const& channels,
-            parameters_map const* const params) // non-null!
+            parameters_store const* const params) // non-null!
         : solo_groups{runtime::solo_groups(channels)}
         , solo_params{algorithm::transform_to_vector(
                   solo_groups | std::views::values,
@@ -744,7 +744,7 @@ struct muted_by_solo_state
 auto
 make_muted_by_solo_state(
         mixer::channels_t const& channels,
-        parameters_map const* const params) -> box<muted_by_solo_state>
+        parameters_store const* const params) -> box<muted_by_solo_state>
 {
     return box(muted_by_solo_state{channels, params});
 }

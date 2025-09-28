@@ -10,7 +10,7 @@
 #include <piejam/runtime/parameter/bool_descriptor.h>
 #include <piejam/runtime/parameter/float_descriptor.h>
 #include <piejam/runtime/parameter/int_descriptor.h>
-#include <piejam/runtime/parameter/map.h>
+#include <piejam/runtime/parameter/store.h>
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/ui/action.h>
 #include <piejam/runtime/ui/cloneable_action.h>

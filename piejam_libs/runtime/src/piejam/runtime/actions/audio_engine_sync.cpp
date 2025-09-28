@@ -4,7 +4,7 @@
 
 #include <piejam/runtime/actions/audio_engine_sync.h>
 
-#include <piejam/runtime/parameter/map.h>
+#include <piejam/runtime/parameter/store.h>
 #include <piejam/runtime/state.h>
 
 #include <piejam/tuple.h>

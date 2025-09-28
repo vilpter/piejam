@@ -85,11 +85,11 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/parameter/float_normalize.h
     include/piejam/runtime/parameter/fwd.h
     include/piejam/runtime/parameter/int_descriptor.h
-    include/piejam/runtime/parameter/map.h
+    include/piejam/runtime/parameter/store.h
     include/piejam/runtime/parameter_factory.h
     include/piejam/runtime/parameter_processor_factory.h
     include/piejam/runtime/parameters.h
-    include/piejam/runtime/parameters_map.h
+    include/piejam/runtime/parameters_store.h
     include/piejam/runtime/persistence/access.h
     include/piejam/runtime/persistence/app_config.h
     include/piejam/runtime/persistence/fwd.h

@@ -7,25 +7,25 @@ if(NOT PIEJAM_TESTS)
 endif()
 
 add_executable(piejam_runtime_test
-    ${CMAKE_CURRENT_SOURCE_DIR}/audio_engine_middleware_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_key_shared_object_map_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ladspa_fx_middleware_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ladspa_instance_manager_mock.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ladspa_processor_factory_mock.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/middleware_functors_mock.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/midi_assignment_processor_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/midi_control_middleware_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/midi_input_controller_mock.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/midi_input_processor_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/midi_learn_processor_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/midi_to_parameter_processor_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/mixer_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/mute_solo_processor_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/parameter_map_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/parameter_processor_factory_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sound_card_manager_mock.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/state_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/stream_processor_factory_test.cpp
+    audio_engine_middleware_test.cpp
+    dynamic_key_shared_object_map_test.cpp
+    ladspa_fx_middleware_test.cpp
+    ladspa_instance_manager_mock.h
+    ladspa_processor_factory_mock.h
+    middleware_functors_mock.h
+    midi_assignment_processor_test.cpp
+    midi_control_middleware_test.cpp
+    midi_input_controller_mock.h
+    midi_input_processor_test.cpp
+    midi_learn_processor_test.cpp
+    midi_to_parameter_processor_test.cpp
+    mixer_test.cpp
+    mute_solo_processor_test.cpp
+    parameters_store_test.cpp
+    parameter_processor_factory_test.cpp
+    sound_card_manager_mock.h
+    state_test.cpp
+    stream_processor_factory_test.cpp
 )
 target_link_libraries(piejam_runtime_test gtest_driver gmock piejam_compiler_warnings piejam_runtime)
 

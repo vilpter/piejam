@@ -20,7 +20,7 @@ template <class Parameter>
 using value_type_t = typename Parameter::value_type;
 
 template <template <class> class Slot>
-class map;
+class store;
 
 using key = unsigned;
 

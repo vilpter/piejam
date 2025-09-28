@@ -82,7 +82,7 @@ export_external_audio_device_configs(
 }
 
 auto
-export_parameter_values(fx::module const& fx_mod, parameters_map const& params)
+export_parameter_values(fx::module const& fx_mod, parameters_store const& params)
         -> std::vector<fx::parameter_value_assignment>
 {
     std::vector<fx::parameter_value_assignment> result;

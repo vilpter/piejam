@@ -197,7 +197,7 @@ make_fx_chain_components(
         component_map& comps,
         component_map& prev_comps,
         fx::modules_t const& fx_modules,
-        parameters_map const& params,
+        parameters_store const& params,
         parameter_processor_factory& param_procs,
         processors::stream_processor_factory& stream_procs,
         fx::simple_ladspa_processor_factory const& ladspa_fx_proc_factory,
@@ -264,7 +264,7 @@ make_midi_processors(
 auto
 make_midi_assignment_processors(
         midi_assignments_map const& assignments,
-        parameters_map const& params,
+        parameters_store const& params,
         processor_map& procs,
         processor_map& prev_procs)
 {
@@ -474,7 +474,7 @@ make_graph(
         component_map const& comps,
         mixer::state const& mixer_state,
         external_audio::devices_t const& device_buses,
-        parameters_map const& params,
+        parameters_store const& params,
         std::span<audio::engine::input_processor> const input_procs,
         std::span<audio::engine::output_processor> const output_procs,
         std::span<processor_ptr> const output_clip_procs)

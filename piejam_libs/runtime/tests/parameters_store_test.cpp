@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <piejam/entity_id.h>
-#include <piejam/runtime/parameter/map.h>
-#include <piejam/runtime/parameters_map.h>
+#include <piejam/runtime/parameter/store.h>
+#include <piejam/runtime/parameters_store.h>
 
 #include <gtest/gtest.h>
 
@@ -18,9 +18,9 @@ struct float_parameter
     float default_value{1.f};
 };
 
-TEST(parameters_map, add_default_get)
+TEST(parameters_store, add_default_get)
 {
-    parameters_map sut;
+    parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
@@ -28,9 +28,9 @@ TEST(parameters_map, add_default_get)
     EXPECT_EQ(1.f, sut[id].value.get());
 }
 
-TEST(parameters_map, add_remove)
+TEST(parameters_store, add_remove)
 {
-    parameters_map sut;
+    parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
@@ -40,25 +40,25 @@ TEST(parameters_map, add_remove)
     EXPECT_FALSE(sut.contains(id));
 }
 
-TEST(parameters_map, get_existing_parameter)
+TEST(parameters_store, get_existing_parameter)
 {
-    parameters_map sut;
+    parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
     EXPECT_NE(nullptr, sut.find(id));
 }
 
-TEST(parameters_map, find_for_non_existing_parameter)
+TEST(parameters_store, find_for_non_existing_parameter)
 {
-    parameters_map sut;
+    parameters_store sut;
 
     EXPECT_EQ(nullptr, sut.find(parameter::id_t<float_parameter>::generate()));
 }
 
-TEST(parameters_map, get_cached_for_existing_parameter)
+TEST(parameters_store, get_cached_for_existing_parameter)
 {
-    parameters_map sut;
+    parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
@@ -67,9 +67,9 @@ TEST(parameters_map, get_cached_for_existing_parameter)
     EXPECT_EQ(1.f, *desc->value.cached());
 }
 
-TEST(parameters_map, set_value)
+TEST(parameters_store, set_value)
 {
-    parameters_map sut;
+    parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
@@ -78,9 +78,9 @@ TEST(parameters_map, set_value)
     EXPECT_EQ(2.f, sut[id].value.get());
 }
 
-TEST(parameters_map, cached_is_updated_after_set)
+TEST(parameters_store, cached_is_updated_after_set)
 {
-    parameters_map sut;
+    parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
@@ -94,16 +94,16 @@ TEST(parameters_map, cached_is_updated_after_set)
     EXPECT_EQ(2.f, *cached);
 }
 
-TEST(parameters_map, equality)
+TEST(parameters_store, equality)
 {
-    parameters_map m1;
+    parameters_store m1;
 
     auto id = id_t<float_parameter>::generate();
     m1.emplace(id);
 
     EXPECT_EQ(m1, m1);
 
-    parameters_map m2;
+    parameters_store m2;
 
     m2.emplace(id);
 

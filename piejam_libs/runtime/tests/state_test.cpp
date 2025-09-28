@@ -5,7 +5,7 @@
 #include <piejam/runtime/state.h>
 
 #include <piejam/numeric/dB_convert.h>
-#include <piejam/runtime/parameter/map.h>
+#include <piejam/runtime/parameter/store.h>
 
 #include <gtest/gtest.h>
 

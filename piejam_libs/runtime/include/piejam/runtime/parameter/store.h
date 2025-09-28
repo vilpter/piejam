@@ -15,7 +15,7 @@ namespace piejam::runtime::parameter
 {
 
 template <template <class Parameter> class Slot>
-class map
+class store
 {
 public:
     template <class P>
@@ -102,7 +102,7 @@ public:
         return it->second;
     }
 
-    auto operator==(map const& other) const noexcept -> bool = default;
+    auto operator==(store const& other) const noexcept -> bool = default;
 
 private:
     boost::container::flat_map<std::type_index, std::shared_ptr<void>> m_maps;

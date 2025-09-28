@@ -5,8 +5,8 @@
 #pragma once
 
 #include <piejam/runtime/fwd.h>
-#include <piejam/runtime/parameter/map.h>
-#include <piejam/runtime/parameters_map.h>
+#include <piejam/runtime/parameter/store.h>
+#include <piejam/runtime/parameters_store.h>
 
 #include <boost/container/flat_map.hpp>
 
@@ -20,8 +20,8 @@ class parameter_factory
 {
 public:
     explicit parameter_factory(
-            parameters_map& params,
-            parameter::map<Value>&... aux_param_maps)
+            parameters_store& params,
+            parameter::store<Value>&... aux_param_maps)
         : m_params{params}
         , m_aux_param_maps{std::forward_as_tuple(aux_param_maps...)}
     {
@@ -44,12 +44,12 @@ public:
     }
 
 private:
-    parameters_map& m_params;
-    std::tuple<parameter::map<Value>&...> m_aux_param_maps;
+    parameters_store& m_params;
+    std::tuple<parameter::store<Value>&...> m_aux_param_maps;
 };
 
 template <template <class> class... Value>
-parameter_factory(parameters_map&, parameter::map<Value>&...)
+parameter_factory(parameters_store&, parameter::store<Value>&...)
         -> parameter_factory<Value...>;
 
 } // namespace piejam::runtime

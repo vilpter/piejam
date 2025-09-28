@@ -108,7 +108,7 @@ apply_mixer_midi(
 
 void
 apply_mixer_parameters(
-        parameters_map& params,
+        parameters_store& params,
         mixer::channel const& mixer_channel,
         persistence::session::mixer_parameters const& mixer_params)
 {
@@ -146,7 +146,7 @@ find_external_audio_device_route(
 
 void
 apply_mixer_io(
-        parameters_map& params,
+        parameters_store& params,
         external_audio::state& external_audio_state,
         mixer::state& mixer_state,
         mixer::channel_id const& channel_id,
@@ -210,7 +210,7 @@ apply_mixer_io(
 
 void
 apply_aux_channels(
-        parameters_map& params,
+        parameters_store& params,
         mixer::state& mixer_state,
         std::vector<persistence::session::aux_channel> const& aux_channels_data)
 {
