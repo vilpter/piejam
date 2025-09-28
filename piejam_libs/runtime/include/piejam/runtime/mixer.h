@@ -89,7 +89,7 @@ struct state
     box<channel_ids_t> inputs;
     channel_id main;
 
-    using aux_channels_t = entity_data_map<channel_id, aux_channel>;
+    using aux_channels_t = entity_map<aux_channel, channel_id>;
     aux_channels_t aux_channels;
 
     using fx_chains_t = entity_data_map<channel_id, box<fx::chain_t>>;

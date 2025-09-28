@@ -6,6 +6,7 @@
 
 #include <piejam/box.h>
 #include <piejam/entity_id.h>
+#include <piejam/fwd.h>
 
 #include <boost/assert.hpp>
 #include <boost/container/flat_map.hpp>
@@ -13,11 +14,13 @@
 namespace piejam
 {
 
-template <class Entity>
+template <class Entity, class Id>
 class entity_map
 {
+    static constexpr bool foreign_id = !std::is_same_v<Id, entity_id<Entity>>;
+
 public:
-    using id_t = entity_id<Entity>;
+    using id_t = Id;
     using map_t = boost::container::flat_map<id_t, Entity>;
     using value_type = typename map_t::value_type;
 
@@ -96,15 +99,23 @@ public:
 
         [[nodiscard]]
         auto insert(Entity value) -> id_t
+            requires(!foreign_id)
         {
             auto id = id_t::generate();
             m_->emplace_hint(m_->end(), id, std::move(value));
             return id;
         }
 
+        auto insert(id_t id, Entity value) -> bool
+            requires(foreign_id)
+        {
+            return m_->emplace(id, std::move(value)).second;
+        }
+
         template <class... Args>
         [[nodiscard]]
         auto emplace(Args&&... args) -> id_t
+            requires(!foreign_id)
         {
             auto id = id_t::generate();
             m_->emplace_hint(
@@ -113,6 +124,18 @@ public:
                     std::forward_as_tuple(id),
                     std::forward_as_tuple(std::forward<Args>(args)...));
             return id;
+        }
+
+        template <class... Args>
+        auto emplace(id_t id, Args&&... args) -> bool
+            requires(foreign_id)
+        {
+            return m_
+                    ->emplace(
+                            std::piecewise_construct,
+                            std::forward_as_tuple(id),
+                            std::forward_as_tuple(std::forward<Args>(args)...))
+                    .second;
         }
 
         auto erase(id_t id) -> typename map_t::size_type
@@ -140,15 +163,30 @@ public:
 
     [[nodiscard]]
     auto insert(Entity value) -> id_t
+        requires(!foreign_id)
     {
         return lock().insert(std::move(value));
+    }
+
+    auto insert(id_t id, Entity value) -> bool
+        requires(foreign_id)
+    {
+        return lock().insert(id, std::move(value));
     }
 
     template <class... Args>
     [[nodiscard]]
     auto emplace(Args&&... args) -> id_t
+        requires(!foreign_id)
     {
         return lock().emplace(std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    auto emplace(id_t id, Args&&... args) -> bool
+        requires(foreign_id)
+    {
+        return lock().emplace(id, std::forward<Args>(args)...);
     }
 
     auto erase(id_t id) -> typename map_t::size_type
