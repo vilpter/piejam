@@ -231,7 +231,12 @@ get_sound_cards() -> sound_cards
 
     for (sound_card_info const& sc_info : scan_for_sound_cards())
     {
-        result.append_range(get_sound_card_descriptors(sc_info));
+        // TODO: use result.append_range when available (C++23)
+        auto scs = get_sound_card_descriptors(sc_info);
+        result.insert(
+                result.end(),
+                std::make_move_iterator(scs.begin()),
+                std::make_move_iterator(scs.end()));
     }
 
     return result;
