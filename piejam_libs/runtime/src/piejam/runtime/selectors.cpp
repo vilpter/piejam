@@ -375,24 +375,24 @@ make_mixer_channel_aux_enabled_selector(
 }
 
 static auto
-get_mixer_channel_aux_fader_tap(
+get_mixer_channel_aux_send_fader_tap(
         mixer::channel const& channel,
-        mixer::channel_id const aux_id) -> mixer::fader_tap
+        mixer::channel_id const aux_id) -> enum_parameter_id
 {
     auto it = channel.aux_sends->find(aux_id);
-    return it != channel.aux_sends->end() ? it->second.tap
-                                          : mixer::fader_tap::post;
+    return it != channel.aux_sends->end() ? it->second.fader_tap
+                                          : enum_parameter_id{};
 }
 
 auto
-make_mixer_channel_aux_fader_tap_selector(
+make_mixer_channel_aux_send_fader_tap_selector(
         mixer::channel_id const channel_id,
-        mixer::channel_id const aux_id) -> selector<mixer::fader_tap>
+        mixer::channel_id const aux_id) -> selector<enum_parameter_id>
 {
     auto get = memo([channel_id, aux_id](mixer::channels_t const& channels) {
         mixer::channel const* const channel = channels.find(channel_id);
-        return channel ? get_mixer_channel_aux_fader_tap(*channel, aux_id)
-                       : mixer::fader_tap::post;
+        return channel ? get_mixer_channel_aux_send_fader_tap(*channel, aux_id)
+                       : enum_parameter_id{};
     });
 
     return [get = std::move(get)](state const& st) {
@@ -422,6 +422,15 @@ make_mixer_channel_aux_sends_selector(mixer::channel_id channel_id)
         return box{std::ranges::to<std::vector>(
                 *st.mixer_state.channels[channel_id].aux_sends |
                 std::views::keys)};
+    };
+}
+
+auto
+make_aux_channel_default_fader_tap_parameter_selector(mixer::channel_id aux_id)
+        -> selector<enum_parameter_id>
+{
+    return [aux_id](state const& st) {
+        return st.mixer_state.aux_channels[aux_id].default_fader_tap;
     };
 }
 
@@ -1070,6 +1079,19 @@ make_int_parameter_enum_values_selector(int_parameter_id const param_id)
 
         return result;
     };
+}
+
+auto
+make_parameter_is_midi_assignable_selector(parameter_id param_id)
+        -> selector<bool>
+{
+    return std::visit(
+            [](auto const id) -> selector<bool> {
+                return [id](state const& st) -> bool {
+                    return st.params[id].param.midi_assignable;
+                };
+            },
+            param_id);
 }
 
 auto

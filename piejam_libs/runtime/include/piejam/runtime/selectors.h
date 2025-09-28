@@ -111,14 +111,17 @@ auto make_mixer_channel_aux_volume_parameter_selector(
 auto make_mixer_channel_aux_enabled_selector(
         mixer::channel_id,
         mixer::channel_id aux_id) -> selector<bool>;
-auto make_mixer_channel_aux_fader_tap_selector(
+auto make_mixer_channel_aux_send_fader_tap_selector(
         mixer::channel_id,
-        mixer::channel_id aux_id) -> selector<mixer::fader_tap>;
+        mixer::channel_id aux_id) -> selector<enum_parameter_id>;
 auto make_mixer_channel_can_toggle_aux_selector(
         mixer::channel_id,
         mixer::channel_id aux_id) -> selector<bool>;
 auto make_mixer_channel_aux_sends_selector(mixer::channel_id)
         -> selector<box<mixer::channel_ids_t>>;
+
+auto make_aux_channel_default_fader_tap_parameter_selector(mixer::channel_id)
+        -> selector<enum_parameter_id>;
 
 struct mixer_device_route
 {
@@ -213,6 +216,8 @@ auto make_int_parameter_min_selector(int_parameter_id) -> selector<int>;
 auto make_int_parameter_max_selector(int_parameter_id) -> selector<int>;
 auto make_int_parameter_enum_values_selector(int_parameter_id)
         -> selector<std::vector<std::pair<std::string, int>>>;
+
+auto make_parameter_is_midi_assignable_selector(parameter_id) -> selector<bool>;
 
 auto make_midi_assignment_selector(midi_assignment_id)
         -> selector<std::optional<midi_assignment>>;

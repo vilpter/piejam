@@ -25,8 +25,23 @@ namespace piejam::runtime::mixer
 
 struct aux_send
 {
+    static auto to_fader_tap_string(int const v) -> std::string
+    {
+        using namespace std::string_literals;
+        switch (v)
+        {
+            case std::to_underlying(aux_send_fader_tap::post):
+                return "Post"s;
+
+            case std::to_underlying(aux_send_fader_tap::pre):
+                return "Pre"s;
+        }
+
+        return "Auto"s;
+    }
+
     bool enabled{};
-    fader_tap tap{fader_tap::post};
+    enum_parameter_id fader_tap{};
     float_parameter_id volume{};
 };
 
@@ -55,12 +70,27 @@ struct channel
     auto operator==(channel const&) const noexcept -> bool = default;
 };
 
+struct aux_channel
+{
+    static auto to_fader_tap_string(int const v) -> std::string
+    {
+        using namespace std::string_literals;
+        return v == std::to_underlying(aux_channel_fader_tap::pre) ? "Pre"s
+                                                                   : "Post"s;
+    }
+
+    int_parameter_id default_fader_tap;
+};
+
 struct state
 {
     channels_t channels;
 
     box<channel_ids_t> inputs;
     channel_id main;
+
+    using aux_channels_t = entity_data_map<channel_id, aux_channel>;
+    aux_channels_t aux_channels;
 
     using fx_chains_t = entity_data_map<channel_id, box<fx::chain_t>>;
     fx_chains_t fx_chains;

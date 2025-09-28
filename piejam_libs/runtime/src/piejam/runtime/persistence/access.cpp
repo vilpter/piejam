@@ -15,6 +15,7 @@
 
 #include <boost/assert.hpp>
 #include <boost/hof/match.hpp>
+#include <boost/hof/unpack.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -300,15 +301,9 @@ export_mixer_aux_sends(state const& st, mixer::aux_sends_t const& aux_sends)
     {
         result.emplace_back(
                 session::mixer_aux_send{
-                        .channel_index =
-                                aux == st.mixer_state.main
-                                        ? 0
-                                        : algorithm::index_of(
-                                                  *st.mixer_state.inputs,
-                                                  aux) +
-                                                  1,
+                        .channel_index = channel_index(st.mixer_state, aux),
                         .enabled = aux_send.enabled,
-                        .tap = aux_send.tap,
+                        .fader_tap = st.params[aux_send.fader_tap].value.get(),
                         .volume = st.params[aux_send.volume].value.get(),
                 });
     }
@@ -349,6 +344,29 @@ export_mixer_channels(state const& st, mixer::channel_ids_t const& channel_ids)
             });
 }
 
+auto
+export_aux_channel(
+        state const& st,
+        mixer::channel_id aux_id,
+        mixer::aux_channel const& aux)
+{
+    session::aux_channel result;
+    result.channel_index = channel_index(st.mixer_state, aux_id);
+    result.fader_tap = st.params[aux.default_fader_tap].value.get();
+    return result;
+}
+
+auto
+export_aux_channels(state const& st)
+{
+    return algorithm::transform_to_vector(
+            st.mixer_state.aux_channels,
+            boost::hof::unpack([&st](mixer::channel_id aux_id,
+                                     mixer::aux_channel const& aux) {
+                return export_aux_channel(st, aux_id, aux);
+            }));
+}
+
 } // namespace
 
 void
@@ -380,6 +398,8 @@ save_session(std::filesystem::path const& file, state const& st)
                 st,
                 st.mixer_state.main,
                 st.mixer_state.channels[st.mixer_state.main]);
+
+        ses.aux_channels = export_aux_channels(st);
 
         save_session(out, ses);
     }

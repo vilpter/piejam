@@ -103,7 +103,7 @@ SubscribableItem {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                visible: root.model && root.model.volume && private_.expanded
+                visible: private_.expanded
 
                 model: root.model ? root.model.volume : null
                 muted: !root.model || !root.model.enabled
@@ -111,15 +111,13 @@ SubscribableItem {
                 scaleData: PJModels.MixerDbScales.sendFaderScale
             }
 
-            ChoiceBox {
+            EnumComboBox {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
 
-                visible: root.model && root.model.volume && private_.expanded
+                visible: private_.expanded
 
-                model: ["AUTO", "PRE", "POST"]
-
-                textHorizontalAlignment: Text.AlignHCenter
+                model: root.model ? root.model.faderTap : null
             }
         }
     }

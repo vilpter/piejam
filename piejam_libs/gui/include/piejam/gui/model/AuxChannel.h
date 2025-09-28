@@ -5,31 +5,30 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/MixerChannel.h>
+#include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
 
-class QAbstractListModel;
-
 namespace piejam::gui::model
 {
 
-class MixerChannelAuxSend final : public MixerChannel
+class AuxChannel final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, sends)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AuxChannel*, aux)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+            piejam::gui::model::EnumParameter*,
+            defaultFaderTap)
 
 public:
-    MixerChannelAuxSend(
-            runtime::state_access const&,
-            runtime::mixer::channel_id);
+    AuxChannel(runtime::state_access const&, runtime::mixer::channel_id aux_id);
 
 private:
     void onSubscribe() override;
+
+    runtime::mixer::channel_id m_aux_id;
 
     struct Impl;
     pimpl<Impl> m_impl;

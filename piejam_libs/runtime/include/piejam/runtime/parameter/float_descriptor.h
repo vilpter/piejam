@@ -32,6 +32,9 @@ struct float_descriptor
 
     to_normalized_f to_normalized{[](auto const&, float x) { return x; }};
     from_normalized_f from_normalized{[](auto const&, float x) { return x; }};
+
+    bool midi_assignable{true};
+    bool audio_graph_affecting{false};
 };
 
 } // namespace piejam::runtime::parameter

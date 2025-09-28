@@ -4,7 +4,6 @@
 
 #include <piejam/gui/model/FloatParameter.h>
 
-#include <piejam/runtime/actions/set_float_parameter_normalized.h>
 #include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
@@ -37,11 +36,15 @@ FloatParameter::onSubscribe()
 
     observe(runtime::selectors::make_float_parameter_value_selector(
                     float_param_id),
-            [this](float const value) { setValue(value); });
+            [this](float const value) {
+                setValue(static_cast<double>(value));
+            });
 
     observe(runtime::selectors::make_float_parameter_normalized_value_selector(
                     float_param_id),
-            [this](float const value) { setNormalizedValue(value); });
+            [this](float const value) {
+                setNormalizedValue(static_cast<double>(value));
+            });
 }
 
 void

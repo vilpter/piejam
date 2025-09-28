@@ -86,7 +86,7 @@ struct mixer_output_key
 struct mixer_aux_send_key
 {
     mixer::channel_id channel_id;
-    mixer::io_address_t route;
+    mixer::channel_id route;
 
     constexpr bool
     operator==(mixer_aux_send_key const&) const noexcept = default;
@@ -474,6 +474,7 @@ make_graph(
         component_map const& comps,
         mixer::state const& mixer_state,
         external_audio::devices_t const& device_buses,
+        parameters_map const& params,
         std::span<audio::engine::input_processor> const input_procs,
         std::span<audio::engine::output_processor> const output_procs,
         std::span<processor_ptr> const output_clip_procs)
@@ -529,10 +530,37 @@ make_graph(
             {
                 mixer_channel_aux_send->connect(g);
 
-                auto const [out_L, out_R] = bool_enum_to(
-                        aux_send.tap,
-                        std::pair{0uz, 1uz},
-                        std::pair{2uz, 3uz});
+                auto aux_send_fader_tap =
+                        static_cast<mixer::aux_send_fader_tap>(
+                                params[aux_send.fader_tap].value.get());
+                auto aux_channel_fader_tap = static_cast<
+                        mixer::aux_channel_fader_tap>(
+                        params[mixer_state.aux_channels[aux].default_fader_tap]
+                                .value.get());
+
+                auto const [out_L, out_R] = [&]() {
+                    switch (aux_send_fader_tap)
+                    {
+                        case mixer::aux_send_fader_tap::auto_:
+                            switch (aux_channel_fader_tap)
+                            {
+                                case mixer::aux_channel_fader_tap::post:
+                                    return std::pair{0uz, 1uz};
+
+                                case mixer::aux_channel_fader_tap::pre:
+                                    return std::pair{2uz, 3uz};
+                            }
+                            break;
+
+                        case mixer::aux_send_fader_tap::post:
+                            return std::pair{0uz, 1uz};
+
+                        case mixer::aux_send_fader_tap::pre:
+                            return std::pair{2uz, 3uz};
+                    }
+
+                    return std::pair{0uz, 1uz};
+                }();
 
                 g.audio.insert(
                         mixer_channel_out->outputs()[out_L],
@@ -825,6 +853,7 @@ audio_engine::rebuild(
             comps,
             st.mixer_state,
             st.external_audio_state.devices,
+            st.params,
             m_impl->input_procs,
             m_impl->output_procs,
             output_clip_procs);

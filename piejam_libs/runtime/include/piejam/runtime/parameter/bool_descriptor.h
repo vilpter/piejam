@@ -22,6 +22,9 @@ struct bool_descriptor
         using namespace std::string_literals;
         return x ? "on"s : "off"s;
     }};
+
+    bool midi_assignable{true};
+    bool audio_graph_affecting{false};
 };
 
 } // namespace piejam::runtime::parameter

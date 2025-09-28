@@ -18,20 +18,10 @@ class AuxSend final : public SubscribableModel
 {
     Q_OBJECT
 
-public:
-    enum class FaderTap : bool
-    {
-        Post,
-        Pre,
-    };
-
-    Q_ENUM(FaderTap)
-
-private:
     M_PIEJAM_GUI_PROPERTY(QString, name, setName)
     M_PIEJAM_GUI_PROPERTY(bool, canToggle, setCanToggle)
     M_PIEJAM_GUI_PROPERTY(bool, enabled, setEnabled)
-    M_PIEJAM_GUI_PROPERTY(FaderTap, faderTap, setFaderTap)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, faderTap)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, volume)
 
 public:

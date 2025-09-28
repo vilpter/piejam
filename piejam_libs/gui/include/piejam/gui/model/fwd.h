@@ -42,6 +42,7 @@ class AudioRouting;
 class AudioRoutingSelection;
 class AuxSend;
 using AuxSendsList = ObjectListModel<AuxSend>;
+class AuxChannel;
 
 class ExternalAudioDeviceConfig;
 using ExternalAudioDeviceConfigList =

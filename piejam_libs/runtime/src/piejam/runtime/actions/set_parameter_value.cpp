@@ -4,8 +4,10 @@
 
 #include <piejam/runtime/actions/set_parameter_value.h>
 
-#include <piejam/functional/in_interval.h>
 #include <piejam/runtime/state.h>
+#include <piejam/runtime/ui/thunk_action.h>
+
+#include <piejam/functional/in_interval.h>
 
 #include <boost/assert.hpp>
 
@@ -39,5 +41,38 @@ set_parameter_value<Parameter>::reduce(state& st) const
 template struct set_parameter_value<bool_parameter>;
 template struct set_parameter_value<int_parameter>;
 template struct set_parameter_value<float_parameter>;
+
+auto
+reset_parameter_to_default_value(parameter_id param_id) -> thunk_action
+{
+    return [=](auto&& get_state, auto&& dispatch) {
+        std::visit(
+                [&]<class P>(parameter::id_t<P> typed_param_id) {
+                    state const& st = get_state();
+
+                    dispatch(
+                            set_parameter_value{
+                                    typed_param_id,
+                                    st.params[typed_param_id]
+                                            .param.default_value});
+                },
+                param_id);
+    };
+}
+
+auto
+set_float_parameter_normalized(
+        float_parameter_id const param_id,
+        float const norm_value) -> thunk_action
+{
+    return [=](auto const& get_state, auto const& dispatch) {
+        state const& st = get_state();
+        float_parameter const& param = st.params[param_id].param;
+        dispatch(
+                set_float_parameter{
+                        param_id,
+                        param.from_normalized(param, norm_value)});
+    };
+}
 
 } // namespace piejam::runtime::actions

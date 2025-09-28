@@ -9,13 +9,14 @@ import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
 import PieJam.Models 1.0 as PJModels
+import PieJam.ParameterControls 1.0
 
 ChannelStripBase {
     id: root
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 2
+        spacing: 4
 
         HeaderLabel {
             Layout.fillWidth: true
@@ -24,41 +25,70 @@ ChannelStripBase {
             text: root.model ? root.model.name : ""
         }
 
-        ListView {
-            id: auxSends
-
+        StackLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            spacing: 2
+            currentIndex: root.model && root.model.aux ? 0 : 1
 
-            clip: true
-            boundsBehavior: Flickable.StopAtBounds
-            boundsMovement: Flickable.StopAtBounds
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            model: root.model ? root.model.auxSends : null
+                spacing: 4
 
-            delegate: AuxSend {
-                anchors.left: parent ? parent.left : undefined
-                anchors.right: parent ? parent.right : undefined
+                Label {
+                    Layout.fillWidth: true
 
-                model: item
+                    textFormat: Text.PlainText
+                    text: qsTr("Fader Tap")
+                }
 
-                onExpanded: auxSends.slideToIndex(index)
+                EnumComboBox {
+                    Layout.fillWidth: true
+
+                    model: root.model && root.model.aux ? root.model.aux.defaultFaderTap : null
+                }
             }
 
-            Behavior on contentY {
-                NumberAnimation { duration: 400; easing.type: Easing.InOutQuad }
-            }
+            ListView {
+                id: auxSends
 
-            function slideToIndex(idx) {
-                // Force delegate creation & correct geometry
-                auxSends.positionViewAtIndex(idx, ListView.Contain);
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-                // Animate to its Y position
-                var item = itemAtIndex(idx);
-                if (item) {
-                    contentY = item.y;
+                spacing: 2
+
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                boundsMovement: Flickable.StopAtBounds
+
+                model: root.model ? root.model.sends : null
+
+                delegate: AuxSend {
+                    anchors.left: parent ? parent.left : undefined
+                    anchors.right: parent ? parent.right : undefined
+
+                    expandedHeight: auxSends.height
+
+                    model: item
+
+                    onExpanded: auxSends.slideToIndex(index)
+                }
+
+                Behavior on contentY {
+                    NumberAnimation { duration: 400; easing.type: Easing.InOutQuad }
+                }
+
+                function slideToIndex(idx) {
+                    // Force delegate creation & correct geometry
+                    auxSends.positionViewAtIndex(idx, ListView.Contain);
+
+                    // Animate to its Y position
+                    var item = itemAtIndex(idx);
+                    if (item) {
+                        contentY = item.y;
+                    }
                 }
             }
         }

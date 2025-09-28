@@ -23,6 +23,9 @@ struct int_descriptor
 
     value_to_string_fn value_to_string{
             [](value_type x) { return std::to_string(x); }};
+
+    bool midi_assignable{true};
+    bool audio_graph_affecting{false};
 };
 
 } // namespace piejam::runtime::parameter

@@ -100,7 +100,7 @@ struct session
     {
         std::size_t channel_index;
         bool enabled;
-        mixer::fader_tap tap;
+        int fader_tap;
         float volume;
     };
 
@@ -117,10 +117,17 @@ struct session
         std::vector<mixer_aux_send> aux_sends;
     };
 
+    struct aux_channel
+    {
+        std::size_t channel_index;
+        int fader_tap;
+    };
+
     std::vector<external_audio_device_config> external_audio_input_devices;
     std::vector<external_audio_device_config> external_audio_output_devices;
     mixer_channel main_mixer_channel;
     std::vector<mixer_channel> mixer_channels;
+    std::vector<aux_channel> aux_channels;
 };
 
 auto load_session(std::istream&) -> session;

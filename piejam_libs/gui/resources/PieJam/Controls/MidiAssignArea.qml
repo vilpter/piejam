@@ -6,10 +6,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
-Item {
+SubscribableItem {
     id: root
-
-    property var model
 
     implicitWidth: 100
     implicitHeight: 100
@@ -101,11 +99,6 @@ Item {
         }
     }
 
-    enabled: MidiLearn.active
-    visible: MidiLearn.active
-
-    onModelChanged: {
-        if (root.model)
-            root.model.subscribed = Qt.binding(function() { return root.visible && MidiLearn.active })
-    }
+    enabled: root.model && MidiLearn.active
+    visible: root.model && MidiLearn.active
 }

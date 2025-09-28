@@ -118,9 +118,8 @@ apply_mixer_parameters(
 }
 
 auto
-find_mixer_channel_route(
-        mixer::state const& mixer_state,
-        std::size_t const& index) -> std::optional<mixer::channel_id>
+find_mixer_channel(mixer::state const& mixer_state, std::size_t const& index)
+        -> std::optional<mixer::channel_id>
 {
     if (index == 0)
     {
@@ -166,9 +165,8 @@ apply_mixer_io(
                         mixer_io.index);
 
             case persistence::session::mixer_io_type::channel:
-                if (auto found_channel_id = find_mixer_channel_route(
-                            mixer_state,
-                            mixer_io.index))
+                if (auto found_channel_id =
+                            find_mixer_channel(mixer_state, mixer_io.index))
                 {
                     return mixer::io_address_t{*found_channel_id};
                 }
@@ -191,7 +189,7 @@ apply_mixer_io(
 
         for (auto const& aux_send_data : aux_sends_data)
         {
-            if (auto route = find_mixer_channel_route(
+            if (auto route = find_mixer_channel(
                         mixer_state,
                         aux_send_data.channel_index))
             {
@@ -202,11 +200,35 @@ apply_mixer_io(
                             aux_send_data.volume);
 
                     aux_send_it->second.enabled = aux_send_data.enabled;
-                    aux_send_it->second.tap = aux_send_data.tap;
+                    params[aux_send_it->second.fader_tap].value.set(
+                            aux_send_data.fader_tap);
                 }
             }
         }
     }(mixer_state.channels.lock()[channel_id]);
+}
+
+void
+apply_aux_channels(
+        parameters_map& params,
+        mixer::state& mixer_state,
+        std::vector<persistence::session::aux_channel> const& aux_channels_data)
+{
+    for (auto const& aux_channel_data : aux_channels_data)
+    {
+        if (auto aux_id = find_mixer_channel(
+                    mixer_state,
+                    aux_channel_data.channel_index);
+            aux_id)
+        {
+            if (auto aux_channel = mixer_state.aux_channels.find(*aux_id);
+                aux_channel)
+            {
+                params[aux_channel->default_fader_tap].value.set(
+                        aux_channel_data.fader_tap);
+            }
+        }
+    }
 }
 
 } // namespace
@@ -268,6 +290,8 @@ apply_session::reduce(state& st) const
             st,
             st.mixer_state.main,
             session->main_mixer_channel.fx_chain);
+
+    apply_aux_channels(st.params, st.mixer_state, session->aux_channels);
 
     runtime::update_midi_assignments(st, mixer_midi_assignments);
 

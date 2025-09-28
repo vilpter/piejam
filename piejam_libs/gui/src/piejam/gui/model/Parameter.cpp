@@ -10,8 +10,6 @@
 #include <piejam/gui/model/MidiAssignable.h>
 #include <piejam/gui/model/StereoLevel.h>
 
-#include <piejam/runtime/actions/reset_fx_parameter_to_default_value.h>
-#include <piejam/runtime/actions/set_float_parameter_normalized.h>
 #include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
@@ -37,11 +35,19 @@ Parameter::Parameter(
         ParameterId const& paramId)
     : SubscribableModel(state_access)
     , m_paramId{paramId}
-    , m_midi{make_pimpl<MidiAssignable>(state_access, paramId)}
 {
     setName(QString::fromStdString(observe_once(
             runtime::selectors::make_fx_parameter_name_selector(m_paramId))));
+
+    if (observe_once(
+                runtime::selectors::make_parameter_is_midi_assignable_selector(
+                        paramId)))
+    {
+        m_midi = std::make_unique<MidiAssignable>(state_access, paramId);
+    }
 }
+
+Parameter::~Parameter() = default;
 
 auto
 Parameter::type() const noexcept -> Type
@@ -75,7 +81,7 @@ Parameter::midi() const noexcept -> MidiAssignable*
 void
 Parameter::resetToDefault()
 {
-    dispatch(runtime::actions::reset_fx_parameter_to_default_value(m_paramId));
+    dispatch(runtime::actions::reset_parameter_to_default_value(m_paramId));
 }
 
 auto

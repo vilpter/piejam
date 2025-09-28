@@ -31,7 +31,6 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/actions/refresh_sound_cards.h
     include/piejam/runtime/actions/reload_missing_plugins.h
     include/piejam/runtime/actions/request_info_update.h
-    include/piejam/runtime/actions/reset_fx_parameter_to_default_value.h
     include/piejam/runtime/actions/root_view_actions.h
     include/piejam/runtime/actions/save_app_config.h
     include/piejam/runtime/actions/save_session.h
@@ -39,7 +38,6 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/actions/scan_ladspa_fx_plugins.h
     include/piejam/runtime/actions/select_period_size.h
     include/piejam/runtime/actions/select_sample_rate.h
-    include/piejam/runtime/actions/set_float_parameter_normalized.h
     include/piejam/runtime/actions/set_parameter_value.h
     include/piejam/runtime/actions/set_string.h
     include/piejam/runtime/audio_engine.h
@@ -140,11 +138,9 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/actions/insert_fx_module.cpp
     src/piejam/runtime/actions/mixer_actions.cpp
     src/piejam/runtime/actions/move_fx_module.cpp
-    src/piejam/runtime/actions/reset_fx_parameter_to_default_value.cpp
     src/piejam/runtime/actions/root_view_actions.cpp
     src/piejam/runtime/actions/scan_for_sound_cards.cpp
     src/piejam/runtime/actions/scan_ladspa_fx_plugins.cpp
-    src/piejam/runtime/actions/set_float_parameter_normalized.cpp
     src/piejam/runtime/actions/set_parameter_value.cpp
     src/piejam/runtime/actions/set_string.cpp
     src/piejam/runtime/audio_engine.cpp

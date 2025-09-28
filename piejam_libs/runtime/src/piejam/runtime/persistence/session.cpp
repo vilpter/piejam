@@ -86,10 +86,18 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-        fader_tap,
+        aux_send_fader_tap,
         {
-                {fader_tap::pre, "pre"},
-                {fader_tap::post, "post"},
+                {aux_send_fader_tap::auto_, "auto"},
+                {aux_send_fader_tap::pre, "pre"},
+                {aux_send_fader_tap::post, "post"},
+        })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+        aux_channel_fader_tap,
+        {
+                {aux_channel_fader_tap::pre, "pre"},
+                {aux_channel_fader_tap::post, "post"},
         })
 
 } // namespace mixer
@@ -242,7 +250,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         session::mixer_aux_send,
         channel_index,
         enabled,
-        tap,
+        fader_tap,
         volume);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
@@ -258,11 +266,17 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         aux_sends);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+        session::aux_channel,
+        channel_index,
+        fader_tap);
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         session,
         external_audio_input_devices,
         external_audio_output_devices,
         main_mixer_channel,
-        mixer_channels);
+        mixer_channels,
+        aux_channels);
 
 using upgrade_function = void (*)(nlohmann::json&);
 using upgrade_functions_array =

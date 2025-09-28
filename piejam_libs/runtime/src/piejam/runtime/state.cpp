@@ -4,16 +4,18 @@
 
 #include <piejam/runtime/state.h>
 
-#include <piejam/audio/types.h>
-#include <piejam/functional/operators.h>
-#include <piejam/indexed_access.h>
-#include <piejam/ladspa/port_descriptor.h>
-#include <piejam/numeric/dB_convert.h>
+#include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/fader_mapping.h>
 #include <piejam/runtime/internal_fx_module_factory.h>
 #include <piejam/runtime/ladspa_fx/ladspa_fx_module.h>
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter_factory.h>
+
+#include <piejam/audio/types.h>
+#include <piejam/functional/operators.h>
+#include <piejam/indexed_access.h>
+#include <piejam/ladspa/port_descriptor.h>
+#include <piejam/numeric/dB_convert.h>
 #include <piejam/set_if.h>
 #include <piejam/tuple_element_compare.h>
 
@@ -352,8 +354,14 @@ make_aux_send(
             aux_id,
             mixer::aux_send{
                     .enabled = false,
+                    .fader_tap = ui_params_factory.make_parameter(
+                            enum_parameter<mixer::aux_send_fader_tap>(
+                                    "Fader Tap",
+                                    &mixer::aux_send::to_fader_tap_string,
+                                    false /* midi_assignable */,
+                                    true /* routing */)),
                     .volume = ui_params_factory.make_parameter(
-                            parameter::float_descriptor{
+                            float_parameter{
                                     .name = box("Send"s),
                                     .default_value = 0.f,
                                     .min = 0.f,
@@ -483,23 +491,38 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                           ? mixer::io_address_t{mixer::mix_input{}}
                           : mixer::io_address_t{},
             .out = st.mixer_state.main,
-            .aux_sends = box(
-                    make_aux_sends(st.mixer_state.channels, params_factory)),
+            .aux_sends = type == mixer::channel_type::aux
+                                 ? box{mixer::aux_sends_t{}}
+                                 : box{make_aux_sends(
+                                           st.mixer_state.channels,
+                                           params_factory)},
     });
     emplace_back(st.mixer_state.inputs, channel_id);
 
-    // add as aux_send to each channel
     if (type == mixer::channel_type::aux)
     {
+        // add as aux_send to each channel
         for (auto& [id, channel] : mixer_channels)
         {
-            if (channel_id != id)
+            if (channel.type != mixer::channel_type::aux)
             {
                 make_aux_send(
                         *channel.aux_sends.lock(),
                         channel_id,
                         params_factory);
             }
+
+            st.mixer_state.aux_channels.insert(
+                    channel_id,
+                    mixer::aux_channel{
+                            .default_fader_tap = params_factory.make_parameter(
+                                    enum_parameter<
+                                            mixer::aux_channel_fader_tap>(
+                                            "Fader Tap"s,
+                                            &mixer::aux_channel::
+                                                    to_fader_tap_string,
+                                            false /* midi_assignable */,
+                                            true /* routing */))});
         }
     }
 

@@ -4,7 +4,6 @@
 
 module PieJam.FxChainControls
 EnumButtonGroup 1.0 EnumButtonGroup.qml
-EnumComboBox 1.0 EnumComboBox.qml
 IntSlider 1.0 IntSlider.qml
 ParameterControl 1.0 ParameterControl.qml
 ParameterQuickSpinBox 1.0 ParameterQuickSpinBox.qml

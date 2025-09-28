@@ -20,7 +20,6 @@ struct audio_engine_action_visitor
               set_mixer_channel_route<mixer::io_socket::in>,
               set_mixer_channel_route<mixer::io_socket::out>,
               enable_mixer_channel_aux_route,
-              toggle_mixer_channel_aux_fader_tap,
               delete_fx_module,
               insert_internal_fx_module,
               insert_ladspa_fx_module,
