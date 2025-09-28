@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <boost/assert.hpp>
 #include <boost/outcome/std_result.hpp>
 
 #include <chrono>
