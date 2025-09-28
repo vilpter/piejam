@@ -94,4 +94,24 @@ TEST(parameters_map, cached_is_updated_after_set)
     EXPECT_EQ(2.f, *cached);
 }
 
+TEST(parameters_map, equality)
+{
+    parameters_map m1;
+
+    auto id = id_t<float_parameter>::generate();
+    m1.emplace(id);
+
+    EXPECT_EQ(m1, m1);
+
+    parameters_map m2;
+
+    m2.emplace(id);
+
+    EXPECT_NE(m1, m2);
+
+    auto m3 = m1;
+
+    EXPECT_EQ(m1, m3);
+}
+
 } // namespace piejam::runtime::parameter::test

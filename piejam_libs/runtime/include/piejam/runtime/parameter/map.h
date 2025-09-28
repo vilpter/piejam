@@ -102,6 +102,8 @@ public:
         return it->second;
     }
 
+    auto operator==(map const& other) const noexcept -> bool = default;
+
 private:
     boost::container::flat_map<std::type_index, std::shared_ptr<void>> m_maps;
 };
