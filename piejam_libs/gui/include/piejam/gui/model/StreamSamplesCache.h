@@ -6,7 +6,7 @@
 
 #include <piejam/algorithm/shift_push_back.h>
 
-#include <boost/range/adaptor/strided.hpp>
+#include <boost/range/iterator_range_core.hpp>
 
 #include <ranges>
 #include <span>
@@ -41,7 +41,7 @@ public:
 
         algorithm::shift_push_back(
                 m_cached,
-                boost::adaptors::stride(streamFramesSubRange, m_stride));
+                streamFramesSubRange | std::views::stride(m_stride));
 
         m_restFrames =
                 static_cast<int>(std::ranges::size(streamFramesSubRange)) %

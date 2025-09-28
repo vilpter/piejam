@@ -4,13 +4,11 @@
 
 #include <piejam/runtime/mixer.h>
 
-#include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/functional/get.h>
 #include <piejam/io_pair.h>
 
 #include <boost/hof/compose.hpp>
 #include <boost/hof/unpack.hpp>
-#include <boost/range/adaptor/filtered.hpp>
 
 #include <algorithm>
 #include <ranges>
@@ -59,26 +57,25 @@ using channels_io_t = boost::container::flat_map<channel_id, channel_io_t>;
 auto
 extract_channels_io(channels_t const& channels) -> channels_io_t
 {
-    using boost::adaptors::filtered;
     namespace bhof = boost::hof;
 
     auto transformed = std::views::transform(
             channels,
             bhof::unpack([](auto const id, auto const& channel) {
-                auto aux_sends = algorithm::transform_to_vector(
+                auto active_aux_sends =
                         *channel.aux_sends |
-                                filtered(
-                                        bhof::compose(
-                                                &mixer::aux_send::enabled,
-                                                get_by_index<1>)),
-                        get_by_index<0>);
+                        std::views::filter(
+                                bhof::compose(
+                                        &mixer::aux_send::enabled,
+                                        get_by_index<1>)) |
+                        std::views::keys | std::ranges::to<std::vector>();
 
                 return std::pair(
                         id,
                         channel_io_t{
                                 .in = channel.in,
                                 .out = channel.out,
-                                .aux_sends = std::move(aux_sends)});
+                                .aux_sends = std::move(active_aux_sends)});
             }));
 
     return channels_io_t(

@@ -13,7 +13,7 @@
 #include <piejam/functional/operators.h>
 #include <piejam/switch_cast.h>
 
-#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/iterator_range_core.hpp>
 
 #include <memory>
 
@@ -35,11 +35,11 @@ struct StreamProcessor
                 break;
 
             default:
-                static_cast<Derived&>(*this).process(boost::adaptors::transform(
+                static_cast<Derived&>(*this).process(
                         boost::make_iterator_range(
                                 std::begin(samples),
-                                std::end(samples)),
-                        multiplies(g)));
+                                std::end(samples)) |
+                        std::views::transform(multiplies(g)));
                 break;
         }
     }

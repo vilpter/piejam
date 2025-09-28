@@ -6,7 +6,7 @@
 
 #include <piejam/audio/multichannel_view.h>
 
-#include <boost/range/adaptor/transformed.hpp>
+#include <ranges>
 
 namespace piejam::gui::model
 {
@@ -40,7 +40,7 @@ toRight(StereoAudioStream stream)
 inline auto
 toMiddle(StereoAudioStream stream)
 {
-    return stream.frames() | boost::adaptors::transformed([](auto frame) {
+    return stream.frames() | std::views::transform([](auto frame) {
                return frame[0] + frame[1];
            });
 }
@@ -48,7 +48,7 @@ toMiddle(StereoAudioStream stream)
 inline auto
 toSide(StereoAudioStream stream)
 {
-    return stream.frames() | boost::adaptors::transformed([](auto frame) {
+    return stream.frames() | std::views::transform([](auto frame) {
                return frame[0] - frame[1];
            });
 }
