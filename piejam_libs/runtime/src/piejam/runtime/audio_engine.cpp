@@ -116,15 +116,15 @@ make_mixer_components(
         component_map& prev_comps,
         audio::sample_rate const sample_rate,
         strings_t const& strings,
-        mixer::channels_t const& channels,
+        mixer::state const& mixer_state,
         parameter_processor_factory& param_procs,
         processors::stream_processor_factory& stream_procs)
 {
-    for (auto const& [mixer_channel_id, mixer_channel] : channels)
+    for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
         mixer_input_key const in_key{
                 .channel_id = mixer_channel_id,
-                .route = mixer_channel.in};
+                .route = mixer_state.io_map.in()[mixer_channel_id]};
         if (auto comp = prev_comps.find(in_key))
         {
             comps.insert(in_key, std::move(comp));
@@ -347,13 +347,14 @@ connect_mixer_channel_with_fx_chain(
 void
 connect_mixer_input(
         audio::engine::graph& g,
-        [[maybe_unused]] mixer::channels_t const& channels,
+        mixer::state const& mixer_state,
         external_audio::devices_t const& device_buses,
         component_map const& comps,
         std::span<audio::engine::input_processor> const input_procs,
-        mixer::channel const& mixer_channel,
+        mixer::channel_id const& mixer_channel_id,
         audio::engine::component& mixer_channel_in)
 {
+    auto const& mixer_channel = mixer_state.channels[mixer_channel_id];
     std::visit(
             boost::hof::match(
                     [&](external_audio::device_id const device_id) {
@@ -378,7 +379,8 @@ connect_mixer_input(
                         }
                     },
                     [&](mixer::channel_id const src_channel_id) {
-                        BOOST_ASSERT(channels.contains(src_channel_id));
+                        BOOST_ASSERT(
+                                mixer_state.channels.contains(src_channel_id));
 
                         audio::engine::component* const
                                 source_mixer_channel_out =
@@ -393,13 +395,13 @@ connect_mixer_input(
                                 mixer_channel_in);
                     },
                     [](auto const&) {}),
-            mixer_channel.in);
+            mixer_state.io_map.in()[mixer_channel_id]);
 }
 
 void
 connect_mixer_output(
         audio::engine::graph& g,
-        mixer::channels_t const& mixer_channels,
+        mixer::state const& mixer_state,
         external_audio::devices_t const& external_audio_devices,
         component_map const& comps,
         std::span<audio::engine::output_processor> const output_procs,
@@ -446,16 +448,16 @@ connect_mixer_output(
                         }
                     },
                     [&](mixer::channel_id const dst_channel_id) {
-                        mixer::channel const& dst_channel =
-                                mixer_channels[dst_channel_id];
+                        auto const& dst_channel_in =
+                                mixer_state.io_map.in()[dst_channel_id];
 
                         if (std::holds_alternative<mixer::mix_input>(
-                                    dst_channel.in))
+                                    dst_channel_in))
                         {
                             auto* const dst_mixer_channel_in_comp =
                                     comps.find(mixer_input_key{
                                                        dst_channel_id,
-                                                       dst_channel.in})
+                                                       dst_channel_in})
                                             .get();
                             BOOST_ASSERT(dst_mixer_channel_in_comp);
 
@@ -484,7 +486,9 @@ make_graph(
     for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
         audio::engine::component* const mixer_channel_in =
-                comps.find(mixer_input_key{mixer_channel_id, mixer_channel.in})
+                comps.find(mixer_input_key{
+                                   mixer_channel_id,
+                                   mixer_state.io_map.in()[mixer_channel_id]})
                         .get();
         audio::engine::component* const mixer_channel_out =
                 comps.find(mixer_output_key{mixer_channel_id}).get();
@@ -497,11 +501,11 @@ make_graph(
 
         connect_mixer_input(
                 g,
-                mixer_state.channels,
+                mixer_state,
                 device_buses,
                 comps,
                 input_procs,
-                mixer_channel,
+                mixer_channel_id,
                 *mixer_channel_in);
 
         connect_mixer_channel_with_fx_chain(
@@ -513,12 +517,12 @@ make_graph(
 
         connect_mixer_output(
                 g,
-                mixer_state.channels,
+                mixer_state,
                 device_buses,
                 comps,
                 output_procs,
                 output_clip_procs,
-                mixer_channel.out,
+                mixer_state.io_map.out()[mixer_channel_id],
                 *mixer_channel_out);
 
         for (auto const& [aux, aux_send] : *mixer_channel.aux_sends)
@@ -571,7 +575,7 @@ make_graph(
 
                 connect_mixer_output(
                         g,
-                        mixer_state.channels,
+                        mixer_state,
                         device_buses,
                         comps,
                         output_procs,
@@ -817,7 +821,7 @@ audio_engine::rebuild(
             m_impl->comps,
             m_impl->sample_rate,
             st.strings,
-            st.mixer_state.channels,
+            st.mixer_state,
             m_impl->param_procs,
             m_impl->stream_procs);
     make_fx_chain_components(
@@ -829,7 +833,9 @@ audio_engine::rebuild(
             m_impl->stream_procs,
             ladspa_fx_proc_factory,
             m_impl->sample_rate);
-    auto const solo_groups = runtime::solo_groups(st.mixer_state.channels);
+    auto const solo_groups = runtime::solo_groups(
+            st.mixer_state.channels,
+            st.mixer_state.io_map);
     make_solo_group_components(comps, solo_groups, m_impl->param_procs);
 
     processor_map procs;

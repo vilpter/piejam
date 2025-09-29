@@ -10,6 +10,8 @@
 #include <piejam/default.h>
 #include <piejam/fwd.h>
 
+#include <boost/container/container_fwd.hpp>
+
 #include <variant>
 #include <vector>
 
@@ -42,6 +44,9 @@ struct mix_input
 
 using io_address_t = std::
         variant<default_t, mix_input, external_audio::device_id, channel_id>;
+
+using io_map = io_pair<
+        boxed_map<boost::container::flat_map<channel_id, io_address_t>>>;
 
 using channel_ids_t = std::vector<channel_id>;
 

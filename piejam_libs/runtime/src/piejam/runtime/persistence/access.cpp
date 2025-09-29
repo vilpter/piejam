@@ -4,12 +4,13 @@
 
 #include <piejam/runtime/persistence/access.h>
 
-#include <piejam/algorithm/index_of.h>
-#include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/runtime/fx/unavailable_ladspa.h>
 #include <piejam/runtime/persistence/app_config.h>
 #include <piejam/runtime/persistence/session.h>
 #include <piejam/runtime/state.h>
+
+#include <piejam/algorithm/index_of.h>
+#include <piejam/algorithm/transform_to_vector.h>
 
 #include <spdlog/spdlog.h>
 
@@ -289,8 +290,8 @@ export_mixer_channel(
     result.midi =
             export_midi_assignments(channel.parameters, st.midi_assignments);
     result.parameter = export_parameter_values(channel.parameters, st.params);
-    result.in = export_mixer_io(st, channel.in);
-    result.out = export_mixer_io(st, channel.out);
+    result.in = export_mixer_io(st, st.mixer_state.io_map.in()[channel_id]);
+    result.out = export_mixer_io(st, st.mixer_state.io_map.out()[channel_id]);
     result.aux_sends = export_mixer_aux_sends(st, channel.aux_sends);
     return result;
 }

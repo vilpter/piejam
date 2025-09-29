@@ -25,7 +25,9 @@ using channel_infos =
         boost::container::flat_map<mixer::channel_id, channel_info>;
 
 auto
-gather_channel_infos(mixer::channels_t const& channels)
+gather_channel_infos(
+        mixer::channels_t const& channels,
+        mixer::io_map const& io_map)
 {
     std::size_t const num_channels = channels.size();
 
@@ -36,10 +38,8 @@ gather_channel_infos(mixer::channels_t const& channels)
         if (auto const* const target_id = std::get_if<mixer::channel_id>(&out);
             target_id)
         {
-            auto const* const target_channel = channels.find(*target_id);
-            BOOST_ASSERT(target_channel);
-
-            if (std::holds_alternative<mixer::mix_input>(target_channel->in))
+            if (std::holds_alternative<mixer::mix_input>(
+                        io_map.in()[*target_id]))
             {
                 result[current].children.insert(*target_id);
                 result[*target_id].mixins.insert(current);
@@ -56,13 +56,13 @@ gather_channel_infos(mixer::channels_t const& channels)
         info.solo_param = channel.solo();
 
         if (auto const* const in_id =
-                    std::get_if<mixer::channel_id>(&channel.in);
+                    std::get_if<mixer::channel_id>(&io_map.in()[id]);
             in_id)
         {
             result[*in_id].children.insert(id);
         }
 
-        add(id, channel.out);
+        add(id, io_map.out()[id]);
 
         for (auto const& [aux, aux_send] : *channel.aux_sends)
         {
@@ -99,9 +99,10 @@ gather_solo_group(
 } // namespace
 
 auto
-solo_groups(mixer::channels_t const& channels) -> solo_groups_t
+solo_groups(mixer::channels_t const& channels, mixer::io_map const& io_map)
+        -> solo_groups_t
 {
-    auto infos = gather_channel_infos(channels);
+    auto infos = gather_channel_infos(channels, io_map);
 
     std::size_t const num_channels = channels.size();
 

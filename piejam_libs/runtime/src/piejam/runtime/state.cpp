@@ -80,13 +80,15 @@ make_initial_state() -> state
     state st;
     st.mixer_state.main =
             add_mixer_channel(st, mixer::channel_type::stereo, "Main");
+
     // main doesn't belong into inputs
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
+
     // reset io
-    [](mixer::channel& main_channel) {
-        main_channel.in = mixer::mix_input{};
-        main_channel.out = default_t{};
-    }(st.mixer_state.channels.lock()[st.mixer_state.main]);
+    st.mixer_state.io_map.in().lock()[st.mixer_state.main] = mixer::mix_input{};
+    st.mixer_state.io_map.out().lock()[st.mixer_state.main] = default_t{};
+
+    // enable record on main
     st.params[st.mixer_state.channels[st.mixer_state.main].record()].value.set(
             true);
     return st;
@@ -495,10 +497,6 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                              .default_value = false})},
                     }},
                     .out_stream = make_stream(st.streams, 2),
-                    .in = type == mixer::channel_type::aux
-                                  ? mixer::io_address_t{mixer::mix_input{}}
-                                  : mixer::io_address_t{},
-                    .out = st.mixer_state.main,
                     .aux_sends = type == mixer::channel_type::aux
                                          ? box{mixer::aux_sends_t{}}
                                          : box{make_aux_sends(
@@ -506,6 +504,13 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                                    params_factory)},
             });
     emplace_back(st.mixer_state.inputs, channel_id);
+
+    st.mixer_state.io_map.in().emplace(
+            channel_id,
+            type == mixer::channel_type::aux
+                    ? mixer::io_address_t{mixer::mix_input{}}
+                    : mixer::io_address_t{});
+    st.mixer_state.io_map.out().emplace(channel_id, st.mixer_state.main);
 
     if (type == mixer::channel_type::aux)
     {
@@ -537,6 +542,22 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
     st.mixer_state.fx_chains.emplace(channel_id);
 
     return channel_id;
+}
+
+static void
+reset_io_targets(mixer::io_map& io_map, mixer::io_address_t target)
+{
+    for (auto& id_addr_map : io_map)
+    {
+        auto id_addr_map_locked = id_addr_map.lock();
+        for (auto&& [id, addr] : id_addr_map)
+        {
+            if (addr == target)
+            {
+                id_addr_map_locked[id] = default_t{};
+            }
+        }
+    }
 }
 
 void
@@ -592,12 +613,11 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
 
     st.streams.erase(mixer_channel.out_stream);
 
-    auto const addr = mixer::io_address_t{mixer_channel_id};
-    auto const equal_to_mixer_channel = equal_to(addr);
-    for (auto& [_, channel] : mixer_channels)
+    reset_io_targets(st.mixer_state.io_map, mixer_channel_id);
+
+    for (auto& io_dir_map : st.mixer_state.io_map)
     {
-        set_if(channel.in, equal_to_mixer_channel, default_t{});
-        set_if(channel.out, equal_to_mixer_channel, default_t{});
+        io_dir_map.erase(mixer_channel_id);
     }
 
     st.mixer_state.fx_chains.erase(mixer_channel_id);
@@ -615,16 +635,7 @@ remove_external_audio_device(
 
     st.strings.erase(name_id);
 
-    auto mixer_channels = st.mixer_state.channels.lock();
-    {
-        auto const equal_to_device = equal_to(mixer::io_address_t(device_id));
-
-        for (auto& [_, mixer_channel] : mixer_channels)
-        {
-            set_if(mixer_channel.in, equal_to_device, default_t{});
-            set_if(mixer_channel.out, equal_to_device, default_t{});
-        }
-    }
+    reset_io_targets(st.mixer_state.io_map, device_id);
 
     st.external_audio_state.devices.erase(device_id);
 

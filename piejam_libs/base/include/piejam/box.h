@@ -70,6 +70,11 @@ public:
         auto operator=(write_lock const&) = delete;
         auto operator=(write_lock&&) = delete;
 
+        auto get() const noexcept -> T&
+        {
+            return *m_value;
+        }
+
         auto operator*() const noexcept -> T&
         {
             return *m_value;

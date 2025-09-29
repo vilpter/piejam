@@ -28,13 +28,14 @@ struct channel_io_t
 using channels_io_t = boost::container::flat_map<channel_id, channel_io_t>;
 
 auto
-extract_channels_io(channels_t const& channels) -> channels_io_t
+extract_channels_io(channels_t const& channels, mixer::io_map const& io_map)
+        -> channels_io_t
 {
     namespace bhof = boost::hof;
 
     auto transformed = std::views::transform(
             channels,
-            bhof::unpack([](auto const id, auto const& channel) {
+            bhof::unpack([&](auto const id, auto const& channel) {
                 auto active_aux_sends =
                         *channel.aux_sends |
                         std::views::filter(
@@ -46,7 +47,7 @@ extract_channels_io(channels_t const& channels) -> channels_io_t
                 return std::pair(
                         id,
                         channel_io_t{
-                                .port = {channel.in, channel.out},
+                                .port = {io_map.in()[id], io_map.out()[id]},
                                 .aux_sends = std::move(active_aux_sends)});
             }));
 
@@ -146,10 +147,12 @@ has_cycle(io_graph g)
 
 template <io_direction D>
 auto
-valid_io_channels(channels_t const& channels, channel_id const ch_id)
-        -> std::vector<mixer::channel_id>
+valid_io_channels(
+        channels_t const& channels,
+        channel_id const ch_id,
+        mixer::io_map const& io_map) -> std::vector<mixer::channel_id>
 {
-    auto channels_io = extract_channels_io(channels);
+    auto channels_io = extract_channels_io(channels, io_map);
 
     std::vector<mixer::channel_id> valid_ids;
     for (auto const& [mixer_channel_id, mixer_channel] : channels)
@@ -191,10 +194,13 @@ valid_io_channels(channels_t const& channels, channel_id const ch_id)
 } // namespace
 
 auto
-is_mix_input_valid(channels_t const& channels, channel_id const ch_id) -> bool
+is_mix_input_valid(
+        channels_t const& channels,
+        channel_id const ch_id,
+        mixer::io_map const& io_map) -> bool
 {
     BOOST_ASSERT(channels[ch_id].type != mixer::channel_type::mono);
-    auto channels_io = extract_channels_io(channels);
+    auto channels_io = extract_channels_io(channels, io_map);
     channels_io[ch_id].port.in() = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));
 }
@@ -203,7 +209,8 @@ auto
 can_toggle_aux(
         channels_t const& channels,
         channel_id const ch_id,
-        channel_id const aux_id) -> bool
+        channel_id const aux_id,
+        mixer::io_map const& io_map) -> bool
 {
     mixer::channel const* const channel = channels.find(ch_id);
     if (!channel)
@@ -222,7 +229,7 @@ can_toggle_aux(
         return true; // we can always disable an enabled aux
     }
 
-    auto channels_io = extract_channels_io(channels);
+    auto channels_io = extract_channels_io(channels, io_map);
 
     channels_io[ch_id].aux_sends.emplace_back(aux_id);
     return !has_cycle(make_channels_io_graph(channels_io));
@@ -232,15 +239,22 @@ auto
 valid_channels(
         io_direction const s,
         channels_t const& channels,
-        channel_id const ch_id) -> std::vector<channel_id>
+        channel_id const ch_id,
+        mixer::io_map const& io_map) -> std::vector<channel_id>
 {
     switch (s)
     {
         case io_direction::input:
-            return valid_io_channels<io_direction::input>(channels, ch_id);
+            return valid_io_channels<io_direction::input>(
+                    channels,
+                    ch_id,
+                    io_map);
 
         case io_direction::output:
-            return valid_io_channels<io_direction::output>(channels, ch_id);
+            return valid_io_channels<io_direction::output>(
+                    channels,
+                    ch_id,
+                    io_map);
     }
 
     return {};

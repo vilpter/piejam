@@ -15,8 +15,10 @@
 #include <piejam/audio/types.h>
 #include <piejam/boxed_map.h>
 #include <piejam/boxed_string.h>
+#include <piejam/entity_data_map.h>
 #include <piejam/entity_map.h>
 #include <piejam/io_direction.h>
+#include <piejam/io_pair.h>
 
 #include <boost/assert.hpp>
 
@@ -69,9 +71,6 @@ struct channel
 
     audio_stream_id out_stream{};
 
-    io_address_t in{};
-    io_address_t out{};
-
     box<aux_sends_t> aux_sends{};
 
     auto operator==(channel const&) const noexcept -> bool = default;
@@ -121,6 +120,8 @@ struct state
     box<channel_ids_t> inputs;
     channel_id main;
 
+    mixer::io_map io_map;
+
     using aux_channels_t = boxed_map<entity_map<aux_channel, channel_id>>;
     aux_channels_t aux_channels;
 
@@ -128,11 +129,13 @@ struct state
     fx_chains_t fx_chains;
 };
 
-auto is_mix_input_valid(channels_t const&, channel_id) -> bool;
+auto is_mix_input_valid(channels_t const&, channel_id, io_map const&) -> bool;
 
-auto can_toggle_aux(channels_t const&, channel_id, channel_id aux_id) -> bool;
+auto
+can_toggle_aux(channels_t const&, channel_id, channel_id aux_id, io_map const&)
+        -> bool;
 
-auto valid_channels(io_direction, channels_t const&, channel_id)
+auto valid_channels(io_direction, channels_t const&, channel_id, io_map const&)
         -> std::vector<channel_id>;
 
 } // namespace piejam::runtime::mixer

@@ -4,12 +4,8 @@
 
 #include <piejam/runtime/actions/mixer_actions.h>
 
-#include <piejam/enum.h>
 #include <piejam/functional/get.h>
-#include <piejam/runtime/actions/delete_fx_module.h>
 #include <piejam/runtime/state.h>
-
-#include <boost/hof/compose.hpp>
 
 #include <iterator>
 
@@ -27,15 +23,15 @@ add_mixer_channel::reduce(state& st) const
         for (auto device_id : *st.external_audio_state.inputs)
         {
             auto it = std::ranges::find(
-                    st.mixer_state.channels,
+                    st.mixer_state.io_map.in(),
                     mixer::io_address_t{device_id},
-                    boost::hof::compose(&mixer::channel::in, get_by_index<1>));
+                    get_by_index<1>);
 
-            if (it == st.mixer_state.channels.end() &&
+            if (it == st.mixer_state.io_map.in().end() &&
                 st.external_audio_state.devices[device_id].bus_type ==
                         to_bus_type(channel_type))
             {
-                st.mixer_state.channels.lock()[added_mixer_channel_id].in =
+                st.mixer_state.io_map.in().lock()[added_mixer_channel_id] =
                         device_id;
                 break;
             }
@@ -59,18 +55,12 @@ set_mixer_channel_color::reduce(state& st) const
 void
 set_mixer_channel_route::reduce(state& st) const
 {
-    [this](mixer::channel& mixer_channel) {
-        switch (port)
-        {
-            case io_direction::input:
-                mixer_channel.in = route;
-                break;
-
-            case io_direction::output:
-                mixer_channel.out = route;
-                break;
-        }
-    }(st.mixer_state.channels.lock()[channel_id]);
+    BOOST_ASSERT_MSG(
+            !(st.mixer_state.channels[channel_id].type ==
+                      mixer::channel_type::aux &&
+              port == io_direction::input),
+            "changing aux input is not allowed");
+    st.mixer_state.io_map[port].lock()[channel_id] = route;
 }
 
 void

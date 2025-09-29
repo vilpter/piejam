@@ -148,10 +148,12 @@ apply_mixer_io(
         }
     };
 
-    [&](mixer::channel& channel) {
-        channel.in = find_route(in, io_direction::input);
-        channel.out = find_route(out, io_direction::output);
+    mixer_state.io_map.in().lock()[channel_id] =
+            find_route(in, io_direction::input);
+    mixer_state.io_map.out().lock()[channel_id] =
+            find_route(out, io_direction::output);
 
+    [&](mixer::channel& channel) {
         auto aux_sends = channel.aux_sends.lock();
 
         for (auto const& aux_send_data : aux_sends_data)
