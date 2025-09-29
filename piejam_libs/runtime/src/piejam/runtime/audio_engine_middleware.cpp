@@ -91,11 +91,11 @@ struct update_devices final
         };
 
         update_channels(
-                selected_sc.num_channels.in,
+                selected_sc.num_channels.in(),
                 *st.external_audio_state.inputs);
 
         update_channels(
-                selected_sc.num_channels.out,
+                selected_sc.num_channels.out(),
                 *st.external_audio_state.outputs);
     }
 };
@@ -506,8 +506,8 @@ audio_engine_middleware::start_engine(state const& st)
         m_engine = std::make_unique<audio_engine>(
                 m_workers,
                 st.sample_rate,
-                st.selected_sound_card.num_channels.in,
-                st.selected_sound_card.num_channels.out);
+                st.selected_sound_card.num_channels.in(),
+                st.selected_sound_card.num_channels.out());
 
         m_io_process->start(
                 m_audio_thread_config,

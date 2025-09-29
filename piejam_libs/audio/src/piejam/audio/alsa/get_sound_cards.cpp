@@ -209,9 +209,9 @@ get_sound_card_descriptors(sound_card_info const& sc)
         std::filesystem::path in_path;
         std::filesystem::path out_path;
 
-        std::tie(in_path, desc.num_channels.in) =
+        std::tie(in_path, desc.num_channels.in()) =
                 get_stream(SNDRV_PCM_STREAM_CAPTURE);
-        std::tie(out_path, desc.num_channels.out) =
+        std::tie(out_path, desc.num_channels.out()) =
                 get_stream(SNDRV_PCM_STREAM_PLAYBACK);
         desc.impl_data =
                 stream_descriptors{std::move(in_path), std::move(out_path)};

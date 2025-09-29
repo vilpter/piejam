@@ -173,8 +173,8 @@ TEST_F(audio_engine_middleware_test, initiate_device_selection)
     sut(make_middleware_functors(mf_mock), in_action);
 
     EXPECT_EQ(1u, st.selected_sound_card.index);
-    EXPECT_EQ(2u, st.selected_sound_card.num_channels.in);
-    EXPECT_EQ(2u, st.selected_sound_card.num_channels.out);
+    EXPECT_EQ(2u, st.selected_sound_card.num_channels.in());
+    EXPECT_EQ(2u, st.selected_sound_card.num_channels.out());
     EXPECT_EQ(48000u, st.sample_rate.value());
     EXPECT_EQ(192u, st.period_size.value());
 }

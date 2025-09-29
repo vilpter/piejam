@@ -110,8 +110,8 @@ selector<box<sound_card_choice>> const select_sound_card([](state const& st) {
                                 [](auto const& desc) {
                                     return sound_card_info{
                                             .name = desc.name,
-                                            .num_ins = desc.num_channels.in,
-                                            .num_outs = desc.num_channels.out,
+                                            .num_ins = desc.num_channels.in(),
+                                            .num_outs = desc.num_channels.out(),
                                     };
                                 }),
                         index};
@@ -123,18 +123,9 @@ auto
 make_num_device_channels_selector(io_direction const io_dir)
         -> selector<std::size_t>
 {
-    switch (io_dir)
-    {
-        case io_direction::input:
-            return selector<std::size_t>([](state const& st) -> std::size_t {
-                return st.selected_sound_card.num_channels.in;
-            });
-
-        case io_direction::output:
-            return selector<std::size_t>([](state const& st) -> std::size_t {
-                return st.selected_sound_card.num_channels.out;
-            });
-    }
+    return selector<std::size_t>([io_dir](state const& st) -> std::size_t {
+        return st.selected_sound_card.num_channels[io_dir];
+    });
 }
 
 auto

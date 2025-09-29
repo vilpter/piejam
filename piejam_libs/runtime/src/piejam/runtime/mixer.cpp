@@ -76,21 +76,21 @@ make_channels_io_graph(channels_io_t const& channels_io) -> io_graph
         result[id];
 
         if (channel_id const* const in_channel_id =
-                    std::get_if<channel_id>(&ch_io.port.in))
+                    std::get_if<channel_id>(&ch_io.port.in()))
         {
             result[*in_channel_id].children.push_back(id);
         }
 
         auto add_out_child = [&](channel_id const& out_channel_id) {
             if (std::holds_alternative<mixer::mix_input>(
-                        channels_io.at(out_channel_id).port.in))
+                        channels_io.at(out_channel_id).port.in()))
             {
                 result[id].children.push_back(out_channel_id);
             }
         };
 
         if (auto const* const out_channel_id =
-                    std::get_if<channel_id>(&ch_io.port.out))
+                    std::get_if<channel_id>(&ch_io.port.out()))
         {
             add_out_child(*out_channel_id);
         }
@@ -175,14 +175,14 @@ valid_io_channels(channels_t const& channels, channel_id const ch_id)
         }
 
         auto prev_id =
-                std::exchange(channels_io[ch_id].port.get(D), mixer_channel_id);
+                std::exchange(channels_io[ch_id].port[D], mixer_channel_id);
 
         if (!has_cycle(make_channels_io_graph(channels_io)))
         {
             valid_ids.push_back(mixer_channel_id);
         }
 
-        channels_io[ch_id].port.get(D) = prev_id;
+        channels_io[ch_id].port[D] = prev_id;
     }
 
     return valid_ids;
@@ -195,7 +195,7 @@ is_mix_input_valid(channels_t const& channels, channel_id const ch_id) -> bool
 {
     BOOST_ASSERT(channels[ch_id].type != mixer::channel_type::mono);
     auto channels_io = extract_channels_io(channels);
-    channels_io[ch_id].port.in = mixer::mix_input{};
+    channels_io[ch_id].port.in() = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));
 }
 
