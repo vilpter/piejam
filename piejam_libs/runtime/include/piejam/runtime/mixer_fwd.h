@@ -32,7 +32,7 @@ to_bus_type(channel_type t) -> audio::bus_type
 
 struct channel;
 using channel_id = entity_id<channel>;
-using channels_t = entity_map<channel>;
+using channels_t = boxed_map<entity_map<channel>>;
 
 struct mix_input
 {

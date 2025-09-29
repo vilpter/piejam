@@ -18,12 +18,14 @@ TEST(mixer_valid_io, test1)
     using namespace std::string_literals;
 
     channels_t channels;
-    auto channel1 = channels.insert({
-            .type = channel_type::stereo,
-    });
-    auto channel2 = channels.insert({
-            .type = channel_type::stereo,
-    });
+    auto channel1 = channels.emplace(
+            channel{
+                    .type = channel_type::stereo,
+            });
+    auto channel2 = channels.emplace(
+            channel{
+                    .type = channel_type::stereo,
+            });
 
     auto vs1 = valid_channels(io_direction::input, channels, channel1);
     EXPECT_TRUE(Matches(ElementsAre(channel2))(vs1));
@@ -46,11 +48,12 @@ TEST(mixer_valid_io, test2)
     using namespace std::string_literals;
 
     channels_t channels;
-    auto channel1 = channels.insert({});
-    auto channel2 = channels.insert({
-            .type = channel_type::stereo,
-            .in = channel1,
-    });
+    auto channel1 = channels.emplace(channel{});
+    auto channel2 = channels.emplace(
+            channel{
+                    .type = channel_type::stereo,
+                    .in = channel1,
+            });
 
     auto vs1 = valid_channels(io_direction::input, channels, channel1);
     EXPECT_TRUE(vs1.empty());

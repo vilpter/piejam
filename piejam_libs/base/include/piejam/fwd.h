@@ -22,4 +22,7 @@ struct io_pair;
 template <class T>
 class box;
 
+template <class Map>
+class boxed_map;
+
 } // namespace piejam

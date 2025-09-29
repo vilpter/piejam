@@ -13,6 +13,7 @@
 #include <piejam/runtime/string_id.h>
 
 #include <piejam/audio/types.h>
+#include <piejam/boxed_map.h>
 #include <piejam/boxed_string.h>
 #include <piejam/entity_map.h>
 #include <piejam/io_direction.h>
@@ -120,7 +121,7 @@ struct state
     box<channel_ids_t> inputs;
     channel_id main;
 
-    using aux_channels_t = entity_map<aux_channel, channel_id>;
+    using aux_channels_t = boxed_map<entity_map<aux_channel, channel_id>>;
     aux_channels_t aux_channels;
 
     using fx_chains_t = entity_data_map<channel_id, box<fx::chain_t>>;

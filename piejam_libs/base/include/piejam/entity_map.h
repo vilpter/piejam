@@ -27,151 +27,58 @@ public:
     [[nodiscard]]
     auto empty() const noexcept
     {
-        return m_map->empty();
+        return m_map.empty();
     }
 
     [[nodiscard]]
     auto size() const noexcept
     {
-        return m_map->size();
+        return m_map.size();
     }
 
     [[nodiscard]]
     auto begin() const noexcept
     {
-        return m_map->begin();
+        return m_map.begin();
+    }
+
+    // TODO: remove
+    [[nodiscard]]
+    auto begin() noexcept
+    {
+        return m_map.begin();
     }
 
     [[nodiscard]]
     auto end() const noexcept
     {
-        return m_map->end();
+        return m_map.end();
+    }
+
+    // TODO: remove
+    [[nodiscard]]
+    auto end() noexcept
+    {
+        return m_map.end();
     }
 
     [[nodiscard]]
     auto contains(id_t id) const noexcept
     {
-        return m_map->contains(id);
+        return m_map.contains(id);
     }
 
     [[nodiscard]]
-    auto find(id_t id) const noexcept -> Entity const*
+    auto find(id_t id) const noexcept
     {
-        auto it = m_map->find(id);
-        return it != m_map->end() ? std::addressof(it->second) : nullptr;
+        return m_map.find(id);
     }
 
+    // TODO: remove
     [[nodiscard]]
-    auto operator[](id_t id) const noexcept -> Entity const&
+    auto find(id_t id) noexcept
     {
-        auto it = m_map->find(id);
-        BOOST_ASSERT(it != m_map->end());
-        return it->second;
-    }
-
-    class locked
-    {
-    public:
-        explicit locked(entity_map& m)
-            : m_{m.m_map.lock()}
-        {
-        }
-
-        [[nodiscard]]
-        auto begin() noexcept
-        {
-            return m_->begin();
-        }
-
-        [[nodiscard]]
-        auto end() noexcept
-        {
-            return m_->end();
-        }
-
-        [[nodiscard]]
-        auto operator[](id_t id) -> Entity&
-        {
-            auto it = m_->find(id);
-            BOOST_ASSERT(it != m_->end());
-            return it->second;
-        }
-
-        [[nodiscard]]
-        auto insert(Entity value) -> id_t
-            requires(!foreign_id)
-        {
-            auto id = id_t::generate();
-            m_->emplace_hint(m_->end(), id, std::move(value));
-            return id;
-        }
-
-        auto insert(id_t id, Entity value) -> bool
-            requires(foreign_id)
-        {
-            return m_->emplace(id, std::move(value)).second;
-        }
-
-        template <class... Args>
-        [[nodiscard]]
-        auto emplace(Args&&... args) -> id_t
-            requires(!foreign_id)
-        {
-            auto id = id_t::generate();
-            m_->emplace_hint(
-                    m_->end(),
-                    std::piecewise_construct,
-                    std::forward_as_tuple(id),
-                    std::forward_as_tuple(std::forward<Args>(args)...));
-            return id;
-        }
-
-        template <class... Args>
-        auto emplace(id_t id, Args&&... args) -> bool
-            requires(foreign_id)
-        {
-            return m_
-                    ->emplace(
-                            std::piecewise_construct,
-                            std::forward_as_tuple(id),
-                            std::forward_as_tuple(std::forward<Args>(args)...))
-                    .second;
-        }
-
-        auto erase(id_t id) -> typename map_t::size_type
-        {
-            return m_->erase(id);
-        }
-
-        template <std::ranges::range RangeOfIds>
-        void erase(RangeOfIds&& ids)
-        {
-            for (auto id : ids)
-            {
-                m_->erase(id);
-            }
-        }
-
-    private:
-        box<map_t>::write_lock m_;
-    };
-
-    auto lock() -> locked
-    {
-        return locked{*this};
-    }
-
-    [[nodiscard]]
-    auto insert(Entity value) -> id_t
-        requires(!foreign_id)
-    {
-        return lock().insert(std::move(value));
-    }
-
-    auto insert(id_t id, Entity value) -> bool
-        requires(foreign_id)
-    {
-        return lock().insert(id, std::move(value));
+        return m_map.find(id);
     }
 
     template <class... Args>
@@ -179,31 +86,43 @@ public:
     auto emplace(Args&&... args) -> id_t
         requires(!foreign_id)
     {
-        return lock().emplace(std::forward<Args>(args)...);
+        auto id = id_t::generate();
+        m_map.emplace_hint(
+                m_map.end(),
+                std::piecewise_construct,
+                std::forward_as_tuple(id),
+                std::forward_as_tuple(std::forward<Args>(args)...));
+        return id;
     }
 
     template <class... Args>
     auto emplace(id_t id, Args&&... args) -> bool
         requires(foreign_id)
     {
-        return lock().emplace(id, std::forward<Args>(args)...);
+        return m_map
+                .emplace(
+                        std::piecewise_construct,
+                        std::forward_as_tuple(id),
+                        std::forward_as_tuple(std::forward<Args>(args)...))
+                .second;
     }
 
     auto erase(id_t id) -> typename map_t::size_type
     {
-        return lock().erase(id);
+        return m_map.erase(id);
     }
 
+    // TODO remove
     template <std::ranges::range RangeOfIds>
     void erase(RangeOfIds&& ids)
     {
-        lock().erase(std::forward<RangeOfIds>(ids));
+        m_map.erase(std::ranges::begin(ids), std::ranges::end(ids));
     }
 
     auto operator==(entity_map const&) const noexcept -> bool = default;
 
 private:
-    box<map_t> m_map;
+    map_t m_map;
 };
 
 } // namespace piejam

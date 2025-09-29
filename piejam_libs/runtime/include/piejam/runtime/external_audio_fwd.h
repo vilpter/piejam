@@ -13,7 +13,7 @@ namespace piejam::runtime::external_audio
 
 struct device;
 using device_id = entity_id<device>;
-using devices_t = entity_map<device>;
+using devices_t = boxed_map<entity_map<device>>;
 
 using device_ids_t = std::vector<device_id>;
 

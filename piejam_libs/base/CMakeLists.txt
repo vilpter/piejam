@@ -6,6 +6,7 @@ add_library(piejam_base INTERFACE
     include/piejam/assert_deref.h
     include/piejam/bool.h
     include/piejam/box.h
+    include/piejam/boxed_map.h
     include/piejam/boxed_string.h
     include/piejam/boxed_vector.h
     include/piejam/enum.h

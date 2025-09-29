@@ -9,6 +9,7 @@
 #include <piejam/runtime/string_id.h>
 
 #include <piejam/audio/types.h>
+#include <piejam/boxed_map.h>
 #include <piejam/entity_map.h>
 #include <piejam/npos.h>
 
