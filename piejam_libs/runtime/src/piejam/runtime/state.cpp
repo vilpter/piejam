@@ -36,7 +36,7 @@ namespace
 constexpr auto
 to_normalized_volume(float_parameter const&, float const value)
 {
-    return parameter::to_normalized_dB_mapping<
+    return fader_mapping::to_normalized_dB_mapping<
             fader_mapping::volume,
             fader_mapping::min_gain_dB>(value);
 }
@@ -44,7 +44,7 @@ to_normalized_volume(float_parameter const&, float const value)
 constexpr auto
 from_normalized_volume(float_parameter const&, float const norm_value) -> float
 {
-    return parameter::from_normalized_dB_maping<
+    return fader_mapping::from_normalized_dB_maping<
             fader_mapping::volume,
             fader_mapping::min_gain_dB>(norm_value);
 }
@@ -52,7 +52,7 @@ from_normalized_volume(float_parameter const&, float const norm_value) -> float
 constexpr auto
 to_normalized_send(float_parameter const&, float const value)
 {
-    return parameter::to_normalized_dB_mapping<
+    return fader_mapping::to_normalized_dB_mapping<
             fader_mapping::send,
             fader_mapping::min_gain_dB>(value);
 }
@@ -60,7 +60,7 @@ to_normalized_send(float_parameter const&, float const value)
 constexpr auto
 from_normalized_send(float_parameter const&, float const norm_value) -> float
 {
-    return parameter::from_normalized_dB_maping<
+    return fader_mapping::from_normalized_dB_maping<
             fader_mapping::send,
             fader_mapping::min_gain_dB>(norm_value);
 }

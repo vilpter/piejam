@@ -19,58 +19,65 @@ namespace piejam::runtime::parameter
 namespace detail
 {
 
+template <std::floating_point T>
 [[nodiscard]]
 constexpr auto
-to_normalized(float const value, float const min, float const max) -> float
+to_normalized(T const value, T const min, T const max) -> T
 {
     return (value - min) / (max - min);
 }
 
+template <std::floating_point T>
 [[nodiscard]]
 constexpr auto
-from_normalized(float const norm_value, float const min, float const max)
-        -> float
+from_normalized(T const norm_value, T const min, T const max) -> T
 {
     return norm_value * (max - min) + min;
 }
+
+using float_type = typename float_descriptor::value_type;
 
 } // namespace detail
 
 [[nodiscard]]
 constexpr auto
-to_normalized_linear(float_descriptor const& p, float const value) -> float
+to_normalized_linear(float_descriptor const& p, detail::float_type const value)
 {
     return detail::to_normalized(value, p.min, p.max);
 }
 
-template <float Min, float Max>
+template <detail::float_type Min, detail::float_type Max>
 [[nodiscard]]
 constexpr auto
-to_normalized_linear_static(float_descriptor const&, float const value) -> float
+to_normalized_linear_static(
+        float_descriptor const&,
+        detail::float_type const value)
 {
     return detail::to_normalized(value, Min, Max);
 }
 
 [[nodiscard]]
 constexpr auto
-from_normalized_linear(float_descriptor const& p, float const norm_value)
-        -> float
+from_normalized_linear(
+        float_descriptor const& p,
+        detail::float_type const norm_value)
 {
     return detail::from_normalized(norm_value, p.min, p.max);
 }
 
-template <float Min, float Max>
+template <detail::float_type Min, detail::float_type Max>
 [[nodiscard]]
 constexpr auto
-from_normalized_linear_static(float_descriptor const&, float const norm_value)
-        -> float
+from_normalized_linear_static(
+        float_descriptor const&,
+        detail::float_type const norm_value)
 {
     return detail::from_normalized(norm_value, Min, Max);
 }
 
 [[nodiscard]]
 constexpr auto
-to_normalized_log(float_descriptor const& p, float const value) -> float
+to_normalized_log(float_descriptor const& p, detail::float_type const value)
 {
     return detail::to_normalized(
             std::log(value),
@@ -80,7 +87,9 @@ to_normalized_log(float_descriptor const& p, float const value) -> float
 
 [[nodiscard]]
 constexpr auto
-from_normalized_log(float_descriptor const& p, float const norm_value) -> float
+from_normalized_log(
+        float_descriptor const& p,
+        detail::float_type const norm_value)
 {
     return std::exp(
             detail::from_normalized(
@@ -89,101 +98,26 @@ from_normalized_log(float_descriptor const& p, float const norm_value) -> float
                     std::log(p.max)));
 }
 
-template <float Min_dB, float Max_dB>
+template <detail::float_type Min_dB, detail::float_type Max_dB>
 [[nodiscard]]
 constexpr auto
-to_normalized_dB(float_descriptor const&, float const value) -> float
+to_normalized_dB(float_descriptor const&, detail::float_type const value)
 {
-    return detail::to_normalized(std::log10(value) * 20.f, Min_dB, Max_dB);
+    return detail::to_normalized(
+            std::log10(value) * detail::float_type{20},
+            Min_dB,
+            Max_dB);
 }
 
-template <float Min_dB, float Max_dB>
+template <detail::float_type Min_dB, detail::float_type Max_dB>
 [[nodiscard]]
 constexpr auto
-from_normalized_dB(float_descriptor const&, float const norm_value) -> float
+from_normalized_dB(float_descriptor const&, detail::float_type const norm_value)
 {
     return std::pow(
-            10.f,
-            detail::from_normalized(norm_value, Min_dB, Max_dB) / 20.f);
-}
-
-struct normalized_dB_mapping
-{
-    float normalized{};
-    float dB{};
-};
-
-template <auto Mapping, float Min_dB>
-constexpr auto
-to_normalized_dB_mapping(float const value)
-{
-    float const value_dB = numeric::to_dB(value);
-    if (value_dB <= Min_dB)
-    {
-        return 0.f;
-    }
-
-    auto first = std::ranges::begin(Mapping);
-    if (value_dB < first->dB)
-    {
-        return numeric::linear_map(
-                value_dB,
-                Min_dB,
-                first->dB,
-                0.f,
-                first->normalized);
-    }
-
-    auto lower = std::ranges::adjacent_find(
-            Mapping,
-            in_closed(value_dB),
-            &normalized_dB_mapping::dB);
-    BOOST_ASSERT(lower != std::ranges::end(Mapping));
-    auto const upper = std::next(lower);
-
-    return numeric::linear_map(
-            value_dB,
-            lower->dB,
-            upper->dB,
-            lower->normalized,
-            upper->normalized);
-}
-
-template <auto Mapping, float Min_dB>
-constexpr auto
-from_normalized_dB_maping(float const norm_value)
-{
-    if (norm_value == 0.f)
-    {
-        return 0.f;
-    }
-
-    auto first = std::ranges::begin(Mapping);
-    if (norm_value < first->normalized)
-    {
-        return numeric::from_dB(
-                numeric::linear_map(
-                        norm_value,
-                        0.f,
-                        first->normalized,
-                        Min_dB,
-                        first->dB));
-    }
-
-    auto lower = std::ranges::adjacent_find(
-            Mapping,
-            in_closed(norm_value),
-            &normalized_dB_mapping::normalized);
-    BOOST_ASSERT(lower != std::ranges::end(Mapping));
-    auto const upper = std::next(lower);
-
-    return numeric::from_dB(
-            numeric::linear_map(
-                    norm_value,
-                    lower->normalized,
-                    upper->normalized,
-                    lower->dB,
-                    upper->dB));
+            detail::float_type{10},
+            detail::from_normalized(norm_value, Min_dB, Max_dB) /
+                    detail::float_type{20});
 }
 
 } // namespace piejam::runtime::parameter

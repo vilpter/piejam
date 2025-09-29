@@ -15,23 +15,25 @@ struct float_descriptor
 {
     using value_type = float;
     using value_to_string_fn = std::string (*)(value_type);
-    using to_normalized_f = float (*)(float_descriptor const&, float);
-    using from_normalized_f = float (*)(float_descriptor const&, float);
+    using to_normalized_f = value_type (*)(float_descriptor const&, value_type);
+    using from_normalized_f =
+            value_type (*)(float_descriptor const&, value_type);
 
     boxed_string name;
 
-    float default_value{};
+    value_type default_value{};
 
-    float min{};
-    float max{1.f};
+    value_type min{};
+    value_type max{1.f};
 
-    bool bipolar{};
+    value_type bipolar{};
 
     value_to_string_fn value_to_string{
             [](value_type x) { return std::format("{:.2f}", x); }};
 
-    to_normalized_f to_normalized{[](auto const&, float x) { return x; }};
-    from_normalized_f from_normalized{[](auto const&, float x) { return x; }};
+    to_normalized_f to_normalized{[](auto const&, value_type x) { return x; }};
+    from_normalized_f from_normalized{
+            [](auto const&, value_type x) { return x; }};
 
     bool midi_assignable{true};
     bool audio_graph_affecting{false};

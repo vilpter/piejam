@@ -16,10 +16,10 @@ struct int_descriptor
 
     boxed_string name;
 
-    int default_value;
+    value_type default_value;
 
-    int min;
-    int max;
+    value_type min;
+    value_type max;
 
     value_to_string_fn value_to_string{
             [](value_type x) { return std::to_string(x); }};
