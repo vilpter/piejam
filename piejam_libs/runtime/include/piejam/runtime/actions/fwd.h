@@ -35,7 +35,6 @@ struct remove_external_audio_device;
 
 struct add_mixer_channel;
 struct delete_mixer_channel;
-template <mixer::io_socket>
 struct set_mixer_channel_route;
 struct enable_mixer_channel_aux_route;
 struct move_mixer_channel_left;

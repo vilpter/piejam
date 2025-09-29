@@ -56,26 +56,22 @@ set_mixer_channel_color::reduce(state& st) const
     st.material_colors.set(channel.color, color);
 }
 
-template <mixer::io_socket IOSocket>
 void
-set_mixer_channel_route<IOSocket>::reduce(state& st) const
+set_mixer_channel_route::reduce(state& st) const
 {
     [this](mixer::channel& mixer_channel) {
-        switch (IOSocket)
+        switch (port)
         {
-            case mixer::io_socket::in:
+            case io_direction::input:
                 mixer_channel.in = route;
                 break;
 
-            case mixer::io_socket::out:
+            case io_direction::output:
                 mixer_channel.out = route;
                 break;
         }
     }(st.mixer_state.channels.lock()[channel_id]);
 }
-
-template struct set_mixer_channel_route<mixer::io_socket::in>;
-template struct set_mixer_channel_route<mixer::io_socket::out>;
 
 void
 enable_mixer_channel_aux_route::reduce(state& st) const

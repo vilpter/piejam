@@ -156,14 +156,13 @@ struct selected_route
     auto operator==(selected_route const&) const noexcept -> bool = default;
 };
 
-auto make_mixer_channel_selected_route_selector(
-        mixer::channel_id,
-        mixer::io_socket) -> selector<selected_route>;
+auto make_mixer_channel_selected_route_selector(mixer::channel_id, io_direction)
+        -> selector<selected_route>;
 
-auto make_mixer_device_routes_selector(mixer::channel_type, mixer::io_socket)
+auto make_mixer_device_routes_selector(mixer::channel_type, io_direction)
         -> selector<boxed_vector<mixer_device_route>>;
 
-auto make_mixer_channel_routes_selector(mixer::channel_id, mixer::io_socket)
+auto make_mixer_channel_routes_selector(mixer::channel_id, io_direction)
         -> selector<boxed_vector<mixer_channel_route>>;
 
 auto make_mixer_channel_name_selector(mixer::channel_id) -> selector<string_id>;

@@ -15,6 +15,7 @@
 #include <piejam/audio/types.h>
 #include <piejam/boxed_string.h>
 #include <piejam/entity_map.h>
+#include <piejam/io_direction.h>
 
 #include <boost/assert.hpp>
 
@@ -130,7 +131,7 @@ auto is_mix_input_valid(channels_t const&, channel_id) -> bool;
 
 auto can_toggle_aux(channels_t const&, channel_id, channel_id aux_id) -> bool;
 
-auto valid_channels(io_socket, channels_t const&, channel_id)
+auto valid_channels(io_direction, channels_t const&, channel_id)
         -> std::vector<channel_id>;
 
 } // namespace piejam::runtime::mixer

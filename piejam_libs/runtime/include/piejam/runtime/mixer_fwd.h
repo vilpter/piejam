@@ -43,12 +43,6 @@ struct mix_input
 using io_address_t = std::
         variant<default_t, mix_input, external_audio::device_id, channel_id>;
 
-enum class io_socket : bool
-{
-    in,
-    out,
-};
-
 using channel_ids_t = std::vector<channel_id>;
 
 enum class aux_send_fader_tap

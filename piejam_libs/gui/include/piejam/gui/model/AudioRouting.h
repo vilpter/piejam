@@ -8,6 +8,7 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
+#include <piejam/io_direction.h>
 #include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
 
@@ -32,7 +33,7 @@ public:
     AudioRouting(
             runtime::state_access const&,
             runtime::mixer::channel_id,
-            runtime::mixer::io_socket);
+            io_direction);
 
     Q_INVOKABLE void changeToNone();
     Q_INVOKABLE void changeToMix();

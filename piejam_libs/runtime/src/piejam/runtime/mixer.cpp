@@ -21,35 +21,8 @@ namespace
 
 struct channel_io_t
 {
-    io_address_t in;
-    io_address_t out;
+    io_pair<io_address_t> port;
     std::vector<channel_id> aux_sends;
-
-    template <io_socket S>
-    constexpr auto get() -> io_address_t&
-    {
-        switch (S)
-        {
-            case io_socket::in:
-                return in;
-
-            case io_socket::out:
-                return out;
-        }
-    }
-
-    template <io_socket S>
-    constexpr auto get() const -> io_address_t const&
-    {
-        switch (S)
-        {
-            case io_socket::in:
-                return in;
-
-            case io_socket::out:
-                return out;
-        }
-    }
 };
 
 using channels_io_t = boost::container::flat_map<channel_id, channel_io_t>;
@@ -73,8 +46,7 @@ extract_channels_io(channels_t const& channels) -> channels_io_t
                 return std::pair(
                         id,
                         channel_io_t{
-                                .in = channel.in,
-                                .out = channel.out,
+                                .port = {channel.in, channel.out},
                                 .aux_sends = std::move(active_aux_sends)});
             }));
 
@@ -104,21 +76,21 @@ make_channels_io_graph(channels_io_t const& channels_io) -> io_graph
         result[id];
 
         if (channel_id const* const in_channel_id =
-                    std::get_if<channel_id>(&ch_io.in))
+                    std::get_if<channel_id>(&ch_io.port.in))
         {
             result[*in_channel_id].children.push_back(id);
         }
 
         auto add_out_child = [&](channel_id const& out_channel_id) {
             if (std::holds_alternative<mixer::mix_input>(
-                        channels_io.at(out_channel_id).in))
+                        channels_io.at(out_channel_id).port.in))
             {
                 result[id].children.push_back(out_channel_id);
             }
         };
 
         if (auto const* const out_channel_id =
-                    std::get_if<channel_id>(&ch_io.out))
+                    std::get_if<channel_id>(&ch_io.port.out))
         {
             add_out_child(*out_channel_id);
         }
@@ -172,7 +144,7 @@ has_cycle(io_graph g)
     });
 }
 
-template <io_socket D>
+template <io_direction D>
 auto
 valid_io_channels(channels_t const& channels, channel_id const ch_id)
         -> std::vector<mixer::channel_id>
@@ -185,7 +157,8 @@ valid_io_channels(channels_t const& channels, channel_id const ch_id)
         if (mixer_channel_id == ch_id)
         {
             // mono mixer channels can't have input channels
-            if (D == io_socket::in && mixer_channel.type == channel_type::mono)
+            if (D == io_direction::input &&
+                mixer_channel.type == channel_type::mono)
             {
                 return {};
             }
@@ -194,21 +167,22 @@ valid_io_channels(channels_t const& channels, channel_id const ch_id)
             continue;
         }
 
-        if (D == io_socket::out && mixer_channel.type == channel_type::mono)
+        if (D == io_direction::output &&
+            mixer_channel.type == channel_type::mono)
         {
             // mono mixer channels can't be targets
             continue;
         }
 
         auto prev_id =
-                std::exchange(channels_io[ch_id].get<D>(), mixer_channel_id);
+                std::exchange(channels_io[ch_id].port.get(D), mixer_channel_id);
 
         if (!has_cycle(make_channels_io_graph(channels_io)))
         {
             valid_ids.push_back(mixer_channel_id);
         }
 
-        channels_io[ch_id].get<D>() = prev_id;
+        channels_io[ch_id].port.get(D) = prev_id;
     }
 
     return valid_ids;
@@ -221,7 +195,7 @@ is_mix_input_valid(channels_t const& channels, channel_id const ch_id) -> bool
 {
     BOOST_ASSERT(channels[ch_id].type != mixer::channel_type::mono);
     auto channels_io = extract_channels_io(channels);
-    channels_io[ch_id].in = mixer::mix_input{};
+    channels_io[ch_id].port.in = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));
 }
 
@@ -256,17 +230,17 @@ can_toggle_aux(
 
 auto
 valid_channels(
-        io_socket const s,
+        io_direction const s,
         channels_t const& channels,
         channel_id const ch_id) -> std::vector<channel_id>
 {
     switch (s)
     {
-        case io_socket::in:
-            return valid_io_channels<io_socket::in>(channels, ch_id);
+        case io_direction::input:
+            return valid_io_channels<io_direction::input>(channels, ch_id);
 
-        case io_socket::out:
-            return valid_io_channels<io_socket::out>(channels, ch_id);
+        case io_direction::output:
+            return valid_io_channels<io_direction::output>(channels, ch_id);
     }
 
     return {};

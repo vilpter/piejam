@@ -12,13 +12,13 @@ namespace piejam::gui::model
 struct AudioRoutingSelection::Impl
 {
     runtime::mixer::channel_id mixer_channel_id;
-    runtime::mixer::io_socket io_socket;
+    io_direction io_socket;
 };
 
 AudioRoutingSelection::AudioRoutingSelection(
         runtime::state_access const& state_access,
         runtime::mixer::channel_id const id,
-        runtime::mixer::io_socket const io_socket)
+        io_direction const io_socket)
     : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(id, io_socket)}
 {

@@ -11,6 +11,8 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
+#include <piejam/io_direction.h>
+
 namespace piejam::gui::model
 {
 
@@ -18,8 +20,8 @@ struct MixerChannelEdit::Impl
 {
     Impl(runtime::state_access const& state_access,
          runtime::mixer::channel_id const id)
-        : in{state_access, id, runtime::mixer::io_socket::in}
-        , out{state_access, id, runtime::mixer::io_socket::out}
+        : in{state_access, id, io_direction::input}
+        , out{state_access, id, io_direction::output}
     {
     }
 

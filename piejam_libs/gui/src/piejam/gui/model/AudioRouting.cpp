@@ -21,7 +21,7 @@ namespace piejam::gui::model
 struct AudioRouting::Impl
 {
     runtime::mixer::channel_id mixer_channel_id;
-    runtime::mixer::io_socket io_socket;
+    io_direction port;
     runtime::mixer::channel_type channel_type;
 
     std::unique_ptr<AudioRoutingSelection> selected;
@@ -35,7 +35,7 @@ struct AudioRouting::Impl
 AudioRouting::AudioRouting(
         runtime::state_access const& state_access,
         runtime::mixer::channel_id const id,
-        runtime::mixer::io_socket const io_socket)
+        io_direction const io_socket)
     : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(
               id,
@@ -54,7 +54,7 @@ auto
 AudioRouting::mixIsAvailable() const noexcept -> mixIsValid_property_t
 {
     return m_impl->channel_type != runtime::mixer::channel_type::mono &&
-           m_impl->io_socket == runtime::mixer::io_socket::in;
+           m_impl->port == io_direction::input;
 }
 
 auto
@@ -88,7 +88,7 @@ AudioRouting::onSubscribe()
 
     observe(runtime::selectors::make_mixer_device_routes_selector(
                     m_impl->channel_type,
-                    m_impl->io_socket),
+                    m_impl->port),
             [this](boxed_vector<runtime::selectors::mixer_device_route> const&
                            devices) {
                 algorithm::apply_edit_script(
@@ -106,7 +106,7 @@ AudioRouting::onSubscribe()
 
     observe(runtime::selectors::make_mixer_channel_routes_selector(
                     m_impl->mixer_channel_id,
-                    m_impl->io_socket),
+                    m_impl->port),
             [this](boxed_vector<runtime::selectors::mixer_channel_route> const&
                            channels) {
                 algorithm::apply_edit_script(
@@ -123,44 +123,18 @@ AudioRouting::onSubscribe()
             });
 }
 
-template <runtime::mixer::io_socket IOSocket>
 static void
 dispatch_set_mixer_channel_route_action(
         runtime::state_access state_access,
         runtime::mixer::channel_id channel_id,
+        io_direction port,
         runtime::mixer::io_address_t addr)
 {
-    runtime::actions::set_mixer_channel_route<IOSocket> action;
+    runtime::actions::set_mixer_channel_route action;
     action.channel_id = channel_id;
+    action.port = port;
     action.route = std::move(addr);
     state_access.dispatch(action);
-}
-
-static void
-dispatch_set_mixer_channel_route_action(
-        runtime::state_access state_access,
-        runtime::mixer::io_socket io_socket,
-        runtime::mixer::channel_id channel_id,
-        runtime::mixer::io_address_t addr)
-{
-    switch (io_socket)
-    {
-        case runtime::mixer::io_socket::in:
-            dispatch_set_mixer_channel_route_action<
-                    runtime::mixer::io_socket::in>(
-                    state_access,
-                    channel_id,
-                    addr);
-            return;
-
-        case runtime::mixer::io_socket::out:
-            dispatch_set_mixer_channel_route_action<
-                    runtime::mixer::io_socket::out>(
-                    state_access,
-                    channel_id,
-                    addr);
-            return;
-    }
 }
 
 void
@@ -168,8 +142,8 @@ AudioRouting::changeToNone()
 {
     dispatch_set_mixer_channel_route_action(
             state_access(),
-            m_impl->io_socket,
             m_impl->mixer_channel_id,
+            m_impl->port,
             {});
 }
 
@@ -179,8 +153,8 @@ AudioRouting::changeToMix()
     BOOST_ASSERT(mixIsAvailable() && mixIsValid());
     dispatch_set_mixer_channel_route_action(
             state_access(),
-            m_impl->io_socket,
             m_impl->mixer_channel_id,
+            m_impl->port,
             runtime::mixer::mix_input{});
 }
 
@@ -191,8 +165,8 @@ AudioRouting::changeToDevice(unsigned index)
 
     dispatch_set_mixer_channel_route_action(
             state_access(),
-            m_impl->io_socket,
             m_impl->mixer_channel_id,
+            m_impl->port,
             (*m_impl->devices)[index].device_id);
 }
 
@@ -203,8 +177,8 @@ AudioRouting::changeToChannel(unsigned index)
 
     dispatch_set_mixer_channel_route_action(
             state_access(),
-            m_impl->io_socket,
             m_impl->mixer_channel_id,
+            m_impl->port,
             (*m_impl->channels)[index].channel_id);
 }
 
