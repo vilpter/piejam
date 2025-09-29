@@ -23,7 +23,7 @@ concept parameter_enum_key =
         std::is_same_v<parameter::key, std::underlying_type_t<Key>>;
 
 template <parameter_enum_key Key>
-class parameters_map_by : private parameters_map
+class parameters_map_by : public parameters_map
 {
 public:
     parameters_map_by() = default;
@@ -44,6 +44,14 @@ public:
     {
         parameters_map::emplace(std::to_underlying(key), id);
         return *this;
+    }
+
+    template <class ParameterId>
+    auto get(Key key) const -> ParameterId
+    {
+        auto it = parameters_map::find(std::to_underlying(key));
+        BOOST_ASSERT(it != parameters_map::end());
+        return std::get<ParameterId>(it->second);
     }
 
     auto as_base() && -> parameters_map&&

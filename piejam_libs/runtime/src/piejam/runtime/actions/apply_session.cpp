@@ -84,39 +84,6 @@ apply_mixer_fx_chain(
     }
 }
 
-void
-apply_mixer_midi(
-        midi_assignments_map& assignments,
-        mixer::channel const& mixer_channel,
-        persistence::session::mixer_midi const& mixer_midi)
-{
-    if (mixer_midi.volume)
-    {
-        assignments.emplace(mixer_channel.volume, *mixer_midi.volume);
-    }
-
-    if (mixer_midi.pan)
-    {
-        assignments.emplace(mixer_channel.pan_balance, *mixer_midi.pan);
-    }
-
-    if (mixer_midi.mute)
-    {
-        assignments.emplace(mixer_channel.mute, *mixer_midi.mute);
-    }
-}
-
-void
-apply_mixer_parameters(
-        parameters_store& params,
-        mixer::channel const& mixer_channel,
-        persistence::session::mixer_parameters const& mixer_params)
-{
-    params[mixer_channel.volume].value.set(mixer_params.volume);
-    params[mixer_channel.pan_balance].value.set(mixer_params.pan);
-    params[mixer_channel.mute].value.set(mixer_params.mute);
-}
-
 auto
 find_mixer_channel(mixer::state const& mixer_state, std::size_t const& index)
         -> std::optional<mixer::channel_id>
@@ -259,14 +226,14 @@ apply_session::reduce(state& st) const
                 channel_data.name);
         auto& added_channel = st.mixer_state.channels[added_channel_id];
         st.material_colors.set(added_channel.color, channel_data.color);
-        apply_mixer_midi(
-                mixer_midi_assignments,
-                added_channel,
-                channel_data.midi);
-        apply_mixer_parameters(
-                st.params,
-                added_channel,
-                channel_data.parameter);
+        apply_midi_assignments(
+                channel_data.midi,
+                *added_channel.parameters,
+                mixer_midi_assignments);
+        apply_parameter_values(
+                channel_data.parameter,
+                *added_channel.parameters,
+                st.params);
         apply_mixer_fx_chain(st, added_channel_id, channel_data.fx_chain);
     }
 
@@ -277,14 +244,14 @@ apply_session::reduce(state& st) const
         st.material_colors.set(
                 main_mixer_channel.color,
                 session->main_mixer_channel.color);
-        apply_mixer_midi(
-                mixer_midi_assignments,
-                main_mixer_channel,
-                session->main_mixer_channel.midi);
-        apply_mixer_parameters(
-                st.params,
-                main_mixer_channel,
-                session->main_mixer_channel.parameter);
+        apply_midi_assignments(
+                session->main_mixer_channel.midi,
+                *main_mixer_channel.parameters,
+                mixer_midi_assignments);
+        apply_parameter_values(
+                session->main_mixer_channel.parameter,
+                *main_mixer_channel.parameters,
+                st.params);
     }(st.mixer_state.channels.lock()[st.mixer_state.main]);
     apply_mixer_fx_chain(
             st,

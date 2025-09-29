@@ -19,7 +19,6 @@
 #include <nlohmann/json_fwd.hpp>
 
 #include <iosfwd>
-#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -66,20 +65,6 @@ struct session
         }
     };
 
-    struct mixer_parameters
-    {
-        float volume;
-        float pan;
-        bool mute;
-    };
-
-    struct mixer_midi
-    {
-        std::optional<midi_assignment> volume;
-        std::optional<midi_assignment> pan;
-        std::optional<midi_assignment> mute;
-    };
-
     using fx_chain_t = std::vector<fx_plugin>;
 
     enum class mixer_io_type
@@ -109,8 +94,8 @@ struct session
         std::string name;
         material_color color;
         mixer::channel_type channel_type;
-        mixer_parameters parameter;
-        mixer_midi midi;
+        parameter_value_assignments parameter;
+        parameter_midi_assignments midi;
         fx_chain_t fx_chain;
         mixer_io in;
         mixer_io out;

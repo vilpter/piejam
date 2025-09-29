@@ -58,18 +58,18 @@ public:
             processors::stream_processor_factory& stream_procs,
             audio::sample_rate const sample_rate)
         : m_volume_input_proc(param_procs.find_or_make_processor(
-                  mixer_channel.volume,
+                  mixer_channel.volume(),
                   format_name(channel_name, "volume")))
         , m_pan_balance_input_proc(param_procs.find_or_make_processor(
-                  mixer_channel.pan_balance,
+                  mixer_channel.pan_balance(),
                   to_bus_type(mixer_channel.type) == audio::bus_type::mono
                           ? format_name(channel_name, "pan")
                           : format_name(channel_name, "balance")))
         , m_solo_input_proc(param_procs.find_or_make_processor(
-                  mixer_channel.solo,
+                  mixer_channel.solo(),
                   format_name(channel_name, "solo")))
         , m_mute_input_proc(param_procs.find_or_make_processor(
-                  mixer_channel.mute,
+                  mixer_channel.mute(),
                   format_name(channel_name, "mute")))
         , m_input(audio::components::make_identity(
                   num_channels(to_bus_type(mixer_channel.type))))

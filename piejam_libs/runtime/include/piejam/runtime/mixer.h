@@ -9,7 +9,7 @@
 #include <piejam/runtime/fx/fwd.h>
 #include <piejam/runtime/material_color.h>
 #include <piejam/runtime/mixer_fwd.h>
-#include <piejam/runtime/parameters.h>
+#include <piejam/runtime/parameters_map.h>
 #include <piejam/runtime/string_id.h>
 
 #include <piejam/audio/types.h>
@@ -54,11 +54,16 @@ struct channel
     string_id name{};
     material_color_id color{};
 
-    float_parameter_id volume{};
-    float_parameter_id pan_balance{};
-    bool_parameter_id record{};
-    bool_parameter_id mute{};
-    bool_parameter_id solo{};
+    enum class parameter_key : parameter::key
+    {
+        volume,
+        pan_balance,
+        record,
+        mute,
+        solo,
+    };
+
+    box<parameters_map_by<parameter_key>> parameters{};
 
     audio_stream_id out_stream{};
 
@@ -68,6 +73,31 @@ struct channel
     box<aux_sends_t> aux_sends{};
 
     auto operator==(channel const&) const noexcept -> bool = default;
+
+    auto volume() const -> float_parameter_id
+    {
+        return parameters->get<float_parameter_id>(parameter_key::volume);
+    }
+
+    auto pan_balance() const -> float_parameter_id
+    {
+        return parameters->get<float_parameter_id>(parameter_key::pan_balance);
+    }
+
+    auto record() const -> bool_parameter_id
+    {
+        return parameters->get<bool_parameter_id>(parameter_key::record);
+    }
+
+    auto mute() const -> bool_parameter_id
+    {
+        return parameters->get<bool_parameter_id>(parameter_key::mute);
+    }
+
+    auto solo() const -> bool_parameter_id
+    {
+        return parameters->get<bool_parameter_id>(parameter_key::solo);
+    }
 };
 
 struct aux_channel

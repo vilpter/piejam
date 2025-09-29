@@ -211,32 +211,6 @@ from_json(nlohmann::json const& j, session::fx_plugin& fx_plug)
     }
 }
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        session::mixer_parameters,
-        volume,
-        pan,
-        mute);
-
-static optional_serializer<midi_assignment> const s_midi_volume{"volume"};
-static optional_serializer<midi_assignment> const s_midi_pan{"pan"};
-static optional_serializer<midi_assignment> const s_midi_mute{"mute"};
-
-void
-to_json(nlohmann::json& j, session::mixer_midi const& midi)
-{
-    s_midi_volume.to_json(j, midi.volume);
-    s_midi_pan.to_json(j, midi.pan);
-    s_midi_mute.to_json(j, midi.mute);
-}
-
-void
-from_json(nlohmann::json const& j, session::mixer_midi& midi)
-{
-    s_midi_volume.from_json(j, midi.volume);
-    s_midi_pan.from_json(j, midi.pan);
-    s_midi_mute.from_json(j, midi.mute);
-}
-
 NLOHMANN_JSON_SERIALIZE_ENUM(
         session::mixer_io_type,
         {{session::mixer_io_type::none, "none"},

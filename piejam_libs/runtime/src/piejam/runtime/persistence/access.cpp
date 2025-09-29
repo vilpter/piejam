@@ -83,46 +83,48 @@ export_external_audio_device_configs(
 
 auto
 export_parameter_values(
-        fx::module const& fx_mod,
-        parameters_store const& params)
+        parameters_map const& parameters,
+        parameters_store const& params_store)
         -> std::vector<parameter_value_assignment>
 {
     std::vector<parameter_value_assignment> result;
 
-    for (auto&& [key, fx_param_id] : *fx_mod.parameters)
+    for (auto&& [key, param_id] : parameters)
     {
         std::visit(
-                [&]<class ParamId>(ParamId param) {
+                [&]<class ParamId>(ParamId param_id) {
                     if constexpr (is_persistable_parameter_v<ParamId>)
                     {
-                        result.emplace_back(key, params[param].value.get());
+                        result.emplace_back(
+                                key,
+                                params_store[param_id].value.get());
                     }
                 },
-                fx_param_id);
+                param_id);
     }
 
     return result;
 }
 
 auto
-export_fx_midi_assignments(
-        fx::module const& fx_mod,
+export_midi_assignments(
+        parameters_map const& parameters,
         midi_assignments_map const& midi_assigns)
         -> std::vector<parameter_midi_assignment>
 {
     std::vector<parameter_midi_assignment> result;
 
-    for (auto&& [key, fx_param_id] : *fx_mod.parameters)
+    for (auto&& [key, param_id] : parameters)
     {
         std::visit(
-                [&](auto&& param) {
-                    if (auto it = midi_assigns.find(param);
+                [&](auto&& param_id) {
+                    if (auto it = midi_assigns.find(param_id);
                         it != midi_assigns.end())
                     {
                         result.emplace_back(key, it->second);
                     }
                 },
-                fx_param_id);
+                param_id);
     }
 
     return result;
@@ -139,8 +141,8 @@ export_fx_plugin(
 
     session::internal_fx fx;
     fx.type = fx_internal_id;
-    fx.preset = export_parameter_values(fx_mod, st.params);
-    fx.midi = export_fx_midi_assignments(fx_mod, st.midi_assignments);
+    fx.preset = export_parameter_values(fx_mod.parameters, st.params);
+    fx.midi = export_midi_assignments(fx_mod.parameters, st.midi_assignments);
     return fx;
 }
 
@@ -156,8 +158,8 @@ export_fx_plugin(
     auto const& pd = st.fx_ladspa_instances.at(id);
     plug.id = pd.id;
     plug.name = pd.name;
-    plug.preset = export_parameter_values(fx_mod, st.params);
-    plug.midi = export_fx_midi_assignments(fx_mod, st.midi_assignments);
+    plug.preset = export_parameter_values(fx_mod.parameters, st.params);
+    plug.midi = export_midi_assignments(fx_mod.parameters, st.midi_assignments);
     return plug;
 }
 
@@ -196,43 +198,6 @@ export_fx_chain(state const& st, fx::chain_t const& fx_chain)
                         fx_mod.fx_instance_id));
     }
 
-    return result;
-}
-
-auto
-export_mixer_midi(state const& st, mixer::channel const& mixer_channel)
-        -> persistence::session::mixer_midi
-{
-    persistence::session::mixer_midi result;
-
-    if (auto it = st.midi_assignments->find(mixer_channel.volume);
-        it != st.midi_assignments->end())
-    {
-        result.volume = it->second;
-    }
-
-    if (auto it = st.midi_assignments->find(mixer_channel.pan_balance);
-        it != st.midi_assignments->end())
-    {
-        result.pan = it->second;
-    }
-
-    if (auto it = st.midi_assignments->find(mixer_channel.mute);
-        it != st.midi_assignments->end())
-    {
-        result.mute = it->second;
-    }
-
-    return result;
-}
-
-auto
-export_mixer_parameters(state const& st, mixer::channel const& mixer_channel)
-{
-    session::mixer_parameters result;
-    result.volume = st.params[mixer_channel.volume].value.get();
-    result.pan = st.params[mixer_channel.pan_balance].value.get();
-    result.mute = st.params[mixer_channel.mute].value.get();
     return result;
 }
 
@@ -321,8 +286,9 @@ export_mixer_channel(
     result.channel_type = channel.type;
     result.fx_chain =
             export_fx_chain(st, *st.mixer_state.fx_chains[channel_id]);
-    result.midi = export_mixer_midi(st, channel);
-    result.parameter = export_mixer_parameters(st, channel);
+    result.midi =
+            export_midi_assignments(channel.parameters, st.midi_assignments);
+    result.parameter = export_parameter_values(channel.parameters, st.params);
     result.in = export_mixer_io(st, channel.in);
     result.out = export_mixer_io(st, channel.out);
     result.aux_sends = export_mixer_aux_sends(st, channel.aux_sends);

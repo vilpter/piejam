@@ -82,28 +82,14 @@ make_initial_state() -> state
             add_mixer_channel(st, mixer::channel_type::stereo, "Main");
     // main doesn't belong into inputs
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
-    // reset the output to mix
-    st.mixer_state.channels.lock()[st.mixer_state.main].out =
-            mixer::mix_input{};
-    st.params[st.mixer_state.channels[st.mixer_state.main].record].value.set(
+    // reset io
+    [](mixer::channel& main_channel) {
+        main_channel.in = mixer::mix_input{};
+        main_channel.out = default_t{};
+    }(st.mixer_state.channels.lock()[st.mixer_state.main]);
+    st.params[st.mixer_state.channels[st.mixer_state.main].record()].value.set(
             true);
     return st;
-}
-
-template <class Vector>
-static auto
-set_intersection(Vector const& in, Vector const& out)
-{
-    Vector result;
-    auto proj = [](auto const& x) { return x.value(); };
-    std::ranges::set_intersection(
-            in,
-            out,
-            std::back_inserter(result),
-            {},
-            proj,
-            proj);
-    return result;
 }
 
 static auto
@@ -114,25 +100,24 @@ make_internal_fx_module(fx::modules_t& fx_modules, fx::module&& fx_mod)
 
 void
 apply_parameter_values(
-        std::vector<parameter_value_assignment> const& values,
-        fx::module const& fx_mod,
-        parameters_store& params)
+        std::span<parameter_value_assignment const> values,
+        parameters_map const& parameters,
+        parameters_store& params_store)
 {
     for (auto&& [key, value] : values)
     {
-        if (auto it = fx_mod.parameters->find(key);
-            it != fx_mod.parameters->end())
+        if (auto it = parameters.find(key); it != parameters.end())
         {
-            auto const& fx_param_id = it->second;
+            auto const param_id = it->second;
             std::visit(
                     boost::hof::match(
-                            [&params]<class P>(
+                            [&params_store]<class P>(
                                     parameter::id_t<P> id,
                                     parameter::value_type_t<P> v) {
-                                params[id].value.set(v);
+                                params_store[id].value.set(v);
                             },
                             [](auto&&, auto&&) { BOOST_ASSERT(false); }),
-                    fx_param_id,
+                    param_id,
                     value);
         }
     }
@@ -152,16 +137,15 @@ update_midi_assignments(
 }
 
 void
-apply_fx_midi_assignments(
-        std::vector<parameter_midi_assignment> const& fx_midi_assigns,
-        fx::module const& fx_mod,
-        midi_assignments_map& midi_assigns)
+apply_midi_assignments(
+        std::span<parameter_midi_assignment const> midi_assigns,
+        parameters_map const& parameters,
+        midi_assignments_map& midi_assigns_store)
 {
     midi_assignments_map new_assignments;
-    for (auto&& [key, value] : fx_midi_assigns)
+    for (auto&& [key, value] : midi_assigns)
     {
-        if (auto it = fx_mod.parameters->find(key);
-            it != fx_mod.parameters->end())
+        if (auto it = parameters.find(key); it != parameters.end())
         {
             BOOST_ASSERT(
                     std::visit(
@@ -173,7 +157,7 @@ apply_fx_midi_assignments(
         }
     }
 
-    update_midi_assignments(midi_assigns, new_assignments);
+    update_midi_assignments(midi_assigns_store, new_assignments);
 }
 
 auto
@@ -207,10 +191,10 @@ insert_internal_fx_module(
 
     auto const& fx_mod = st.fx_modules[fx_chain[insert_pos]];
 
-    apply_parameter_values(initial_values, fx_mod, st.params);
-    apply_fx_midi_assignments(
+    apply_parameter_values(initial_values, fx_mod.parameters, st.params);
+    apply_midi_assignments(
             midi_assigns,
-            fx_mod,
+            fx_mod.parameters,
             *st.midi_assignments.lock());
 
     st.mixer_state.fx_chains.set(mixer_channel_id, box{std::move(fx_chain)});
@@ -249,10 +233,10 @@ insert_ladspa_fx_module(
     fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
 
     auto const& fx_mod = st.fx_modules[fx_chain[insert_pos]];
-    apply_parameter_values(initial_values, fx_mod, st.params);
-    apply_fx_midi_assignments(
+    apply_parameter_values(initial_values, fx_mod.parameters, st.params);
+    apply_midi_assignments(
             midi_assigns,
-            fx_mod,
+            fx_mod.parameters,
             *st.midi_assignments.lock());
 
     st.mixer_state.fx_chains.set(mixer_channel_id, box{std::move(fx_chain)});
@@ -457,41 +441,51 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
             .type = type,
             .name = name_id,
             .color = color_id,
-            .volume = params_factory.make_parameter(
-                    float_parameter{
-                            .name = box("Volume"s),
-                            .default_value = 1.f,
-                            .min = 0.f,
-                            .max = numeric::from_dB(6.f),
-                            .value_to_string = &volume_to_string,
-                            .to_normalized = &to_normalized_volume,
-                            .from_normalized = &from_normalized_volume}),
-            .pan_balance = params_factory.make_parameter(
-                    float_parameter{
-                            .name =
-                                    box(std::string(bool_enum_to(
-                                            to_bus_type(type),
-                                            "Pan"sv,
-                                            "Balance"sv))),
-                            .default_value = 0.f,
-                            .min = -1.f,
-                            .max = 1.f,
-                            .bipolar = true,
-                            .to_normalized = &parameter::to_normalized_linear,
-                            .from_normalized =
-                                    &parameter::from_normalized_linear}),
-            .record = params_factory.make_parameter(
-                    bool_parameter{
-                            .name = box("Record"s),
-                            .default_value = false}),
-            .mute = params_factory.make_parameter(
-                    bool_parameter{
-                            .name = box("Mute"s),
-                            .default_value = false}),
-            .solo = params_factory.make_parameter(
-                    bool_parameter{
-                            .name = box("Solo"s),
-                            .default_value = false}),
+            .parameters = box{parameters_map_by<mixer::channel::parameter_key>{
+                    {mixer::channel::parameter_key::volume,
+                     params_factory.make_parameter(
+                             float_parameter{
+                                     .name = box("Volume"s),
+                                     .default_value = 1.f,
+                                     .min = 0.f,
+                                     .max = numeric::from_dB(6.f),
+                                     .value_to_string = &volume_to_string,
+                                     .to_normalized = &to_normalized_volume,
+                                     .from_normalized =
+                                             &from_normalized_volume})},
+                    {mixer::channel::parameter_key::pan_balance,
+                     params_factory.make_parameter(
+                             float_parameter{
+                                     .name =
+                                             box(std::string(bool_enum_to(
+                                                     to_bus_type(type),
+                                                     "Pan"sv,
+                                                     "Balance"sv))),
+                                     .default_value = 0.f,
+                                     .min = -1.f,
+                                     .max = 1.f,
+                                     .bipolar = true,
+                                     .to_normalized =
+                                             &parameter::to_normalized_linear,
+                                     .from_normalized =
+                                             &parameter::
+                                                     from_normalized_linear})},
+                    {mixer::channel::parameter_key::record,
+                     params_factory.make_parameter(
+                             bool_parameter{
+                                     .name = box("Record"s),
+                                     .default_value = false})},
+                    {mixer::channel::parameter_key::mute,
+                     params_factory.make_parameter(
+                             bool_parameter{
+                                     .name = box("Mute"s),
+                                     .default_value = false})},
+                    {mixer::channel::parameter_key::solo,
+                     params_factory.make_parameter(
+                             bool_parameter{
+                                     .name = box("Solo"s),
+                                     .default_value = false})},
+            }},
             .out_stream = make_stream(st.streams, 2),
             .in = type == mixer::channel_type::aux
                           ? mixer::io_address_t{mixer::mix_input{}}
@@ -548,11 +542,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     st.strings.erase(mixer_channel.name);
     st.material_colors.erase(mixer_channel.color);
 
-    remove_parameter(st, mixer_channel.volume);
-    remove_parameter(st, mixer_channel.pan_balance);
-    remove_parameter(st, mixer_channel.record);
-    remove_parameter(st, mixer_channel.mute);
-    remove_parameter(st, mixer_channel.solo);
+    remove_parameters(st, mixer_channel.parameters);
 
     auto mixer_channels = st.mixer_state.channels.lock();
 

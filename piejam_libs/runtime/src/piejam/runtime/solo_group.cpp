@@ -53,7 +53,7 @@ gather_channel_infos(mixer::channels_t const& channels)
 
         info.children.reserve(num_channels);
         info.mixins.reserve(num_channels);
-        info.solo_param = channel.solo;
+        info.solo_param = channel.solo();
 
         if (auto const* const in_id =
                     std::get_if<mixer::channel_id>(&channel.in);

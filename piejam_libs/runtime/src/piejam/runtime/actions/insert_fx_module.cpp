@@ -107,10 +107,13 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
             fx_chain[pos] = fx_mod_id;
 
             auto const& fx_mod = fx_modules[fx_mod_id];
-            apply_parameter_values(unavail.parameter_values, fx_mod, st.params);
-            apply_fx_midi_assignments(
+            apply_parameter_values(
+                    unavail.parameter_values,
+                    fx_mod.parameters,
+                    st.params);
+            apply_midi_assignments(
                     unavail.midi_assignments,
-                    fx_mod,
+                    fx_mod.parameters,
                     *st.midi_assignments.lock());
 
             unavail_ladspas.erase(unavail_id);

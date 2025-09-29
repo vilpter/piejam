@@ -99,7 +99,7 @@ recorder_middleware::process_recorder_action(
     for (auto const& [mixer_channel_id, mixer_channel] :
          st.mixer_state.channels)
     {
-        if (!st.params[mixer_channel.record].value.get())
+        if (!st.params[mixer_channel.record()].value.get())
         {
             continue;
         }
