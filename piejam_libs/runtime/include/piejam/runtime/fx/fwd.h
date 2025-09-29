@@ -13,13 +13,6 @@
 #include <variant>
 #include <vector>
 
-namespace piejam::runtime
-{
-
-struct midi_assignment;
-
-} // namespace piejam::runtime
-
 namespace piejam::runtime::fx
 {
 
@@ -36,12 +29,6 @@ class ladspa_manager;
 
 struct module;
 struct registry;
-
-using parameter_value_assignment = parameter::assignment<parameter_value>;
-using parameter_midi_assignment = parameter::assignment<midi_assignment>;
-
-using module_parameters =
-        boost::container::flat_map<parameter::key, parameter_id>;
 
 using stream_key = std::size_t;
 using module_streams = boost::container::flat_map<stream_key, audio_stream_id>;

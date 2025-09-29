@@ -29,7 +29,7 @@ public:
     virtual auto type() const noexcept -> FxModuleType = 0;
 
 protected:
-    auto parameters() const -> runtime::fx::module_parameters const&;
+    auto parameters() const -> runtime::parameters_map const&;
     auto streams() const -> runtime::fx::module_streams const&;
 
 private:

@@ -139,36 +139,34 @@ template <class ProcessorFactory, class... P>
 auto
 make_parameter_processor(
         ProcessorFactory& proc_factory,
-        std::variant<parameter::id_t<P>...> const& param,
+        std::variant<parameter::id_t<P>...> const& param_id,
         std::string_view const name = {})
         -> std::shared_ptr<audio::engine::processor>
 {
     return std::visit(
-            [&proc_factory,
-             name](auto&& p) -> std::shared_ptr<audio::engine::processor> {
-                return proc_factory.make_processor(
-                        std::forward<decltype(p)>(p),
-                        name);
+            [&proc_factory, name]<class Param>(parameter::id_t<Param> param_id)
+                    -> std::shared_ptr<audio::engine::processor> {
+                return proc_factory.make_processor(std::move(param_id), name);
             },
-            param);
+            param_id);
 }
 
 template <class ProcessorFactory, class... P>
 auto
 find_or_make_parameter_processor(
         ProcessorFactory& proc_factory,
-        std::variant<parameter::id_t<P>...> const& param,
+        std::variant<parameter::id_t<P>...> const& param_id,
         std::string_view const name = {})
         -> std::shared_ptr<audio::engine::processor>
 {
     return std::visit(
-            [&proc_factory,
-             name](auto&& p) -> std::shared_ptr<audio::engine::processor> {
+            [&proc_factory, name]<class Param>(parameter::id_t<Param> param_id)
+                    -> std::shared_ptr<audio::engine::processor> {
                 return proc_factory.find_or_make_processor(
-                        std::forward<decltype(p)>(p),
+                        std::move(param_id),
                         name);
             },
-            param);
+            param_id);
 }
 
 } // namespace piejam::runtime::processors

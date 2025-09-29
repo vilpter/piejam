@@ -194,7 +194,7 @@ auto make_fx_module_bus_type_selector(fx::module_id)
         -> selector<audio::bus_type>;
 auto make_fx_module_bypass_selector(fx::module_id) -> selector<bool>;
 auto make_fx_module_parameters_selector(fx::module_id)
-        -> selector<box<fx::module_parameters>>;
+        -> selector<box<parameters_map>>;
 auto make_fx_module_can_move_up_selector(mixer::channel_id) -> selector<bool>;
 auto make_fx_module_can_move_down_selector(mixer::channel_id) -> selector<bool>;
 auto make_fx_parameter_name_selector(parameter_id) -> selector<boxed_string>;

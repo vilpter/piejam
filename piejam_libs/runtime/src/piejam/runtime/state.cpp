@@ -114,7 +114,7 @@ make_internal_fx_module(fx::modules_t& fx_modules, fx::module&& fx_mod)
 
 void
 apply_parameter_values(
-        std::vector<fx::parameter_value_assignment> const& values,
+        std::vector<parameter_value_assignment> const& values,
         fx::module const& fx_mod,
         parameters_store& params)
 {
@@ -153,7 +153,7 @@ update_midi_assignments(
 
 void
 apply_fx_midi_assignments(
-        std::vector<fx::parameter_midi_assignment> const& fx_midi_assigns,
+        std::vector<parameter_midi_assignment> const& fx_midi_assigns,
         fx::module const& fx_mod,
         midi_assignments_map& midi_assigns)
 {
@@ -182,8 +182,8 @@ insert_internal_fx_module(
         mixer::channel_id const mixer_channel_id,
         std::size_t const position,
         fx::internal_id fx_internal_id,
-        std::vector<fx::parameter_value_assignment> const& initial_values,
-        std::vector<fx::parameter_midi_assignment> const& midi_assigns)
+        std::vector<parameter_value_assignment> const& initial_values,
+        std::vector<parameter_midi_assignment> const& midi_assigns)
         -> fx::module_id
 {
     BOOST_ASSERT(mixer_channel_id.valid());
@@ -226,8 +226,8 @@ insert_ladspa_fx_module(
         ladspa::instance_id const instance_id,
         ladspa::plugin_descriptor const& plugin_desc,
         std::span<ladspa::port_descriptor const> const control_inputs,
-        std::vector<fx::parameter_value_assignment> const& initial_values,
-        std::vector<fx::parameter_midi_assignment> const& midi_assigns)
+        std::vector<parameter_value_assignment> const& initial_values,
+        std::vector<parameter_midi_assignment> const& midi_assigns)
         -> fx::module_id
 {
     BOOST_ASSERT(mixer_channel_id != mixer::channel_id{});
@@ -310,6 +310,15 @@ remove_parameter(state& st, parameter::id_t<P> id)
     }
 }
 
+static auto
+remove_parameters(state& st, parameters_map const& params)
+{
+    for (auto&& [key, param_id] : params)
+    {
+        std::visit([&st](auto&& id) { remove_parameter(st, id); }, param_id);
+    }
+}
+
 void
 remove_fx_module(
         state& st,
@@ -323,10 +332,7 @@ remove_fx_module(
     boost::remove_erase(fx_chain, fx_mod_id);
     st.mixer_state.fx_chains.set(fx_chain_id, box{std::move(fx_chain)});
 
-    for (auto&& [key, fx_param_id] : *fx_mod.parameters)
-    {
-        std::visit([&st](auto&& id) { remove_parameter(st, id); }, fx_param_id);
-    }
+    remove_parameters(st, *fx_mod.parameters);
 
     if (auto id = std::get_if<ladspa::instance_id>(&fx_mod.fx_instance_id))
     {

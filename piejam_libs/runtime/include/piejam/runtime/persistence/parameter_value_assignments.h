@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <piejam/runtime/fx/fwd.h>
+#include <piejam/runtime/parameters.h>
 
 #include <vector>
 
 namespace piejam::runtime::persistence
 {
 
-using fx_preset = std::vector<fx::parameter_value_assignment>;
+using parameter_value_assignments = std::vector<parameter_value_assignment>;
 
 } // namespace piejam::runtime::persistence

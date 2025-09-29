@@ -826,7 +826,7 @@ make_fx_module_bypass_selector(fx::module_id const fx_mod_id) -> selector<bool>
 
 auto
 make_fx_module_parameters_selector(fx::module_id const fx_mod_id)
-        -> selector<box<fx::module_parameters>>
+        -> selector<box<parameters_map>>
 {
     return make_fx_module_member_selector<&fx::module::parameters>(fx_mod_id);
 }

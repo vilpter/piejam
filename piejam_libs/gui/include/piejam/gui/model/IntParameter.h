@@ -19,7 +19,7 @@ class IntParameter : public Parameter
     M_PIEJAM_GUI_PROPERTY(int, maxValue, setMaxValue)
 
 public:
-    IntParameter(runtime::state_access const&, runtime::parameter_id);
+    IntParameter(runtime::state_access const&, runtime::int_parameter_id);
 
     static constexpr auto StaticType = Type::Int;
 

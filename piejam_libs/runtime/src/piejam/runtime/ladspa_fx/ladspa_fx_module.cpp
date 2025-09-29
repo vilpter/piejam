@@ -30,7 +30,7 @@ struct make_module_parameters
     auto operator()(std::span<piejam::ladspa::port_descriptor const>
                             control_inputs) const
     {
-        fx::module_parameters module_params;
+        parameters_map module_params;
 
         for (auto const& port_desc : control_inputs)
         {
@@ -46,7 +46,7 @@ struct make_module_parameters
 
 private:
     void operator()(
-            fx::module_parameters& module_params,
+            parameters_map& module_params,
             ladspa::port_descriptor const& port_desc,
             ladspa::float_port const p) const
     {
@@ -56,22 +56,27 @@ private:
 
         module_params.emplace(
                 port_desc.index,
-                params_factory.make_parameter(float_parameter{
-                        .name = box(port_desc.name),
-                        .default_value = p.default_value,
-                        .min = p.min,
-                        .max = p.max,
-                        .to_normalized =
-                                logarithmic ? &parameter::to_normalized_log
-                                            : &parameter::to_normalized_linear,
-                        .from_normalized =
-                                logarithmic
-                                        ? &parameter::from_normalized_log
-                                        : &parameter::from_normalized_linear}));
+                params_factory.make_parameter(
+                        float_parameter{
+                                .name = box(port_desc.name),
+                                .default_value = p.default_value,
+                                .min = p.min,
+                                .max = p.max,
+                                .to_normalized =
+                                        logarithmic
+                                                ? &parameter::to_normalized_log
+                                                : &parameter::
+                                                          to_normalized_linear,
+                                .from_normalized =
+                                        logarithmic
+                                                ? &parameter::
+                                                          from_normalized_log
+                                                : &parameter::
+                                                          from_normalized_linear}));
     }
 
     void operator()(
-            fx::module_parameters& module_params,
+            parameters_map& module_params,
             ladspa::port_descriptor const& port_desc,
             ladspa::int_port const p) const
     {
@@ -81,15 +86,16 @@ private:
 
         module_params.emplace(
                 port_desc.index,
-                params_factory.make_parameter(int_parameter{
-                        .name = box(port_desc.name),
-                        .default_value = p.default_value,
-                        .min = p.min,
-                        .max = p.max}));
+                params_factory.make_parameter(
+                        int_parameter{
+                                .name = box(port_desc.name),
+                                .default_value = p.default_value,
+                                .min = p.min,
+                                .max = p.max}));
     }
 
     void operator()(
-            fx::module_parameters& module_params,
+            parameters_map& module_params,
             ladspa::port_descriptor const& port_desc,
             ladspa::bool_port const p) const
     {
@@ -97,9 +103,10 @@ private:
 
         module_params.emplace(
                 port_desc.index,
-                params_factory.make_parameter(bool_parameter{
-                        .name = box(port_desc.name),
-                        .default_value = p.default_value}));
+                params_factory.make_parameter(
+                        bool_parameter{
+                                .name = box(port_desc.name),
+                                .default_value = p.default_value}));
     }
 
     parameters_store& m_params;

@@ -13,11 +13,11 @@ namespace piejam::gui::model
 
 EnumParameter::EnumParameter(
         runtime::state_access const& state_access,
-        runtime::parameter_id param_id)
+        runtime::enum_parameter_id param_id)
     : IntParameter{state_access, param_id}
     , m_values{make_pimpl<EnumListModel>(observe_once(
               runtime::selectors::make_int_parameter_enum_values_selector(
-                      std::get<runtime::int_parameter_id>(param_id))))}
+                      param_id)))}
 
 {
 }

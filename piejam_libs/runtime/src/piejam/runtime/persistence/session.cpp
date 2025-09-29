@@ -128,14 +128,14 @@ static auto const parameter_value_assignment_serializer =
         };
 
 void
-to_json(nlohmann::json& j, parameter::assignment<parameter_value> const& p)
+to_json(nlohmann::json& j, parameter_value_assignment const& p)
 {
     j = {{"key", p.key},
          {"value", parameter_value_assignment_serializer.to_json(p.value)}};
 }
 
 void
-from_json(nlohmann::json const& j, parameter::assignment<parameter_value>& p)
+from_json(nlohmann::json const& j, parameter_value_assignment& p)
 {
     j.at("key").get_to(p.key);
 

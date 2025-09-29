@@ -10,8 +10,8 @@
 #include <piejam/runtime/midi_assignment.h>
 #include <piejam/runtime/mixer_fwd.h>
 #include <piejam/runtime/parameter/assignment.h>
-#include <piejam/runtime/persistence/fx_midi_assignments.h>
-#include <piejam/runtime/persistence/fx_preset.h>
+#include <piejam/runtime/persistence/parameter_midi_assignments.h>
+#include <piejam/runtime/persistence/parameter_value_assignments.h>
 
 #include <piejam/audio/types.h>
 #include <piejam/ladspa/fwd.h>
@@ -41,16 +41,16 @@ struct session
     struct internal_fx
     {
         fx::internal_id type{};
-        fx_preset preset;
-        fx_midi_assignments midi;
+        parameter_value_assignments preset;
+        parameter_midi_assignments midi;
     };
 
     struct ladspa_plugin
     {
         ladspa::plugin_id_t id{};
         std::string name;
-        fx_preset preset;
-        fx_midi_assignments midi;
+        parameter_value_assignments preset;
+        parameter_midi_assignments midi;
     };
 
     struct fx_plugin : std::variant<std::monostate, internal_fx, ladspa_plugin>

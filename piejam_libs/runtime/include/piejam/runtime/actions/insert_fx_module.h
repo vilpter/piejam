@@ -29,8 +29,8 @@ struct insert_internal_fx_module final
     mixer::channel_id fx_chain_id;
     std::size_t position{};
     fx::internal_id type{};
-    std::vector<fx::parameter_value_assignment> initial_values;
-    std::vector<fx::parameter_midi_assignment> midi_assignments;
+    std::vector<parameter_value_assignment> initial_values;
+    std::vector<parameter_midi_assignment> midi_assignments;
     bool show_fx_module{};
 
     void reduce(state&) const override;
@@ -44,8 +44,8 @@ struct load_ladspa_fx_plugin final
     std::size_t position{};
     ladspa::plugin_id_t plugin_id;
     std::string name;
-    std::vector<fx::parameter_value_assignment> initial_values;
-    std::vector<fx::parameter_midi_assignment> midi_assignments;
+    std::vector<parameter_value_assignment> initial_values;
+    std::vector<parameter_midi_assignment> midi_assignments;
     bool show_fx_module{};
 };
 
@@ -58,8 +58,8 @@ struct insert_ladspa_fx_module final
     ladspa::instance_id instance_id;
     ladspa::plugin_descriptor plugin_desc;
     std::span<ladspa::port_descriptor const> control_inputs;
-    std::vector<fx::parameter_value_assignment> initial_values;
-    std::vector<fx::parameter_midi_assignment> midi_assignments;
+    std::vector<parameter_value_assignment> initial_values;
+    std::vector<parameter_midi_assignment> midi_assignments;
     bool show_fx_module{};
 
     void reduce(state&) const override;

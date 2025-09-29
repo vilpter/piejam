@@ -37,7 +37,9 @@ struct audio_engine_sync_update final
             parameter_value_type_t<Parameter>>;
 
     using parameter_values_t = boost::mp11::mp_rename<
-            boost::mp11::mp_transform<id_value_map_t, parameter_ids_t>,
+            boost::mp11::mp_transform<
+                    id_value_map_t,
+                    boost::mp11::mp_map_keys<parameters_fwd_t>>,
             std::tuple>;
 
     parameter_values_t values;

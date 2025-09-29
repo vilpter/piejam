@@ -109,12 +109,12 @@ void remove_mixer_channel(state&, mixer::channel_id);
 void remove_external_audio_device(state&, external_audio::device_id);
 
 void apply_parameter_values(
-        std::vector<fx::parameter_value_assignment> const&,
+        std::vector<parameter_value_assignment> const&,
         fx::module const&,
         parameters_store&);
 
 void apply_fx_midi_assignments(
-        std::vector<fx::parameter_midi_assignment> const&,
+        std::vector<parameter_midi_assignment> const&,
         fx::module const&,
         midi_assignments_map&);
 
@@ -123,8 +123,8 @@ auto insert_internal_fx_module(
         mixer::channel_id,
         std::size_t position,
         fx::internal_id,
-        std::vector<fx::parameter_value_assignment> const& initial_values,
-        std::vector<fx::parameter_midi_assignment> const& midi_assigns)
+        std::vector<parameter_value_assignment> const& initial_values,
+        std::vector<parameter_midi_assignment> const& midi_assigns)
         -> fx::module_id;
 auto insert_ladspa_fx_module(
         state&,
@@ -133,8 +133,8 @@ auto insert_ladspa_fx_module(
         ladspa::instance_id,
         ladspa::plugin_descriptor const&,
         std::span<ladspa::port_descriptor const> control_inputs,
-        std::vector<fx::parameter_value_assignment> const& initial_values,
-        std::vector<fx::parameter_midi_assignment> const& midi_assigns)
+        std::vector<parameter_value_assignment> const& initial_values,
+        std::vector<parameter_midi_assignment> const& midi_assigns)
         -> fx::module_id;
 void insert_missing_ladspa_fx_module(
         state&,

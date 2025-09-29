@@ -13,12 +13,12 @@ namespace piejam::gui::model
 
 FloatParameter::FloatParameter(
         runtime::state_access const& state_access,
-        runtime::parameter_id param_id)
+        runtime::float_parameter_id param_id)
     : Parameter{state_access, param_id}
 {
     setBipolar(observe_once(
             runtime::selectors::make_float_parameter_bipolar_selector(
-                    paramId())));
+                    param_id)));
 }
 
 auto

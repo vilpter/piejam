@@ -14,8 +14,7 @@
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter_factory.h>
-
-#include <boost/container/flat_map.hpp>
+#include <piejam/runtime/parameters_map.h>
 
 #include <format>
 
@@ -81,13 +80,13 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .name = box("Filter"s),
             .bus_type = args.bus_type,
             .parameters =
-                    box(runtime::fx::module_parameters{
-                            {std::to_underlying(parameter_key::type),
+                    box(runtime::parameters_map_by<parameter_key>{
+                            {parameter_key::type,
                              params_factory.make_parameter(
                                      runtime::enum_parameter<type>(
                                              "Type"s,
                                              &to_type_string))},
-                            {std::to_underlying(parameter_key::cutoff),
+                            {parameter_key::cutoff,
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Cutoff"s),
@@ -102,7 +101,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              .from_normalized =
                                                      &runtime::parameter::
                                                              from_normalized_log})},
-                            {std::to_underlying(parameter_key::resonance),
+                            {parameter_key::resonance,
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Resonance"s),
@@ -116,7 +115,8 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                                              to_normalized_linear,
                                              .from_normalized =
                                                      &runtime::parameter::
-                                                             from_normalized_linear})}}),
+                                                             from_normalized_linear})}}
+                                .as_base()),
             .streams =
                     box(runtime::fx::module_streams{
                             {std::to_underlying(stream_key::in_out),

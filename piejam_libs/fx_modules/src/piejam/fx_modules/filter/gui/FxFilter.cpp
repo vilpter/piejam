@@ -13,9 +13,8 @@
 #include <piejam/gui/model/SpectrumGenerator.h>
 #include <piejam/gui/model/SpectrumSlot.h>
 #include <piejam/renew.h>
+#include <piejam/runtime/parameters_map.h>
 #include <piejam/runtime/selectors.h>
-
-#include <boost/container/flat_map.hpp>
 
 namespace piejam::fx_modules::filter::gui
 {
@@ -64,19 +63,21 @@ FxFilter::FxFilter(
               runtime::selectors::make_fx_module_bus_type_selector(
                       fx_mod_id))))}
 {
-    auto const& parameters = this->parameters();
+    auto const parameters =
+            runtime::parameters_map_view<parameter_key>(this->parameters());
 
     makeParameter(
             m_impl->filterTypeParam,
-            parameters.at(std::to_underlying(parameter_key::type)));
+            parameters.get<runtime::enum_parameter_id>(parameter_key::type));
 
     makeParameter(
             m_impl->cutoffParam,
-            parameters.at(std::to_underlying(parameter_key::cutoff)));
+            parameters.get<runtime::float_parameter_id>(parameter_key::cutoff));
 
     makeParameter(
             m_impl->resonanceParam,
-            parameters.at(std::to_underlying(parameter_key::resonance)));
+            parameters.get<runtime::float_parameter_id>(
+                    parameter_key::resonance));
 
     makeStream(
             m_impl->inOutStream,

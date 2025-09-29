@@ -11,7 +11,7 @@ namespace piejam::gui::model
 
 struct FxModule::Impl
 {
-    box<runtime::fx::module_parameters> parameters;
+    box<runtime::parameters_map> parameters;
     box<runtime::fx::module_streams> streams;
 };
 
@@ -38,7 +38,7 @@ FxModule::busType() const noexcept -> busType_property_t
 }
 
 auto
-FxModule::parameters() const -> runtime::fx::module_parameters const&
+FxModule::parameters() const -> runtime::parameters_map const&
 {
     return m_impl->parameters;
 }

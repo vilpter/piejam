@@ -11,8 +11,7 @@
 #include <piejam/runtime/parameter/float_descriptor.h>
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter_factory.h>
-
-#include <boost/container/flat_map.hpp>
+#include <piejam/runtime/parameters_map.h>
 
 #include <format>
 
@@ -49,10 +48,10 @@ make_module(runtime::internal_fx_module_factory_args const& args)
 
     runtime::parameter_factory params_factory{args.params};
 
-    runtime::fx::module_parameters parameters;
+    runtime::parameters_map_by<parameter_key> parameters;
 
     parameters.emplace(
-            std::to_underlying(parameter_key::gain),
+            parameter_key::gain,
             params_factory.make_parameter(
                     runtime::float_parameter{
                             .name = box("Gain"s),
@@ -68,7 +67,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
     {
         case audio::bus_type::mono:
             parameters.emplace(
-                    std::to_underlying(parameter_key::invert),
+                    parameter_key::invert,
                     params_factory.make_parameter(
                             runtime::bool_parameter{
                                     .name = box("Invert"s),
@@ -77,13 +76,13 @@ make_module(runtime::internal_fx_module_factory_args const& args)
 
         case audio::bus_type::stereo:
             parameters.emplace(
-                    std::to_underlying(parameter_key::invert_left),
+                    parameter_key::invert_left,
                     params_factory.make_parameter(
                             runtime::bool_parameter{
                                     .name = box("Invert L"s),
                                     .default_value = false}));
             parameters.emplace(
-                    std::to_underlying(parameter_key::invert_right),
+                    parameter_key::invert_right,
                     params_factory.make_parameter(
                             runtime::bool_parameter{
                                     .name = box("Invert R"s),
@@ -95,7 +94,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .fx_instance_id = internal_id(),
             .name = box("Utility"s),
             .bus_type = args.bus_type,
-            .parameters = box(std::move(parameters)),
+            .parameters = box(std::move(parameters).as_base()),
             .streams = {}};
 }
 

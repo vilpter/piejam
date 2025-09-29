@@ -94,8 +94,8 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/persistence/app_config.h
     include/piejam/runtime/persistence/fwd.h
     include/piejam/runtime/persistence/fx_internal_id.h
-    include/piejam/runtime/persistence/fx_midi_assignments.h
-    include/piejam/runtime/persistence/fx_preset.h
+    include/piejam/runtime/persistence/parameter_midi_assignments.h
+    include/piejam/runtime/persistence/parameter_value_assignments.h
     include/piejam/runtime/persistence/optional.h
     include/piejam/runtime/persistence/session.h
     include/piejam/runtime/persistence/strong_type.h
@@ -176,6 +176,7 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/state.cpp
     src/piejam/runtime/state_access.cpp
     src/piejam/runtime/thunk_action.cpp
+    include/piejam/runtime/parameters_map.h
 )
 
 find_package(nlohmann_json REQUIRED)

@@ -13,17 +13,15 @@ namespace piejam::gui::model
 
 IntParameter::IntParameter(
         runtime::state_access const& state_access,
-        runtime::parameter_id param_id)
+        runtime::int_parameter_id param_id)
     : Parameter{state_access, param_id}
 
 {
-    auto const int_param_id = paramId();
-
     setMinValue(observe_once(
-            runtime::selectors::make_int_parameter_min_selector(int_param_id)));
+            runtime::selectors::make_int_parameter_min_selector(param_id)));
 
     setMaxValue(observe_once(
-            runtime::selectors::make_int_parameter_max_selector(int_param_id)));
+            runtime::selectors::make_int_parameter_max_selector(param_id)));
 }
 
 auto

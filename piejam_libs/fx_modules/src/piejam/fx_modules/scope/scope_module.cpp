@@ -15,8 +15,7 @@
 #include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter_factory.h>
-
-#include <boost/container/flat_map.hpp>
+#include <piejam/runtime/parameters_map.h>
 
 #include <format>
 
@@ -173,8 +172,8 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .name = box("Scope"s),
             .bus_type = args.bus_type,
             .parameters =
-                    box(runtime::fx::module_parameters{
-                            {std::to_underlying(parameter_key::mode),
+                    box(runtime::parameters_map_by<parameter_key>{
+                            {parameter_key::mode,
                              params_factory.make_parameter(
                                      args.bus_type == audio::bus_type::mono
                                              ? runtime::enum_parameter<
@@ -185,12 +184,12 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                                        mode_stereo>(
                                                        "Mode"s,
                                                        &to_mode_stereo_string))},
-                            {std::to_underlying(parameter_key::trigger_slope),
+                            {parameter_key::trigger_slope,
                              params_factory.make_parameter(
                                      runtime::enum_parameter<trigger_slope>(
                                              "Slope"s,
                                              &to_trigger_slope_string))},
-                            {std::to_underlying(parameter_key::trigger_level),
+                            {parameter_key::trigger_level,
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Trigger Level"s),
@@ -203,7 +202,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              .from_normalized =
                                                      &runtime::parameter::
                                                              from_normalized_linear})},
-                            {std::to_underlying(parameter_key::hold_time),
+                            {parameter_key::hold_time,
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Hold Time"s),
@@ -218,8 +217,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              .from_normalized =
                                                      &runtime::parameter::
                                                              from_normalized_linear})},
-                            {std::to_underlying(
-                                     parameter_key::waveform_window_size),
+                            {parameter_key::waveform_window_size,
                              params_factory.make_parameter(
                                      runtime::enum_parameter<window_size>(
                                              "Window Size"s,
@@ -227,8 +225,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              true /* midi_assignable */,
                                              false /* routing */,
                                              window_size::large))},
-                            {std::to_underlying(
-                                     parameter_key::scope_window_size),
+                            {parameter_key::scope_window_size,
                              params_factory.make_parameter(
                                      runtime::enum_parameter<window_size>(
                                              "Window Size"s,
@@ -236,17 +233,17 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              true /* midi_assignable */,
                                              false /* routing */,
                                              window_size::very_small))},
-                            {std::to_underlying(parameter_key::stream_a_active),
+                            {parameter_key::stream_a_active,
                              params_factory.make_parameter(
                                      runtime::bool_parameter{
                                              .name = box("Stream A Active"s),
                                              .default_value = true})},
-                            {std::to_underlying(parameter_key::stream_b_active),
+                            {parameter_key::stream_b_active,
                              params_factory.make_parameter(
                                      runtime::bool_parameter{
                                              .name = box("Stream B Active"s),
                                              .default_value = false})},
-                            {std::to_underlying(parameter_key::channel_a),
+                            {parameter_key::channel_a,
                              params_factory.make_parameter(
                                      runtime::enum_parameter(
                                              "Channel A"s,
@@ -254,7 +251,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              true /* midi_assignable */,
                                              false /* routing */,
                                              stereo_channel::left))},
-                            {std::to_underlying(parameter_key::channel_b),
+                            {parameter_key::channel_b,
                              params_factory.make_parameter(
                                      runtime::enum_parameter(
                                              "Channel B"s,
@@ -262,7 +259,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              true /* midi_assignable */,
                                              false /* routing */,
                                              stereo_channel::right))},
-                            {std::to_underlying(parameter_key::gain_a),
+                            {parameter_key::gain_a,
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Gain A"s),
@@ -274,7 +271,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                                      dB_ival::to_normalized,
                                              .from_normalized = dB_ival::
                                                      from_normalized})},
-                            {std::to_underlying(parameter_key::gain_b),
+                            {parameter_key::gain_b,
                              params_factory.make_parameter(
                                      runtime::float_parameter{
                                              .name = box("Gain B"s),
@@ -286,12 +283,12 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                                      dB_ival::to_normalized,
                                              .from_normalized = dB_ival::
                                                      from_normalized})},
-                            {std::to_underlying(parameter_key::freeze),
+                            {parameter_key::freeze,
                              params_factory.make_parameter(
                                      runtime::bool_parameter{
                                              .name = box("Freeze"s),
-                                             .default_value = false})},
-                    }),
+                                             .default_value = false})}}
+                                .as_base()),
             .streams =
                     box(runtime::fx::module_streams{
                             {std::to_underlying(stream_key::input),

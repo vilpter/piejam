@@ -22,7 +22,7 @@ class EnumParameter final : public IntParameter
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, values)
 
 public:
-    EnumParameter(runtime::state_access const&, runtime::parameter_id);
+    EnumParameter(runtime::state_access const&, runtime::enum_parameter_id);
 
     static constexpr auto StaticType = Type::Enum;
 

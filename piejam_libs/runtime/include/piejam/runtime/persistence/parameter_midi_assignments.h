@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <piejam/runtime/fx/fwd.h>
+#include <piejam/runtime/parameters.h>
 
 #include <vector>
 
 namespace piejam::runtime::persistence
 {
 
-using fx_midi_assignments = std::vector<fx::parameter_midi_assignment>;
+using parameter_midi_assignments = std::vector<parameter_midi_assignment>;
 
 } // namespace piejam::runtime::persistence

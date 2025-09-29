@@ -13,7 +13,7 @@ namespace piejam::gui::model
 
 BoolParameter::BoolParameter(
         runtime::state_access const& state_access,
-        runtime::parameter_id param_id)
+        runtime::bool_parameter_id param_id)
     : Parameter(state_access, param_id)
 {
 }

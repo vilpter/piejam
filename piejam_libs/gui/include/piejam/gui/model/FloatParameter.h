@@ -19,7 +19,7 @@ class FloatParameter : public Parameter
     M_PIEJAM_GUI_PROPERTY(bool, bipolar, setBipolar)
 
 public:
-    FloatParameter(runtime::state_access const&, runtime::parameter_id);
+    FloatParameter(runtime::state_access const&, runtime::float_parameter_id);
 
     static constexpr auto StaticType = Type::Float;
 

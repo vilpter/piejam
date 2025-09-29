@@ -17,9 +17,8 @@
 #include <piejam/gui/model/StreamSamplesCache.h>
 #include <piejam/gui/model/WaveformGenerator.h>
 #include <piejam/renew.h>
+#include <piejam/runtime/parameters_map.h>
 #include <piejam/runtime/selectors.h>
-
-#include <boost/container/flat_map.hpp>
 
 namespace piejam::fx_modules::scope::gui
 {
@@ -140,61 +139,69 @@ FxScope::FxScope(
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
-    auto const& parameters = this->parameters();
+    auto const parameters =
+            runtime::parameters_map_view<parameter_key>(this->parameters());
 
     makeParameter(
             m_impl->mode,
-            parameters.at(std::to_underlying(parameter_key::mode)));
+            parameters.get<runtime::enum_parameter_id>(parameter_key::mode));
 
     makeParameter(
             m_impl->triggerSlope,
-            parameters.at(std::to_underlying(parameter_key::trigger_slope)));
+            parameters.get<runtime::enum_parameter_id>(
+                    parameter_key::trigger_slope));
 
     makeParameter(
             m_impl->triggerLevel,
-            parameters.at(std::to_underlying(parameter_key::trigger_level)));
+            parameters.get<runtime::float_parameter_id>(
+                    parameter_key::trigger_level));
 
     makeParameter(
             m_impl->holdTime,
-            parameters.at(std::to_underlying(parameter_key::hold_time)));
+            parameters.get<runtime::float_parameter_id>(
+                    parameter_key::hold_time));
 
     makeParameter(
             m_impl->waveformResolution,
-            parameters.at(
-                    std::to_underlying(parameter_key::waveform_window_size)));
+            parameters.get<runtime::int_parameter_id>(
+                    parameter_key::waveform_window_size));
 
     makeParameter(
             m_impl->scopeResolution,
-            parameters.at(
-                    std::to_underlying(parameter_key::scope_window_size)));
+            parameters.get<runtime::int_parameter_id>(
+                    parameter_key::scope_window_size));
 
     makeParameter(
             m_impl->streamProcessor.first.active,
-            parameters.at(std::to_underlying(parameter_key::stream_a_active)));
+            parameters.get<runtime::bool_parameter_id>(
+                    parameter_key::stream_a_active));
 
     makeParameter(
             m_impl->streamProcessor.second.active,
-            parameters.at(std::to_underlying(parameter_key::stream_b_active)));
+            parameters.get<runtime::bool_parameter_id>(
+                    parameter_key::stream_b_active));
 
     makeParameter(
             m_impl->streamProcessor.first.channel,
-            parameters.at(std::to_underlying(parameter_key::channel_a)));
+            parameters.get<runtime::enum_parameter_id>(
+                    parameter_key::channel_a));
 
     makeParameter(
             m_impl->streamProcessor.second.channel,
-            parameters.at(std::to_underlying(parameter_key::channel_b)));
+            parameters.get<runtime::enum_parameter_id>(
+                    parameter_key::channel_b));
 
     makeParameter(
             m_impl->streamProcessor.first.gain,
-            parameters.at(std::to_underlying(parameter_key::gain_a)));
+            parameters.get<runtime::float_parameter_id>(parameter_key::gain_a));
 
     makeParameter(
             m_impl->streamProcessor.second.gain,
-            parameters.at(std::to_underlying(parameter_key::gain_b)));
+            parameters.get<runtime::float_parameter_id>(parameter_key::gain_b));
 
     makeParameter(
             m_impl->freeze,
-            parameters.at(std::to_underlying(parameter_key::freeze)));
+            parameters.get<runtime::bool_parameter_id>(parameter_key::freeze));
 
     makeStream(
             m_impl->stream,

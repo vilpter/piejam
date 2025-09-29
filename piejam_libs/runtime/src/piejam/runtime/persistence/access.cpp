@@ -82,10 +82,12 @@ export_external_audio_device_configs(
 }
 
 auto
-export_parameter_values(fx::module const& fx_mod, parameters_store const& params)
-        -> std::vector<fx::parameter_value_assignment>
+export_parameter_values(
+        fx::module const& fx_mod,
+        parameters_store const& params)
+        -> std::vector<parameter_value_assignment>
 {
-    std::vector<fx::parameter_value_assignment> result;
+    std::vector<parameter_value_assignment> result;
 
     for (auto&& [key, fx_param_id] : *fx_mod.parameters)
     {
@@ -93,10 +95,7 @@ export_parameter_values(fx::module const& fx_mod, parameters_store const& params
                 [&]<class ParamId>(ParamId param) {
                     if constexpr (is_persistable_parameter_v<ParamId>)
                     {
-                        result.emplace_back(
-                                fx::parameter_value_assignment{
-                                        key,
-                                        params[param].value.get()});
+                        result.emplace_back(key, params[param].value.get());
                     }
                 },
                 fx_param_id);
@@ -109,9 +108,9 @@ auto
 export_fx_midi_assignments(
         fx::module const& fx_mod,
         midi_assignments_map const& midi_assigns)
-        -> std::vector<fx::parameter_midi_assignment>
+        -> std::vector<parameter_midi_assignment>
 {
-    std::vector<fx::parameter_midi_assignment> result;
+    std::vector<parameter_midi_assignment> result;
 
     for (auto&& [key, fx_param_id] : *fx_mod.parameters)
     {
@@ -120,8 +119,7 @@ export_fx_midi_assignments(
                     if (auto it = midi_assigns.find(param);
                         it != midi_assigns.end())
                     {
-                        result.emplace_back(
-                                fx::parameter_midi_assignment{key, it->second});
+                        result.emplace_back(key, it->second);
                     }
                 },
                 fx_param_id);

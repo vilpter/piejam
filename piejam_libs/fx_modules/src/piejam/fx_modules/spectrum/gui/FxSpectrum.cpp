@@ -15,10 +15,9 @@
 #include <piejam/gui/model/SpectrumGenerator.h>
 #include <piejam/gui/model/StreamProcessor.h>
 #include <piejam/renew.h>
+#include <piejam/runtime/parameters_map.h>
 #include <piejam/runtime/selectors.h>
 #include <piejam/switch_cast.h>
-
-#include <boost/container/flat_map.hpp>
 
 namespace piejam::fx_modules::spectrum::gui
 {
@@ -83,35 +82,40 @@ FxSpectrum::FxSpectrum(
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
-    auto const& parameters = this->parameters();
+    auto const parameters =
+            runtime::parameters_map_view<parameter_key>(this->parameters());
 
     makeParameter(
             m_impl->spectrumProcessor.first.active,
-            parameters.at(std::to_underlying(parameter_key::stream_a_active)));
+            parameters.get<runtime::bool_parameter_id>(
+                    parameter_key::stream_a_active));
 
     makeParameter(
             m_impl->spectrumProcessor.second.active,
-            parameters.at(std::to_underlying(parameter_key::stream_b_active)));
+            parameters.get<runtime::bool_parameter_id>(
+                    parameter_key::stream_b_active));
 
     makeParameter(
             m_impl->spectrumProcessor.first.channel,
-            parameters.at(std::to_underlying(parameter_key::channel_a)));
+            parameters.get<runtime::enum_parameter_id>(
+                    parameter_key::channel_a));
 
     makeParameter(
             m_impl->spectrumProcessor.second.channel,
-            parameters.at(std::to_underlying(parameter_key::channel_b)));
+            parameters.get<runtime::enum_parameter_id>(
+                    parameter_key::channel_b));
 
     makeParameter(
             m_impl->spectrumProcessor.first.gain,
-            parameters.at(std::to_underlying(parameter_key::gain_a)));
+            parameters.get<runtime::float_parameter_id>(parameter_key::gain_a));
 
     makeParameter(
             m_impl->spectrumProcessor.second.gain,
-            parameters.at(std::to_underlying(parameter_key::gain_b)));
+            parameters.get<runtime::float_parameter_id>(parameter_key::gain_b));
 
     makeParameter(
             m_impl->freeze,
-            parameters.at(std::to_underlying(parameter_key::freeze)));
+            parameters.get<runtime::bool_parameter_id>(parameter_key::freeze));
 
     makeStream(
             m_impl->stream,

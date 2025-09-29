@@ -20,7 +20,7 @@ struct module
     boxed_string name;
     audio::bus_type bus_type{};
     bool bypassed{};
-    box<module_parameters> parameters;
+    box<parameters_map> parameters;
     box<module_streams> streams;
 
     auto operator==(module const&) const noexcept -> bool = default;
