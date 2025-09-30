@@ -133,7 +133,6 @@ struct state
 
 auto is_mix_input_valid(
         channel_id,
-        channels_t const&,
         io_map_t const&,
         aux_sends_t const&,
         parameters_store const&) -> bool;
@@ -141,7 +140,6 @@ auto is_mix_input_valid(
 auto can_toggle_aux(
         channel_id,
         channel_id aux_id,
-        channels_t const&,
         io_map_t const&,
         aux_sends_t const&,
         parameters_store const&) -> bool;

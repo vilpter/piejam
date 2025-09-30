@@ -7,11 +7,7 @@
 #include <piejam/runtime/parameter/bool_descriptor.h>
 #include <piejam/runtime/parameters_store.h>
 
-#include <piejam/functional/get.h>
 #include <piejam/io_pair.h>
-
-#include <boost/hof/compose.hpp>
-#include <boost/hof/unpack.hpp>
 
 #include <algorithm>
 #include <ranges>
@@ -32,47 +28,30 @@ using channels_io_t = boost::container::flat_map<channel_id, channel_io_t>;
 
 auto
 extract_channels_io(
-        channels_t const& channels,
         io_map_t const& io_map,
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> channels_io_t
 {
-    namespace bhof = boost::hof;
-
     channels_io_t result;
 
-    auto transformed = std::views::transform(
-            channels,
-            bhof::unpack([&](auto const id, auto const& /*channel*/) {
-                auto const* const channel_aux_sends = aux_sends.find(id);
-                auto active_aux_sends =
-                        channel_aux_sends
-                                ? *channel_aux_sends |
-                                          std::views::filter(
-                                                  [&](auto const& aux_send) {
-                                                      return params
-                                                              [aux_send.second
-                                                                       .active]
-                                                                      .value
-                                                                      .get();
-                                                  }) |
-                                          std::views::keys |
-                                          std::ranges::to<std::vector>()
-                                : std::vector<channel_id>{};
+    for (auto const& [id, io] : io_map)
+    {
+        auto [it, inserted] = result.emplace(id, io);
+        BOOST_ASSERT(inserted);
 
-                return std::pair(
-                        id,
-                        channel_io_t{
-                                .port =
-                                        {io_map.at(id).in(),
-                                         io_map.at(id).out()},
-                                .aux_sends = std::move(active_aux_sends)});
-            }));
+        if (auto channel_aux_sends = aux_sends.find(id))
+        {
+            for (auto const& [aux_id, aux] : *channel_aux_sends)
+            {
+                if (params[aux.active].value.get())
+                {
+                    it->second.aux_sends.emplace_back(aux_id);
+                }
+            }
+        }
+    }
 
-    return channels_io_t(
-            boost::container::ordered_unique_range,
-            transformed.begin(),
-            transformed.end());
+    return result;
 }
 
 struct io_graph_node
@@ -168,13 +147,11 @@ has_cycle(io_graph g)
 auto
 is_mix_input_valid(
         channel_id const ch_id,
-        channels_t const& channels,
         io_map_t const& io_map,
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> bool
 {
-    BOOST_ASSERT(channels.at(ch_id).type != mixer::channel_type::mono);
-    auto channels_io = extract_channels_io(channels, io_map, aux_sends, params);
+    auto channels_io = extract_channels_io(io_map, aux_sends, params);
     channels_io[ch_id].port.in() = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));
 }
@@ -183,7 +160,6 @@ auto
 can_toggle_aux(
         channel_id const ch_id,
         channel_id const aux_id,
-        channels_t const& channels,
         io_map_t const& io_map,
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> bool
@@ -205,7 +181,7 @@ can_toggle_aux(
         return true; // we can always disable an enabled aux
     }
 
-    auto channels_io = extract_channels_io(channels, io_map, aux_sends, params);
+    auto channels_io = extract_channels_io(io_map, aux_sends, params);
 
     channels_io[ch_id].aux_sends.emplace_back(aux_id);
     return !has_cycle(make_channels_io_graph(channels_io));
@@ -220,7 +196,7 @@ valid_channels(
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> std::vector<channel_id>
 {
-    auto channels_io = extract_channels_io(channels, io_map, aux_sends, params);
+    auto channels_io = extract_channels_io(io_map, aux_sends, params);
 
     std::vector<mixer::channel_id> valid_ids;
     for (auto const& [mixer_channel_id, mixer_channel] : channels)

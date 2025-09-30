@@ -353,25 +353,19 @@ make_can_toggle_aux_send_selector(
         mixer::channel_id const aux_id) -> selector<bool>
 {
     auto get = memo([channel_id, aux_id](
-                            mixer::channels_t const& channels,
                             mixer::io_map_t const& io_map,
                             mixer::aux_sends_t const& aux_sends,
                             parameters_store const& params) {
         return mixer::can_toggle_aux(
                 channel_id,
                 aux_id,
-                channels,
                 io_map,
                 aux_sends,
                 params);
     });
 
     return [get = std::move(get)](state const& st) {
-        return get(
-                st.mixer_state.channels,
-                st.mixer_state.io_map,
-                st.mixer_state.aux_sends,
-                st.params);
+        return get(st.mixer_state.io_map, st.mixer_state.aux_sends, st.params);
     };
 }
 
@@ -408,7 +402,6 @@ make_mixer_channel_mix_input_is_valid_selector(
             get = memo(&mixer::is_mix_input_valid)](state const& st) {
         return get(
                 channel_id,
-                st.mixer_state.channels,
                 st.mixer_state.io_map,
                 st.mixer_state.aux_sends,
                 st.params);
