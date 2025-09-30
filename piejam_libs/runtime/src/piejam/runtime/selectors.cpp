@@ -859,48 +859,30 @@ make_fx_parameter_value_string_selector(parameter_id const fx_param_id)
         -> selector<std::string>
 {
     return std::visit(
-            [](auto param_id) -> selector<std::string> {
-                using parameter_t = typename decltype(param_id)::tag;
+            []<class P>(parameter::id_t<P> param_id) -> selector<std::string> {
+                using cached_value_type = typename parameter_store_slot<
+                        P>::value_slot::cached_type;
 
-                if constexpr (parameter::has_value_to_string_fn<parameter_t>)
-                {
-                    using cached_value_type = typename parameter_store_slot<
-                            parameter_t>::value_slot::cached_type;
+                using value_to_string_fn = typename P::value_to_string_fn;
+                using memoed_value_to_string_fn =
+                        decltype(memo(std::declval<value_to_string_fn>()));
 
-                    using value_to_string_fn = parameter_t::value_to_string_fn;
-                    using memoed_value_to_string_fn =
-                            decltype(memo(std::declval<value_to_string_fn>()));
+                return [param_id,
+                        cached_value = cached_value_type{},
+                        value_to_string =
+                                std::optional<memoed_value_to_string_fn>{}](
+                               state const& st) mutable {
+                    if (!cached_value || !value_to_string) [[unlikely]]
+                    {
+                        auto const& slot = st.params[param_id];
 
-                    return [param_id,
-                            cached_value = cached_value_type{},
-                            value_to_string = std::shared_ptr<
-                                    memoed_value_to_string_fn>{}](
-                                   state const& st) mutable {
-                        if (cached_value && value_to_string) [[likely]]
-                        {
-                            return (*value_to_string)(*cached_value);
-                        }
+                        cached_value = slot.value.cached();
+                        BOOST_ASSERT(cached_value);
+                        value_to_string = memo(slot.param.value_to_string);
+                    }
 
-                        auto const* const desc = st.params.find(param_id);
-
-                        if (desc)
-                        {
-                            cached_value = desc->value.cached();
-                            value_to_string =
-                                    std::make_shared<memoed_value_to_string_fn>(
-                                            memo(desc->param.value_to_string));
-
-                            return desc->param.value_to_string(
-                                    desc->value.get());
-                        }
-
-                        return std::string{};
-                    };
-                }
-                else
-                {
-                    return [](state const&) { return std::string{}; };
-                }
+                    return (*value_to_string)(*cached_value);
+                };
             },
             fx_param_id);
 }

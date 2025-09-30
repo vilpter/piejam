@@ -58,23 +58,9 @@ struct parameter_store_slot
     private:
         std::shared_ptr<value_type> m_value{
                 std::make_shared<value_type>(value_type{})};
-    } value{get_default_value(param)};
+    } value{param.default_value};
 
     auto operator==(parameter_store_slot const&) const -> bool = default;
-
-private:
-    auto get_default_value(Parameter const& param)
-            -> parameter::value_type_t<Parameter>
-    {
-        if constexpr (parameter::has_default_value<Parameter>)
-        {
-            return param.default_value;
-        }
-        else
-        {
-            return {};
-        }
-    }
 };
 
 using parameters_store = parameter::store<parameter_store_slot>;
