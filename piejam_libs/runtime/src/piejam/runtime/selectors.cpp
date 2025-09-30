@@ -132,18 +132,9 @@ auto
 make_external_audio_device_ids_selector(io_direction const io_dir)
         -> selector<box<external_audio::device_ids_t>>
 {
-    switch (io_dir)
-    {
-        case io_direction::input:
-            return [](state const& st) {
-                return st.external_audio_state.inputs;
-            };
-
-        case io_direction::output:
-            return [](state const& st) {
-                return st.external_audio_state.outputs;
-            };
-    }
+    return [io_dir](state const& st) {
+        return st.external_audio_state.io_ids[io_dir];
+    };
 }
 
 template <auto GetMember>
@@ -528,11 +519,18 @@ make_mixer_channel_selected_route_selector(
 auto
 make_mixer_device_routes_selector(
         mixer::channel_type const channel_type,
-        io_direction const io_socket)
+        io_direction const io_port)
         -> selector<boxed_vector<mixer_device_route>>
 {
-    auto const bus_type = channel_type == mixer::channel_type::mono
-                                  ? bool_enum_to<audio::bus_type>(io_socket)
+    if (channel_type == mixer::channel_type::aux &&
+        io_port == io_direction::input)
+    {
+        return boost::hof::always(boxed_vector<mixer_device_route>{});
+    }
+
+    auto const bus_type = (io_port != io_direction::output &&
+                           channel_type == mixer::channel_type::mono)
+                                  ? audio::bus_type::mono
                                   : audio::bus_type::stereo;
 
     auto get_mixer_device_routes =
@@ -543,58 +541,38 @@ make_mixer_device_routes_selector(
                 std::vector<mixer_device_route> result;
                 for (auto device_id : *device_ids)
                 {
-                    if (auto const* const device = devices.find(device_id);
-                        device && device->bus_type == bus_type)
+                    if (auto const& device = devices[device_id];
+                        device.bus_type == bus_type)
                     {
                         result.emplace_back(
                                 mixer_device_route{
                                         .device_id = device_id,
-                                        .name = device->name});
+                                        .name = device.name});
                     }
                 }
                 return box(std::move(result));
             });
 
-    switch (io_socket)
-    {
-        case io_direction::input:
-            if (channel_type == mixer::channel_type::aux)
-            {
-                return boost::hof::always(boxed_vector<mixer_device_route>{});
-            }
-
-            return [get = std::move(get_mixer_device_routes)](
-                           state const& st) mutable {
-                return get(
-                        st.external_audio_state.devices,
-                        st.external_audio_state.inputs);
-            };
-
-        case io_direction::output:
-            return [get = std::move(get_mixer_device_routes)](
-                           state const& st) mutable {
-                return get(
-                        st.external_audio_state.devices,
-                        st.external_audio_state.outputs);
-            };
-    }
-
-    BOOST_ASSERT(false);
-    return boost::hof::always(boxed_vector<mixer_device_route>{});
+    return [io_port,
+            get = std::move(get_mixer_device_routes)](state const& st) mutable {
+        return get(
+                st.external_audio_state.devices,
+                st.external_audio_state.io_ids[io_port]);
+    };
 }
 
 auto
 make_mixer_channel_routes_selector(
         mixer::channel_id const channel_id,
-        io_direction const io_socket)
+        io_direction const io_port)
         -> selector<boxed_vector<mixer_channel_route>>
 {
     auto get_mixer_channel_routes =
-            memo([channel_id, io_socket](
+            memo([channel_id, io_port](
                          mixer::channels_t const& channels,
                          mixer::io_map const& io_map,
                          parameters_store const& params) {
-                if (io_socket == io_direction::input &&
+                if (io_port == io_direction::input &&
                     channels[channel_id].type == mixer::channel_type::aux)
                 {
                     return boxed_vector<mixer_channel_route>{};
@@ -602,7 +580,7 @@ make_mixer_channel_routes_selector(
 
                 auto valid_sources = mixer::valid_channels(
                         channel_id,
-                        io_socket,
+                        io_port,
                         channels,
                         io_map,
                         params);

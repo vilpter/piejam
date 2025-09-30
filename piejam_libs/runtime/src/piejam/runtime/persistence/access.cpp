@@ -215,9 +215,9 @@ device_index(
         external_audio::state const& st,
         external_audio::device_id const device_id)
 {
-    auto const in_index = algorithm::index_of(*st.inputs, device_id);
+    auto const in_index = algorithm::index_of(*st.io_ids.in(), device_id);
     return in_index != npos ? in_index
-                            : algorithm::index_of(*st.outputs, device_id);
+                            : algorithm::index_of(*st.io_ids.out(), device_id);
 }
 
 auto
@@ -349,13 +349,13 @@ save_session(std::filesystem::path const& file, state const& st)
 
         ses.external_audio_input_devices = export_external_audio_device_configs(
                 st.external_audio_state.devices,
-                st.external_audio_state.inputs.get(),
+                st.external_audio_state.io_ids.in().get(),
                 st.strings);
 
         ses.external_audio_output_devices =
                 export_external_audio_device_configs(
                         st.external_audio_state.devices,
-                        st.external_audio_state.outputs.get(),
+                        st.external_audio_state.io_ids.out().get(),
                         st.strings);
 
         ses.mixer_channels = export_mixer_channels(st, *st.mixer_state.inputs);

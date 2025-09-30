@@ -92,11 +92,11 @@ struct update_devices final
 
         update_channels(
                 selected_sc.num_channels.in(),
-                *st.external_audio_state.inputs);
+                st.external_audio_state.io_ids.in().get());
 
         update_channels(
                 selected_sc.num_channels.out(),
-                *st.external_audio_state.outputs);
+                st.external_audio_state.io_ids.out().get());
     }
 };
 

@@ -20,7 +20,7 @@ add_mixer_channel::reduce(state& st) const
 
     if (auto_assign_input && channel_type != mixer::channel_type::aux)
     {
-        for (auto device_id : *st.external_audio_state.inputs)
+        for (auto device_id : *st.external_audio_state.io_ids.in())
         {
             auto it = std::ranges::find(
                     st.mixer_state.io_map.in(),

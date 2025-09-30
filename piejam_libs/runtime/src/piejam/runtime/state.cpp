@@ -425,11 +425,7 @@ add_external_audio_device(
                     .channels = channels,
             });
 
-    auto& devices_ids = io_dir == io_direction::input
-                                ? st.external_audio_state.inputs
-                                : st.external_audio_state.outputs;
-
-    emplace_back(devices_ids, id);
+    emplace_back(st.external_audio_state.io_ids[io_dir], id);
 
     return id;
 }
@@ -646,17 +642,17 @@ remove_external_audio_device(
 
     st.external_audio_state.devices.erase(device_id);
 
-    if (std::ranges::contains(*st.external_audio_state.inputs, device_id))
+    if (std::ranges::contains(*st.external_audio_state.io_ids.in(), device_id))
     {
-        remove_erase(st.external_audio_state.inputs, device_id);
+        remove_erase(st.external_audio_state.io_ids.in(), device_id);
     }
     else
     {
         BOOST_ASSERT(
                 std::ranges::contains(
-                        *st.external_audio_state.outputs,
+                        *st.external_audio_state.io_ids.out(),
                         device_id));
-        remove_erase(st.external_audio_state.outputs, device_id);
+        remove_erase(st.external_audio_state.io_ids.out(), device_id);
     }
 }
 

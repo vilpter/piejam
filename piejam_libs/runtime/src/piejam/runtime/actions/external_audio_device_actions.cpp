@@ -31,11 +31,11 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
         case io_direction::input:
             return std::format(
                     "In {} {}",
-                    st.external_audio_state.inputs->size() + 1,
+                    st.external_audio_state.io_ids.in()->size() + 1,
                     bus_type == audio::bus_type::mono ? "M" : "S");
 
         case io_direction::output:
-            switch (st.external_audio_state.outputs->size())
+            switch (st.external_audio_state.io_ids.out()->size())
             {
                 case 0:
                     return "Speaker"s;
@@ -46,7 +46,7 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
                 default:
                     return std::format(
                             "Aux {}",
-                            st.external_audio_state.outputs->size() - 1);
+                            st.external_audio_state.io_ids.out()->size() - 1);
             }
     }
 }
@@ -54,15 +54,10 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
 auto
 default_channels(state const& st, io_direction io_dir, audio::bus_type bus_type)
 {
-    auto num_channels = io_dir == io_direction::input
-                                ? st.selected_sound_card.num_channels.in()
-                                : st.selected_sound_card.num_channels.out();
-
+    auto num_channels = st.selected_sound_card.num_channels[io_dir];
     std::vector<bool> assigned_channels(num_channels);
 
-    auto const& device_ids = io_dir == io_direction::input
-                                     ? *st.external_audio_state.inputs
-                                     : *st.external_audio_state.outputs;
+    auto const& device_ids = *st.external_audio_state.io_ids[io_dir];
 
     for (external_audio::device_id const device_id : device_ids)
     {

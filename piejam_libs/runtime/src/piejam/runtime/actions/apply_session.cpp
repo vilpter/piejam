@@ -29,8 +29,7 @@ apply_external_audio_device_configs(
         std::size_t const num_ch)
 {
     BOOST_ASSERT_MSG(
-            D == io_direction::input ? st.external_audio_state.inputs->empty()
-                                     : st.external_audio_state.outputs->empty(),
+            st.external_audio_state.io_ids[D]->empty(),
             "configs should be cleared before applying");
     auto const gte_num_ch = greater_equal(num_ch);
     for (auto const& config : configs)
@@ -126,9 +125,7 @@ apply_mixer_io(
         {
             case persistence::session::mixer_io_type::device:
                 return find_external_audio_device_route(
-                        io_dir == io_direction::input
-                                ? external_audio_state.inputs
-                                : external_audio_state.outputs,
+                        external_audio_state.io_ids[io_dir],
                         mixer_io.index);
 
             case persistence::session::mixer_io_type::channel:

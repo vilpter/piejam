@@ -11,6 +11,7 @@
 #include <piejam/audio/types.h>
 #include <piejam/boxed_map.h>
 #include <piejam/entity_map.h>
+#include <piejam/io_pair.h>
 #include <piejam/npos.h>
 
 namespace piejam::runtime::external_audio
@@ -32,8 +33,7 @@ struct state
 {
     devices_t devices;
 
-    box<device_ids_t> inputs;
-    box<device_ids_t> outputs;
+    io_pair<box<device_ids_t>> io_ids;
 };
 
 } // namespace piejam::runtime::external_audio
