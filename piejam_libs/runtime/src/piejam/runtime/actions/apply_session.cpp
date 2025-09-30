@@ -150,30 +150,24 @@ apply_mixer_io(
     mixer_state.io_map.out().lock().at(channel_id) =
             find_route(out, io_direction::output);
 
-    [&](mixer::channel& channel) {
-        auto aux_sends = channel.aux_sends.lock();
-
+    if (auto channel_aux_sends = mixer_state.aux_sends.find(channel_id))
+    {
         for (auto const& aux_send_data : aux_sends_data)
         {
             if (auto route = find_mixer_channel(
                         mixer_state,
                         aux_send_data.channel_index))
             {
-                if (auto aux_send_it = aux_sends->find(*route);
-                    aux_send_it != aux_sends->end())
+                if (auto aux_send = channel_aux_sends->find(*route))
                 {
-                    params[aux_send_it->second.active].value.set(
-                            aux_send_data.enabled);
-
-                    params[aux_send_it->second.fader_tap].value.set(
+                    params[aux_send->active].value.set(aux_send_data.enabled);
+                    params[aux_send->fader_tap].value.set(
                             aux_send_data.fader_tap);
-
-                    params[aux_send_it->second.volume].value.set(
-                            aux_send_data.volume);
+                    params[aux_send->volume].value.set(aux_send_data.volume);
                 }
             }
         }
-    }(mixer_state.channels.lock().at(channel_id));
+    }
 }
 
 void

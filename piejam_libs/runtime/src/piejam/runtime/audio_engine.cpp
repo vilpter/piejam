@@ -154,29 +154,33 @@ make_mixer_components(
                             sample_rate));
         }
 
-        for (auto const& [aux, aux_send] : *mixer_channel.aux_sends)
+        if (auto const* const channel_aux_sends =
+                    mixer_state.aux_sends.find(mixer_channel_id))
         {
-            if (!params[aux_send.active].value.get())
+            for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                continue;
-            }
+                if (!params[aux_send.active].value.get())
+                {
+                    continue;
+                }
 
-            mixer_aux_send_key const aux_send_key{
-                    .channel_id = mixer_channel_id,
-                    .route = aux};
+                mixer_aux_send_key const aux_send_key{
+                        .channel_id = mixer_channel_id,
+                        .route = aux};
 
-            if (auto comp = prev_comps.find(aux_send_key))
-            {
-                comps.insert(aux_send_key, std::move(comp));
-            }
-            else
-            {
-                comps.insert(
-                        aux_send_key,
-                        components::make_mixer_channel_aux_send(
-                                *strings[mixer_channel.name],
-                                aux_send.volume,
-                                param_procs));
+                if (auto comp = prev_comps.find(aux_send_key))
+                {
+                    comps.insert(aux_send_key, std::move(comp));
+                }
+                else
+                {
+                    comps.insert(
+                            aux_send_key,
+                            components::make_mixer_channel_aux_send(
+                                    *strings[mixer_channel.name],
+                                    aux_send.volume,
+                                    param_procs));
+                }
             }
         }
     }
@@ -527,64 +531,69 @@ make_graph(
                 mixer_state.io_map.out().at(mixer_channel_id),
                 *mixer_channel_out);
 
-        for (auto const& [aux, aux_send] : *mixer_channel.aux_sends)
+        if (auto const* const channel_aux_sends =
+                    mixer_state.aux_sends.find(mixer_channel_id))
         {
-            audio::engine::component* mixer_channel_aux_send =
-                    comps.find(mixer_aux_send_key{mixer_channel_id, aux}).get();
-
-            if (mixer_channel_aux_send)
+            for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                mixer_channel_aux_send->connect(g);
+                audio::engine::component* mixer_channel_aux_send =
+                        comps.find(mixer_aux_send_key{mixer_channel_id, aux})
+                                .get();
 
-                auto aux_send_fader_tap =
-                        static_cast<mixer::aux_send_fader_tap>(
-                                params[aux_send.fader_tap].value.get());
-                auto aux_channel_fader_tap =
-                        static_cast<mixer::aux_channel_fader_tap>(
-                                params[mixer_state.aux_channels.at(aux)
-                                               .default_fader_tap]
-                                        .value.get());
+                if (mixer_channel_aux_send)
+                {
+                    mixer_channel_aux_send->connect(g);
 
-                auto const [out_L, out_R] = [&]() {
-                    switch (aux_send_fader_tap)
-                    {
-                        case mixer::aux_send_fader_tap::auto_:
-                            switch (aux_channel_fader_tap)
-                            {
-                                case mixer::aux_channel_fader_tap::post:
-                                    return std::pair{0uz, 1uz};
+                    auto aux_send_fader_tap =
+                            static_cast<mixer::aux_send_fader_tap>(
+                                    params[aux_send.fader_tap].value.get());
+                    auto aux_channel_fader_tap =
+                            static_cast<mixer::aux_channel_fader_tap>(
+                                    params[mixer_state.aux_channels.at(aux)
+                                                   .default_fader_tap]
+                                            .value.get());
 
-                                case mixer::aux_channel_fader_tap::pre:
-                                    return std::pair{2uz, 3uz};
-                            }
-                            break;
+                    auto const [out_L, out_R] = [&]() {
+                        switch (aux_send_fader_tap)
+                        {
+                            case mixer::aux_send_fader_tap::auto_:
+                                switch (aux_channel_fader_tap)
+                                {
+                                    case mixer::aux_channel_fader_tap::post:
+                                        return std::pair{0uz, 1uz};
 
-                        case mixer::aux_send_fader_tap::post:
-                            return std::pair{0uz, 1uz};
+                                    case mixer::aux_channel_fader_tap::pre:
+                                        return std::pair{2uz, 3uz};
+                                }
+                                break;
 
-                        case mixer::aux_send_fader_tap::pre:
-                            return std::pair{2uz, 3uz};
-                    }
+                            case mixer::aux_send_fader_tap::post:
+                                return std::pair{0uz, 1uz};
 
-                    return std::pair{0uz, 1uz};
-                }();
+                            case mixer::aux_send_fader_tap::pre:
+                                return std::pair{2uz, 3uz};
+                        }
 
-                g.audio.insert(
-                        mixer_channel_out->outputs()[out_L],
-                        mixer_channel_aux_send->inputs()[0]);
-                g.audio.insert(
-                        mixer_channel_out->outputs()[out_R],
-                        mixer_channel_aux_send->inputs()[1]);
+                        return std::pair{0uz, 1uz};
+                    }();
 
-                connect_mixer_output(
-                        g,
-                        mixer_state,
-                        device_buses,
-                        comps,
-                        output_procs,
-                        output_clip_procs,
-                        aux,
-                        *mixer_channel_aux_send);
+                    g.audio.insert(
+                            mixer_channel_out->outputs()[out_L],
+                            mixer_channel_aux_send->inputs()[0]);
+                    g.audio.insert(
+                            mixer_channel_out->outputs()[out_R],
+                            mixer_channel_aux_send->inputs()[1]);
+
+                    connect_mixer_output(
+                            g,
+                            mixer_state,
+                            device_buses,
+                            comps,
+                            output_procs,
+                            output_clip_procs,
+                            aux,
+                            *mixer_channel_aux_send);
+                }
             }
         }
     }
@@ -840,6 +849,7 @@ audio_engine::rebuild(
     auto const solo_groups = runtime::solo_groups(
             st.mixer_state.channels,
             st.mixer_state.io_map,
+            st.mixer_state.aux_sends,
             st.params);
     make_solo_group_components(comps, solo_groups, m_impl->param_procs);
 

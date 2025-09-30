@@ -339,7 +339,7 @@ remove_fx_module(
 template <class ParameterFactory>
 static auto
 make_aux_send(
-        mixer::aux_sends_t& aux_sends,
+        mixer::channel_aux_sends_t& aux_sends,
         mixer::channel_id const& aux_id,
         ParameterFactory& ui_params_factory)
 {
@@ -392,16 +392,11 @@ make_aux_sends(
 }
 
 static auto
-remove_aux_send(
-        state& st,
-        mixer::aux_sends_t& aux_sends,
-        mixer::channel_id const& aux_id)
+remove_aux_send(state& st, mixer::aux_send const& aux_send)
 {
-    if (auto it = aux_sends.find(aux_id); it != aux_sends.end())
-    {
-        remove_parameter(st, it->second.volume);
-        aux_sends.erase(it);
-    }
+    remove_parameter(st, aux_send.active);
+    remove_parameter(st, aux_send.fader_tap);
+    remove_parameter(st, aux_send.volume);
 }
 
 auto
@@ -501,11 +496,6 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                              .default_value = false})},
                     }},
                     .out_stream = make_stream(st.streams, 2),
-                    .aux_sends = type == mixer::channel_type::aux
-                                         ? box{mixer::aux_sends_t{}}
-                                         : box{make_aux_sends(
-                                                   st.mixer_state.channels,
-                                                   params_factory)},
             });
     emplace_back(st.mixer_state.inputs, channel_id);
 
@@ -518,29 +508,30 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
 
     if (type == mixer::channel_type::aux)
     {
-        // add as aux_send to each channel
-        for (auto&& [id, channel] : mixer_channels)
-        {
-            if (channel.type != mixer::channel_type::aux)
-            {
-                make_aux_send(
-                        channel.aux_sends.lock().get(),
-                        channel_id,
-                        params_factory);
-            }
+        st.mixer_state.aux_channels.emplace(
+                channel_id,
+                mixer::aux_channel{
+                        .default_fader_tap = params_factory.make_parameter(
+                                enum_parameter<mixer::aux_channel_fader_tap>(
+                                        "Fader Tap"s,
+                                        &mixer::aux_channel::
+                                                to_fader_tap_string,
+                                        false /* midi_assignable */,
+                                        true /* routing */))});
 
-            st.mixer_state.aux_channels.emplace(
-                    channel_id,
-                    mixer::aux_channel{
-                            .default_fader_tap = params_factory.make_parameter(
-                                    enum_parameter<
-                                            mixer::aux_channel_fader_tap>(
-                                            "Fader Tap"s,
-                                            &mixer::aux_channel::
-                                                    to_fader_tap_string,
-                                            false /* midi_assignable */,
-                                            true /* routing */))});
-        }
+        // add as aux_send to each channel
+        [&](auto&& aux_sends) {
+            for (auto&& [ch_id, ch_aux_sends] : aux_sends)
+            {
+                make_aux_send(ch_aux_sends, channel_id, params_factory);
+            }
+        }(st.mixer_state.aux_sends.lock());
+    }
+    else
+    {
+        st.mixer_state.aux_sends.emplace(
+                channel_id,
+                mixer::channel_aux_sends_t{});
     }
 
     st.mixer_state.fx_chains.emplace(channel_id);
@@ -579,20 +570,25 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
 
     auto mixer_channels = st.mixer_state.channels.lock();
 
-    if (mixer_channel.type == mixer::channel_type::aux)
-    {
-        // remove own aux_sends
-        for (auto const& aux_send : mixer_channel.aux_sends.get())
+    // remove own aux_sends
+    [&](auto&& aux_sends) {
+        for (auto const& [aux_id, aux_send] : aux_sends.at(mixer_channel_id))
         {
-            remove_parameter(st, aux_send.second.volume);
+            remove_aux_send(st, aux_send);
         }
 
-        // remove itself as aux_send from other channels
-        for (auto& [id, channel] : mixer_channels)
+        aux_sends.erase(mixer_channel_id);
+
+        if (mixer_channel.type == mixer::channel_type::aux)
         {
-            remove_aux_send(st, *channel.aux_sends.lock(), mixer_channel_id);
+            // remove itself as aux_send from other channels
+            for (auto& [ch_id, ch_aux_sends] : aux_sends)
+            {
+                remove_aux_send(st, ch_aux_sends.at(mixer_channel_id));
+                ch_aux_sends.erase(mixer_channel_id);
+            }
         }
-    }
+    }(st.mixer_state.aux_sends.lock());
 
     for (auto fx_mod_id :
          std::views::reverse(*st.mixer_state.fx_chains[mixer_channel_id]))

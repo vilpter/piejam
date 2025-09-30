@@ -27,6 +27,7 @@ using solo_groups_t = boost::container::flat_map<mixer::channel_id, solo_group>;
 auto solo_groups(
         mixer::channels_t const&,
         mixer::io_map const&,
+        mixer::aux_sends_t const&,
         parameters_store const&) -> solo_groups_t;
 
 class solo_group_state

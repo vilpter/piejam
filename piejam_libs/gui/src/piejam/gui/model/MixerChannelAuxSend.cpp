@@ -58,8 +58,7 @@ MixerChannelAuxSend::onSubscribe()
 
     if (channelType() != ChannelType::Aux)
     {
-        observe(runtime::selectors::make_mixer_channel_aux_sends_selector(
-                        channel_id()),
+        observe(runtime::selectors::select_mixer_aux_channels,
                 [this](box<runtime::mixer::channel_ids_t> const& send_ids) {
                     algorithm::apply_edit_script(
                             algorithm::edit_script(

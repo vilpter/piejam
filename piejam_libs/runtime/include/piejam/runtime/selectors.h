@@ -86,6 +86,7 @@ auto make_external_audio_device_bus_channel_selector(
         external_audio::device_id,
         audio::bus_channel) -> selector<std::size_t>;
 
+extern selector<box<mixer::channel_ids_t>> const select_mixer_aux_channels;
 extern selector<box<mixer::channel_ids_t>> const select_mixer_user_channels;
 extern selector<mixer::channel_id> const select_mixer_main_channel;
 
@@ -108,17 +109,14 @@ auto make_mixer_channel_out_stream_selector(mixer::channel_id)
 auto make_aux_send_volume_parameter_selector(
         mixer::channel_id,
         mixer::channel_id aux_id) -> selector<float_parameter_id>;
-auto make_aux_send_active_selector(
-        mixer::channel_id,
-        mixer::channel_id aux_id) -> selector<bool_parameter_id>;
-auto make_aux_send_fader_tap_selector(
-        mixer::channel_id,
-        mixer::channel_id aux_id) -> selector<enum_parameter_id>;
-auto make_can_toggle_aux_send_selector(
-        mixer::channel_id,
-        mixer::channel_id aux_id) -> selector<bool>;
-auto make_mixer_channel_aux_sends_selector(mixer::channel_id)
-        -> selector<box<mixer::channel_ids_t>>;
+auto make_aux_send_active_selector(mixer::channel_id, mixer::channel_id aux_id)
+        -> selector<bool_parameter_id>;
+auto
+make_aux_send_fader_tap_selector(mixer::channel_id, mixer::channel_id aux_id)
+        -> selector<enum_parameter_id>;
+auto
+make_can_toggle_aux_send_selector(mixer::channel_id, mixer::channel_id aux_id)
+        -> selector<bool>;
 
 auto make_aux_channel_default_fader_tap_parameter_selector(mixer::channel_id)
         -> selector<enum_parameter_id>;

@@ -51,8 +51,6 @@ struct aux_send
     constexpr auto operator==(aux_send const&) const noexcept -> bool = default;
 };
 
-using aux_sends_t = std::map<channel_id, aux_send>;
-
 struct channel
 {
     channel_type type{};
@@ -72,8 +70,6 @@ struct channel
     box<parameters_map_by<parameter_key>> parameters{};
 
     audio_stream_id out_stream{};
-
-    box<aux_sends_t> aux_sends{};
 
     auto operator==(channel const&) const noexcept -> bool = default;
 
@@ -127,9 +123,9 @@ struct state
 
     mixer::io_map io_map;
 
-    using aux_channels_t =
-            boxed_map<boost::container::flat_map<channel_id, aux_channel>>;
     aux_channels_t aux_channels;
+
+    aux_sends_t aux_sends;
 
     using fx_chains_t = entity_data_map<channel_id, box<fx::chain_t>>;
     fx_chains_t fx_chains;
@@ -139,6 +135,7 @@ auto is_mix_input_valid(
         channel_id,
         channels_t const&,
         io_map const&,
+        aux_sends_t const&,
         parameters_store const&) -> bool;
 
 auto can_toggle_aux(
@@ -146,6 +143,7 @@ auto can_toggle_aux(
         channel_id aux_id,
         channels_t const&,
         io_map const&,
+        aux_sends_t const&,
         parameters_store const&) -> bool;
 
 auto valid_channels(
@@ -153,6 +151,7 @@ auto valid_channels(
         io_direction,
         channels_t const&,
         io_map const&,
+        aux_sends_t const&,
         parameters_store const&) -> std::vector<channel_id>;
 
 } // namespace piejam::runtime::mixer

@@ -257,19 +257,24 @@ export_mixer_io(state const& st, mixer::io_address_t const& addr)
 }
 
 auto
-export_mixer_aux_sends(state const& st, mixer::aux_sends_t const& aux_sends)
+export_mixer_aux_sends(state const& st, mixer::channel_id const channel_id)
 {
     std::vector<session::mixer_aux_send> result;
 
-    for (auto const& [aux, aux_send] : aux_sends)
+    if (auto const* const channel_aux_sends =
+                st.mixer_state.aux_sends.find(channel_id))
     {
-        result.emplace_back(
-                session::mixer_aux_send{
-                        .channel_index = channel_index(st.mixer_state, aux),
-                        .enabled = st.params[aux_send.active].value.get(),
-                        .fader_tap = st.params[aux_send.fader_tap].value.get(),
-                        .volume = st.params[aux_send.volume].value.get(),
-                });
+        for (auto const& [aux, aux_send] : *channel_aux_sends)
+        {
+            result.emplace_back(
+                    session::mixer_aux_send{
+                            .channel_index = channel_index(st.mixer_state, aux),
+                            .enabled = st.params[aux_send.active].value.get(),
+                            .fader_tap =
+                                    st.params[aux_send.fader_tap].value.get(),
+                            .volume = st.params[aux_send.volume].value.get(),
+                    });
+        }
     }
 
     return result;
@@ -293,7 +298,7 @@ export_mixer_channel(
     result.in = export_mixer_io(st, st.mixer_state.io_map.in().at(channel_id));
     result.out =
             export_mixer_io(st, st.mixer_state.io_map.out().at(channel_id));
-    result.aux_sends = export_mixer_aux_sends(st, channel.aux_sends);
+    result.aux_sends = export_mixer_aux_sends(st, channel_id);
     return result;
 }
 

@@ -50,6 +50,16 @@ using io_map = io_pair<
 
 using channel_ids_t = std::vector<channel_id>;
 
+struct aux_channel;
+using aux_channels_t =
+        boxed_map<boost::container::flat_map<channel_id, aux_channel>>;
+
+struct aux_send;
+using channel_aux_sends_t =
+        lean_map_facade<boost::container::flat_map<channel_id, aux_send>>;
+using aux_sends_t =
+        boxed_map<boost::container::flat_map<channel_id, channel_aux_sends_t>>;
+
 enum class aux_send_fader_tap
 {
     auto_,

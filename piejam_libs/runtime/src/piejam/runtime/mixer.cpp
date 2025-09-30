@@ -34,19 +34,31 @@ auto
 extract_channels_io(
         channels_t const& channels,
         mixer::io_map const& io_map,
+        aux_sends_t const& aux_sends,
         parameters_store const& params) -> channels_io_t
 {
     namespace bhof = boost::hof;
 
+    channels_io_t result;
+
     auto transformed = std::views::transform(
             channels,
-            bhof::unpack([&](auto const id, auto const& channel) {
+            bhof::unpack([&](auto const id, auto const& /*channel*/) {
+                auto const* const channel_aux_sends = aux_sends.find(id);
                 auto active_aux_sends =
-                        *channel.aux_sends |
-                        std::views::filter([&](auto const& aux_send) {
-                            return params[aux_send.second.active].value.get();
-                        }) |
-                        std::views::keys | std::ranges::to<std::vector>();
+                        channel_aux_sends
+                                ? *channel_aux_sends |
+                                          std::views::filter(
+                                                  [&](auto const& aux_send) {
+                                                      return params
+                                                              [aux_send.second
+                                                                       .active]
+                                                                      .value
+                                                                      .get();
+                                                  }) |
+                                          std::views::keys |
+                                          std::ranges::to<std::vector>()
+                                : std::vector<channel_id>{};
 
                 return std::pair(
                         id,
@@ -158,10 +170,11 @@ is_mix_input_valid(
         channel_id const ch_id,
         channels_t const& channels,
         mixer::io_map const& io_map,
+        aux_sends_t const& aux_sends,
         parameters_store const& params) -> bool
 {
     BOOST_ASSERT(channels.at(ch_id).type != mixer::channel_type::mono);
-    auto channels_io = extract_channels_io(channels, io_map, params);
+    auto channels_io = extract_channels_io(channels, io_map, aux_sends, params);
     channels_io[ch_id].port.in() = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));
 }
@@ -172,26 +185,27 @@ can_toggle_aux(
         channel_id const aux_id,
         channels_t const& channels,
         mixer::io_map const& io_map,
+        aux_sends_t const& aux_sends,
         parameters_store const& params) -> bool
 {
-    mixer::channel const* const channel = channels.find(ch_id);
-    if (!channel)
+    auto channel_aux_sends = aux_sends.find(ch_id);
+    if (!channel_aux_sends)
     {
         return false;
     }
 
-    auto it_aux_send = channel->aux_sends->find(aux_id);
-    if (it_aux_send == channel->aux_sends->end())
+    auto aux_send = channel_aux_sends->find(aux_id);
+    if (!aux_send)
     {
         return false;
     }
 
-    if (params[it_aux_send->second.active].value.get())
+    if (params[aux_send->active].value.get())
     {
         return true; // we can always disable an enabled aux
     }
 
-    auto channels_io = extract_channels_io(channels, io_map, params);
+    auto channels_io = extract_channels_io(channels, io_map, aux_sends, params);
 
     channels_io[ch_id].aux_sends.emplace_back(aux_id);
     return !has_cycle(make_channels_io_graph(channels_io));
@@ -203,9 +217,10 @@ valid_channels(
         io_direction const io_dir,
         channels_t const& channels,
         mixer::io_map const& io_map,
+        aux_sends_t const& aux_sends,
         parameters_store const& params) -> std::vector<channel_id>
 {
-    auto channels_io = extract_channels_io(channels, io_map, params);
+    auto channels_io = extract_channels_io(channels, io_map, aux_sends, params);
 
     std::vector<mixer::channel_id> valid_ids;
     for (auto const& [mixer_channel_id, mixer_channel] : channels)

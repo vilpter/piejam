@@ -30,6 +30,7 @@ auto
 gather_channel_infos(
         mixer::channels_t const& channels,
         mixer::io_map const& io_map,
+        mixer::aux_sends_t const& aux_sends,
         parameters_store const& params)
 {
     std::size_t const num_channels = channels.size();
@@ -67,11 +68,14 @@ gather_channel_infos(
 
         add(id, io_map.out().at(id));
 
-        for (auto const& [aux, aux_send] : *channel.aux_sends)
+        if (auto const* const channel_aux_sends = aux_sends.find(id))
         {
-            if (params[aux_send.active].value.get())
+            for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                add(id, aux);
+                if (params[aux_send.active].value.get())
+                {
+                    add(id, aux);
+                }
             }
         }
     }
@@ -105,9 +109,10 @@ auto
 solo_groups(
         mixer::channels_t const& channels,
         mixer::io_map const& io_map,
+        mixer::aux_sends_t const& aux_sends,
         parameters_store const& params) -> solo_groups_t
 {
-    auto infos = gather_channel_infos(channels, io_map, params);
+    auto infos = gather_channel_infos(channels, io_map, aux_sends, params);
 
     std::size_t const num_channels = channels.size();
 

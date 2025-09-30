@@ -29,16 +29,30 @@ TEST(mixer_valid_io, test1)
                     .type = channel_type::stereo,
             });
 
-    auto vs1 = valid_channels(channel1, io_direction::input, channels, {}, {});
+    auto vs1 =
+            valid_channels(channel1, io_direction::input, channels, {}, {}, {});
     EXPECT_TRUE(Matches(ElementsAre(channel2))(vs1));
 
-    auto vs2 = valid_channels(channel2, io_direction::input, channels, {}, {});
+    auto vs2 =
+            valid_channels(channel2, io_direction::input, channels, {}, {}, {});
     EXPECT_TRUE(Matches(ElementsAre(channel1))(vs2));
 
-    auto vt1 = valid_channels(channel1, io_direction::output, channels, {}, {});
+    auto vt1 = valid_channels(
+            channel1,
+            io_direction::output,
+            channels,
+            {},
+            {},
+            {});
     EXPECT_TRUE(Matches(ElementsAre(channel2))(vt1));
 
-    auto vt2 = valid_channels(channel2, io_direction::output, channels, {}, {});
+    auto vt2 = valid_channels(
+            channel2,
+            io_direction::output,
+            channels,
+            {},
+            {},
+            {});
     EXPECT_TRUE(Matches(ElementsAre(channel1))(vt2));
 }
 
@@ -56,16 +70,30 @@ TEST(mixer_valid_io, test2)
                     .type = channel_type::stereo,
             });
 
-    auto vs1 = valid_channels(channel1, io_direction::input, channels, {}, {});
+    auto vs1 =
+            valid_channels(channel1, io_direction::input, channels, {}, {}, {});
     EXPECT_TRUE(vs1.empty());
 
-    auto vs2 = valid_channels(channel2, io_direction::input, channels, {}, {});
+    auto vs2 =
+            valid_channels(channel2, io_direction::input, channels, {}, {}, {});
     EXPECT_TRUE(Matches(ElementsAre(channel1))(vs2));
 
-    auto vt1 = valid_channels(channel1, io_direction::output, channels, {}, {});
+    auto vt1 = valid_channels(
+            channel1,
+            io_direction::output,
+            channels,
+            {},
+            {},
+            {});
     EXPECT_TRUE(Matches(ElementsAre(channel2))(vt1));
 
-    auto vt2 = valid_channels(channel2, io_direction::output, channels, {}, {});
+    auto vt2 = valid_channels(
+            channel2,
+            io_direction::output,
+            channels,
+            {},
+            {},
+            {});
     EXPECT_TRUE(vt2.empty());
 }
 
