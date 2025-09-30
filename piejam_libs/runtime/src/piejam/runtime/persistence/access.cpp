@@ -266,7 +266,7 @@ export_mixer_aux_sends(state const& st, mixer::aux_sends_t const& aux_sends)
         result.emplace_back(
                 session::mixer_aux_send{
                         .channel_index = channel_index(st.mixer_state, aux),
-                        .enabled = aux_send.enabled,
+                        .enabled = st.params[aux_send.active].value.get(),
                         .fader_tap = st.params[aux_send.fader_tap].value.get(),
                         .volume = st.params[aux_send.volume].value.get(),
                 });

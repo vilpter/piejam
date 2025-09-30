@@ -44,7 +44,7 @@ struct aux_send
         return "Auto"s;
     }
 
-    bool enabled{};
+    bool_parameter_id active{};
     enum_parameter_id fader_tap{};
     float_parameter_id volume{};
 };
@@ -129,13 +129,24 @@ struct state
     fx_chains_t fx_chains;
 };
 
-auto is_mix_input_valid(channels_t const&, channel_id, io_map const&) -> bool;
+auto is_mix_input_valid(
+        channel_id,
+        channels_t const&,
+        io_map const&,
+        parameters_store const&) -> bool;
 
-auto
-can_toggle_aux(channels_t const&, channel_id, channel_id aux_id, io_map const&)
-        -> bool;
+auto can_toggle_aux(
+        channel_id,
+        channel_id aux_id,
+        channels_t const&,
+        io_map const&,
+        parameters_store const&) -> bool;
 
-auto valid_channels(io_direction, channels_t const&, channel_id, io_map const&)
-        -> std::vector<channel_id>;
+auto valid_channels(
+        channel_id,
+        io_direction,
+        channels_t const&,
+        io_map const&,
+        parameters_store const&) -> std::vector<channel_id>;
 
 } // namespace piejam::runtime::mixer

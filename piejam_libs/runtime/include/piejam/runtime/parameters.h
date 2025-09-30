@@ -63,4 +63,8 @@ using parameters_map = boost::container::flat_map<parameter::key, parameter_id>;
 using parameter_value_assignment = parameter::assignment<parameter_value>;
 using parameter_midi_assignment = parameter::assignment<midi_assignment>;
 
+template <class Parameter>
+struct parameter_map_slot;
+using parameters_store = parameter::store<parameter_map_slot>;
+
 } // namespace piejam::runtime

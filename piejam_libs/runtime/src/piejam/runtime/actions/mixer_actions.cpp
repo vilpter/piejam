@@ -64,17 +64,6 @@ set_mixer_channel_route::reduce(state& st) const
 }
 
 void
-enable_mixer_channel_aux_route::reduce(state& st) const
-{
-    [this](mixer::channel& mixer_channel) {
-        auto aux_sends = mixer_channel.aux_sends.lock();
-        auto it = aux_sends->find(aux_id);
-        BOOST_ASSERT(it != aux_sends->end());
-        it->second.enabled = enabled;
-    }(st.mixer_state.channels.lock()[channel_id]);
-}
-
-void
 move_mixer_channel_left::reduce(state& st) const
 {
     auto channel_ids = st.mixer_state.inputs.lock();

@@ -60,17 +60,6 @@ struct set_mixer_channel_route final
     void reduce(state&) const override;
 };
 
-struct enable_mixer_channel_aux_route final
-    : ui::cloneable_action<enable_mixer_channel_aux_route, reducible_action>
-    , visitable_audio_engine_action<enable_mixer_channel_aux_route>
-{
-    mixer::channel_id channel_id;
-    mixer::channel_id aux_id;
-    bool enabled;
-
-    void reduce(state&) const override;
-};
-
 struct move_mixer_channel_left final
     : ui::cloneable_action<move_mixer_channel_left, reducible_action>
 {

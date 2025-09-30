@@ -85,21 +85,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
                 {channel_type::aux, "aux"},
         })
 
-NLOHMANN_JSON_SERIALIZE_ENUM(
-        aux_send_fader_tap,
-        {
-                {aux_send_fader_tap::auto_, "auto"},
-                {aux_send_fader_tap::pre, "pre"},
-                {aux_send_fader_tap::post, "post"},
-        })
-
-NLOHMANN_JSON_SERIALIZE_ENUM(
-        aux_channel_fader_tap,
-        {
-                {aux_channel_fader_tap::pre, "pre"},
-                {aux_channel_fader_tap::post, "post"},
-        })
-
 } // namespace mixer
 
 namespace parameter

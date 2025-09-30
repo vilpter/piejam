@@ -105,16 +105,16 @@ auto make_mixer_channel_solo_parameter_selector(mixer::channel_id)
         -> selector<bool_parameter_id>;
 auto make_mixer_channel_out_stream_selector(mixer::channel_id)
         -> selector<audio_stream_id>;
-auto make_mixer_channel_aux_volume_parameter_selector(
+auto make_aux_send_volume_parameter_selector(
         mixer::channel_id,
         mixer::channel_id aux_id) -> selector<float_parameter_id>;
-auto make_mixer_channel_aux_enabled_selector(
+auto make_aux_send_active_selector(
         mixer::channel_id,
-        mixer::channel_id aux_id) -> selector<bool>;
-auto make_mixer_channel_aux_send_fader_tap_selector(
+        mixer::channel_id aux_id) -> selector<bool_parameter_id>;
+auto make_aux_send_fader_tap_selector(
         mixer::channel_id,
         mixer::channel_id aux_id) -> selector<enum_parameter_id>;
-auto make_mixer_channel_can_toggle_aux_selector(
+auto make_can_toggle_aux_send_selector(
         mixer::channel_id,
         mixer::channel_id aux_id) -> selector<bool>;
 auto make_mixer_channel_aux_sends_selector(mixer::channel_id)

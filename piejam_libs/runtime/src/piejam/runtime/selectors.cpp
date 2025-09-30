@@ -324,7 +324,7 @@ get_mixer_channel_aux_volume_parameter(
 }
 
 auto
-make_mixer_channel_aux_volume_parameter_selector(
+make_aux_send_volume_parameter_selector(
         mixer::channel_id const channel_id,
         mixer::channel_id const aux_id) -> selector<float_parameter_id>
 {
@@ -344,20 +344,22 @@ make_mixer_channel_aux_volume_parameter_selector(
 static auto
 get_mixer_channel_aux_enabled(
         mixer::channel const& channel,
-        mixer::channel_id const aux_id) -> bool
+        mixer::channel_id const aux_id) -> bool_parameter_id
 {
     auto it = channel.aux_sends->find(aux_id);
-    return it != channel.aux_sends->end() ? it->second.enabled : false;
+    return it != channel.aux_sends->end() ? it->second.active
+                                          : bool_parameter_id{};
 }
 
 auto
-make_mixer_channel_aux_enabled_selector(
+make_aux_send_active_selector(
         mixer::channel_id const channel_id,
-        mixer::channel_id const aux_id) -> selector<bool>
+        mixer::channel_id const aux_id) -> selector<bool_parameter_id>
 {
     auto get = memo([channel_id, aux_id](mixer::channels_t const& channels) {
         mixer::channel const* const channel = channels.find(channel_id);
-        return channel && get_mixer_channel_aux_enabled(*channel, aux_id);
+        return channel ? get_mixer_channel_aux_enabled(*channel, aux_id)
+                       : bool_parameter_id{};
     });
 
     return [get = std::move(get)](state const& st) {
@@ -376,7 +378,7 @@ get_mixer_channel_aux_send_fader_tap(
 }
 
 auto
-make_mixer_channel_aux_send_fader_tap_selector(
+make_aux_send_fader_tap_selector(
         mixer::channel_id const channel_id,
         mixer::channel_id const aux_id) -> selector<enum_parameter_id>
 {
@@ -392,18 +394,24 @@ make_mixer_channel_aux_send_fader_tap_selector(
 }
 
 auto
-make_mixer_channel_can_toggle_aux_selector(
+make_can_toggle_aux_send_selector(
         mixer::channel_id const channel_id,
         mixer::channel_id const aux_id) -> selector<bool>
 {
     auto get = memo([channel_id, aux_id](
                             mixer::channels_t const& channels,
-                            mixer::io_map const& io_map) {
-        return mixer::can_toggle_aux(channels, channel_id, aux_id, io_map);
+                            mixer::io_map const& io_map,
+                            parameters_store const& params) {
+        return mixer::can_toggle_aux(
+                channel_id,
+                aux_id,
+                channels,
+                io_map,
+                params);
     });
 
     return [get = std::move(get)](state const& st) {
-        return get(st.mixer_state.channels, st.mixer_state.io_map);
+        return get(st.mixer_state.channels, st.mixer_state.io_map, st.params);
     };
 }
 
@@ -433,7 +441,11 @@ make_mixer_channel_mix_input_is_valid_selector(
 {
     return [channel_id,
             get = memo(&mixer::is_mix_input_valid)](state const& st) {
-        return get(st.mixer_state.channels, channel_id, st.mixer_state.io_map);
+        return get(
+                channel_id,
+                st.mixer_state.channels,
+                st.mixer_state.io_map,
+                st.params);
     };
 }
 
@@ -580,7 +592,8 @@ make_mixer_channel_routes_selector(
     auto get_mixer_channel_routes =
             memo([channel_id, io_socket](
                          mixer::channels_t const& channels,
-                         mixer::io_map const& io_map) {
+                         mixer::io_map const& io_map,
+                         parameters_store const& params) {
                 if (io_socket == io_direction::input &&
                     channels[channel_id].type == mixer::channel_type::aux)
                 {
@@ -588,10 +601,11 @@ make_mixer_channel_routes_selector(
                 }
 
                 auto valid_sources = mixer::valid_channels(
+                        channel_id,
                         io_socket,
                         channels,
-                        channel_id,
-                        io_map);
+                        io_map,
+                        params);
                 return box(
                         algorithm::transform_to_vector(
                                 valid_sources,
@@ -603,7 +617,7 @@ make_mixer_channel_routes_selector(
             });
 
     return [get = std::move(get_mixer_channel_routes)](state const& st) {
-        return get(st.mixer_state.channels, st.mixer_state.io_map);
+        return get(st.mixer_state.channels, st.mixer_state.io_map, st.params);
     };
 }
 
@@ -690,7 +704,7 @@ struct muted_by_solo_state
             mixer::channels_t const& channels,
             mixer::io_map const& io_map,
             parameters_store const& params) // non-null!
-        : solo_groups{runtime::solo_groups(channels, io_map)}
+        : solo_groups{runtime::solo_groups(channels, io_map, params)}
         , solo_params{algorithm::transform_to_vector(
                   solo_groups | std::views::values,
                   [params](solo_group const& g) {

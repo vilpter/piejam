@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <piejam/runtime/parameter/fwd.h>
+#include <piejam/runtime/parameter/store.h>
 
 #include <memory>
 

@@ -9,6 +9,13 @@
 namespace piejam::runtime::parameter
 {
 
+inline auto
+default_bool_to_string(bool x) -> std::string
+{
+    using namespace std::string_literals;
+    return x ? "on"s : "off"s;
+}
+
 struct bool_descriptor
 {
     using value_type = bool;
@@ -18,10 +25,7 @@ struct bool_descriptor
 
     value_type default_value;
 
-    value_to_string_fn value_to_string{[](value_type x) {
-        using namespace std::string_literals;
-        return x ? "on"s : "off"s;
-    }};
+    value_to_string_fn value_to_string{&default_bool_to_string};
 
     bool midi_assignable{true};
     bool audio_graph_affecting{false};

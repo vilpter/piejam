@@ -4,6 +4,7 @@
 
 #include <piejam/runtime/actions/set_parameter_value.h>
 
+#include <piejam/runtime/parameters_store.h>
 #include <piejam/runtime/state.h>
 #include <piejam/runtime/ui/thunk_action.h>
 

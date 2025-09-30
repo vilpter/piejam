@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/runtime/fwd.h>
-#include <piejam/runtime/parameter/store.h>
 #include <piejam/runtime/parameters_store.h>
 
 #include <boost/container/flat_map.hpp>

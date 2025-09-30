@@ -20,7 +20,7 @@ class AuxSend final : public SubscribableModel
 
     M_PIEJAM_GUI_PROPERTY(QString, name, setName)
     M_PIEJAM_GUI_PROPERTY(bool, canToggle, setCanToggle)
-    M_PIEJAM_GUI_PROPERTY(bool, enabled, setEnabled)
+    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, active)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, faderTap)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, volume)
 
@@ -28,9 +28,6 @@ public:
     AuxSend(runtime::state_access const&,
             runtime::mixer::channel_id ch_id,
             runtime::mixer::channel_id aux_id);
-
-    Q_INVOKABLE void toggleEnabled();
-    Q_INVOKABLE void toggleFaderTap();
 
 private:
     void onSubscribe() override;

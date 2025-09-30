@@ -346,7 +346,14 @@ make_aux_send(
     aux_sends.emplace(
             aux_id,
             mixer::aux_send{
-                    .enabled = false,
+                    .active = ui_params_factory.make_parameter(
+                            bool_parameter{
+                                    .name = box{"Active"s},
+                                    .default_value = false,
+                                    .value_to_string =
+                                            &parameter::default_bool_to_string,
+                                    .midi_assignable = false,
+                                    .audio_graph_affecting = true}),
                     .fader_tap = ui_params_factory.make_parameter(
                             enum_parameter<mixer::aux_send_fader_tap>(
                                     "Fader Tap",

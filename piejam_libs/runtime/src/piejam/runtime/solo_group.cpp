@@ -5,6 +5,8 @@
 #include <piejam/runtime/solo_group.h>
 
 #include <piejam/runtime/mixer.h>
+#include <piejam/runtime/parameter/bool_descriptor.h>
+#include <piejam/runtime/parameters_store.h>
 
 #include <piejam/range/indices.h>
 
@@ -27,7 +29,8 @@ using channel_infos =
 auto
 gather_channel_infos(
         mixer::channels_t const& channels,
-        mixer::io_map const& io_map)
+        mixer::io_map const& io_map,
+        parameters_store const& params)
 {
     std::size_t const num_channels = channels.size();
 
@@ -66,7 +69,7 @@ gather_channel_infos(
 
         for (auto const& [aux, aux_send] : *channel.aux_sends)
         {
-            if (aux_send.enabled)
+            if (params[aux_send.active].value.get())
             {
                 add(id, aux);
             }
@@ -99,10 +102,12 @@ gather_solo_group(
 } // namespace
 
 auto
-solo_groups(mixer::channels_t const& channels, mixer::io_map const& io_map)
-        -> solo_groups_t
+solo_groups(
+        mixer::channels_t const& channels,
+        mixer::io_map const& io_map,
+        parameters_store const& params) -> solo_groups_t
 {
-    auto infos = gather_channel_infos(channels, io_map);
+    auto infos = gather_channel_infos(channels, io_map, params);
 
     std::size_t const num_channels = channels.size();
 

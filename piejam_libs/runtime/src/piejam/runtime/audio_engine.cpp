@@ -117,6 +117,7 @@ make_mixer_components(
         audio::sample_rate const sample_rate,
         strings_t const& strings,
         mixer::state const& mixer_state,
+        parameters_store const& params,
         parameter_processor_factory& param_procs,
         processors::stream_processor_factory& stream_procs)
 {
@@ -155,7 +156,7 @@ make_mixer_components(
 
         for (auto const& [aux, aux_send] : *mixer_channel.aux_sends)
         {
-            if (!aux_send.enabled)
+            if (!params[aux_send.active].value.get())
             {
                 continue;
             }
@@ -822,6 +823,7 @@ audio_engine::rebuild(
             m_impl->sample_rate,
             st.strings,
             st.mixer_state,
+            st.params,
             m_impl->param_procs,
             m_impl->stream_procs);
     make_fx_chain_components(
@@ -835,7 +837,8 @@ audio_engine::rebuild(
             m_impl->sample_rate);
     auto const solo_groups = runtime::solo_groups(
             st.mixer_state.channels,
-            st.mixer_state.io_map);
+            st.mixer_state.io_map,
+            st.params);
     make_solo_group_components(comps, solo_groups, m_impl->param_procs);
 
     processor_map procs;

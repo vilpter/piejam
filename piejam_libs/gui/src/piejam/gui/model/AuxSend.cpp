@@ -4,6 +4,7 @@
 
 #include <piejam/gui/model/AuxSend.h>
 
+#include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/EnumParameter.h>
 #include <piejam/gui/model/FloatParameter.h>
 
@@ -18,16 +19,23 @@ struct AuxSend::Impl
     Impl(runtime::state_access const& state_access,
          runtime::mixer::channel_id ch_id,
          runtime::mixer::channel_id aux_id)
-        : faderTap{state_access, state_access.observe_once(runtime::selectors::make_mixer_channel_aux_send_fader_tap_selector(ch_id, aux_id))}
+        : active{state_access,
+                 state_access.observe_once(
+                         runtime::selectors::
+                                 make_aux_send_active_selector(
+                                         ch_id,
+                                         aux_id))}
+        , faderTap{state_access, state_access.observe_once(runtime::selectors::make_aux_send_fader_tap_selector(ch_id, aux_id))}
         , volume{state_access,
                  state_access.observe_once(
                          runtime::selectors::
-                                 make_mixer_channel_aux_volume_parameter_selector(
+                                 make_aux_send_volume_parameter_selector(
                                          ch_id,
                                          aux_id))}
     {
     }
 
+    BoolParameter active;
     EnumParameter faderTap;
     FloatParameter volume;
 };
@@ -41,6 +49,12 @@ AuxSend::AuxSend(
     , m_aux_id{aux_id}
     , m_impl{make_pimpl<Impl>(state_access, ch_id, aux_id)}
 {
+}
+
+auto
+AuxSend::active() const noexcept -> active_property_t
+{
+    return &m_impl->active;
 }
 
 auto
@@ -62,30 +76,10 @@ AuxSend::onSubscribe()
             runtime::selectors::make_mixer_channel_name_string_selector(
                     m_aux_id))));
 
-    observe(runtime::selectors::make_mixer_channel_aux_enabled_selector(
-                    m_channel_id,
-                    m_aux_id),
-            [this](bool const enabled) { setEnabled(enabled); });
-
-    observe(runtime::selectors::make_mixer_channel_can_toggle_aux_selector(
+    observe(runtime::selectors::make_can_toggle_aux_send_selector(
                     m_channel_id,
                     m_aux_id),
             [this](bool const x) { setCanToggle(x); });
-}
-
-void
-AuxSend::toggleEnabled()
-{
-    runtime::actions::enable_mixer_channel_aux_route action;
-    action.channel_id = m_channel_id;
-    action.aux_id = m_aux_id;
-    action.enabled = !m_enabled;
-    dispatch(action);
-}
-
-void
-AuxSend::toggleFaderTap()
-{
 }
 
 } // namespace piejam::gui::model

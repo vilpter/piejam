@@ -4,6 +4,9 @@
 
 #include <piejam/runtime/mixer.h>
 
+#include <piejam/runtime/parameter/bool_descriptor.h>
+#include <piejam/runtime/parameters_store.h>
+
 #include <piejam/functional/get.h>
 #include <piejam/io_pair.h>
 
@@ -28,8 +31,10 @@ struct channel_io_t
 using channels_io_t = boost::container::flat_map<channel_id, channel_io_t>;
 
 auto
-extract_channels_io(channels_t const& channels, mixer::io_map const& io_map)
-        -> channels_io_t
+extract_channels_io(
+        channels_t const& channels,
+        mixer::io_map const& io_map,
+        parameters_store const& params) -> channels_io_t
 {
     namespace bhof = boost::hof;
 
@@ -38,10 +43,9 @@ extract_channels_io(channels_t const& channels, mixer::io_map const& io_map)
             bhof::unpack([&](auto const id, auto const& channel) {
                 auto active_aux_sends =
                         *channel.aux_sends |
-                        std::views::filter(
-                                bhof::compose(
-                                        &mixer::aux_send::enabled,
-                                        get_by_index<1>)) |
+                        std::views::filter([&](auto const& aux_send) {
+                            return params[aux_send.second.active].value.get();
+                        }) |
                         std::views::keys | std::ranges::to<std::vector>();
 
                 return std::pair(
@@ -145,72 +149,28 @@ has_cycle(io_graph g)
     });
 }
 
-template <io_direction D>
-auto
-valid_io_channels(
-        channels_t const& channels,
-        channel_id const ch_id,
-        mixer::io_map const& io_map) -> std::vector<mixer::channel_id>
-{
-    auto channels_io = extract_channels_io(channels, io_map);
-
-    std::vector<mixer::channel_id> valid_ids;
-    for (auto const& [mixer_channel_id, mixer_channel] : channels)
-    {
-        if (mixer_channel_id == ch_id)
-        {
-            // mono mixer channels can't have input channels
-            if (D == io_direction::input &&
-                mixer_channel.type == channel_type::mono)
-            {
-                return {};
-            }
-
-            // otherwise, we can't be our own input
-            continue;
-        }
-
-        if (D == io_direction::output &&
-            mixer_channel.type == channel_type::mono)
-        {
-            // mono mixer channels can't be targets
-            continue;
-        }
-
-        auto prev_id =
-                std::exchange(channels_io[ch_id].port[D], mixer_channel_id);
-
-        if (!has_cycle(make_channels_io_graph(channels_io)))
-        {
-            valid_ids.push_back(mixer_channel_id);
-        }
-
-        channels_io[ch_id].port[D] = prev_id;
-    }
-
-    return valid_ids;
-}
-
 } // namespace
 
 auto
 is_mix_input_valid(
-        channels_t const& channels,
         channel_id const ch_id,
-        mixer::io_map const& io_map) -> bool
+        channels_t const& channels,
+        mixer::io_map const& io_map,
+        parameters_store const& params) -> bool
 {
     BOOST_ASSERT(channels[ch_id].type != mixer::channel_type::mono);
-    auto channels_io = extract_channels_io(channels, io_map);
+    auto channels_io = extract_channels_io(channels, io_map, params);
     channels_io[ch_id].port.in() = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));
 }
 
 auto
 can_toggle_aux(
-        channels_t const& channels,
         channel_id const ch_id,
         channel_id const aux_id,
-        mixer::io_map const& io_map) -> bool
+        channels_t const& channels,
+        mixer::io_map const& io_map,
+        parameters_store const& params) -> bool
 {
     mixer::channel const* const channel = channels.find(ch_id);
     if (!channel)
@@ -224,12 +184,12 @@ can_toggle_aux(
         return false;
     }
 
-    if (it_aux_send->second.enabled)
+    if (params[it_aux_send->second.active].value.get())
     {
         return true; // we can always disable an enabled aux
     }
 
-    auto channels_io = extract_channels_io(channels, io_map);
+    auto channels_io = extract_channels_io(channels, io_map, params);
 
     channels_io[ch_id].aux_sends.emplace_back(aux_id);
     return !has_cycle(make_channels_io_graph(channels_io));
@@ -237,27 +197,50 @@ can_toggle_aux(
 
 auto
 valid_channels(
-        io_direction const s,
-        channels_t const& channels,
         channel_id const ch_id,
-        mixer::io_map const& io_map) -> std::vector<channel_id>
+        io_direction const io_dir,
+        channels_t const& channels,
+        mixer::io_map const& io_map,
+        parameters_store const& params) -> std::vector<channel_id>
 {
-    switch (s)
-    {
-        case io_direction::input:
-            return valid_io_channels<io_direction::input>(
-                    channels,
-                    ch_id,
-                    io_map);
+    auto channels_io = extract_channels_io(channels, io_map, params);
 
-        case io_direction::output:
-            return valid_io_channels<io_direction::output>(
-                    channels,
-                    ch_id,
-                    io_map);
+    std::vector<mixer::channel_id> valid_ids;
+    for (auto const& [mixer_channel_id, mixer_channel] : channels)
+    {
+        if (mixer_channel_id == ch_id)
+        {
+            // mono mixer channels can't have input channels
+            if (io_dir == io_direction::input &&
+                mixer_channel.type == channel_type::mono)
+            {
+                return {};
+            }
+
+            // otherwise, we can't be our own input
+            continue;
+        }
+
+        if (io_dir == io_direction::output &&
+            mixer_channel.type == channel_type::mono)
+        {
+            // mono mixer channels can't be targets
+            continue;
+        }
+
+        auto prev_id = std::exchange(
+                channels_io[ch_id].port[io_dir],
+                mixer_channel_id);
+
+        if (!has_cycle(make_channels_io_graph(channels_io)))
+        {
+            valid_ids.push_back(mixer_channel_id);
+        }
+
+        channels_io[ch_id].port[io_dir] = prev_id;
     }
 
-    return {};
+    return valid_ids;
 }
 
 } // namespace piejam::runtime::mixer

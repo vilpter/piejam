@@ -34,7 +34,7 @@ SubscribableItem {
     Rectangle {
         anchors.fill: parent
 
-        border.color: root.model && root.model.enabled ? Material.primaryColor : Material.frameColor
+        border.color: root.model && root.model.active && root.model.active.value ? Material.primaryColor : Material.frameColor
         border.width: 2
         color: Material.backgroundColor
         radius: 4
@@ -62,22 +62,22 @@ SubscribableItem {
                     color: root.model && root.model.enabled ? Material.primaryTextColor : Material.secondaryTextColor
                 }
 
-                Button {
+                ParameterToggleButton {
                     Layout.preferredWidth: 32
                     Layout.preferredHeight: 40
+
+                    model: root.model ? root.model.active : null
 
                     icon.source: (!root.model || root.model.canToggle)
                                  ? "qrc:///images/icons/power.svg"
                                  : "qrc:///images/icons/cycle_arrows.svg"
 
-                    icon.color: root.model && root.model.enabled
+                    icon.color: root.model && root.model.active && root.model.active.value
                             ? Material.primaryColor
                             : (root.model && root.model.canToggle ? Material.primaryTextColor : Material.secondaryTextColor)
 
                     flat: true
                     enabled: root.model && root.model.canToggle
-
-                    onClicked: root.model.toggleEnabled()
                 }
             }
 
