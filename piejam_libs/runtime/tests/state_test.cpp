@@ -28,7 +28,7 @@ TEST_F(state_with_one_mixer_input, after_add_mixer_channel)
 {
     ASSERT_EQ(1u, sut.mixer_state.inputs->size());
 
-    auto const& channel = sut.mixer_state.channels[channel_id];
+    auto const& channel = sut.mixer_state.channels.at(channel_id);
 
     EXPECT_EQ("foo", *sut.strings[channel.name]);
 

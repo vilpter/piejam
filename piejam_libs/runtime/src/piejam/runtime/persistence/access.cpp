@@ -75,7 +75,7 @@ export_external_audio_device_configs(
             device_ids,
             [&](external_audio::device_id const& device_id)
                     -> persistence::session::external_audio_device_config {
-                external_audio::device const& device = devices[device_id];
+                external_audio::device const& device = devices.at(device_id);
                 return {.name = strings[device.name],
                         .bus_type = device.bus_type,
                         .channels = device.channels};
@@ -173,7 +173,7 @@ export_fx_plugin(
     BOOST_ASSERT(
             std::get<fx::unavailable_ladspa_id>(fx_mod.fx_instance_id) == id);
 
-    auto const& unavail = st.fx_unavailable_ladspa_plugins[id];
+    auto const& unavail = st.fx_unavailable_ladspa_plugins.at(id);
     session::ladspa_plugin plug;
     plug.id = unavail.plugin_id;
     plug.name = fx_mod.name;
@@ -190,7 +190,7 @@ export_fx_chain(state const& st, fx::chain_t const& fx_chain)
 
     for (auto const& fx_mod_id : fx_chain)
     {
-        fx::module const& fx_mod = st.fx_modules[fx_mod_id];
+        fx::module const& fx_mod = st.fx_modules.at(fx_mod_id);
         result.emplace_back(
                 std::visit(
                         [&st, &fx_mod](auto const& id) {
@@ -290,8 +290,9 @@ export_mixer_channel(
     result.midi =
             export_midi_assignments(channel.parameters, st.midi_assignments);
     result.parameter = export_parameter_values(channel.parameters, st.params);
-    result.in = export_mixer_io(st, st.mixer_state.io_map.in()[channel_id]);
-    result.out = export_mixer_io(st, st.mixer_state.io_map.out()[channel_id]);
+    result.in = export_mixer_io(st, st.mixer_state.io_map.in().at(channel_id));
+    result.out =
+            export_mixer_io(st, st.mixer_state.io_map.out().at(channel_id));
     result.aux_sends = export_mixer_aux_sends(st, channel.aux_sends);
     return result;
 }
@@ -305,7 +306,7 @@ export_mixer_channels(state const& st, mixer::channel_ids_t const& channel_ids)
                 return export_mixer_channel(
                         st,
                         channel_id,
-                        st.mixer_state.channels[channel_id]);
+                        st.mixer_state.channels.at(channel_id));
             });
 }
 
@@ -362,7 +363,7 @@ save_session(std::filesystem::path const& file, state const& st)
         ses.main_mixer_channel = export_mixer_channel(
                 st,
                 st.mixer_state.main,
-                st.mixer_state.channels[st.mixer_state.main]);
+                st.mixer_state.channels.at(st.mixer_state.main));
 
         ses.aux_channels = export_aux_channels(st);
 

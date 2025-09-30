@@ -28,10 +28,10 @@ add_mixer_channel::reduce(state& st) const
                     get_by_index<1>);
 
             if (it == st.mixer_state.io_map.in().end() &&
-                st.external_audio_state.devices[device_id].bus_type ==
+                st.external_audio_state.devices.at(device_id).bus_type ==
                         to_bus_type(channel_type))
             {
-                st.mixer_state.io_map.in().lock()[added_mixer_channel_id] =
+                st.mixer_state.io_map.in().lock().at(added_mixer_channel_id) =
                         device_id;
                 break;
             }
@@ -48,7 +48,7 @@ delete_mixer_channel::reduce(state& st) const
 void
 set_mixer_channel_color::reduce(state& st) const
 {
-    auto const& channel = st.mixer_state.channels[channel_id];
+    auto const& channel = st.mixer_state.channels.at(channel_id);
     st.material_colors.set(channel.color, color);
 }
 
@@ -56,11 +56,11 @@ void
 set_mixer_channel_route::reduce(state& st) const
 {
     BOOST_ASSERT_MSG(
-            !(st.mixer_state.channels[channel_id].type ==
+            !(st.mixer_state.channels.at(channel_id).type ==
                       mixer::channel_type::aux &&
               port == io_direction::input),
             "changing aux input is not allowed");
-    st.mixer_state.io_map[port].lock()[channel_id] = route;
+    st.mixer_state.io_map[port].lock().at(channel_id) = route;
 }
 
 void

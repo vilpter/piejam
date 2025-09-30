@@ -125,7 +125,7 @@ make_mixer_components(
     {
         mixer_input_key const in_key{
                 .channel_id = mixer_channel_id,
-                .route = mixer_state.io_map.in()[mixer_channel_id]};
+                .route = mixer_state.io_map.in().at(mixer_channel_id)};
         if (auto comp = prev_comps.find(in_key))
         {
             comps.insert(in_key, std::move(comp));
@@ -349,18 +349,18 @@ void
 connect_mixer_input(
         audio::engine::graph& g,
         mixer::state const& mixer_state,
-        external_audio::devices_t const& device_buses,
+        external_audio::devices_t const& devices,
         component_map const& comps,
         std::span<audio::engine::input_processor> const input_procs,
         mixer::channel_id const& mixer_channel_id,
         audio::engine::component& mixer_channel_in)
 {
-    auto const& mixer_channel = mixer_state.channels[mixer_channel_id];
+    auto const& mixer_channel = mixer_state.channels.at(mixer_channel_id);
     std::visit(
             boost::hof::match(
                     [&](external_audio::device_id const device_id) {
                         external_audio::device const& device =
-                                device_buses[device_id];
+                                devices.at(device_id);
 
                         if (device.channels.left != npos)
                         {
@@ -396,14 +396,14 @@ connect_mixer_input(
                                 mixer_channel_in);
                     },
                     [](auto const&) {}),
-            mixer_state.io_map.in()[mixer_channel_id]);
+            mixer_state.io_map.in().at(mixer_channel_id));
 }
 
 void
 connect_mixer_output(
         audio::engine::graph& g,
         mixer::state const& mixer_state,
-        external_audio::devices_t const& external_audio_devices,
+        external_audio::devices_t const& devices,
         component_map const& comps,
         std::span<audio::engine::output_processor> const output_procs,
         std::span<processor_ptr> const output_clip_procs,
@@ -414,7 +414,7 @@ connect_mixer_output(
             boost::hof::match(
                     [&](external_audio::device_id const device_id) {
                         external_audio::device const& device =
-                                external_audio_devices[device_id];
+                                devices.at(device_id);
 
                         auto get_clip_proc = [&](std::size_t const ch)
                                 -> audio::engine::processor& {
@@ -450,7 +450,7 @@ connect_mixer_output(
                     },
                     [&](mixer::channel_id const dst_channel_id) {
                         auto const& dst_channel_in =
-                                mixer_state.io_map.in()[dst_channel_id];
+                                mixer_state.io_map.in().at(dst_channel_id);
 
                         if (std::holds_alternative<mixer::mix_input>(
                                     dst_channel_in))
@@ -487,9 +487,10 @@ make_graph(
     for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
         audio::engine::component* const mixer_channel_in =
-                comps.find(mixer_input_key{
-                                   mixer_channel_id,
-                                   mixer_state.io_map.in()[mixer_channel_id]})
+                comps
+                        .find(mixer_input_key{
+                                mixer_channel_id,
+                                mixer_state.io_map.in().at(mixer_channel_id)})
                         .get();
         audio::engine::component* const mixer_channel_out =
                 comps.find(mixer_output_key{mixer_channel_id}).get();
@@ -523,7 +524,7 @@ make_graph(
                 comps,
                 output_procs,
                 output_clip_procs,
-                mixer_state.io_map.out()[mixer_channel_id],
+                mixer_state.io_map.out().at(mixer_channel_id),
                 *mixer_channel_out);
 
         for (auto const& [aux, aux_send] : *mixer_channel.aux_sends)
@@ -538,10 +539,11 @@ make_graph(
                 auto aux_send_fader_tap =
                         static_cast<mixer::aux_send_fader_tap>(
                                 params[aux_send.fader_tap].value.get());
-                auto aux_channel_fader_tap = static_cast<
-                        mixer::aux_channel_fader_tap>(
-                        params[mixer_state.aux_channels[aux].default_fader_tap]
-                                .value.get());
+                auto aux_channel_fader_tap =
+                        static_cast<mixer::aux_channel_fader_tap>(
+                                params[mixer_state.aux_channels.at(aux)
+                                               .default_fader_tap]
+                                        .value.get());
 
                 auto const [out_L, out_R] = [&]() {
                     switch (aux_send_fader_tap)

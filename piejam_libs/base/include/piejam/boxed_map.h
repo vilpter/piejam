@@ -5,6 +5,7 @@
 #pragma once
 
 #include <piejam/box.h>
+#include <piejam/lean_map_facade.h>
 
 namespace piejam
 {
@@ -12,96 +13,97 @@ namespace piejam
 template <class Map>
 class boxed_map
 {
+    using map_t = lean_map_facade<Map>;
+
 public:
+    using key_type = typename map_t::key_type;
+    using mapped_type = typename map_t::mapped_type;
+    using size_type = typename map_t::size_type;
+    using const_iterator = typename map_t::const_iterator;
+    using iterator = typename map_t::iterator;
+
     [[nodiscard]]
-    auto empty() const noexcept
+    auto empty() const noexcept -> bool
     {
         return m_map->empty();
     }
 
     [[nodiscard]]
-    auto size() const noexcept
+    auto size() const noexcept -> size_type
     {
         return m_map->size();
     }
 
     [[nodiscard]]
-    auto begin() const noexcept
+    auto begin() const noexcept -> const_iterator
     {
         return m_map->begin();
     }
 
     [[nodiscard]]
-    auto end() const noexcept
+    auto end() const noexcept -> const_iterator
     {
         return m_map->end();
     }
 
     template <class Key>
     [[nodiscard]]
-    auto contains(Key&& key) const noexcept
+    auto contains(Key&& key) const noexcept -> bool
     {
         return m_map->contains(std::forward<Key>(key));
     }
 
     template <class Key>
     [[nodiscard]]
-    auto find(Key&& key) const noexcept
+    auto find(Key&& key) const noexcept -> mapped_type const*
     {
-        auto it = m_map->find(std::forward<Key>(key));
-        return it != m_map->end() ? std::addressof(it->second) : nullptr;
+        return m_map->find(std::forward<Key>(key));
     }
 
     template <class Key>
     [[nodiscard]]
-    auto operator[](Key&& key) const noexcept -> decltype(auto)
+    auto at(Key&& key) const noexcept -> mapped_type const&
     {
-        auto it = m_map->find(std::forward<Key>(key));
-        BOOST_ASSERT(it != m_map->end());
-        auto const& ref = it->second;
-        return ref;
+        return m_map->at(std::forward<Key>(key));
     }
 
     class locked
     {
     public:
         explicit locked(boxed_map& m)
-            : m_{m.m_map.lock()}
+            : m_locked{m.m_map.lock()}
         {
         }
 
         [[nodiscard]]
-        auto begin() noexcept
+        auto begin() noexcept -> iterator
         {
-            return m_->begin();
+            return m_locked->begin();
         }
 
         [[nodiscard]]
-        auto end() noexcept
+        auto end() noexcept -> iterator
         {
-            return m_->end();
+            return m_locked->end();
         }
 
         template <class Key>
         [[nodiscard]]
-        auto operator[](Key&& key) -> decltype(auto)
+        auto at(Key&& key) -> mapped_type&
         {
-            auto it = m_->find(std::forward<Key>(key));
-            BOOST_ASSERT(it != m_->end());
-            auto& ref = it->second;
-            return ref;
+            return m_locked->at(std::forward<Key>(key));
         }
 
         template <class... Args>
         auto emplace(Args&&... args)
         {
-            return m_->emplace(std::forward<Args>(args)...);
+            return m_locked->emplace(std::forward<Args>(args)...);
         }
 
         template <class Key>
         auto erase(Key&& key)
         {
-            return m_->erase(std::forward<Key>(key));
+            return m_locked->erase(std::forward<Key>(key));
         }
 
         // TODO remove
@@ -110,12 +112,12 @@ public:
         {
             for (auto&& key : keys)
             {
-                m_->erase(key);
+                m_locked->erase(key);
             }
         }
 
     private:
-        box<Map>::write_lock m_;
+        box<map_t>::write_lock m_locked;
     };
 
     auto lock() -> locked
@@ -145,7 +147,7 @@ public:
     auto operator==(boxed_map const&) const noexcept -> bool = default;
 
 private:
-    box<Map> m_map;
+    box<map_t> m_map;
 };
 
 } // namespace piejam

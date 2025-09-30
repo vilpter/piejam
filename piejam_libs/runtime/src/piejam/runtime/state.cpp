@@ -85,12 +85,13 @@ make_initial_state() -> state
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
 
     // reset io
-    st.mixer_state.io_map.in().lock()[st.mixer_state.main] = mixer::mix_input{};
-    st.mixer_state.io_map.out().lock()[st.mixer_state.main] = default_t{};
+    st.mixer_state.io_map.in().lock().at(st.mixer_state.main) =
+            mixer::mix_input{};
+    st.mixer_state.io_map.out().lock().at(st.mixer_state.main) = default_t{};
 
     // enable record on main
-    st.params[st.mixer_state.channels[st.mixer_state.main].record()].value.set(
-            true);
+    st.params[st.mixer_state.channels.at(st.mixer_state.main).record()]
+            .value.set(true);
     return st;
 }
 
@@ -175,7 +176,7 @@ insert_internal_fx_module(
     BOOST_ASSERT(mixer_channel_id.valid());
 
     mixer::channel const& mixer_channel =
-            st.mixer_state.channels[mixer_channel_id];
+            st.mixer_state.channels.at(mixer_channel_id);
     auto const bus_type = to_bus_type(mixer_channel.type);
     fx::chain_t fx_chain = st.mixer_state.fx_chains[mixer_channel_id];
     auto const insert_pos = std::min(position, fx_chain.size());
@@ -191,7 +192,7 @@ insert_internal_fx_module(
 
     fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
 
-    auto const& fx_mod = st.fx_modules[fx_chain[insert_pos]];
+    auto const& fx_mod = st.fx_modules.at(fx_chain[insert_pos]);
 
     apply_parameter_values(initial_values, fx_mod.parameters, st.params);
     apply_midi_assignments(
@@ -219,7 +220,7 @@ insert_ladspa_fx_module(
     BOOST_ASSERT(mixer_channel_id != mixer::channel_id{});
 
     mixer::channel const& mixer_channel =
-            st.mixer_state.channels[mixer_channel_id];
+            st.mixer_state.channels.at(mixer_channel_id);
     auto const bus_type = to_bus_type(mixer_channel.type);
     fx::chain_t fx_chain = st.mixer_state.fx_chains[mixer_channel_id];
     auto const insert_pos = std::min(position, fx_chain.size());
@@ -234,7 +235,7 @@ insert_ladspa_fx_module(
 
     fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
 
-    auto const& fx_mod = st.fx_modules[fx_chain[insert_pos]];
+    auto const& fx_mod = st.fx_modules.at(fx_chain[insert_pos]);
     apply_parameter_values(initial_values, fx_mod.parameters, st.params);
     apply_midi_assignments(
             midi_assigns,
@@ -256,7 +257,7 @@ insert_missing_ladspa_fx_module(
         fx::unavailable_ladspa const& unavail,
         std::string_view const name)
 {
-    auto const& mixer_channel = st.mixer_state.channels[channel_id];
+    auto const& mixer_channel = st.mixer_state.channels.at(channel_id);
 
     fx::chain_t fx_chain = st.mixer_state.fx_chains[channel_id];
 
@@ -312,7 +313,7 @@ remove_fx_module(
         mixer::channel_id const fx_chain_id,
         fx::module_id const fx_mod_id)
 {
-    fx::module const& fx_mod = st.fx_modules[fx_mod_id];
+    fx::module const& fx_mod = st.fx_modules.at(fx_mod_id);
 
     fx::chain_t fx_chain = st.mixer_state.fx_chains[fx_chain_id];
     BOOST_ASSERT(std::ranges::contains(fx_chain, fx_mod_id));
@@ -518,12 +519,12 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
     if (type == mixer::channel_type::aux)
     {
         // add as aux_send to each channel
-        for (auto& [id, channel] : mixer_channels)
+        for (auto&& [id, channel] : mixer_channels)
         {
             if (channel.type != mixer::channel_type::aux)
             {
                 make_aux_send(
-                        *channel.aux_sends.lock(),
+                        channel.aux_sends.lock().get(),
                         channel_id,
                         params_factory);
             }
@@ -557,7 +558,7 @@ reset_io_targets(mixer::io_map& io_map, mixer::io_address_t target)
         {
             if (addr == target)
             {
-                id_addr_map_locked[id] = default_t{};
+                id_addr_map_locked.at(id) = default_t{};
             }
         }
     }
@@ -569,7 +570,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     BOOST_ASSERT(mixer_channel_id != st.mixer_state.main);
 
     mixer::channel const& mixer_channel =
-            st.mixer_state.channels[mixer_channel_id];
+            st.mixer_state.channels.at(mixer_channel_id);
 
     st.strings.erase(mixer_channel.name);
     st.material_colors.erase(mixer_channel.color);
@@ -633,7 +634,7 @@ remove_external_audio_device(
         state& st,
         external_audio::device_id const device_id)
 {
-    auto const name_id = st.external_audio_state.devices[device_id].name;
+    auto const name_id = st.external_audio_state.devices.at(device_id).name;
     auto const name = st.strings[name_id];
 
     st.strings.erase(name_id);

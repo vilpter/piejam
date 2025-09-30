@@ -251,7 +251,7 @@ make_mixer_channel_color_selector(mixer::channel_id const channel_id)
     return make_entity_data_map_selector(
             [](state const& st) -> auto& { return st.material_colors; },
             [channel_id](state const& st) {
-                return st.mixer_state.channels[channel_id].color;
+                return st.mixer_state.channels.at(channel_id).color;
             },
             material_color::pink);
 }
@@ -412,7 +412,7 @@ make_mixer_channel_aux_sends_selector(mixer::channel_id channel_id)
 {
     return [channel_id](state const& st) {
         return box{std::ranges::to<std::vector>(
-                *st.mixer_state.channels[channel_id].aux_sends |
+                *st.mixer_state.channels.at(channel_id).aux_sends |
                 std::views::keys)};
     };
 }
@@ -422,7 +422,7 @@ make_aux_channel_default_fader_tap_parameter_selector(mixer::channel_id aux_id)
         -> selector<enum_parameter_id>
 {
     return [aux_id](state const& st) {
-        return st.mixer_state.aux_channels[aux_id].default_fader_tap;
+        return st.mixer_state.aux_channels.at(aux_id).default_fader_tap;
     };
 }
 
@@ -456,7 +456,7 @@ make_route_state_selector(mixer::io_address_t addr, io_direction io_socket)
                         else
                         {
                             return [id](state const& st) {
-                                auto addr = st.mixer_state.io_map.in()[id];
+                                auto addr = st.mixer_state.io_map.in().at(id);
                                 return std::holds_alternative<mixer::mix_input>(
                                                addr)
                                                ? selected_route::state_t::valid
@@ -505,7 +505,7 @@ make_mixer_channel_selected_route_selector(
             channel_id,
             get_state = memo(&make_route_state_selector),
             get_name = memo(&make_route_name_selector)](state const& st) {
-        auto addr = st.mixer_state.io_map[io_socket][channel_id];
+        auto addr = st.mixer_state.io_map[io_socket].at(channel_id);
 
         selected_route result;
 
@@ -541,7 +541,7 @@ make_mixer_device_routes_selector(
                 std::vector<mixer_device_route> result;
                 for (auto device_id : *device_ids)
                 {
-                    if (auto const& device = devices[device_id];
+                    if (auto const& device = devices.at(device_id);
                         device.bus_type == bus_type)
                     {
                         result.emplace_back(
@@ -573,7 +573,7 @@ make_mixer_channel_routes_selector(
                          mixer::io_map const& io_map,
                          parameters_store const& params) {
                 if (io_port == io_direction::input &&
-                    channels[channel_id].type == mixer::channel_type::aux)
+                    channels.at(channel_id).type == mixer::channel_type::aux)
                 {
                     return boxed_vector<mixer_channel_route>{};
                 }
@@ -590,7 +590,7 @@ make_mixer_channel_routes_selector(
                                 [&](auto const& id) {
                                     return mixer_channel_route{
                                             .channel_id = id,
-                                            .name = channels[id].name};
+                                            .name = channels.at(id).name};
                                 }));
             });
 
@@ -1155,7 +1155,7 @@ selector<material_color> const select_focused_fx_module_color(
 
             focused_fx_chain = st.focused_fx_chain_id;
             color = st.material_colors.cached(
-                    st.mixer_state.channels[st.focused_fx_chain_id].color);
+                    st.mixer_state.channels.at(st.focused_fx_chain_id).color);
             return color ? *color : material_color::pink;
         });
 

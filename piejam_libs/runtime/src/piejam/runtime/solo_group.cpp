@@ -42,7 +42,7 @@ gather_channel_infos(
             target_id)
         {
             if (std::holds_alternative<mixer::mix_input>(
-                        io_map.in()[*target_id]))
+                        io_map.in().at(*target_id)))
             {
                 result[current].children.insert(*target_id);
                 result[*target_id].mixins.insert(current);
@@ -59,13 +59,13 @@ gather_channel_infos(
         info.solo_param = channel.solo();
 
         if (auto const* const in_id =
-                    std::get_if<mixer::channel_id>(&io_map.in()[id]);
+                    std::get_if<mixer::channel_id>(&io_map.in().at(id));
             in_id)
         {
             result[*in_id].children.insert(id);
         }
 
-        add(id, io_map.out()[id]);
+        add(id, io_map.out().at(id));
 
         for (auto const& [aux, aux_send] : *channel.aux_sends)
         {

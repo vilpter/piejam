@@ -116,9 +116,9 @@ add_external_audio_device::reduce(state& st) const
     if (direction == io_direction::output)
     {
         if (std::holds_alternative<default_t>(
-                    st.mixer_state.io_map.out()[st.mixer_state.main]))
+                    st.mixer_state.io_map.out().at(st.mixer_state.main)))
         {
-            st.mixer_state.io_map.out().lock()[st.mixer_state.main] =
+            st.mixer_state.io_map.out().lock().at(st.mixer_state.main) =
                     added_device_id;
         }
     }
@@ -148,7 +148,7 @@ set_external_audio_device_bus_channel::reduce(state& st) const
                 device.channels.right = channel_index;
                 break;
         }
-    }(st.external_audio_state.devices.lock()[device_id]);
+    }(st.external_audio_state.devices.lock().at(device_id));
 }
 
 } // namespace piejam::runtime::actions

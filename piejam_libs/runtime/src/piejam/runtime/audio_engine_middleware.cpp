@@ -84,7 +84,7 @@ struct update_devices final
             auto const ge_num_channels = greater_equal(num_channels);
             for (auto id : ids)
             {
-                auto& device = devices[id];
+                auto& device = devices.at(id);
                 set_if(device.channels.left, ge_num_channels, npos);
                 set_if(device.channels.right, ge_num_channels, npos);
             }

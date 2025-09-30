@@ -51,7 +51,9 @@ extract_channels_io(
                 return std::pair(
                         id,
                         channel_io_t{
-                                .port = {io_map.in()[id], io_map.out()[id]},
+                                .port =
+                                        {io_map.in().at(id),
+                                         io_map.out().at(id)},
                                 .aux_sends = std::move(active_aux_sends)});
             }));
 
@@ -158,7 +160,7 @@ is_mix_input_valid(
         mixer::io_map const& io_map,
         parameters_store const& params) -> bool
 {
-    BOOST_ASSERT(channels[ch_id].type != mixer::channel_type::mono);
+    BOOST_ASSERT(channels.at(ch_id).type != mixer::channel_type::mono);
     auto channels_io = extract_channels_io(channels, io_map, params);
     channels_io[ch_id].port.in() = mixer::mix_input{};
     return !has_cycle(make_channels_io_graph(channels_io));

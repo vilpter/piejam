@@ -47,6 +47,8 @@ struct aux_send
     bool_parameter_id active{};
     enum_parameter_id fader_tap{};
     float_parameter_id volume{};
+
+    constexpr auto operator==(aux_send const&) const noexcept -> bool = default;
 };
 
 using aux_sends_t = std::map<channel_id, aux_send>;
@@ -111,6 +113,9 @@ struct aux_channel
     }
 
     int_parameter_id default_fader_tap;
+
+    constexpr auto operator==(aux_channel const&) const noexcept
+            -> bool = default;
 };
 
 struct state

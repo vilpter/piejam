@@ -145,9 +145,9 @@ apply_mixer_io(
         }
     };
 
-    mixer_state.io_map.in().lock()[channel_id] =
+    mixer_state.io_map.in().lock().at(channel_id) =
             find_route(in, io_direction::input);
-    mixer_state.io_map.out().lock()[channel_id] =
+    mixer_state.io_map.out().lock().at(channel_id) =
             find_route(out, io_direction::output);
 
     [&](mixer::channel& channel) {
@@ -173,7 +173,7 @@ apply_mixer_io(
                 }
             }
         }
-    }(mixer_state.channels.lock()[channel_id]);
+    }(mixer_state.channels.lock().at(channel_id));
 }
 
 void
@@ -225,7 +225,7 @@ apply_session::reduce(state& st) const
                 st,
                 channel_data.channel_type,
                 channel_data.name);
-        auto& added_channel = st.mixer_state.channels[added_channel_id];
+        auto& added_channel = st.mixer_state.channels.at(added_channel_id);
         st.material_colors.set(added_channel.color, channel_data.color);
         apply_midi_assignments(
                 channel_data.midi,
@@ -253,7 +253,7 @@ apply_session::reduce(state& st) const
                 session->main_mixer_channel.parameter,
                 *main_mixer_channel.parameters,
                 st.params);
-    }(st.mixer_state.channels.lock()[st.mixer_state.main]);
+    }(st.mixer_state.channels.lock().at(st.mixer_state.main));
     apply_mixer_fx_chain(
             st,
             st.mixer_state.main,

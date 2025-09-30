@@ -22,7 +22,12 @@ class entity_map
 public:
     using id_t = Id;
     using map_t = boost::container::flat_map<id_t, Entity>;
+    using key_type = typename map_t::key_type;
+    using mapped_type = typename map_t::mapped_type;
     using value_type = typename map_t::value_type;
+    using size_type = typename map_t::size_type;
+    using const_iterator = typename map_t::const_iterator;
+    using iterator = typename map_t::iterator;
 
     [[nodiscard]]
     auto empty() const noexcept

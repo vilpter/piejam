@@ -73,7 +73,7 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
 
     for (auto const& [fx_chain_id, replacements] : fx_chain_replacements)
     {
-        auto const& mixer_channel = mixer_channels[fx_chain_id];
+        auto const& mixer_channel = mixer_channels.at(fx_chain_id);
         auto fx_chain = *st.mixer_state.fx_chains[fx_chain_id];
 
         for (auto const& [pos, ladspa_instance] : replacements)
@@ -82,11 +82,11 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
             auto const prev_fx_mod_id = fx_chain[pos];
 
             auto unavail_id = std::get<fx::unavailable_ladspa_id>(
-                    fx_modules[prev_fx_mod_id].fx_instance_id);
+                    fx_modules.at(prev_fx_mod_id).fx_instance_id);
 
             fx_modules.erase(prev_fx_mod_id);
 
-            auto const& unavail = unavail_ladspas[unavail_id];
+            auto const& unavail = unavail_ladspas.at(unavail_id);
 
             BOOST_ASSERT(unavail.plugin_id == ladspa_instance.plugin_desc.id);
             BOOST_ASSERT(
@@ -106,7 +106,7 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
 
             fx_chain[pos] = fx_mod_id;
 
-            auto const& fx_mod = fx_modules[fx_mod_id];
+            auto const& fx_mod = fx_modules.at(fx_mod_id);
             apply_parameter_values(
                     unavail.parameter_values,
                     fx_mod.parameters,
