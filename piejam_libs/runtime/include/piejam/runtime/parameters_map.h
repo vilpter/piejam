@@ -17,11 +17,6 @@
 namespace piejam::runtime
 {
 
-template <class Key>
-concept parameter_enum_key =
-        std::is_scoped_enum_v<Key> &&
-        std::is_same_v<parameter::key, std::underlying_type_t<Key>>;
-
 template <parameter_enum_key Key>
 class parameters_map_by : public parameters_map
 {

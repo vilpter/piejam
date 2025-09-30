@@ -28,10 +28,6 @@ using update_state_action = ui::update_state_action<state>;
 
 struct locations;
 
-template <class Parameter>
-struct parameter_map_slot;
-using parameters_store = parameter::store<parameter_map_slot>;
-
 using parameter_processor_factory = boost::mp11::mp_rename<
         boost::mp11::mp_map_keys<parameters_fwd_t>,
         processors::parameter_processor_factory>;

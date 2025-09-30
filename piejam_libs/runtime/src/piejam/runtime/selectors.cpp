@@ -270,6 +270,15 @@ make_mixer_channel_color_selector(mixer::channel_id const channel_id)
 }
 
 auto
+make_mixer_channel_parameters_selector(mixer::channel_id const channel_id)
+        -> selector<box<parameters_map>>
+{
+    return [channel_id](state const& st) -> box<parameters_map> {
+        return st.mixer_state.channels.at(channel_id).parameters;
+    };
+}
+
+auto
 make_mixer_channel_volume_parameter_selector(mixer::channel_id const channel_id)
         -> selector<float_parameter_id>
 {
@@ -855,7 +864,7 @@ make_fx_parameter_value_string_selector(parameter_id const fx_param_id)
 
                 if constexpr (parameter::has_value_to_string_fn<parameter_t>)
                 {
-                    using cached_value_type = typename parameter_map_slot<
+                    using cached_value_type = typename parameter_store_slot<
                             parameter_t>::value_slot::cached_type;
 
                     using value_to_string_fn = parameter_t::value_to_string_fn;

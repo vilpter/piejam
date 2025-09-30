@@ -12,7 +12,7 @@ namespace piejam::runtime
 {
 
 template <class Parameter>
-struct parameter_map_slot
+struct parameter_store_slot
 {
     using parameter_type = Parameter;
 
@@ -60,7 +60,7 @@ struct parameter_map_slot
                 std::make_shared<value_type>(value_type{})};
     } value{get_default_value(param)};
 
-    auto operator==(parameter_map_slot const&) const -> bool = default;
+    auto operator==(parameter_store_slot const&) const -> bool = default;
 
 private:
     auto get_default_value(Parameter const& param)
@@ -77,6 +77,6 @@ private:
     }
 };
 
-using parameters_store = parameter::store<parameter_map_slot>;
+using parameters_store = parameter::store<parameter_store_slot>;
 
 } // namespace piejam::runtime

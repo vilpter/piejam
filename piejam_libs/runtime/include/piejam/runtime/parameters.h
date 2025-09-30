@@ -60,11 +60,19 @@ constexpr bool is_persistable_parameter_v =
 
 using parameters_map = boost::container::flat_map<parameter::key, parameter_id>;
 
+template <class Key>
+concept parameter_enum_key =
+        std::is_scoped_enum_v<Key> &&
+        std::is_same_v<parameter::key, std::underlying_type_t<Key>>;
+
+template <parameter_enum_key Key>
+class parameters_map_by;
+
 using parameter_value_assignment = parameter::assignment<parameter_value>;
 using parameter_midi_assignment = parameter::assignment<midi_assignment>;
 
 template <class Parameter>
-struct parameter_map_slot;
-using parameters_store = parameter::store<parameter_map_slot>;
+struct parameter_store_slot;
+using parameters_store = parameter::store<parameter_store_slot>;
 
 } // namespace piejam::runtime

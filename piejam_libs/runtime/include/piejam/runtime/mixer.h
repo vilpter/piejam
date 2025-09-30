@@ -67,35 +67,41 @@ struct channel
         solo,
     };
 
-    box<parameters_map_by<parameter_key>> parameters{};
+    box<parameters_map> parameters{};
 
     audio_stream_id out_stream{};
 
     auto operator==(channel const&) const noexcept -> bool = default;
 
+    auto parameters_view() const noexcept
+    {
+        return parameters_map_view<parameter_key>(*parameters);
+    }
+
     auto volume() const -> float_parameter_id
     {
-        return parameters->get<float_parameter_id>(parameter_key::volume);
+        return parameters_view().get<float_parameter_id>(parameter_key::volume);
     }
 
     auto pan_balance() const -> float_parameter_id
     {
-        return parameters->get<float_parameter_id>(parameter_key::pan_balance);
+        return parameters_view().get<float_parameter_id>(
+                parameter_key::pan_balance);
     }
 
     auto record() const -> bool_parameter_id
     {
-        return parameters->get<bool_parameter_id>(parameter_key::record);
+        return parameters_view().get<bool_parameter_id>(parameter_key::record);
     }
 
     auto mute() const -> bool_parameter_id
     {
-        return parameters->get<bool_parameter_id>(parameter_key::mute);
+        return parameters_view().get<bool_parameter_id>(parameter_key::mute);
     }
 
     auto solo() const -> bool_parameter_id
     {
-        return parameters->get<bool_parameter_id>(parameter_key::solo);
+        return parameters_view().get<bool_parameter_id>(parameter_key::solo);
     }
 };
 

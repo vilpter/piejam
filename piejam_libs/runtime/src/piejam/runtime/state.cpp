@@ -446,7 +446,7 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                     .name = name_id,
                     .color = color_id,
                     .parameters = box{parameters_map_by<
-                            mixer::channel::parameter_key>{
+                                              mixer::channel::parameter_key>{
                             {mixer::channel::parameter_key::volume,
                              params_factory.make_parameter(
                                      float_parameter{
@@ -493,7 +493,8 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                      bool_parameter{
                                              .name = box("Solo"s),
                                              .default_value = false})},
-                    }},
+                    }
+                                              .as_base()},
                     .out_stream = make_stream(st.streams, 2),
             });
     emplace_back(st.mixer_state.inputs, channel_id);

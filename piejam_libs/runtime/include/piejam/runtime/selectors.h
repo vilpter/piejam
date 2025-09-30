@@ -94,6 +94,8 @@ auto make_mixer_channel_type_selector(mixer::channel_id)
         -> selector<mixer::channel_type>;
 auto make_mixer_channel_color_selector(mixer::channel_id)
         -> selector<material_color>;
+auto make_mixer_channel_parameters_selector(mixer::channel_id)
+        -> selector<box<parameters_map>>;
 auto make_mixer_channel_volume_parameter_selector(mixer::channel_id)
         -> selector<float_parameter_id>;
 auto make_mixer_channel_pan_balance_parameter_selector(mixer::channel_id)

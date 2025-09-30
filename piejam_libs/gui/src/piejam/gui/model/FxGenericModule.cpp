@@ -28,10 +28,9 @@ FxGenericModule::FxGenericModule(
 {
     for (auto const& [key, paramId] : parameters())
     {
-        auto param = model::makeParameter(state_access, paramId);
         m_impl->parametersList.add(
                 m_impl->parametersList.size(),
-                std::move(param));
+                model::makeParameter(state_access, paramId));
     }
 }
 
