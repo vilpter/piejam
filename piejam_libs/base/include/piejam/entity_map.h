@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/box.h>
 #include <piejam/entity_id.h>
 #include <piejam/fwd.h>
 
@@ -14,13 +13,11 @@
 namespace piejam
 {
 
-template <class Entity, class Id>
+template <class Entity>
 class entity_map
 {
-    static constexpr bool foreign_id = !std::is_same_v<Id, entity_id<Entity>>;
-
 public:
-    using id_t = Id;
+    using id_t = entity_id<Entity>;
     using map_t = boost::container::flat_map<id_t, Entity>;
     using key_type = typename map_t::key_type;
     using mapped_type = typename map_t::mapped_type;
@@ -30,39 +27,37 @@ public:
     using iterator = typename map_t::iterator;
 
     [[nodiscard]]
-    auto empty() const noexcept
+    auto empty() const noexcept -> bool
     {
         return m_map.empty();
     }
 
     [[nodiscard]]
-    auto size() const noexcept
+    auto size() const noexcept -> size_type
     {
         return m_map.size();
     }
 
     [[nodiscard]]
-    auto begin() const noexcept
-    {
-        return m_map.begin();
-    }
-
-    // TODO: remove
-    [[nodiscard]]
-    auto begin() noexcept
+    auto begin() const noexcept -> const_iterator
     {
         return m_map.begin();
     }
 
     [[nodiscard]]
-    auto end() const noexcept
+    auto begin() noexcept -> iterator
+    {
+        return m_map.begin();
+    }
+
+    [[nodiscard]]
+    auto end() const noexcept -> const_iterator
     {
         return m_map.end();
     }
 
-    // TODO: remove
     [[nodiscard]]
-    auto end() noexcept
+    auto end() noexcept -> iterator
     {
         return m_map.end();
     }
@@ -74,14 +69,13 @@ public:
     }
 
     [[nodiscard]]
-    auto find(id_t id) const noexcept
+    auto find(id_t id) const noexcept -> const_iterator
     {
         return m_map.find(id);
     }
 
-    // TODO: remove
     [[nodiscard]]
-    auto find(id_t id) noexcept
+    auto find(id_t id) noexcept -> iterator
     {
         return m_map.find(id);
     }
@@ -89,7 +83,6 @@ public:
     template <class... Args>
     [[nodiscard]]
     auto emplace(Args&&... args) -> id_t
-        requires(!foreign_id)
     {
         auto id = id_t::generate();
         m_map.emplace_hint(
@@ -100,28 +93,9 @@ public:
         return id;
     }
 
-    template <class... Args>
-    auto emplace(id_t id, Args&&... args) -> bool
-        requires(foreign_id)
-    {
-        return m_map
-                .emplace(
-                        std::piecewise_construct,
-                        std::forward_as_tuple(id),
-                        std::forward_as_tuple(std::forward<Args>(args)...))
-                .second;
-    }
-
-    auto erase(id_t id) -> typename map_t::size_type
+    auto erase(id_t id) -> size_type
     {
         return m_map.erase(id);
-    }
-
-    // TODO remove
-    template <std::ranges::range RangeOfIds>
-    void erase(RangeOfIds&& ids)
-    {
-        m_map.erase(std::ranges::begin(ids), std::ranges::end(ids));
     }
 
     auto operator==(entity_map const&) const noexcept -> bool = default;

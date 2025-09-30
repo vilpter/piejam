@@ -127,7 +127,8 @@ struct state
 
     mixer::io_map io_map;
 
-    using aux_channels_t = boxed_map<entity_map<aux_channel, channel_id>>;
+    using aux_channels_t =
+            boxed_map<boost::container::flat_map<channel_id, aux_channel>>;
     aux_channels_t aux_channels;
 
     using fx_chains_t = entity_data_map<channel_id, box<fx::chain_t>>;

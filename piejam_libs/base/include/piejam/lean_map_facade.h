@@ -74,6 +74,14 @@ public:
 
     template <class Key>
     [[nodiscard]]
+    constexpr auto find(Key&& key) noexcept -> mapped_type*
+    {
+        auto it = m_map.find(std::forward<Key>(key));
+        return it != m_map.end() ? &it->second : nullptr;
+    }
+
+    template <class Key>
+    [[nodiscard]]
     constexpr auto at(Key&& key) const noexcept -> mapped_type const&
     {
         auto it = m_map.find(std::forward<Key>(key));

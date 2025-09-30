@@ -10,7 +10,7 @@ namespace piejam
 template <class EntityTag>
 struct entity_id;
 
-template <class Entity, class Id = entity_id<Entity>>
+template <class Entity>
 class entity_map;
 
 template <class Id, class Data>
@@ -24,5 +24,8 @@ class box;
 
 template <class Map>
 class boxed_map;
+
+template <class Map>
+class lean_map_facade;
 
 } // namespace piejam

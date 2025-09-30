@@ -89,6 +89,13 @@ public:
 
         template <class Key>
         [[nodiscard]]
+        auto find(Key&& key) -> mapped_type*
+        {
+            return m_locked->find(std::forward<Key>(key));
+        }
+
+        template <class Key>
+        [[nodiscard]]
         auto at(Key&& key) -> mapped_type&
         {
             return m_locked->at(std::forward<Key>(key));
@@ -104,16 +111,6 @@ public:
         auto erase(Key&& key)
         {
             return m_locked->erase(std::forward<Key>(key));
-        }
-
-        // TODO remove
-        template <std::ranges::range RangeOfKeys>
-        void erase(RangeOfKeys&& keys)
-        {
-            for (auto&& key : keys)
-            {
-                m_locked->erase(key);
-            }
         }
 
     private:
@@ -135,13 +132,6 @@ public:
     auto erase(Key&& id)
     {
         return lock().erase(id);
-    }
-
-    // TODO remove
-    template <std::ranges::range RangeOfIds>
-    void erase(RangeOfIds&& ids)
-    {
-        lock().erase(std::forward<RangeOfIds>(ids));
     }
 
     auto operator==(boxed_map const&) const noexcept -> bool = default;
