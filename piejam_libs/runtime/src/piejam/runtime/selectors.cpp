@@ -354,7 +354,7 @@ make_can_toggle_aux_send_selector(
 {
     auto get = memo([channel_id, aux_id](
                             mixer::channels_t const& channels,
-                            mixer::io_map const& io_map,
+                            mixer::io_map_t const& io_map,
                             mixer::aux_sends_t const& aux_sends,
                             parameters_store const& params) {
         return mixer::can_toggle_aux(
@@ -431,7 +431,7 @@ make_route_state_selector(mixer::io_address_t addr, io_direction io_socket)
                         else
                         {
                             return [id](state const& st) {
-                                auto addr = st.mixer_state.io_map.in().at(id);
+                                auto addr = st.mixer_state.io_map.at(id).in();
                                 return std::holds_alternative<mixer::mix_input>(
                                                addr)
                                                ? selected_route::state_t::valid
@@ -474,17 +474,17 @@ make_route_name_selector(mixer::io_address_t addr) -> selector<boxed_string>
 auto
 make_mixer_channel_selected_route_selector(
         mixer::channel_id const channel_id,
-        io_direction const io_socket) -> selector<selected_route>
+        io_direction const io_dir) -> selector<selected_route>
 {
-    return [io_socket,
+    return [io_dir,
             channel_id,
             get_state = memo(&make_route_state_selector),
             get_name = memo(&make_route_name_selector)](state const& st) {
-        auto addr = st.mixer_state.io_map[io_socket].at(channel_id);
+        auto addr = st.mixer_state.io_map.at(channel_id)[io_dir];
 
         selected_route result;
 
-        result.state = get_state(addr, io_socket)(st);
+        result.state = get_state(addr, io_dir)(st);
         result.name = get_name(addr)(st);
 
         return result;
@@ -545,7 +545,7 @@ make_mixer_channel_routes_selector(
     auto get_mixer_channel_routes =
             memo([channel_id, io_port](
                          mixer::channels_t const& channels,
-                         mixer::io_map const& io_map,
+                         mixer::io_map_t const& io_map,
                          mixer::aux_sends_t const& aux_sends,
                          parameters_store const& params) {
                 if (io_port == io_direction::input &&
@@ -661,7 +661,7 @@ struct muted_by_solo_state
 {
     muted_by_solo_state(
             mixer::channels_t const& channels,
-            mixer::io_map const& io_map,
+            mixer::io_map_t const& io_map,
             mixer::aux_sends_t const& aux_sends,
             parameters_store const& params) // non-null!
         : solo_groups{runtime::solo_groups(channels, io_map, aux_sends, params)}
@@ -705,7 +705,7 @@ struct muted_by_solo_state
 auto
 make_muted_by_solo_state(
         mixer::channels_t const& channels,
-        mixer::io_map const& io_map,
+        mixer::io_map_t const& io_map,
         mixer::aux_sends_t const& aux_sends,
         parameters_store const& params) -> box<muted_by_solo_state>
 {

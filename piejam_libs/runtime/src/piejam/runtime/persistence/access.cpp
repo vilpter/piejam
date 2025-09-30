@@ -295,9 +295,9 @@ export_mixer_channel(
     result.midi =
             export_midi_assignments(channel.parameters, st.midi_assignments);
     result.parameter = export_parameter_values(channel.parameters, st.params);
-    result.in = export_mixer_io(st, st.mixer_state.io_map.in().at(channel_id));
-    result.out =
-            export_mixer_io(st, st.mixer_state.io_map.out().at(channel_id));
+    auto const& io = st.mixer_state.io_map.at(channel_id);
+    result.in = export_mixer_io(st, io.in());
+    result.out = export_mixer_io(st, io.out());
     result.aux_sends = export_mixer_aux_sends(st, channel_id);
     return result;
 }

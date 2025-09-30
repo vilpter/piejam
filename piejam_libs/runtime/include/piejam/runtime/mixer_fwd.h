@@ -45,8 +45,8 @@ struct mix_input
 using io_address_t = std::
         variant<default_t, mix_input, external_audio::device_id, channel_id>;
 
-using io_map = io_pair<
-        boxed_map<boost::container::flat_map<channel_id, io_address_t>>>;
+using io_map_t = boxed_map<
+        boost::container::flat_map<channel_id, io_pair<io_address_t>>>;
 
 using channel_ids_t = std::vector<channel_id>;
 

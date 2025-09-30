@@ -145,10 +145,9 @@ apply_mixer_io(
         }
     };
 
-    mixer_state.io_map.in().lock().at(channel_id) =
-            find_route(in, io_direction::input);
-    mixer_state.io_map.out().lock().at(channel_id) =
-            find_route(out, io_direction::output);
+    mixer_state.io_map.lock().at(channel_id) = {
+            find_route(in, io_direction::input),
+            find_route(out, io_direction::output)};
 
     if (auto channel_aux_sends = mixer_state.aux_sends.find(channel_id))
     {

@@ -7,6 +7,8 @@
 #include <piejam/functional/get.h>
 #include <piejam/runtime/state.h>
 
+#include <boost/hof/compose.hpp>
+
 #include <iterator>
 
 namespace piejam::runtime::actions
@@ -23,15 +25,15 @@ add_mixer_channel::reduce(state& st) const
         for (auto device_id : *st.external_audio_state.io_ids.in())
         {
             auto it = std::ranges::find(
-                    st.mixer_state.io_map.in(),
+                    st.mixer_state.io_map,
                     mixer::io_address_t{device_id},
-                    get_by_index<1>);
+                    boost::hof::compose(get_by_index<0>, get_by_index<1>));
 
-            if (it == st.mixer_state.io_map.in().end() &&
+            if (it == st.mixer_state.io_map.end() &&
                 st.external_audio_state.devices.at(device_id).bus_type ==
                         to_bus_type(channel_type))
             {
-                st.mixer_state.io_map.in().lock().at(added_mixer_channel_id) =
+                st.mixer_state.io_map.lock().at(added_mixer_channel_id).in() =
                         device_id;
                 break;
             }
@@ -60,7 +62,7 @@ set_mixer_channel_route::reduce(state& st) const
                       mixer::channel_type::aux &&
               port == io_direction::input),
             "changing aux input is not allowed");
-    st.mixer_state.io_map[port].lock().at(channel_id) = route;
+    st.mixer_state.io_map.lock().at(channel_id)[port] = route;
 }
 
 void

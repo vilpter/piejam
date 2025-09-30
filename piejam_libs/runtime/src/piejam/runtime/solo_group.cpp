@@ -29,7 +29,7 @@ using channel_infos =
 auto
 gather_channel_infos(
         mixer::channels_t const& channels,
-        mixer::io_map const& io_map,
+        mixer::io_map_t const& io_map,
         mixer::aux_sends_t const& aux_sends,
         parameters_store const& params)
 {
@@ -43,7 +43,7 @@ gather_channel_infos(
             target_id)
         {
             if (std::holds_alternative<mixer::mix_input>(
-                        io_map.in().at(*target_id)))
+                        io_map.at(*target_id).in()))
             {
                 result[current].children.insert(*target_id);
                 result[*target_id].mixins.insert(current);
@@ -60,13 +60,13 @@ gather_channel_infos(
         info.solo_param = channel.solo();
 
         if (auto const* const in_id =
-                    std::get_if<mixer::channel_id>(&io_map.in().at(id));
+                    std::get_if<mixer::channel_id>(&io_map.at(id).in());
             in_id)
         {
             result[*in_id].children.insert(id);
         }
 
-        add(id, io_map.out().at(id));
+        add(id, io_map.at(id).out());
 
         if (auto const* const channel_aux_sends = aux_sends.find(id))
         {
@@ -108,7 +108,7 @@ gather_solo_group(
 auto
 solo_groups(
         mixer::channels_t const& channels,
-        mixer::io_map const& io_map,
+        mixer::io_map_t const& io_map,
         mixer::aux_sends_t const& aux_sends,
         parameters_store const& params) -> solo_groups_t
 {

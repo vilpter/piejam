@@ -33,7 +33,7 @@ using channels_io_t = boost::container::flat_map<channel_id, channel_io_t>;
 auto
 extract_channels_io(
         channels_t const& channels,
-        mixer::io_map const& io_map,
+        io_map_t const& io_map,
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> channels_io_t
 {
@@ -64,8 +64,8 @@ extract_channels_io(
                         id,
                         channel_io_t{
                                 .port =
-                                        {io_map.in().at(id),
-                                         io_map.out().at(id)},
+                                        {io_map.at(id).in(),
+                                         io_map.at(id).out()},
                                 .aux_sends = std::move(active_aux_sends)});
             }));
 
@@ -169,7 +169,7 @@ auto
 is_mix_input_valid(
         channel_id const ch_id,
         channels_t const& channels,
-        mixer::io_map const& io_map,
+        io_map_t const& io_map,
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> bool
 {
@@ -184,7 +184,7 @@ can_toggle_aux(
         channel_id const ch_id,
         channel_id const aux_id,
         channels_t const& channels,
-        mixer::io_map const& io_map,
+        io_map_t const& io_map,
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> bool
 {
@@ -216,7 +216,7 @@ valid_channels(
         channel_id const ch_id,
         io_direction const io_dir,
         channels_t const& channels,
-        mixer::io_map const& io_map,
+        io_map_t const& io_map,
         aux_sends_t const& aux_sends,
         parameters_store const& params) -> std::vector<channel_id>
 {

@@ -116,9 +116,9 @@ add_external_audio_device::reduce(state& st) const
     if (direction == io_direction::output)
     {
         if (std::holds_alternative<default_t>(
-                    st.mixer_state.io_map.out().at(st.mixer_state.main)))
+                    st.mixer_state.io_map.at(st.mixer_state.main).out()))
         {
-            st.mixer_state.io_map.out().lock().at(st.mixer_state.main) =
+            st.mixer_state.io_map.lock().at(st.mixer_state.main).out() =
                     added_device_id;
         }
     }

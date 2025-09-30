@@ -85,9 +85,8 @@ make_initial_state() -> state
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
 
     // reset io
-    st.mixer_state.io_map.in().lock().at(st.mixer_state.main) =
-            mixer::mix_input{};
-    st.mixer_state.io_map.out().lock().at(st.mixer_state.main) = default_t{};
+    st.mixer_state.io_map.lock().at(
+            st.mixer_state.main) = {mixer::mix_input{}, default_t{}};
 
     // enable record on main
     st.params[st.mixer_state.channels.at(st.mixer_state.main).record()]
@@ -499,12 +498,14 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
             });
     emplace_back(st.mixer_state.inputs, channel_id);
 
-    st.mixer_state.io_map.in().emplace(
-            channel_id,
-            type == mixer::channel_type::aux
-                    ? mixer::io_address_t{mixer::mix_input{}}
-                    : mixer::io_address_t{});
-    st.mixer_state.io_map.out().emplace(channel_id, st.mixer_state.main);
+    st.mixer_state.io_map.emplace(
+            std::piecewise_construct,
+            std::forward_as_tuple(channel_id),
+            std::forward_as_tuple(
+                    type == mixer::channel_type::aux
+                            ? mixer::io_address_t{mixer::mix_input{}}
+                            : mixer::io_address_t{},
+                    st.mixer_state.main));
 
     if (type == mixer::channel_type::aux)
     {
@@ -540,16 +541,16 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
 }
 
 static void
-reset_io_targets(mixer::io_map& io_map, mixer::io_address_t target)
+reset_io_targets(mixer::io_map_t& io_map, mixer::io_address_t target)
 {
-    for (auto& id_addr_map : io_map)
+    auto io_map_locked = io_map.lock();
+    for (auto& [id, io] : io_map_locked)
     {
-        auto id_addr_map_locked = id_addr_map.lock();
-        for (auto&& [id, addr] : id_addr_map)
+        for (auto& addr : io)
         {
             if (addr == target)
             {
-                id_addr_map_locked.at(id) = default_t{};
+                addr = default_t{};
             }
         }
     }
@@ -614,11 +615,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     st.streams.erase(mixer_channel.out_stream);
 
     reset_io_targets(st.mixer_state.io_map, mixer_channel_id);
-
-    for (auto& io_dir_map : st.mixer_state.io_map)
-    {
-        io_dir_map.erase(mixer_channel_id);
-    }
+    st.mixer_state.io_map.erase(mixer_channel_id);
 
     st.mixer_state.fx_chains.erase(mixer_channel_id);
 

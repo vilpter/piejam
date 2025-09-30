@@ -125,7 +125,7 @@ make_mixer_components(
     {
         mixer_input_key const in_key{
                 .channel_id = mixer_channel_id,
-                .route = mixer_state.io_map.in().at(mixer_channel_id)};
+                .route = mixer_state.io_map.at(mixer_channel_id).in()};
         if (auto comp = prev_comps.find(in_key))
         {
             comps.insert(in_key, std::move(comp));
@@ -400,7 +400,7 @@ connect_mixer_input(
                                 mixer_channel_in);
                     },
                     [](auto const&) {}),
-            mixer_state.io_map.in().at(mixer_channel_id));
+            mixer_state.io_map.at(mixer_channel_id).in());
 }
 
 void
@@ -454,7 +454,7 @@ connect_mixer_output(
                     },
                     [&](mixer::channel_id const dst_channel_id) {
                         auto const& dst_channel_in =
-                                mixer_state.io_map.in().at(dst_channel_id);
+                                mixer_state.io_map.at(dst_channel_id).in();
 
                         if (std::holds_alternative<mixer::mix_input>(
                                     dst_channel_in))
@@ -494,7 +494,7 @@ make_graph(
                 comps
                         .find(mixer_input_key{
                                 mixer_channel_id,
-                                mixer_state.io_map.in().at(mixer_channel_id)})
+                                mixer_state.io_map.at(mixer_channel_id).in()})
                         .get();
         audio::engine::component* const mixer_channel_out =
                 comps.find(mixer_output_key{mixer_channel_id}).get();
@@ -528,7 +528,7 @@ make_graph(
                 comps,
                 output_procs,
                 output_clip_procs,
-                mixer_state.io_map.out().at(mixer_channel_id),
+                mixer_state.io_map.at(mixer_channel_id).out(),
                 *mixer_channel_out);
 
         if (auto const* const channel_aux_sends =
