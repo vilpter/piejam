@@ -19,8 +19,6 @@ auto
 enum_parameter(
         std::string name,
         int_parameter::value_to_string_fn value_to_string,
-        bool midi_assignable = true,
-        bool audio_graph_affecting = false,
         T _default = T::_default,
         T _min = T::_min,
         T _max = T::_max) -> int_parameter
@@ -31,8 +29,6 @@ enum_parameter(
             .min = std::to_underlying(_min),
             .max = std::to_underlying(_max),
             .value_to_string = value_to_string,
-            .midi_assignable = midi_assignable,
-            .audio_graph_affecting = audio_graph_affecting,
     };
 }
 

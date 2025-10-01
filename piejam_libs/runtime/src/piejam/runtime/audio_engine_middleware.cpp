@@ -348,7 +348,8 @@ audio_engine_middleware::process_engine_action(
     mw_fs.next(a);
 
     state const& st = mw_fs.get_state();
-    if (st.params[a.id].param.audio_graph_affecting)
+    if (st.params[a.id].param.flags.test(
+                parameter_flags::audio_graph_affecting))
     {
         rebuild(st);
     }

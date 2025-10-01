@@ -4,12 +4,14 @@
 
 #pragma once
 
+#include <piejam/runtime/parameter/flags.h>
+
 #include <piejam/boxed_string.h>
 
 namespace piejam::runtime::parameter
 {
 
-inline auto
+constexpr auto
 default_bool_to_string(bool x) -> std::string
 {
     using namespace std::string_literals;
@@ -27,8 +29,20 @@ struct bool_descriptor
 
     value_to_string_fn value_to_string{&default_bool_to_string};
 
-    bool midi_assignable{true};
-    bool audio_graph_affecting{false};
+    flags_set flags{};
+
+    constexpr auto set_flags(flags_set flags) & -> bool_descriptor&
+    {
+        this->flags = flags;
+        return *this;
+    }
+
+    [[nodiscard]]
+    constexpr auto set_flags(flags_set flags) && -> bool_descriptor&&
+    {
+        this->flags = flags;
+        return std::move(*this);
+    }
 };
 
 } // namespace piejam::runtime::parameter

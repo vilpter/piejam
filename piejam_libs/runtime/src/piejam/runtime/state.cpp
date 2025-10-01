@@ -351,15 +351,17 @@ make_aux_send(
                                     .name = box{"Active"s},
                                     .default_value = false,
                                     .value_to_string =
-                                            &parameter::default_bool_to_string,
-                                    .midi_assignable = false,
-                                    .audio_graph_affecting = true}),
+                                            &parameter::default_bool_to_string}
+                                    .set_flags(
+                                            {parameter_flags::
+                                                     audio_graph_affecting})),
                     .fader_tap = ui_params_factory.make_parameter(
                             enum_parameter<mixer::aux_send_fader_tap>(
                                     "Fader Tap",
-                                    &mixer::aux_send::to_fader_tap_string,
-                                    false /* midi_assignable */,
-                                    true /* routing */)),
+                                    &mixer::aux_send::to_fader_tap_string)
+                                    .set_flags(
+                                            {parameter_flags::
+                                                     audio_graph_affecting})),
                     .volume = ui_params_factory.make_parameter(
                             float_parameter{
                                     .name = box("Send"s),
@@ -517,9 +519,10 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                 enum_parameter<mixer::aux_channel_fader_tap>(
                                         "Fader Tap"s,
                                         &mixer::aux_channel::
-                                                to_fader_tap_string,
-                                        false /* midi_assignable */,
-                                        true /* routing */))});
+                                                to_fader_tap_string)
+                                        .set_flags(
+                                                {parameter_flags::
+                                                         audio_graph_affecting}))});
 
         // add as aux_send to each channel
         [&](auto&& aux_sends) {

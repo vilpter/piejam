@@ -100,16 +100,12 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                      runtime::enum_parameter(
                                              "Channel A"s,
                                              &to_stereo_channel_string,
-                                             true /* midi_assignable */,
-                                             false /* routing */,
                                              stereo_channel::left))},
                             {parameter_key::channel_b,
                              params_factory.make_parameter(
                                      runtime::enum_parameter(
                                              "Channel B"s,
                                              &to_stereo_channel_string,
-                                             true /* midi_assignable */,
-                                             false /* routing */,
                                              stereo_channel::right))},
                             {parameter_key::gain_a,
                              params_factory.make_parameter(

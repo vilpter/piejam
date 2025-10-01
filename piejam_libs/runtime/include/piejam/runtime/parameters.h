@@ -75,4 +75,9 @@ template <class Parameter>
 struct parameter_store_slot;
 using parameters_store = parameter::store<parameter_store_slot>;
 
+enum class parameter_flags : std::size_t
+{
+    audio_graph_affecting,
+};
+
 } // namespace piejam::runtime

@@ -4,12 +4,20 @@
 
 #pragma once
 
+#include <piejam/runtime/parameter/flags.h>
+
 #include <piejam/boxed_string.h>
 
 #include <format>
 
 namespace piejam::runtime::parameter
 {
+
+inline auto
+default_float_to_string(float x) -> std::string
+{
+    return std::format("{:.2f}", x);
+}
 
 struct float_descriptor
 {
@@ -28,15 +36,26 @@ struct float_descriptor
 
     value_type bipolar{};
 
-    value_to_string_fn value_to_string{
-            [](value_type x) { return std::format("{:.2f}", x); }};
+    value_to_string_fn value_to_string{&default_float_to_string};
 
     to_normalized_f to_normalized{[](auto const&, value_type x) { return x; }};
     from_normalized_f from_normalized{
             [](auto const&, value_type x) { return x; }};
 
-    bool midi_assignable{true};
-    bool audio_graph_affecting{false};
+    flags_set flags{};
+
+    constexpr auto set_flags(flags_set flags) & -> float_descriptor&
+    {
+        this->flags = flags;
+        return *this;
+    }
+
+    [[nodiscard]]
+    constexpr auto set_flags(flags_set flags) && -> float_descriptor&&
+    {
+        this->flags = flags;
+        return std::move(*this);
+    }
 };
 
 } // namespace piejam::runtime::parameter
