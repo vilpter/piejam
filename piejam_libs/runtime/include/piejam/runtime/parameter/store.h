@@ -4,14 +4,17 @@
 
 #pragma once
 
+#include <piejam/runtime/parameter/bool_descriptor.h>
+#include <piejam/runtime/parameter/float_descriptor.h>
 #include <piejam/runtime/parameter/fwd.h>
+#include <piejam/runtime/parameter/int_descriptor.h>
 
 #include <piejam/lean_map_facade.h>
 
 #include <boost/container/flat_map.hpp>
 
 #include <memory>
-#include <typeindex>
+#include <tuple>
 
 namespace piejam::runtime::parameter
 {
@@ -36,24 +39,27 @@ public:
         {
         }
 
+        [[nodiscard]]
         auto param() const noexcept -> Parameter const&
         {
             return m_param;
         }
 
+        [[nodiscard]]
         auto get() const noexcept -> value_type
         {
             return *m_value;
         }
 
-        void set(value_type value) noexcept
-        {
-            *m_value = value;
-        }
-
+        [[nodiscard]]
         auto cached() const noexcept -> cached_type
         {
             return m_value;
+        }
+
+        void set(value_type value) noexcept
+        {
+            *m_value = value;
         }
 
         auto operator==(slot const& other) const noexcept -> bool
@@ -118,29 +124,24 @@ private:
     template <class P>
     using map_t = lean_map_facade<boost::container::flat_map<id_t<P>, slot<P>>>;
 
+    using maps_t = std::tuple<
+            map_t<bool_descriptor>,
+            map_t<float_descriptor>,
+            map_t<int_descriptor>>;
+
     template <class P>
     auto get_map() const -> map_t<P> const&
     {
-        return *static_cast<map_t<P> const*>(m_maps.at(typeid(P)).get());
+        return std::get<map_t<P>>(*m_maps);
     }
 
     template <class P>
     auto get_map() -> map_t<P>&
     {
-        auto it = m_maps.find(typeid(P));
-
-        if (it == m_maps.end()) [[unlikely]]
-        {
-            it = m_maps.emplace(
-                               std::type_index{typeid(P)},
-                               std::make_shared<map_t<P>>())
-                         .first;
-        }
-
-        return *static_cast<map_t<P>*>(it->second.get());
+        return std::get<map_t<P>>(*m_maps);
     }
 
-    boost::container::flat_map<std::type_index, std::shared_ptr<void>> m_maps;
+    std::shared_ptr<maps_t> m_maps{std::make_shared<maps_t>()};
 };
 
 } // namespace piejam::runtime::parameter
