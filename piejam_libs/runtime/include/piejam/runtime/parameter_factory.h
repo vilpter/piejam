@@ -9,46 +9,27 @@
 
 #include <boost/container/flat_map.hpp>
 
-#include <tuple>
-
 namespace piejam::runtime
 {
 
-template <template <class> class... Slot>
 class parameter_factory
 {
 public:
-    explicit parameter_factory(
-            parameters_store& params,
-            parameter::store<Slot>&... aux_param_maps)
+    explicit parameter_factory(parameters_store& params)
         : m_params{params}
-        , m_aux_param_maps{std::forward_as_tuple(aux_param_maps...)}
     {
     }
 
-    template <class P, class... Vs>
-    auto make_parameter(P&& param, Vs&&... aux_value) const
+    template <class P>
+    auto make_parameter(P&& param) const
     {
         auto param_id = parameter::id_t<P>::generate();
         m_params.emplace(param_id, std::forward<P>(param));
-        std::apply(
-                [&](auto&&... aux_map) {
-                    (aux_map.emplace(
-                             param_id,
-                             Slot<P>{std::forward<Vs>(aux_value)}),
-                     ...);
-                },
-                m_aux_param_maps);
         return param_id;
     }
 
 private:
     parameters_store& m_params;
-    std::tuple<parameter::store<Slot>&...> m_aux_param_maps;
 };
-
-template <template <class> class... Value>
-parameter_factory(parameters_store&, parameter::store<Value>&...)
-        -> parameter_factory<Value...>;
 
 } // namespace piejam::runtime
