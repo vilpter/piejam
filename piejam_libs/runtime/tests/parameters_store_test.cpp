@@ -25,7 +25,7 @@ TEST(parameters_store, add_default_get)
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
 
-    EXPECT_EQ(1.f, sut[id].value.get());
+    EXPECT_EQ(1.f, sut.at(id).value.get());
 }
 
 TEST(parameters_store, add_remove)
@@ -74,8 +74,8 @@ TEST(parameters_store, set_value)
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
 
-    sut[id].value.set(2.f);
-    EXPECT_EQ(2.f, sut[id].value.get());
+    sut.at(id).value.set(2.f);
+    EXPECT_EQ(2.f, sut.at(id).value.get());
 }
 
 TEST(parameters_store, cached_is_updated_after_set)
@@ -85,11 +85,11 @@ TEST(parameters_store, cached_is_updated_after_set)
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id);
 
-    auto cached = sut[id].value.cached();
+    auto cached = sut.at(id).value.cached();
     ASSERT_NE(nullptr, cached);
     EXPECT_EQ(1.f, *cached);
 
-    sut[id].value.set(2.f);
+    sut.at(id).value.set(2.f);
 
     EXPECT_EQ(2.f, *cached);
 }

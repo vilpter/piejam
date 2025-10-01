@@ -34,7 +34,7 @@ template <class Parameter>
 void
 set_parameter_value<Parameter>::reduce(state& st) const
 {
-    auto& desc = st.params[id];
+    auto& desc = st.params.at(id);
     BOOST_ASSERT(parameter_value_is_in_range(desc.param, value));
     desc.value.set(value);
 }
@@ -54,7 +54,7 @@ reset_parameter_to_default_value(parameter_id param_id) -> thunk_action
                     dispatch(
                             set_parameter_value{
                                     typed_param_id,
-                                    st.params[typed_param_id]
+                                    st.params.at(typed_param_id)
                                             .param.default_value});
                 },
                 param_id);
@@ -68,7 +68,7 @@ set_float_parameter_normalized(
 {
     return [=](auto const& get_state, auto const& dispatch) {
         state const& st = get_state();
-        float_parameter const& param = st.params[param_id].param;
+        float_parameter const& param = st.params.at(param_id).param;
         dispatch(
                 set_float_parameter{
                         param_id,

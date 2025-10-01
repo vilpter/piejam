@@ -159,10 +159,11 @@ apply_mixer_io(
             {
                 if (auto aux_send = channel_aux_sends->find(*route))
                 {
-                    params[aux_send->active].value.set(aux_send_data.enabled);
-                    params[aux_send->fader_tap].value.set(
-                            aux_send_data.fader_tap);
-                    params[aux_send->volume].value.set(aux_send_data.volume);
+                    params.at(aux_send->active)
+                            .value.set(aux_send_data.enabled);
+                    params.at(aux_send->fader_tap)
+                            .value.set(aux_send_data.fader_tap);
+                    params.at(aux_send->volume).value.set(aux_send_data.volume);
                 }
             }
         }
@@ -185,8 +186,8 @@ apply_aux_channels(
             if (auto aux_channel = mixer_state.aux_channels.find(*aux_id);
                 aux_channel)
             {
-                params[aux_channel->default_fader_tap].value.set(
-                        aux_channel_data.fader_tap);
+                params.at(aux_channel->default_fader_tap)
+                        .value.set(aux_channel_data.fader_tap);
             }
         }
     }

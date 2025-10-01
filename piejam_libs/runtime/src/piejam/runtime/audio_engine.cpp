@@ -159,7 +159,7 @@ make_mixer_components(
         {
             for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                if (!params[aux_send.active].value.get())
+                if (!params.at(aux_send.active).value.get())
                 {
                     continue;
                 }
@@ -212,7 +212,7 @@ make_fx_chain_components(
             [&params](parameter_id param_id) -> std::string_view {
         return std::visit(
                 [&](auto typed_param_id) -> std::string_view {
-                    return *params[typed_param_id].param.name;
+                    return *params.at(typed_param_id).param.name;
                 },
                 param_id);
     };
@@ -286,7 +286,7 @@ make_midi_assignment_processors(
     {
         std::visit(
                 [&]<class ParamId>(ParamId const typed_param_id) {
-                    auto const& param = params[typed_param_id].param;
+                    auto const& param = params.at(typed_param_id).param;
 
                     std::tuple const proc_id{typed_param_id, assignment};
                     if (auto proc = prev_procs.find(proc_id))
@@ -546,11 +546,11 @@ make_graph(
 
                     auto aux_send_fader_tap =
                             static_cast<mixer::aux_send_fader_tap>(
-                                    params[aux_send.fader_tap].value.get());
+                                    params.at(aux_send.fader_tap).value.get());
                     auto aux_channel_fader_tap =
                             static_cast<mixer::aux_channel_fader_tap>(
-                                    params[mixer_state.aux_channels.at(aux)
-                                                   .default_fader_tap]
+                                    params.at(mixer_state.aux_channels.at(aux)
+                                                      .default_fader_tap)
                                             .value.get());
 
                     auto const [out_L, out_R] = [&]() {

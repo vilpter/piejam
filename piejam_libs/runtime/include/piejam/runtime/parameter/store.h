@@ -85,7 +85,7 @@ public:
     }
 
     template <class P>
-    auto operator[](id_t<P> const id) const noexcept -> Slot<P> const&
+    auto at(id_t<P> const id) const noexcept -> Slot<P> const&
     {
         auto const& m = get_map<P>();
         auto it = m.find(id);
@@ -94,7 +94,7 @@ public:
     }
 
     template <class P>
-    auto operator[](id_t<P> const id) noexcept -> Slot<P>&
+    auto at(id_t<P> const id) noexcept -> Slot<P>&
     {
         auto& m = get_map<P>();
         auto it = m.find(id);

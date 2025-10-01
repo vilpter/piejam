@@ -89,7 +89,7 @@ make_initial_state() -> state
             st.mixer_state.main) = {mixer::mix_input{}, default_t{}};
 
     // enable record on main
-    st.params[st.mixer_state.channels.at(st.mixer_state.main).record()]
+    st.params.at(st.mixer_state.channels.at(st.mixer_state.main).record())
             .value.set(true);
     return st;
 }
@@ -116,7 +116,7 @@ apply_parameter_values(
                             [&params_store]<class P>(
                                     parameter::id_t<P> id,
                                     parameter::value_type_t<P> v) {
-                                params_store[id].value.set(v);
+                                params_store.at(id).value.set(v);
                             },
                             [](auto&&, auto&&) { BOOST_ASSERT(false); }),
                     param_id,

@@ -14,13 +14,13 @@
 namespace piejam::runtime
 {
 
-template <template <class> class... Value>
+template <template <class> class... Slot>
 class parameter_factory
 {
 public:
     explicit parameter_factory(
             parameters_store& params,
-            parameter::store<Value>&... aux_param_maps)
+            parameter::store<Slot>&... aux_param_maps)
         : m_params{params}
         , m_aux_param_maps{std::forward_as_tuple(aux_param_maps...)}
     {
@@ -35,7 +35,7 @@ public:
                 [&](auto&&... aux_map) {
                     (aux_map.emplace(
                              param_id,
-                             Value<P>{std::forward<Vs>(aux_value)}),
+                             Slot<P>{std::forward<Vs>(aux_value)}),
                      ...);
                 },
                 m_aux_param_maps);
@@ -44,7 +44,7 @@ public:
 
 private:
     parameters_store& m_params;
-    std::tuple<parameter::store<Value>&...> m_aux_param_maps;
+    std::tuple<parameter::store<Slot>&...> m_aux_param_maps;
 };
 
 template <template <class> class... Value>

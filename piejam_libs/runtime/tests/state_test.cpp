@@ -32,23 +32,23 @@ TEST_F(state_with_one_mixer_input, after_add_mixer_channel)
 
     EXPECT_EQ("foo", *sut.strings[channel.name]);
 
-    auto const& volume_param = sut.params[channel.volume()].param;
+    auto const& volume_param = sut.params.at(channel.volume()).param;
     EXPECT_EQ(1.f, volume_param.default_value);
     EXPECT_EQ(0.f, volume_param.min);
     EXPECT_EQ(numeric::from_dB(6.f), volume_param.max);
-    auto volume_value = sut.params[channel.volume()].value.get();
+    auto volume_value = sut.params.at(channel.volume()).value.get();
     EXPECT_EQ(1.f, volume_value);
 
-    auto const& pan_balance_param = sut.params[channel.pan_balance()].param;
+    auto const& pan_balance_param = sut.params.at(channel.pan_balance()).param;
     EXPECT_EQ(0.f, pan_balance_param.default_value);
     EXPECT_EQ(-1.f, pan_balance_param.min);
     EXPECT_EQ(1.f, pan_balance_param.max);
-    auto pan_balance_value = sut.params[channel.pan_balance()].value.get();
+    auto pan_balance_value = sut.params.at(channel.pan_balance()).value.get();
     EXPECT_EQ(0.f, pan_balance_value);
 
-    auto const& mute_param = sut.params[channel.mute()].param;
+    auto const& mute_param = sut.params.at(channel.mute()).param;
     EXPECT_EQ(false, mute_param.default_value);
-    auto mute_value = sut.params[channel.mute()].value.get();
+    auto mute_value = sut.params.at(channel.mute()).value.get();
     EXPECT_EQ(false, mute_value);
 }
 

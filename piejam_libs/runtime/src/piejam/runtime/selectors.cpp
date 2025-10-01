@@ -874,7 +874,7 @@ make_fx_parameter_value_string_selector(parameter_id const fx_param_id)
                                state const& st) mutable {
                     if (!cached_value || !value_to_string) [[unlikely]]
                     {
-                        auto const& slot = st.params[param_id];
+                        auto const& slot = st.params.at(param_id);
 
                         cached_value = slot.value.cached();
                         BOOST_ASSERT(cached_value);
@@ -1039,7 +1039,7 @@ make_parameter_is_midi_assignable_selector(parameter_id param_id)
     return std::visit(
             [](auto const id) -> selector<bool> {
                 return [id](state const& st) -> bool {
-                    return !st.params[id].param.flags.test(
+                    return !st.params.at(id).param.flags.test(
                             parameter_flags::audio_graph_affecting);
                 };
             },
