@@ -34,7 +34,7 @@ struct float_descriptor
     value_type min{};
     value_type max{1.f};
 
-    value_type bipolar{};
+    bool bipolar{};
 
     value_to_string_fn value_to_string{&default_float_to_string};
 
@@ -43,6 +43,8 @@ struct float_descriptor
             [](auto const&, value_type x) { return x; }};
 
     flags_set flags{};
+
+    auto operator==(float_descriptor const&) const noexcept -> bool = default;
 
     constexpr auto set_flags(flags_set flags) & -> float_descriptor&
     {

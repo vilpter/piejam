@@ -32,7 +32,6 @@ using parameter_processor_factory = boost::mp11::mp_rename<
         boost::mp11::mp_map_keys<parameters_fwd_t>,
         processors::parameter_processor_factory>;
 
-template <template <class> class... Value>
 class parameter_factory;
 
 struct midi_device_config;

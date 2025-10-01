@@ -16,6 +16,9 @@ struct float_parameter
     using value_type = float;
 
     float default_value{1.f};
+
+    constexpr auto operator==(float_parameter const&) const noexcept
+            -> bool = default;
 };
 
 TEST(parameters_store, add_default_get)
@@ -23,7 +26,7 @@ TEST(parameters_store, add_default_get)
     parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
-    sut.emplace(id);
+    sut.emplace(id, {});
 
     EXPECT_EQ(1.f, sut.at(id).value.get());
 }
@@ -33,7 +36,7 @@ TEST(parameters_store, add_remove)
     parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
-    sut.emplace(id);
+    sut.emplace(id, {});
     ASSERT_TRUE(sut.contains(id));
     sut.remove(id);
 
@@ -45,7 +48,7 @@ TEST(parameters_store, get_existing_parameter)
     parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
-    sut.emplace(id);
+    sut.emplace(id, {});
     EXPECT_NE(nullptr, sut.find(id));
 }
 
@@ -61,7 +64,7 @@ TEST(parameters_store, get_cached_for_existing_parameter)
     parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
-    sut.emplace(id);
+    sut.emplace(id, {});
     auto desc = sut.find(id);
     ASSERT_NE(nullptr, desc);
     EXPECT_EQ(1.f, *desc->value.cached());
@@ -72,7 +75,7 @@ TEST(parameters_store, set_value)
     parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
-    sut.emplace(id);
+    sut.emplace(id, {});
 
     sut.at(id).value.set(2.f);
     EXPECT_EQ(2.f, sut.at(id).value.get());
@@ -83,7 +86,7 @@ TEST(parameters_store, cached_is_updated_after_set)
     parameters_store sut;
 
     auto id = id_t<float_parameter>::generate();
-    sut.emplace(id);
+    sut.emplace(id, {});
 
     auto cached = sut.at(id).value.cached();
     ASSERT_NE(nullptr, cached);
@@ -99,13 +102,13 @@ TEST(parameters_store, equality)
     parameters_store m1;
 
     auto id = id_t<float_parameter>::generate();
-    m1.emplace(id);
+    m1.emplace(id, {});
 
     EXPECT_EQ(m1, m1);
 
     parameters_store m2;
 
-    m2.emplace(id);
+    m2.emplace(id, {});
 
     EXPECT_NE(m1, m2);
 

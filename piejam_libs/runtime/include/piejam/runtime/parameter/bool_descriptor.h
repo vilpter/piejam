@@ -31,6 +31,8 @@ struct bool_descriptor
 
     flags_set flags{};
 
+    auto operator==(bool_descriptor const&) const noexcept -> bool = default;
+
     constexpr auto set_flags(flags_set flags) & -> bool_descriptor&
     {
         this->flags = flags;

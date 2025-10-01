@@ -6,6 +6,8 @@
 
 #include <piejam/runtime/parameter/fwd.h>
 
+#include <piejam/lean_map_facade.h>
+
 #include <boost/container/flat_map.hpp>
 
 #include <memory>
@@ -19,7 +21,7 @@ class store
 {
 public:
     template <class P>
-    using map_t = boost::container::flat_map<id_t<P>, Slot<P>>;
+    using map_t = lean_map_facade<boost::container::flat_map<id_t<P>, Slot<P>>>;
 
     template <class P>
     auto get_map() const -> map_t<P> const&
@@ -43,17 +45,11 @@ public:
         return *static_cast<map_t<P>*>(it->second.get());
     }
 
-    template <class P, class... Args>
-    auto emplace(id_t<P> const id, Args&&... args)
+    template <class P>
+    auto emplace(id_t<P> const id, P&& param)
     {
         return BOOST_VERIFY(
-                get_map<P>()
-                        .emplace(
-                                std::piecewise_construct,
-                                std::forward_as_tuple(id),
-                                std::forward_as_tuple(
-                                        std::forward<Args>(args)...))
-                        .second);
+                get_map<P>().emplace(id, std::forward<P>(param)).second);
     }
 
     template <class P>
@@ -71,35 +67,25 @@ public:
     template <class P>
     auto find(id_t<P> const id) const noexcept -> Slot<P> const*
     {
-        auto const& m = get_map<P>();
-        auto it = m.find(id);
-        return it != m.end() ? &it->second : nullptr;
+        return get_map<P>().find(id);
     }
 
     template <class P>
     auto find(id_t<P> const id) noexcept -> Slot<P>*
     {
-        auto& m = get_map<P>();
-        auto it = m.find(id);
-        return it != m.end() ? &it->second : nullptr;
+        return get_map<P>().find(id);
     }
 
     template <class P>
     auto at(id_t<P> const id) const noexcept -> Slot<P> const&
     {
-        auto const& m = get_map<P>();
-        auto it = m.find(id);
-        BOOST_ASSERT(it != m.end());
-        return it->second;
+        return get_map<P>().at(id);
     }
 
     template <class P>
     auto at(id_t<P> const id) noexcept -> Slot<P>&
     {
-        auto& m = get_map<P>();
-        auto it = m.find(id);
-        BOOST_ASSERT(it != m.end());
-        return it->second;
+        return get_map<P>().at(id);
     }
 
     auto operator==(store const& other) const noexcept -> bool = default;
