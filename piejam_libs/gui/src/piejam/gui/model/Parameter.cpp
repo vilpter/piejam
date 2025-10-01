@@ -37,7 +37,7 @@ Parameter::Parameter(
     , m_paramId{paramId}
 {
     setName(QString::fromStdString(observe_once(
-            runtime::selectors::make_fx_parameter_name_selector(m_paramId))));
+            runtime::selectors::make_parameter_name_selector(m_paramId))));
 
     if (observe_once(
                 runtime::selectors::make_parameter_is_midi_assignable_selector(

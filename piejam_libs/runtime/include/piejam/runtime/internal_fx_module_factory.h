@@ -17,7 +17,7 @@ struct internal_fx_module_factory_args
 {
     audio::bus_type bus_type;
     audio::sample_rate sample_rate;
-    parameters_store& params;
+    parameter::store& params;
     audio_streams_t& streams;
 };
 

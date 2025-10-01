@@ -20,7 +20,7 @@ audio_engine_sync_update::reduce(state& st) const
     boost::mp11::tuple_for_each(values, [&st](auto const& id_value_pairs) {
         for (auto const& [id, value] : id_value_pairs)
         {
-            st.params.at(id).value.set(value);
+            st.params.at(id).set(value);
         }
     });
 

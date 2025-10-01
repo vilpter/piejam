@@ -5,7 +5,7 @@
 #pragma once
 
 #include <piejam/runtime/fwd.h>
-#include <piejam/runtime/parameters_store.h>
+#include <piejam/runtime/parameter/store.h>
 
 #include <boost/container/flat_map.hpp>
 
@@ -15,7 +15,7 @@ namespace piejam::runtime
 class parameter_factory
 {
 public:
-    explicit parameter_factory(parameters_store& params)
+    explicit parameter_factory(parameter::store& params)
         : m_params{params}
     {
     }
@@ -29,7 +29,7 @@ public:
     }
 
 private:
-    parameters_store& m_params;
+    parameter::store& m_params;
 };
 
 } // namespace piejam::runtime

@@ -141,14 +141,14 @@ auto is_mix_input_valid(
         channel_id,
         io_map_t const&,
         aux_sends_t const&,
-        parameters_store const&) -> bool;
+        parameter::store const&) -> bool;
 
 auto can_toggle_aux(
         channel_id,
         channel_id aux_id,
         io_map_t const&,
         aux_sends_t const&,
-        parameters_store const&) -> bool;
+        parameter::store const&) -> bool;
 
 auto valid_channels(
         channel_id,
@@ -156,6 +156,6 @@ auto valid_channels(
         channels_t const&,
         io_map_t const&,
         aux_sends_t const&,
-        parameters_store const&) -> std::vector<channel_id>;
+        parameter::store const&) -> std::vector<channel_id>;
 
 } // namespace piejam::runtime::mixer

@@ -71,10 +71,6 @@ class parameters_map_by;
 using parameter_value_assignment = parameter::assignment<parameter_value>;
 using parameter_midi_assignment = parameter::assignment<midi_assignment>;
 
-template <class Parameter>
-struct parameter_store_slot;
-using parameters_store = parameter::store<parameter_store_slot>;
-
 enum class parameter_flags : std::size_t
 {
     audio_graph_affecting,

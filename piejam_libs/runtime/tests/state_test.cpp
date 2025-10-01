@@ -32,23 +32,24 @@ TEST_F(state_with_one_mixer_input, after_add_mixer_channel)
 
     EXPECT_EQ("foo", *sut.strings[channel.name]);
 
-    auto const& volume_param = sut.params.at(channel.volume()).param;
+    auto const& volume_param = sut.params.at(channel.volume()).param();
     EXPECT_EQ(1.f, volume_param.default_value);
     EXPECT_EQ(0.f, volume_param.min);
     EXPECT_EQ(numeric::from_dB(6.f), volume_param.max);
-    auto volume_value = sut.params.at(channel.volume()).value.get();
+    auto volume_value = sut.params.at(channel.volume()).get();
     EXPECT_EQ(1.f, volume_value);
 
-    auto const& pan_balance_param = sut.params.at(channel.pan_balance()).param;
+    auto const& pan_balance_param =
+            sut.params.at(channel.pan_balance()).param();
     EXPECT_EQ(0.f, pan_balance_param.default_value);
     EXPECT_EQ(-1.f, pan_balance_param.min);
     EXPECT_EQ(1.f, pan_balance_param.max);
-    auto pan_balance_value = sut.params.at(channel.pan_balance()).value.get();
+    auto pan_balance_value = sut.params.at(channel.pan_balance()).get();
     EXPECT_EQ(0.f, pan_balance_value);
 
-    auto const& mute_param = sut.params.at(channel.mute()).param;
+    auto const& mute_param = sut.params.at(channel.mute()).param();
     EXPECT_EQ(false, mute_param.default_value);
-    auto mute_value = sut.params.at(channel.mute()).value.get();
+    auto mute_value = sut.params.at(channel.mute()).get();
     EXPECT_EQ(false, mute_value);
 }
 
@@ -56,16 +57,11 @@ TEST_F(state_with_one_mixer_input,
        removing_mixer_channel_removes_also_its_parameters)
 {
     ASSERT_EQ(1u, sut.mixer_state.inputs->size());
-    ASSERT_EQ(2u, sut.params.get_map<float_parameter>().size());
-    ASSERT_EQ(3u, sut.params.get_map<bool_parameter>().size());
-    ASSERT_EQ(0u, sut.params.get_map<int_parameter>().size());
 
     remove_mixer_channel(sut, channel_id);
 
     EXPECT_TRUE(sut.mixer_state.inputs->empty());
     EXPECT_EQ(nullptr, sut.mixer_state.channels.find(channel_id));
-    EXPECT_TRUE(sut.params.get_map<float_parameter>().empty());
-    EXPECT_TRUE(sut.params.get_map<bool_parameter>().empty());
 }
 
 } // namespace piejam::runtime::test

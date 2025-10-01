@@ -112,7 +112,7 @@ find_external_audio_device_route(
 
 void
 apply_mixer_io(
-        parameters_store& params,
+        parameter::store& params,
         external_audio::state& external_audio_state,
         mixer::state& mixer_state,
         mixer::channel_id const& channel_id,
@@ -159,11 +159,9 @@ apply_mixer_io(
             {
                 if (auto aux_send = channel_aux_sends->find(*route))
                 {
-                    params.at(aux_send->active)
-                            .value.set(aux_send_data.enabled);
-                    params.at(aux_send->fader_tap)
-                            .value.set(aux_send_data.fader_tap);
-                    params.at(aux_send->volume).value.set(aux_send_data.volume);
+                    params.at(aux_send->active).set(aux_send_data.enabled);
+                    params.at(aux_send->fader_tap).set(aux_send_data.fader_tap);
+                    params.at(aux_send->volume).set(aux_send_data.volume);
                 }
             }
         }
@@ -172,7 +170,7 @@ apply_mixer_io(
 
 void
 apply_aux_channels(
-        parameters_store& params,
+        parameter::store& params,
         mixer::state& mixer_state,
         std::vector<persistence::session::aux_channel> const& aux_channels_data)
 {
@@ -187,7 +185,7 @@ apply_aux_channels(
                 aux_channel)
             {
                 params.at(aux_channel->default_fader_tap)
-                        .value.set(aux_channel_data.fader_tap);
+                        .set(aux_channel_data.fader_tap);
             }
         }
     }

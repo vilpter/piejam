@@ -89,7 +89,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/parameter_factory.h
     include/piejam/runtime/parameter_processor_factory.h
     include/piejam/runtime/parameters.h
-    include/piejam/runtime/parameters_store.h
+
     include/piejam/runtime/persistence/access.h
     include/piejam/runtime/persistence/app_config.h
     include/piejam/runtime/persistence/fwd.h

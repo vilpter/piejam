@@ -21,7 +21,6 @@
 #include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter/store.h>
 #include <piejam/runtime/parameters.h>
-#include <piejam/runtime/parameters_store.h>
 #include <piejam/runtime/root_view_mode.h>
 #include <piejam/runtime/selected_sound_card.h>
 #include <piejam/runtime/string_id.h>
@@ -64,7 +63,7 @@ struct state
     box<midi::device_ids_t> midi_inputs;
     box<midi_devices_t> midi_devices;
 
-    parameters_store params;
+    parameter::store params;
     audio_streams_t streams;
 
     fx::registry fx_registry;
@@ -111,7 +110,7 @@ void remove_external_audio_device(state&, external_audio::device_id);
 void apply_parameter_values(
         std::span<parameter_value_assignment const>,
         parameters_map const&,
-        parameters_store&);
+        parameter::store&);
 
 void apply_midi_assignments(
         std::span<parameter_midi_assignment const>,

@@ -90,7 +90,7 @@ make_initial_state() -> state
 
     // enable record on main
     st.params.at(st.mixer_state.channels.at(st.mixer_state.main).record())
-            .value.set(true);
+            .set(true);
     return st;
 }
 
@@ -104,7 +104,7 @@ void
 apply_parameter_values(
         std::span<parameter_value_assignment const> values,
         parameters_map const& parameters,
-        parameters_store& params_store)
+        parameter::store& params_store)
 {
     for (auto&& [key, value] : values)
     {
@@ -116,7 +116,7 @@ apply_parameter_values(
                             [&params_store]<class P>(
                                     parameter::id_t<P> id,
                                     parameter::value_type_t<P> v) {
-                                params_store.at(id).value.set(v);
+                                params_store.at(id).set(v);
                             },
                             [](auto&&, auto&&) { BOOST_ASSERT(false); }),
                     param_id,

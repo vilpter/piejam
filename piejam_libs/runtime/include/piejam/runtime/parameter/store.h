@@ -16,12 +16,107 @@
 namespace piejam::runtime::parameter
 {
 
-template <template <class Parameter> class Slot>
 class store
 {
 public:
+    template <class Parameter>
+    struct slot
+    {
+        using parameter_type = Parameter;
+        using value_type = parameter::value_type_t<Parameter>;
+        using cached_type = std::shared_ptr<value_type const>;
+
+        explicit slot(Parameter&& param)
+            : m_param{std::move(param)}
+        {
+        }
+
+        explicit slot(Parameter const& param)
+            : m_param{param}
+        {
+        }
+
+        auto param() const noexcept -> Parameter const&
+        {
+            return m_param;
+        }
+
+        auto get() const noexcept -> value_type
+        {
+            return *m_value;
+        }
+
+        void set(value_type value) noexcept
+        {
+            *m_value = value;
+        }
+
+        auto cached() const noexcept -> cached_type
+        {
+            return m_value;
+        }
+
+        auto operator==(slot const& other) const noexcept -> bool
+        {
+            return m_param == other.m_param && get() == other.get();
+        }
+
+    private:
+        Parameter m_param;
+        std::shared_ptr<value_type> m_value{
+                std::make_shared<value_type>(m_param.default_value)};
+    };
+
     template <class P>
-    using map_t = lean_map_facade<boost::container::flat_map<id_t<P>, Slot<P>>>;
+    auto emplace(id_t<P> const id, P&& param)
+    {
+        return BOOST_VERIFY(
+                get_map<P>()
+                        .emplace(id, slot<P>{std::forward<P>(param)})
+                        .second);
+    }
+
+    template <class P>
+    auto remove(id_t<P> const id) -> void
+    {
+        get_map<P>().erase(id);
+    }
+
+    template <class P>
+    auto contains(id_t<P> const id) const noexcept -> bool
+    {
+        return get_map<P>().contains(id);
+    }
+
+    template <class P>
+    auto find(id_t<P> const id) const noexcept -> slot<P> const*
+    {
+        return get_map<P>().find(id);
+    }
+
+    template <class P>
+    auto find(id_t<P> const id) noexcept -> slot<P>*
+    {
+        return get_map<P>().find(id);
+    }
+
+    template <class P>
+    auto at(id_t<P> const id) const noexcept -> slot<P> const&
+    {
+        return get_map<P>().at(id);
+    }
+
+    template <class P>
+    auto at(id_t<P> const id) noexcept -> slot<P>&
+    {
+        return get_map<P>().at(id);
+    }
+
+    auto operator==(store const& other) const noexcept -> bool = default;
+
+private:
+    template <class P>
+    using map_t = lean_map_facade<boost::container::flat_map<id_t<P>, slot<P>>>;
 
     template <class P>
     auto get_map() const -> map_t<P> const&
@@ -45,52 +140,6 @@ public:
         return *static_cast<map_t<P>*>(it->second.get());
     }
 
-    template <class P>
-    auto emplace(id_t<P> const id, P&& param)
-    {
-        return BOOST_VERIFY(
-                get_map<P>().emplace(id, std::forward<P>(param)).second);
-    }
-
-    template <class P>
-    auto remove(id_t<P> const id) -> void
-    {
-        get_map<P>().erase(id);
-    }
-
-    template <class P>
-    auto contains(id_t<P> const id) const noexcept -> bool
-    {
-        return get_map<P>().contains(id);
-    }
-
-    template <class P>
-    auto find(id_t<P> const id) const noexcept -> Slot<P> const*
-    {
-        return get_map<P>().find(id);
-    }
-
-    template <class P>
-    auto find(id_t<P> const id) noexcept -> Slot<P>*
-    {
-        return get_map<P>().find(id);
-    }
-
-    template <class P>
-    auto at(id_t<P> const id) const noexcept -> Slot<P> const&
-    {
-        return get_map<P>().at(id);
-    }
-
-    template <class P>
-    auto at(id_t<P> const id) noexcept -> Slot<P>&
-    {
-        return get_map<P>().at(id);
-    }
-
-    auto operator==(store const& other) const noexcept -> bool = default;
-
-private:
     boost::container::flat_map<std::type_index, std::shared_ptr<void>> m_maps;
 };
 

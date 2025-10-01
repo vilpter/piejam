@@ -4,7 +4,6 @@
 
 #include <piejam/entity_id.h>
 #include <piejam/runtime/parameter/store.h>
-#include <piejam/runtime/parameters_store.h>
 
 #include <gtest/gtest.h>
 
@@ -21,19 +20,19 @@ struct float_parameter
             -> bool = default;
 };
 
-TEST(parameters_store, add_default_get)
+TEST(store, add_default_get)
 {
-    parameters_store sut;
+    store sut;
 
     auto id = id_t<float_parameter>::generate();
-    sut.emplace(id, {});
+    sut.emplace(id, float_parameter{});
 
-    EXPECT_EQ(1.f, sut.at(id).value.get());
+    EXPECT_EQ(1.f, sut.at(id).get());
 }
 
-TEST(parameters_store, add_remove)
+TEST(store, add_remove)
 {
-    parameters_store sut;
+    store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id, {});
@@ -43,70 +42,70 @@ TEST(parameters_store, add_remove)
     EXPECT_FALSE(sut.contains(id));
 }
 
-TEST(parameters_store, get_existing_parameter)
+TEST(store, get_existing_parameter)
 {
-    parameters_store sut;
+    store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id, {});
     EXPECT_NE(nullptr, sut.find(id));
 }
 
-TEST(parameters_store, find_for_non_existing_parameter)
+TEST(store, find_for_non_existing_parameter)
 {
-    parameters_store sut;
+    store sut;
 
     EXPECT_EQ(nullptr, sut.find(parameter::id_t<float_parameter>::generate()));
 }
 
-TEST(parameters_store, get_cached_for_existing_parameter)
+TEST(store, get_cached_for_existing_parameter)
 {
-    parameters_store sut;
+    store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id, {});
     auto desc = sut.find(id);
     ASSERT_NE(nullptr, desc);
-    EXPECT_EQ(1.f, *desc->value.cached());
+    EXPECT_EQ(1.f, *desc->cached());
 }
 
-TEST(parameters_store, set_value)
+TEST(store, set_value)
 {
-    parameters_store sut;
+    store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id, {});
 
-    sut.at(id).value.set(2.f);
-    EXPECT_EQ(2.f, sut.at(id).value.get());
+    sut.at(id).set(2.f);
+    EXPECT_EQ(2.f, sut.at(id).get());
 }
 
-TEST(parameters_store, cached_is_updated_after_set)
+TEST(store, cached_is_updated_after_set)
 {
-    parameters_store sut;
+    store sut;
 
     auto id = id_t<float_parameter>::generate();
     sut.emplace(id, {});
 
-    auto cached = sut.at(id).value.cached();
+    auto cached = sut.at(id).cached();
     ASSERT_NE(nullptr, cached);
     EXPECT_EQ(1.f, *cached);
 
-    sut.at(id).value.set(2.f);
+    sut.at(id).set(2.f);
 
     EXPECT_EQ(2.f, *cached);
 }
 
-TEST(parameters_store, equality)
+TEST(store, equality)
 {
-    parameters_store m1;
+    store m1;
 
     auto id = id_t<float_parameter>::generate();
     m1.emplace(id, {});
 
     EXPECT_EQ(m1, m1);
 
-    parameters_store m2;
+    store m2;
 
     m2.emplace(id, {});
 

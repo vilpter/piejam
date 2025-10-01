@@ -4,7 +4,7 @@
 
 #include <piejam/runtime/mixer.h>
 
-#include <piejam/runtime/parameters_store.h>
+#include <piejam/runtime/parameter/store.h>
 
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>

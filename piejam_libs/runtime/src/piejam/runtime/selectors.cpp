@@ -364,7 +364,7 @@ make_can_toggle_aux_send_selector(
     auto get = memo([channel_id, aux_id](
                             mixer::io_map_t const& io_map,
                             mixer::aux_sends_t const& aux_sends,
-                            parameters_store const& params) {
+                            parameter::store const& params) {
         return mixer::can_toggle_aux(
                 channel_id,
                 aux_id,
@@ -549,7 +549,7 @@ make_mixer_channel_routes_selector(
                          mixer::channels_t const& channels,
                          mixer::io_map_t const& io_map,
                          mixer::aux_sends_t const& aux_sends,
-                         parameters_store const& params) {
+                         parameter::store const& params) {
                 if (io_port == io_direction::input &&
                     channels.at(channel_id).type == mixer::channel_type::aux)
                 {
@@ -665,12 +665,12 @@ struct muted_by_solo_state
             mixer::channels_t const& channels,
             mixer::io_map_t const& io_map,
             mixer::aux_sends_t const& aux_sends,
-            parameters_store const& params) // non-null!
+            parameter::store const& params)
         : solo_groups{runtime::solo_groups(channels, io_map, aux_sends, params)}
         , solo_params{algorithm::transform_to_vector(
                   solo_groups | std::views::values,
                   [params](solo_group const& g) {
-                      return params.find(g.solo_param)->value.cached();
+                      return params.find(g.solo_param)->cached();
                   })}
     {
     }
@@ -709,7 +709,7 @@ make_muted_by_solo_state(
         mixer::channels_t const& channels,
         mixer::io_map_t const& io_map,
         mixer::aux_sends_t const& aux_sends,
-        parameters_store const& params) -> box<muted_by_solo_state>
+        parameter::store const& params) -> box<muted_by_solo_state>
 {
     return box(muted_by_solo_state{channels, io_map, aux_sends, params});
 }
@@ -841,17 +841,16 @@ make_fx_module_can_move_down_selector(mixer::channel_id const fx_chain_id)
 }
 
 auto
-make_fx_parameter_name_selector(parameter_id const fx_param_id)
+make_parameter_name_selector(parameter_id const param_id)
         -> selector<boxed_string>
 {
     return std::visit(
             [](auto param_id) -> selector<boxed_string> {
                 return [param_id](state const& st) {
-                    auto const* const desc = st.params.find(param_id);
-                    return desc ? desc->param.name : boxed_string{};
+                    return st.params.at(param_id).param().name;
                 };
             },
-            fx_param_id);
+            param_id);
 }
 
 auto
@@ -860,8 +859,8 @@ make_fx_parameter_value_string_selector(parameter_id const fx_param_id)
 {
     return std::visit(
             []<class P>(parameter::id_t<P> param_id) -> selector<std::string> {
-                using cached_value_type = typename parameter_store_slot<
-                        P>::value_slot::cached_type;
+                using cached_value_type =
+                        typename parameter::store::slot<P>::cached_type;
 
                 using value_to_string_fn = typename P::value_to_string_fn;
                 using memoed_value_to_string_fn =
@@ -876,9 +875,9 @@ make_fx_parameter_value_string_selector(parameter_id const fx_param_id)
                     {
                         auto const& slot = st.params.at(param_id);
 
-                        cached_value = slot.value.cached();
+                        cached_value = slot.cached();
                         BOOST_ASSERT(cached_value);
-                        value_to_string = memo(slot.param.value_to_string);
+                        value_to_string = memo(slot.param().value_to_string);
                     }
 
                     return (*value_to_string)(*cached_value);
@@ -937,7 +936,7 @@ make_parameter_value_selector(parameter::id_t<P> const param_id)
 
         if (auto const* const desc = st.params.find(param_id); desc)
         {
-            value = desc->value.cached();
+            value = desc->cached();
             BOOST_ASSERT(value);
             return *value;
         }
@@ -965,11 +964,11 @@ make_float_parameter_normalized_value_selector(
         float_parameter_id const param_id) -> selector<float>
 {
     return [param_id](state const& st) -> float {
-        if (auto const* const desc = st.params.find(param_id); desc)
+        if (auto const* const slot = st.params.find(param_id); slot)
         {
-            float const value = desc->value.get();
-            BOOST_ASSERT(desc->param.to_normalized);
-            return desc->param.to_normalized(desc->param, value);
+            float const value = slot->get();
+            BOOST_ASSERT(slot->param().to_normalized);
+            return slot->param().to_normalized(slot->param(), value);
         }
         return 0.f;
     };
@@ -980,8 +979,7 @@ make_float_parameter_bipolar_selector(float_parameter_id const fx_param_id)
         -> selector<bool>
 {
     return [fx_param_id](state const& st) {
-        auto const* const desc = st.params.find(fx_param_id);
-        return desc && desc->param.bipolar;
+        return st.params.at(fx_param_id).param().bipolar;
     };
 }
 
@@ -997,8 +995,7 @@ make_int_parameter_min_selector(int_parameter_id const param_id)
         -> selector<int>
 {
     return [param_id](state const& st) -> int {
-        auto const* const desc = st.params.find(param_id);
-        return desc ? desc->param.min : 0;
+        return st.params.at(param_id).param().min;
     };
 }
 
@@ -1007,8 +1004,7 @@ make_int_parameter_max_selector(int_parameter_id const param_id)
         -> selector<int>
 {
     return [param_id](state const& st) -> int {
-        auto const* const desc = st.params.find(param_id);
-        return desc ? desc->param.max : 1;
+        return st.params.at(param_id).param().max;
     };
 }
 
@@ -1019,13 +1015,11 @@ make_int_parameter_enum_values_selector(int_parameter_id const param_id)
     return [param_id](state const& st) {
         std::vector<std::pair<std::string, int>> result;
 
-        auto const* const desc = st.params.find(param_id);
-        if (desc)
+        auto const& slot = st.params.at(param_id);
+
+        for (int value = slot.param().min; value <= slot.param().max; ++value)
         {
-            for (int value = desc->param.min; value <= desc->param.max; ++value)
-            {
-                result.emplace_back(desc->param.value_to_string(value), value);
-            }
+            result.emplace_back(slot.param().value_to_string(value), value);
         }
 
         return result;
@@ -1039,7 +1033,7 @@ make_parameter_is_midi_assignable_selector(parameter_id param_id)
     return std::visit(
             [](auto const id) -> selector<bool> {
                 return [id](state const& st) -> bool {
-                    return !st.params.at(id).param.flags.test(
+                    return !st.params.at(id).param().flags.test(
                             parameter_flags::audio_graph_affecting);
                 };
             },

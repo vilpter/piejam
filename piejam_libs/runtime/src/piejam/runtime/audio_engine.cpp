@@ -117,7 +117,7 @@ make_mixer_components(
         audio::sample_rate const sample_rate,
         strings_t const& strings,
         mixer::state const& mixer_state,
-        parameters_store const& params,
+        parameter::store const& params,
         parameter_processor_factory& param_procs,
         processors::stream_processor_factory& stream_procs)
 {
@@ -159,7 +159,7 @@ make_mixer_components(
         {
             for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                if (!params.at(aux_send.active).value.get())
+                if (!params.at(aux_send.active).get())
                 {
                     continue;
                 }
@@ -202,7 +202,7 @@ make_fx_chain_components(
         component_map& comps,
         component_map& prev_comps,
         fx::modules_t const& fx_modules,
-        parameters_store const& params,
+        parameter::store const& params,
         parameter_processor_factory& param_procs,
         processors::stream_processor_factory& stream_procs,
         fx::simple_ladspa_processor_factory const& ladspa_fx_proc_factory,
@@ -212,7 +212,7 @@ make_fx_chain_components(
             [&params](parameter_id param_id) -> std::string_view {
         return std::visit(
                 [&](auto typed_param_id) -> std::string_view {
-                    return *params.at(typed_param_id).param.name;
+                    return *params.at(typed_param_id).param().name;
                 },
                 param_id);
     };
@@ -269,7 +269,7 @@ make_midi_processors(
 auto
 make_midi_assignment_processors(
         midi_assignments_map const& assignments,
-        parameters_store const& params,
+        parameter::store const& params,
         processor_map& procs,
         processor_map& prev_procs)
 {
@@ -286,7 +286,7 @@ make_midi_assignment_processors(
     {
         std::visit(
                 [&]<class ParamId>(ParamId const typed_param_id) {
-                    auto const& param = params.at(typed_param_id).param;
+                    auto const& param = params.at(typed_param_id).param();
 
                     std::tuple const proc_id{typed_param_id, assignment};
                     if (auto proc = prev_procs.find(proc_id))
@@ -481,7 +481,7 @@ make_graph(
         component_map const& comps,
         mixer::state const& mixer_state,
         external_audio::devices_t const& device_buses,
-        parameters_store const& params,
+        parameter::store const& params,
         std::span<audio::engine::input_processor> const input_procs,
         std::span<audio::engine::output_processor> const output_procs,
         std::span<processor_ptr> const output_clip_procs)
@@ -546,12 +546,12 @@ make_graph(
 
                     auto aux_send_fader_tap =
                             static_cast<mixer::aux_send_fader_tap>(
-                                    params.at(aux_send.fader_tap).value.get());
+                                    params.at(aux_send.fader_tap).get());
                     auto aux_channel_fader_tap =
                             static_cast<mixer::aux_channel_fader_tap>(
                                     params.at(mixer_state.aux_channels.at(aux)
                                                       .default_fader_tap)
-                                            .value.get());
+                                            .get());
 
                     auto const [out_L, out_R] = [&]() {
                         switch (aux_send_fader_tap)
@@ -891,8 +891,8 @@ audio_engine::rebuild(
     auto [final_graph, mixers] = audio::engine::finalize_graph(new_graph);
 
     m_impl->param_procs.initialize([&st](auto const id) {
-        auto const* const desc = st.params.find(id);
-        return desc ? std::optional{desc->value.get()} : std::nullopt;
+        auto const* const slot = st.params.find(id);
+        return slot ? std::optional{slot->get()} : std::nullopt;
     });
 
     if (!m_impl->process.swap_executor(

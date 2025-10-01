@@ -85,7 +85,7 @@ export_external_audio_device_configs(
 auto
 export_parameter_values(
         parameters_map const& parameters,
-        parameters_store const& params_store)
+        parameter::store const& params_store)
         -> std::vector<parameter_value_assignment>
 {
     std::vector<parameter_value_assignment> result;
@@ -98,7 +98,7 @@ export_parameter_values(
                     {
                         result.emplace_back(
                                 key,
-                                params_store.at(param_id).value.get());
+                                params_store.at(param_id).get());
                     }
                 },
                 param_id);
@@ -269,11 +269,9 @@ export_mixer_aux_sends(state const& st, mixer::channel_id const channel_id)
             result.emplace_back(
                     session::mixer_aux_send{
                             .channel_index = channel_index(st.mixer_state, aux),
-                            .enabled =
-                                    st.params.at(aux_send.active).value.get(),
-                            .fader_tap = st.params.at(aux_send.fader_tap)
-                                                 .value.get(),
-                            .volume = st.params.at(aux_send.volume).value.get(),
+                            .enabled = st.params.at(aux_send.active).get(),
+                            .fader_tap = st.params.at(aux_send.fader_tap).get(),
+                            .volume = st.params.at(aux_send.volume).get(),
                     });
         }
     }
@@ -324,7 +322,7 @@ export_aux_channel(
 {
     session::aux_channel result;
     result.channel_index = channel_index(st.mixer_state, aux_id);
-    result.fader_tap = st.params.at(aux.default_fader_tap).value.get();
+    result.fader_tap = st.params.at(aux.default_fader_tap).get();
     return result;
 }
 

@@ -4,7 +4,7 @@
 
 #include <piejam/runtime/actions/set_parameter_value.h>
 
-#include <piejam/runtime/parameters_store.h>
+#include <piejam/runtime/parameter/store.h>
 #include <piejam/runtime/state.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
@@ -35,8 +35,8 @@ void
 set_parameter_value<Parameter>::reduce(state& st) const
 {
     auto& desc = st.params.at(id);
-    BOOST_ASSERT(parameter_value_is_in_range(desc.param, value));
-    desc.value.set(value);
+    BOOST_ASSERT(parameter_value_is_in_range(desc.param(), value));
+    desc.set(value);
 }
 
 template struct set_parameter_value<bool_parameter>;
@@ -55,7 +55,8 @@ reset_parameter_to_default_value(parameter_id param_id) -> thunk_action
                             set_parameter_value{
                                     typed_param_id,
                                     st.params.at(typed_param_id)
-                                            .param.default_value});
+                                            .param()
+                                            .default_value});
                 },
                 param_id);
     };
@@ -68,7 +69,7 @@ set_float_parameter_normalized(
 {
     return [=](auto const& get_state, auto const& dispatch) {
         state const& st = get_state();
-        float_parameter const& param = st.params.at(param_id).param;
+        float_parameter const& param = st.params.at(param_id).param();
         dispatch(
                 set_float_parameter{
                         param_id,

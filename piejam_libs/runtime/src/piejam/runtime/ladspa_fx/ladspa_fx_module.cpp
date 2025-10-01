@@ -22,7 +22,7 @@ namespace
 
 struct make_module_parameters
 {
-    make_module_parameters(parameters_store& params)
+    make_module_parameters(parameter::store& params)
         : m_params{params}
     {
     }
@@ -109,7 +109,7 @@ private:
                                 .default_value = p.default_value}));
     }
 
-    parameters_store& m_params;
+    parameter::store& m_params;
 };
 
 } // namespace
@@ -120,7 +120,7 @@ make_module(
         std::string const& name,
         audio::bus_type const bus_type,
         std::span<ladspa::port_descriptor const> const control_inputs,
-        parameters_store& params) -> fx::module
+        parameter::store& params) -> fx::module
 {
     return fx::module{
             .fx_instance_id = instance_id,

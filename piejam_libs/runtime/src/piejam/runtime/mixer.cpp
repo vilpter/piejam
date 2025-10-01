@@ -5,7 +5,7 @@
 #include <piejam/runtime/mixer.h>
 
 #include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameters_store.h>
+#include <piejam/runtime/parameter/store.h>
 
 #include <piejam/io_pair.h>
 
@@ -30,7 +30,7 @@ auto
 extract_channels_io(
         io_map_t const& io_map,
         aux_sends_t const& aux_sends,
-        parameters_store const& params) -> channels_io_t
+        parameter::store const& params) -> channels_io_t
 {
     channels_io_t result;
 
@@ -43,7 +43,7 @@ extract_channels_io(
         {
             for (auto const& [aux_id, aux] : *channel_aux_sends)
             {
-                if (params.at(aux.active).value.get())
+                if (params.at(aux.active).get())
                 {
                     it->second.aux_sends.emplace_back(aux_id);
                 }
@@ -149,7 +149,7 @@ is_mix_input_valid(
         channel_id const ch_id,
         io_map_t const& io_map,
         aux_sends_t const& aux_sends,
-        parameters_store const& params) -> bool
+        parameter::store const& params) -> bool
 {
     auto channels_io = extract_channels_io(io_map, aux_sends, params);
     channels_io[ch_id].port.in() = mixer::mix_input{};
@@ -162,7 +162,7 @@ can_toggle_aux(
         channel_id const aux_id,
         io_map_t const& io_map,
         aux_sends_t const& aux_sends,
-        parameters_store const& params) -> bool
+        parameter::store const& params) -> bool
 {
     auto channel_aux_sends = aux_sends.find(ch_id);
     if (!channel_aux_sends)
@@ -176,7 +176,7 @@ can_toggle_aux(
         return false;
     }
 
-    if (params.at(aux_send->active).value.get())
+    if (params.at(aux_send->active).get())
     {
         return true; // we can always disable an enabled aux
     }
@@ -194,7 +194,7 @@ valid_channels(
         channels_t const& channels,
         io_map_t const& io_map,
         aux_sends_t const& aux_sends,
-        parameters_store const& params) -> std::vector<channel_id>
+        parameter::store const& params) -> std::vector<channel_id>
 {
     auto channels_io = extract_channels_io(io_map, aux_sends, params);
 
