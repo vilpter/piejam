@@ -21,11 +21,15 @@ default_float_to_string(float x) -> std::string
 
 struct float_descriptor
 {
+    using this_t = float_descriptor;
+
     using value_type = float;
     using value_to_string_fn = std::string (*)(value_type);
-    using to_normalized_f = value_type (*)(float_descriptor const&, value_type);
-    using from_normalized_f =
-            value_type (*)(float_descriptor const&, value_type);
+    using normalized_type = float;
+    using to_normalized_f = normalized_type (*)(this_t const&, value_type);
+    using from_normalized_f = value_type (*)(this_t const&, normalized_type);
+
+    auto operator==(this_t const&) const noexcept -> bool = default;
 
     boxed_string name;
 
@@ -38,26 +42,12 @@ struct float_descriptor
 
     value_to_string_fn value_to_string{&default_float_to_string};
 
-    to_normalized_f to_normalized{[](auto const&, value_type x) { return x; }};
+    to_normalized_f to_normalized{
+            [](float_descriptor const&, value_type x) { return x; }};
     from_normalized_f from_normalized{
-            [](auto const&, value_type x) { return x; }};
+            [](float_descriptor const&, normalized_type x) { return x; }};
 
-    flags_set flags{};
-
-    auto operator==(float_descriptor const&) const noexcept -> bool = default;
-
-    constexpr auto set_flags(flags_set flags) & -> float_descriptor&
-    {
-        this->flags = flags;
-        return *this;
-    }
-
-    [[nodiscard]]
-    constexpr auto set_flags(flags_set flags) && -> float_descriptor&&
-    {
-        this->flags = flags;
-        return std::move(*this);
-    }
+    M_PIEJAM_DEFINE_PARAMETER_FLAGS_MEMBER(this_t)
 };
 
 } // namespace piejam::runtime::parameter

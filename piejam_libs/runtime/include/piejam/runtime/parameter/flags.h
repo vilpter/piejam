@@ -51,4 +51,20 @@ private:
     std::bitset<max_num_flags> fs{};
 };
 
+#define M_PIEJAM_DEFINE_PARAMETER_FLAGS_MEMBER(Type)                           \
+    flags_set flags{};                                                         \
+                                                                               \
+    constexpr auto set_flags(flags_set flags) & -> Type&                       \
+    {                                                                          \
+        this->flags = flags;                                                   \
+        return *this;                                                          \
+    }                                                                          \
+                                                                               \
+    [[nodiscard]]                                                              \
+    constexpr auto set_flags(flags_set flags) && -> Type&&                     \
+    {                                                                          \
+        this->flags = flags;                                                   \
+        return std::move(*this);                                               \
+    }
+
 } // namespace piejam::runtime::parameter

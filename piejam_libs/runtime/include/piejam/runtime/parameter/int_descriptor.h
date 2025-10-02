@@ -19,8 +19,12 @@ default_int_to_string(int x) -> std::string
 
 struct int_descriptor
 {
+    using this_t = int_descriptor;
+
     using value_type = int;
     using value_to_string_fn = std::string (*)(value_type);
+
+    auto operator==(this_t const&) const noexcept -> bool = default;
 
     boxed_string name;
 
@@ -31,22 +35,7 @@ struct int_descriptor
 
     value_to_string_fn value_to_string{&default_int_to_string};
 
-    flags_set flags{};
-
-    auto operator==(int_descriptor const&) const noexcept -> bool = default;
-
-    constexpr auto set_flags(flags_set flags) & -> int_descriptor&
-    {
-        this->flags = flags;
-        return *this;
-    }
-
-    [[nodiscard]]
-    constexpr auto set_flags(flags_set flags) && -> int_descriptor&&
-    {
-        this->flags = flags;
-        return std::move(*this);
-    }
+    M_PIEJAM_DEFINE_PARAMETER_FLAGS_MEMBER(this_t)
 };
 
 } // namespace piejam::runtime::parameter
