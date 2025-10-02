@@ -68,7 +68,7 @@ from_normalized_send(float_parameter const&, float const norm_value) -> float
 auto
 volume_to_string(float volume) -> std::string
 {
-    auto const volume_dB = numeric::to_dB(volume);
+    auto const volume_dB = numeric::to_dB(volume, 1.e-20f);
     return std::format("{:.1f} dB", volume_dB);
 }
 

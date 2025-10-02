@@ -9,21 +9,11 @@
 namespace piejam::numeric::test
 {
 
-TEST(to_dB, default_min)
-{
-    EXPECT_FLOAT_EQ(constants::negative_inf<float>, to_dB(0.f));
-}
-
 TEST(to_dB, custom_min)
 {
     EXPECT_FLOAT_EQ(constants::negative_inf<float>, to_dB(0.f, 0.1f));
     EXPECT_FLOAT_EQ(constants::negative_inf<float>, to_dB(0.05f, 0.1f));
     EXPECT_FLOAT_EQ(constants::negative_inf<float>, to_dB(0.1f, 0.1f));
-}
-
-TEST(from_dB, default_min)
-{
-    EXPECT_FLOAT_EQ(0.f, from_dB(constants::negative_inf<float>));
 }
 
 TEST(from_dB, custom_min)

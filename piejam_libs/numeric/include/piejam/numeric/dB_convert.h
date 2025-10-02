@@ -6,6 +6,8 @@
 
 #include <piejam/numeric/constants.h>
 
+#include <boost/assert.hpp>
+
 #include <cmath>
 #include <concepts>
 #include <limits>
@@ -16,19 +18,36 @@ namespace piejam::numeric
 template <std::floating_point T>
 [[nodiscard]]
 constexpr auto
-to_dB(T log, T min_log = T{1e-20}) noexcept -> T
+to_dB(T lin) noexcept -> T
 {
     static_assert(std::numeric_limits<T>::is_iec559, "IEEE 754 required");
-    return log <= min_log ? constants::negative_inf<T>
-                          : std::log10(log) * T{20};
+    BOOST_ASSERT(lin > T{0});
+    return std::log10(lin) * T{20};
 }
 
 template <std::floating_point T>
 [[nodiscard]]
 constexpr auto
-from_dB(T dB, T min_dB = constants::negative_inf<T>) noexcept -> T
+to_dB(T lin, T min) noexcept -> T
 {
-    return dB <= min_dB ? T{} : std::pow(T{10}, dB / T{20});
+    return lin <= min ? constants::negative_inf<T> : to_dB(lin);
+}
+
+template <std::floating_point T>
+[[nodiscard]]
+constexpr auto
+from_dB(T dB) noexcept -> T
+{
+    BOOST_ASSERT(std::isfinite(dB));
+    return std::pow(T{10}, dB / T{20});
+}
+
+template <std::floating_point T>
+[[nodiscard]]
+constexpr auto
+from_dB(T dB, T min_dB) noexcept -> T
+{
+    return dB <= min_dB ? T{} : from_dB(dB);
 }
 
 } // namespace piejam::numeric
