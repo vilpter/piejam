@@ -47,12 +47,14 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              .default_value = -1.f,
                                              .min = -1.f,
                                              .max = 1.f,
-                                             .bipolar = true,
                                              .to_normalized =
                                                      s_pan_to_noramlized,
                                              .from_normalized =
                                                      s_pan_from_noramlized,
-                                     })},
+                                     }
+                                             .set_flags(
+                                                     runtime::parameter_flags::
+                                                             bipolar))},
                             {parameter_key::pan_right,
                              params_factory.make_parameter(
                                      runtime::float_parameter{
@@ -60,12 +62,14 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                              .default_value = 1.f,
                                              .min = -1.f,
                                              .max = 1.f,
-                                             .bipolar = true,
                                              .to_normalized =
                                                      s_pan_to_noramlized,
                                              .from_normalized =
                                                      s_pan_from_noramlized,
-                                     })},
+                                     }
+                                             .set_flags(
+                                                     runtime::parameter_flags::
+                                                             bipolar))},
                             {parameter_key::mute_right,
                              params_factory.make_parameter(
                                      runtime::bool_parameter{

@@ -473,13 +473,19 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                              .default_value = 0.f,
                                              .min = -1.f,
                                              .max = 1.f,
-                                             .bipolar = true,
                                              .to_normalized =
                                                      &parameter::
-                                                             to_normalized_linear,
+                                                             to_normalized_linear_static<
+                                                                     -1.f,
+                                                                     1.f>,
                                              .from_normalized =
                                                      &parameter::
-                                                             from_normalized_linear})},
+                                                             from_normalized_linear_static<
+                                                                     -1.f,
+                                                                     1.f>}
+                                             .set_flags(
+                                                     parameter_flags::
+                                                             bipolar))},
                             {mixer::channel::parameter_key::record,
                              params_factory.make_parameter(
                                      bool_parameter{

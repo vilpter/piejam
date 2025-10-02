@@ -38,8 +38,6 @@ struct float_descriptor
     value_type min{};
     value_type max{1.f};
 
-    bool bipolar{};
-
     value_to_string_fn value_to_string{&default_float_to_string};
 
     to_normalized_f to_normalized{

@@ -979,7 +979,9 @@ make_float_parameter_bipolar_selector(float_parameter_id const fx_param_id)
         -> selector<bool>
 {
     return [fx_param_id](state const& st) {
-        return st.params.at(fx_param_id).param().bipolar;
+        return st.params.at(fx_param_id)
+                .param()
+                .flags.test(parameter_flags::bipolar);
     };
 }
 

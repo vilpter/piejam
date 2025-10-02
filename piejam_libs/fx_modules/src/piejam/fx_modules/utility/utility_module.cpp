@@ -58,10 +58,10 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                             .default_value = 1.f,
                             .min = numeric::from_dB(dB_ival::min),
                             .max = numeric::from_dB(dB_ival::max),
-                            .bipolar = true,
                             .value_to_string = &to_dB_string,
                             .to_normalized = dB_ival::to_normalized,
-                            .from_normalized = dB_ival::from_normalized}));
+                            .from_normalized = dB_ival::from_normalized}
+                            .set_flags(runtime::parameter_flags::bipolar)));
 
     switch (args.bus_type)
     {

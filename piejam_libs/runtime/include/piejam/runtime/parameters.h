@@ -73,6 +73,7 @@ using parameter_midi_assignment = parameter::assignment<midi_assignment>;
 
 enum class parameter_flags : std::size_t
 {
+    bipolar,
     audio_graph_affecting,
 };
 
