@@ -332,7 +332,7 @@ make_aux_send_volume_parameter_selector(
         mixer::channel_id const aux_id) -> selector<float_parameter_id>
 {
     return [=](state const& st) {
-        return st.mixer_state.aux_sends.at(channel_id).at(aux_id).volume;
+        return st.mixer_state.aux_sends.at(channel_id).at(aux_id).volume();
     };
 }
 
@@ -342,7 +342,7 @@ make_aux_send_active_selector(
         mixer::channel_id const aux_id) -> selector<bool_parameter_id>
 {
     return [=](state const& st) {
-        return st.mixer_state.aux_sends.at(channel_id).at(aux_id).active;
+        return st.mixer_state.aux_sends.at(channel_id).at(aux_id).active();
     };
 }
 
@@ -352,7 +352,7 @@ make_aux_send_fader_tap_selector(
         mixer::channel_id const aux_id) -> selector<enum_parameter_id>
 {
     return [=](state const& st) {
-        return st.mixer_state.aux_sends.at(channel_id).at(aux_id).fader_tap;
+        return st.mixer_state.aux_sends.at(channel_id).at(aux_id).fader_tap();
     };
 }
 

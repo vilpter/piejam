@@ -44,7 +44,7 @@ extract_channels_io(
         {
             for (auto const& [aux_id, aux] : *channel_aux_sends)
             {
-                if (params.at(aux.active).get())
+                if (params.at(aux.active()).get())
                 {
                     it->second.aux_sends.emplace_back(aux_id);
                 }
@@ -177,7 +177,7 @@ can_toggle_aux(
         return false;
     }
 
-    if (params.at(aux_send->active).get())
+    if (params.at(aux_send->active()).get())
     {
         return true; // we can always disable an enabled aux
     }

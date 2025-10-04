@@ -44,11 +44,31 @@ struct aux_send
         return "Auto"s;
     }
 
-    bool_parameter_id active{};
-    enum_parameter_id fader_tap{};
-    float_parameter_id volume{};
+    enum class parameter_key : parameter::key
+    {
+        active,
+        fader_tap,
+        volume,
+    };
+
+    box<parameters_map> parameters{};
 
     constexpr auto operator==(aux_send const&) const noexcept -> bool = default;
+
+    auto active() const -> bool_parameter_id
+    {
+        return parameters->get<bool_parameter_id>(parameter_key::active);
+    }
+
+    auto fader_tap() const -> enum_parameter_id
+    {
+        return parameters->get<enum_parameter_id>(parameter_key::fader_tap);
+    }
+
+    auto volume() const -> float_parameter_id
+    {
+        return parameters->get<float_parameter_id>(parameter_key::volume);
+    }
 };
 
 struct channel
@@ -73,35 +93,29 @@ struct channel
 
     auto operator==(channel const&) const noexcept -> bool = default;
 
-    auto parameters_view() const noexcept
-    {
-        return parameters->view_by<parameter_key>();
-    }
-
     auto volume() const -> float_parameter_id
     {
-        return parameters_view().get<float_parameter_id>(parameter_key::volume);
+        return parameters->get<float_parameter_id>(parameter_key::volume);
     }
 
     auto pan_balance() const -> float_parameter_id
     {
-        return parameters_view().get<float_parameter_id>(
-                parameter_key::pan_balance);
+        return parameters->get<float_parameter_id>(parameter_key::pan_balance);
     }
 
     auto record() const -> bool_parameter_id
     {
-        return parameters_view().get<bool_parameter_id>(parameter_key::record);
+        return parameters->get<bool_parameter_id>(parameter_key::record);
     }
 
     auto mute() const -> bool_parameter_id
     {
-        return parameters_view().get<bool_parameter_id>(parameter_key::mute);
+        return parameters->get<bool_parameter_id>(parameter_key::mute);
     }
 
     auto solo() const -> bool_parameter_id
     {
-        return parameters_view().get<bool_parameter_id>(parameter_key::solo);
+        return parameters->get<bool_parameter_id>(parameter_key::solo);
     }
 };
 

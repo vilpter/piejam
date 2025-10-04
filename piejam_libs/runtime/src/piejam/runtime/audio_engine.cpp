@@ -159,7 +159,7 @@ make_mixer_components(
         {
             for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                if (!params.at(aux_send.active).get())
+                if (!params.at(aux_send.active()).get())
                 {
                     continue;
                 }
@@ -178,7 +178,7 @@ make_mixer_components(
                             aux_send_key,
                             components::make_mixer_channel_aux_send(
                                     *strings[mixer_channel.name],
-                                    aux_send.volume,
+                                    aux_send.volume(),
                                     param_procs));
                 }
             }
@@ -545,7 +545,7 @@ make_graph(
                     mixer_channel_aux_send->connect(g);
 
                     auto aux_send_fader_tap =
-                            params.at(aux_send.fader_tap)
+                            params.at(aux_send.fader_tap())
                                     .as<mixer::aux_send_fader_tap>();
                     auto aux_channel_fader_tap =
                             params.at(mixer_state.aux_channels.at(aux)

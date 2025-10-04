@@ -73,6 +73,12 @@ public:
         return std::get<P>(m_map.at(key));
     }
 
+    template <class P, scoped_enum<key> E>
+    auto get(E key) const -> P
+    {
+        return std::get<P>(m_map.at(std::to_underlying(key)));
+    }
+
     template <scoped_enum<key> E>
     auto view_by() const noexcept -> map_view_by<E, parameter_id_t>;
 

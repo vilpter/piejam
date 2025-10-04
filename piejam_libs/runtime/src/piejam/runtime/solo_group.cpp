@@ -72,7 +72,7 @@ gather_channel_infos(
         {
             for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                if (params.at(aux_send.active).get())
+                if (params.at(aux_send.active()).get())
                 {
                     add(id, aux);
                 }

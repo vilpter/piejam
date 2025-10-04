@@ -84,9 +84,7 @@ struct session
     struct mixer_aux_send
     {
         std::size_t channel_index;
-        bool enabled;
-        int fader_tap;
-        float volume;
+        parameter_value_assignments parameters;
     };
 
     struct mixer_channel

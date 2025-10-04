@@ -159,9 +159,10 @@ apply_mixer_io(
             {
                 if (auto aux_send = channel_aux_sends->find(*route))
                 {
-                    params.at(aux_send->active).set(aux_send_data.enabled);
-                    params.at(aux_send->fader_tap).set(aux_send_data.fader_tap);
-                    params.at(aux_send->volume).set(aux_send_data.volume);
+                    apply_parameter_values(
+                            aux_send_data.parameters,
+                            aux_send->parameters,
+                            params);
                 }
             }
         }

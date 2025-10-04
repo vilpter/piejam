@@ -35,33 +35,28 @@ namespace
 constexpr auto
 to_normalized_volume(float_parameter const&, float const value)
 {
-    return fader_mapping::to_normalized_dB_mapping<
-            fader_mapping::volume,
-            fader_mapping::min_gain_dB>(value);
+    return fader_mapping::to_normalized_dB_mapping<fader_mapping::volume>(
+            value);
 }
 
 constexpr auto
 from_normalized_volume(float_parameter const&, float const norm_value) -> float
 {
-    return fader_mapping::from_normalized_dB_mapping<
-            fader_mapping::volume,
-            fader_mapping::min_gain_dB>(norm_value);
+    return fader_mapping::from_normalized_dB_mapping<fader_mapping::volume>(
+            norm_value);
 }
 
 constexpr auto
 to_normalized_send(float_parameter const&, float const value)
 {
-    return fader_mapping::to_normalized_dB_mapping<
-            fader_mapping::send,
-            fader_mapping::min_gain_dB>(value);
+    return fader_mapping::to_normalized_dB_mapping<fader_mapping::send>(value);
 }
 
 constexpr auto
 from_normalized_send(float_parameter const&, float const norm_value) -> float
 {
-    return fader_mapping::from_normalized_dB_mapping<
-            fader_mapping::send,
-            fader_mapping::min_gain_dB>(norm_value);
+    return fader_mapping::from_normalized_dB_mapping<fader_mapping::send>(
+            norm_value);
 }
 
 auto
@@ -344,33 +339,43 @@ make_aux_send(
     aux_sends.emplace(
             aux_id,
             mixer::aux_send{
-                    .active = ui_params_factory.make_parameter(
-                            make_bool_parameter({.name = "Active"})
-                                    .set_flags(
-                                            {parameter_flags::
-                                                     audio_graph_affecting})),
-                    .fader_tap = ui_params_factory.make_parameter(
-                            make_enum_parameter(
-                                    "Fader Tap",
-                                    mixer::aux_send_fader_tap::auto_,
-                                    &mixer::aux_send::to_fader_tap_string)
-                                    .set_flags(
-                                            {parameter_flags::
-                                                     audio_graph_affecting})),
-                    .volume = ui_params_factory.make_parameter(
-                            make_float_parameter(
-                                    {
-                                            .name = "Send"s,
-                                            .default_value = 0.f,
-                                    },
-                                    {
-                                            .min = 0.f,
-                                            .max = 1.f,
-                                    })
-                                    .set_value_to_string(&volume_to_string)
-                                    .set_to_normalized(&to_normalized_send)
-                                    .set_from_normalized(
-                                            &from_normalized_send))});
+                    .parameters = box{parameters_map_by<
+                                              mixer::aux_send::parameter_key>{
+                            {mixer::aux_send::parameter_key::active,
+                             ui_params_factory.make_parameter(
+                                     make_bool_parameter({.name = "Active"})
+                                             .set_flags(
+                                                     {parameter_flags::
+                                                              audio_graph_affecting}))},
+                            {mixer::aux_send::parameter_key::fader_tap,
+                             ui_params_factory.make_parameter(
+                                     make_enum_parameter(
+                                             "Fader Tap",
+                                             mixer::aux_send_fader_tap::auto_,
+                                             &mixer::aux_send::
+                                                     to_fader_tap_string)
+                                             .set_flags(
+                                                     {parameter_flags::
+                                                              audio_graph_affecting}))},
+                            {mixer::aux_send::parameter_key::volume,
+                             ui_params_factory.make_parameter(
+                                     make_float_parameter(
+                                             {
+                                                     .name = "Send"s,
+                                                     .default_value = 0.f,
+                                             },
+                                             {
+                                                     .min = 0.f,
+                                                     .max = 1.f,
+                                             })
+                                             .set_value_to_string(
+                                                     &volume_to_string)
+                                             .set_to_normalized(
+                                                     &to_normalized_send)
+                                             .set_from_normalized(
+                                                     &from_normalized_send))},
+                    }
+                                              .as_base()}});
 }
 
 template <class ParameterFactory>
@@ -394,9 +399,7 @@ make_aux_sends(
 static auto
 remove_aux_send(state& st, mixer::aux_send const& aux_send)
 {
-    remove_parameter(st, aux_send.active);
-    remove_parameter(st, aux_send.fader_tap);
-    remove_parameter(st, aux_send.volume);
+    remove_parameters(st, aux_send.parameters);
 }
 
 auto

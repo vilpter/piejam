@@ -268,9 +268,9 @@ export_mixer_aux_sends(state const& st, mixer::channel_id const channel_id)
             result.emplace_back(
                     session::mixer_aux_send{
                             .channel_index = channel_index(st.mixer_state, aux),
-                            .enabled = st.params.at(aux_send.active).get(),
-                            .fader_tap = st.params.at(aux_send.fader_tap).get(),
-                            .volume = st.params.at(aux_send.volume).get(),
+                            .parameters = export_parameter_values(
+                                    aux_send.parameters,
+                                    st.params),
                     });
         }
     }
