@@ -549,7 +549,7 @@ make_graph(
                                     .as<mixer::aux_send_fader_tap>();
                     auto aux_channel_fader_tap =
                             params.at(mixer_state.aux_channels.at(aux)
-                                              .default_fader_tap)
+                                              .default_fader_tap())
                                     .as<mixer::aux_channel_fader_tap>();
 
                     auto const [out_L, out_R] = [&]() {

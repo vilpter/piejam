@@ -321,7 +321,7 @@ export_aux_channel(
 {
     session::aux_channel result;
     result.channel_index = channel_index(st.mixer_state, aux_id);
-    result.fader_tap = st.params.at(aux.default_fader_tap).get();
+    result.parameters = export_parameter_values(aux.parameters, st.params);
     return result;
 }
 

@@ -243,7 +243,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         session::aux_channel,
         channel_index,
-        fader_tap);
+        parameters);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
         session,

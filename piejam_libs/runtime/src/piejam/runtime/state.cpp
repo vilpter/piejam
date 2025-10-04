@@ -516,15 +516,23 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
         st.mixer_state.aux_channels.emplace(
                 channel_id,
                 mixer::aux_channel{
-                        .default_fader_tap = params_factory.make_parameter(
-                                make_enum_parameter(
-                                        "Fader Tap"sv,
-                                        mixer::aux_channel_fader_tap::post,
-                                        &mixer::aux_channel::
-                                                to_fader_tap_string)
-                                        .set_flags(
-                                                {parameter_flags::
-                                                         audio_graph_affecting}))});
+                        .parameters = box{parameters_map_by<
+                                                  mixer::aux_channel::
+                                                          parameter_key>{
+                                {mixer::aux_channel::parameter_key::
+                                         default_fader_tap,
+                                 params_factory.make_parameter(
+                                         make_enum_parameter(
+                                                 "Fader Tap"sv,
+                                                 mixer::aux_channel_fader_tap::
+                                                         post,
+                                                 &mixer::aux_channel::
+                                                         to_fader_tap_string)
+                                                 .set_flags(
+                                                         {parameter_flags::
+                                                                  audio_graph_affecting}))},
+                        }
+                                                  .as_base()}});
 
         // add as aux_send to each channel
         [&](auto&& aux_sends) {

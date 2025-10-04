@@ -103,7 +103,7 @@ struct session
     struct aux_channel
     {
         std::size_t channel_index;
-        int fader_tap;
+        parameter_value_assignments parameters;
     };
 
     std::vector<external_audio_device_config> external_audio_input_devices;

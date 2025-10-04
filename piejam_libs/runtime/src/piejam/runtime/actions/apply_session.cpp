@@ -185,8 +185,10 @@ apply_aux_channels(
             if (auto aux_channel = mixer_state.aux_channels.find(*aux_id);
                 aux_channel)
             {
-                params.at(aux_channel->default_fader_tap)
-                        .set(aux_channel_data.fader_tap);
+                apply_parameter_values(
+                        aux_channel_data.parameters,
+                        aux_channel->parameters,
+                        params);
             }
         }
     }

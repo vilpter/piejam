@@ -399,7 +399,7 @@ make_aux_channel_default_fader_tap_parameter_selector(mixer::channel_id aux_id)
         -> selector<enum_parameter_id>
 {
     return [aux_id](state const& st) {
-        return st.mixer_state.aux_channels.at(aux_id).default_fader_tap;
+        return st.mixer_state.aux_channels.at(aux_id).default_fader_tap();
     };
 }
 

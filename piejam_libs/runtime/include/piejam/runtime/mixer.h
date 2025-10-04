@@ -128,7 +128,18 @@ struct aux_channel
                                                                    : "Post"s;
     }
 
-    enum_parameter_id default_fader_tap;
+    enum class parameter_key : parameter::key
+    {
+        default_fader_tap,
+    };
+
+    box<parameters_map> parameters{};
+
+    auto default_fader_tap() const -> enum_parameter_id
+    {
+        return parameters->get<enum_parameter_id>(
+                parameter_key::default_fader_tap);
+    }
 
     constexpr auto operator==(aux_channel const&) const noexcept
             -> bool = default;
