@@ -76,9 +76,6 @@ auto make_external_audio_device_ids_selector(io_direction)
 auto make_external_audio_device_name_selector(external_audio::device_id)
         -> selector<string_id>;
 
-auto make_external_audio_device_name_string_selector(external_audio::device_id)
-        -> selector<boxed_string>;
-
 auto make_external_audio_device_bus_type_selector(external_audio::device_id)
         -> selector<audio::bus_type>;
 
@@ -94,8 +91,6 @@ auto make_mixer_channel_type_selector(mixer::channel_id)
         -> selector<mixer::channel_type>;
 auto make_mixer_channel_color_selector(mixer::channel_id)
         -> selector<material_color>;
-auto make_mixer_channel_parameters_selector(mixer::channel_id)
-        -> selector<box<parameters_map>>;
 auto make_mixer_channel_volume_parameter_selector(mixer::channel_id)
         -> selector<float_parameter_id>;
 auto make_mixer_channel_pan_balance_parameter_selector(mixer::channel_id)
@@ -197,15 +192,13 @@ auto make_fx_module_parameters_selector(fx::module_id)
 auto make_fx_module_can_move_up_selector(mixer::channel_id) -> selector<bool>;
 auto make_fx_module_can_move_down_selector(mixer::channel_id) -> selector<bool>;
 auto make_parameter_name_selector(parameter_id) -> selector<boxed_string>;
-auto make_fx_parameter_value_string_selector(parameter_id)
+auto make_parameter_value_string_selector(parameter_id)
         -> selector<std::string>;
 auto make_fx_module_streams_selector(fx::module_id)
         -> selector<box<fx::module_streams>>;
 auto make_audio_stream_selector(audio_stream_id)
         -> selector<audio_stream_buffer>;
 
-auto make_float_parameter_normalized_value_selector(float_parameter_id)
-        -> selector<float>;
 auto make_float_parameter_bipolar_selector(float_parameter_id)
         -> selector<bool>;
 auto make_enum_parameter_values_selector(enum_parameter_id)
@@ -222,6 +215,10 @@ auto make_parameter_max_selector(parameter::id_t<P>)
 template <class P>
 auto make_parameter_value_selector(parameter::id_t<P>)
         -> selector<parameter::value_type_t<P>>;
+
+template <class P>
+auto make_parameter_normalized_value_selector(parameter::id_t<P>)
+        -> selector<float>;
 
 auto make_parameter_is_midi_assignable_selector(parameter_id) -> selector<bool>;
 

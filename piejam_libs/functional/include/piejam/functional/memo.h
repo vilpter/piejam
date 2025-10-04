@@ -4,11 +4,13 @@
 
 #pragma once
 
+#include <boost/assert.hpp>
 #include <boost/callable_traits/args.hpp>
 #include <boost/callable_traits/return_type.hpp>
 #include <boost/mp11/algorithm.hpp>
 
 #include <functional>
+#include <memory>
 #include <optional>
 #include <tuple>
 #include <type_traits>
@@ -17,13 +19,32 @@
 namespace piejam
 {
 
+template <class T>
+class memo;
+
+namespace detail
+{
+
+template <class>
+inline constexpr bool is_memo_dispatch_v = false;
+
+template <class T>
+inline constexpr bool is_memo_dispatch_v<memo<T>> = true;
+
+} // namespace detail
+
+template <class T>
+inline constexpr bool is_memo_v =
+        detail::is_memo_dispatch_v<std::remove_cvref_t<T>>;
+
 template <class F>
 class memo
 {
 public:
     template <class G>
+        requires(!is_memo_v<G>)
     explicit memo(G&& f) noexcept(std::is_nothrow_constructible_v<F, G>)
-        : m_f(std::forward<G>(f))
+        : m_f{std::forward<G>(f)}
     {
     }
 
@@ -52,8 +73,8 @@ private:
 
         template <class Args, class Result>
         args_and_result(Args&& args, Result&& result)
-            : args(std::forward<Args>(args))
-            , result(std::forward<Result>(result))
+            : args{std::forward<Args>(args)}
+            , result{std::forward<Result>(result)}
         {
         }
 
@@ -68,5 +89,49 @@ private:
 
 template <class F>
 memo(F&&) -> memo<std::decay_t<F>>;
+
+template <class T>
+class shared_memo;
+
+namespace detail
+{
+
+template <class>
+inline constexpr bool is_shared_memo_dispatch_v = false;
+
+template <class T>
+inline constexpr bool is_shared_memo_dispatch_v<memo<T>> = true;
+
+} // namespace detail
+
+template <class T>
+inline constexpr bool is_shared_memo_v =
+        detail::is_shared_memo_dispatch_v<std::remove_cvref_t<T>>;
+
+template <class F>
+class shared_memo
+{
+public:
+    template <class G>
+        requires(!is_memo_v<G> && !is_shared_memo_v<G>)
+    explicit shared_memo(G&& f)
+        : m_memo{std::make_shared<memo<F>>(std::forward<G>(f))}
+    {
+    }
+
+    template <class... Args>
+    auto operator()(Args&&... args) const -> std::add_lvalue_reference_t<
+            std::add_const_t<std::invoke_result_t<F, Args&&...>>>
+    {
+        BOOST_ASSERT(m_memo);
+        return (*m_memo)(std::forward<Args>(args)...);
+    }
+
+private:
+    std::shared_ptr<memo<F>> m_memo;
+};
+
+template <class F>
+shared_memo(F&&) -> shared_memo<std::decay_t<F>>;
 
 } // namespace piejam

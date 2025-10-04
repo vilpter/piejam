@@ -38,7 +38,7 @@ Parameter::~Parameter() = default;
 void
 Parameter::onSubscribe()
 {
-    observe(runtime::selectors::make_fx_parameter_value_string_selector(
+    observe(runtime::selectors::make_parameter_value_string_selector(
                     m_paramId),
             [this](std::string const& text) {
                 setValueString(QString::fromStdString(text));

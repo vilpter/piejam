@@ -39,7 +39,7 @@ FloatParameter::onSubscribe()
                 setValue(static_cast<double>(value));
             });
 
-    observe(runtime::selectors::make_float_parameter_normalized_value_selector(
+    observe(runtime::selectors::make_parameter_normalized_value_selector(
                     float_param_id),
             [this](float const value) {
                 setNormalizedValue(static_cast<double>(value));
