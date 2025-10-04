@@ -9,12 +9,10 @@
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
 #include <piejam/runtime/enum_parameter.h>
+#include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/fx/module.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/float_normalize.h>
-#include <piejam/runtime/parameter/int_descriptor.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/runtime/parameters_map.h>
 
 #include <format>
 
@@ -83,39 +81,36 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                     box(runtime::parameters_map_by<parameter_key>{
                             {parameter_key::type,
                              params_factory.make_parameter(
-                                     runtime::enum_parameter<type>(
+                                     runtime::make_enum_parameter(
                                              "Type"s,
+                                             type::lp2,
                                              &to_type_string))},
                             {parameter_key::cutoff,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Cutoff"s),
-                                             .default_value = 440.f,
-                                             .min = 10.f,
-                                             .max = 20000.f,
-                                             .value_to_string =
-                                                     &to_cutoff_string,
-                                             .to_normalized =
-                                                     &runtime::parameter::
-                                                             to_normalized_log,
-                                             .from_normalized =
-                                                     &runtime::parameter::
-                                                             from_normalized_log})},
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Cutoff",
+                                                     .default_value = 440.f,
+                                             },
+                                             runtime::
+                                                     logarithmic_float_parameter_range<
+                                                             10.f,
+                                                             20000.f>{})
+                                             .set_value_to_string(
+                                                     &to_cutoff_string))},
                             {parameter_key::resonance,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Resonance"s),
-                                             .default_value = 0.f,
-                                             .min = 0.f,
-                                             .max = 1.f,
-                                             .value_to_string =
-                                                     &to_resonance_string,
-                                             .to_normalized =
-                                                     &runtime::parameter::
-                                                             to_normalized_linear,
-                                             .from_normalized =
-                                                     &runtime::parameter::
-                                                             from_normalized_linear})}}
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Resonance",
+                                                     .default_value = 0.f,
+                                             },
+                                             runtime::
+                                                     linear_float_parameter_range<
+                                                             0.f,
+                                                             1.f>{})
+                                             .set_value_to_string(
+                                                     &to_resonance_string))}}
                                 .as_base()),
             .streams =
                     box(runtime::fx::module_streams{

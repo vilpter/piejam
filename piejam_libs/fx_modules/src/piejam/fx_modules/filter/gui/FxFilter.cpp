@@ -13,7 +13,7 @@
 #include <piejam/gui/model/SpectrumGenerator.h>
 #include <piejam/gui/model/SpectrumSlot.h>
 #include <piejam/renew.h>
-#include <piejam/runtime/parameters_map.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/selectors.h>
 
 namespace piejam::fx_modules::filter::gui
@@ -63,8 +63,7 @@ FxFilter::FxFilter(
               runtime::selectors::make_fx_module_bus_type_selector(
                       fx_mod_id))))}
 {
-    auto const parameters =
-            runtime::parameters_map_view<parameter_key>(this->parameters());
+    auto const parameters = this->parameters().view_by<parameter_key>();
 
     makeParameter(
             m_impl->filterTypeParam,

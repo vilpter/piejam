@@ -4,6 +4,8 @@
 
 #include <piejam/fx_modules/dual_pan/dual_pan_component.h>
 
+#include <piejam/fx_modules/dual_pan/dual_pan_module.h>
+
 #include <piejam/audio/components/pan_balance.h>
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/engine/graph.h>
@@ -11,12 +13,10 @@
 #include <piejam/audio/engine/identity_processor.h>
 #include <piejam/audio/engine/mix_processor.h>
 #include <piejam/audio/engine/pan_balance_processor.h>
-#include <piejam/fx_modules/dual_pan/dual_pan_module.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_processor_factory.h>
-
-#include <boost/container/flat_map.hpp>
 
 #include <array>
 #include <format>

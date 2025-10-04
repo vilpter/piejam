@@ -4,7 +4,9 @@
 
 #include <piejam/runtime/actions/set_parameter_value.h>
 
-#include <piejam/runtime/parameter/store.h>
+#include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/enum_parameter.h>
+#include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/state.h>
 #include <piejam/runtime/ui/thunk_action.h>
 

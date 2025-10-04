@@ -22,6 +22,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/math.h
     include/piejam/numeric/mipp.h
     include/piejam/numeric/mipp_iterator.h
+    include/piejam/numeric/normalize.h
     include/piejam/numeric/pos_mod.h
     include/piejam/numeric/pow_n.h
     include/piejam/numeric/rms.h

@@ -4,17 +4,17 @@
 
 #include <piejam/fx_modules/utility/utility_component.h>
 
+#include <piejam/fx_modules/utility/utility_module.h>
+
 #include <piejam/audio/components/amplifier.h>
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/engine/event_converter_processor.h>
 #include <piejam/audio/engine/graph.h>
 #include <piejam/audio/engine/graph_generic_algorithms.h>
-#include <piejam/fx_modules/utility/utility_module.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_processor_factory.h>
-
-#include <boost/container/flat_map.hpp>
 
 #include <array>
 #include <format>

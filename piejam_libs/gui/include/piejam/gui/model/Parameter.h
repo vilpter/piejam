@@ -41,7 +41,7 @@ public:
 
     Q_ENUM(Type)
 
-    virtual auto type() const noexcept -> Type;
+    virtual auto type() const noexcept -> Type = 0;
 
     Q_INVOKABLE void resetToDefault();
 
@@ -52,9 +52,5 @@ private:
     ParameterId m_paramId;
     std::unique_ptr<MidiAssignable> m_midi;
 };
-
-auto makeParameter(
-        runtime::state_access const&,
-        piejam::gui::model::ParameterId const&) -> std::unique_ptr<Parameter>;
 
 } // namespace piejam::gui::model

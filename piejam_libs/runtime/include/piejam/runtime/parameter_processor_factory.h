@@ -4,17 +4,13 @@
 
 #pragma once
 
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/processors/parameter_processor_factory.h>
 
 namespace piejam::runtime
 {
 
-using parameter_processor_factory = boost::mp11::mp_rename<
-        boost::mp11::mp_map_keys<parameters_fwd_t>,
-        processors::parameter_processor_factory>;
+using parameter_processor_factory = boost::mp11::
+        mp_rename<parameters_fwd_t, processors::parameter_processor_factory>;
 
 } // namespace piejam::runtime

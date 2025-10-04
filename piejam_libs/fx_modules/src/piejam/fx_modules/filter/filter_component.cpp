@@ -4,6 +4,8 @@
 
 #include <piejam/fx_modules/filter/filter_component.h>
 
+#include <piejam/fx_modules/filter/filter_module.h>
+
 #include <piejam/audio/dsp/biquad_filter.h>
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/engine/event_converter_processor.h>
@@ -17,16 +19,14 @@
 #include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/slice_algorithms.h>
-#include <piejam/fx_modules/filter/filter_module.h>
 #include <piejam/make_constant.h>
 #include <piejam/runtime/components/stream.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_processor_factory.h>
 #include <piejam/runtime/processors/stream_processor_factory.h>
 
-#include <boost/container/flat_map.hpp>
-#include <boost/container/static_vector.hpp>
 #include <boost/hof/match.hpp>
 #include <boost/mp11/map.hpp>
 
@@ -84,54 +84,54 @@ make_coefficent_converter_processor(audio::sample_rate const sample_rate)
     static constexpr std::array s_output_names{"coeffs"sv};
     return audio::engine::make_event_converter_processor(
             [inv_sr = 1.f / sample_rate.as<float>()](
-                    int const type,
+                    filter::type const type,
                     float const cutoff,
                     float const res) {
                 switch (type)
                 {
-                    case std::to_underlying(type::lp2):
+                    case type::lp2:
                         return make_coefficients(
                                 lp2_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case std::to_underlying(type::lp4):
+                    case type::lp4:
                         return make_coefficients(
                                 lp4_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case std::to_underlying(type::bp2):
+                    case type::bp2:
                         return make_coefficients(
                                 bp2_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case std::to_underlying(type::bp4):
+                    case type::bp4:
                         return make_coefficients(
                                 bp4_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case std::to_underlying(type::hp2):
+                    case type::hp2:
                         return make_coefficients(
                                 hp2_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case std::to_underlying(type::hp4):
+                    case type::hp4:
                         return make_coefficients(
                                 hp4_tag{},
                                 cutoff,
                                 res,
                                 inv_sr);
 
-                    case std::to_underlying(type::br):
+                    case type::br:
                         return make_coefficients(br_tag{}, cutoff, res, inv_sr);
 
                     default:
@@ -314,12 +314,12 @@ class component final : public audio::engine::component
 
 public:
     component(runtime::internal_fx_component_factory_args const& args)
-        : m_type_input_proc(
-                  runtime::processors::find_or_make_parameter_processor(
-                          args.param_procs,
+        : m_type_input_proc(args.param_procs.find_or_make_processor(
+                  std::get<runtime::enum_parameter_id>(
                           args.fx_mod.parameters->at(
-                                  std::to_underlying(parameter_key::type)),
-                          "type"))
+                                  std::to_underlying(parameter_key::type))),
+                  std::in_place_type<type>,
+                  "type"))
         , m_cutoff_input_proc(
                   runtime::processors::find_or_make_parameter_processor(
                           args.param_procs,

@@ -5,20 +5,21 @@
 #pragma once
 
 #include <piejam/runtime/audio_stream.h>
+#include <piejam/runtime/bool_parameter.h>
 #include <piejam/runtime/channel_index_pair.h>
+#include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/external_audio.h>
+#include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/fx/ladspa_instances.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/fx/registry.h>
+#include <piejam/runtime/int_parameter.h>
 #include <piejam/runtime/material_color.h>
 #include <piejam/runtime/midi_assignment.h>
 #include <piejam/runtime/midi_device_config.h>
 #include <piejam/runtime/midi_devices.h>
 #include <piejam/runtime/mixer.h>
 #include <piejam/runtime/parameter/assignment.h>
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameter/store.h>
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/root_view_mode.h>

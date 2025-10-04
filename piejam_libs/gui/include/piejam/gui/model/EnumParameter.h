@@ -5,7 +5,7 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/IntParameter.h>
+#include <piejam/gui/model/Parameter.h>
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/pimpl.h>
@@ -15,10 +15,13 @@ class QAbstractListModel;
 namespace piejam::gui::model
 {
 
-class EnumParameter final : public IntParameter
+class EnumParameter final : public Parameter
 {
     Q_OBJECT
 
+    M_PIEJAM_GUI_PROPERTY(int, value, setValue)
+    M_PIEJAM_GUI_PROPERTY(int, minValue, setMinValue)
+    M_PIEJAM_GUI_PROPERTY(int, maxValue, setMaxValue)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, values)
 
 public:
@@ -40,7 +43,13 @@ public:
         return static_cast<E>(value());
     }
 
+    Q_INVOKABLE void changeValue(int);
+
 private:
+    void onSubscribe() override;
+
+    auto paramId() const -> runtime::enum_parameter_id;
+
     pimpl<EnumListModel> m_values;
 };
 

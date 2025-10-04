@@ -6,7 +6,6 @@
 
 #include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/selectors.h>
-#include <piejam/runtime/ui/thunk_action.h>
 
 namespace piejam::gui::model
 {
@@ -18,10 +17,10 @@ IntParameter::IntParameter(
 
 {
     setMinValue(observe_once(
-            runtime::selectors::make_int_parameter_min_selector(param_id)));
+            runtime::selectors::make_parameter_min_selector(param_id)));
 
     setMaxValue(observe_once(
-            runtime::selectors::make_int_parameter_max_selector(param_id)));
+            runtime::selectors::make_parameter_max_selector(param_id)));
 }
 
 auto
@@ -35,7 +34,7 @@ IntParameter::onSubscribe()
 {
     Parameter::onSubscribe();
 
-    observe(runtime::selectors::make_int_parameter_value_selector(paramId()),
+    observe(runtime::selectors::make_parameter_value_selector(paramId()),
             [this](int const value) { setValue(value); });
 }
 

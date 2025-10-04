@@ -105,11 +105,29 @@ from_json(nlohmann::json const& j, assignment<Value>& p)
     j.at("value").get_to(p.value);
 }
 
+template <class Parameter>
+void
+to_json(nlohmann::json& j, tagged_value<Parameter> const& v)
+{
+    j = v.value;
+}
+
+template <class Parameter>
+void
+from_json(nlohmann::json const& j, tagged_value<Parameter>& v)
+{
+    j.get_to(v.value);
+}
+
 static auto const parameter_value_assignment_serializer =
         persistence::variant_serializer{
-                persistence::variant_option<float>{"float"},
-                persistence::variant_option<int>{"int"},
-                persistence::variant_option<bool>{"bool"},
+                persistence::variant_option<tagged_value<float_parameter>>{
+                        "float"},
+                persistence::variant_option<tagged_value<int_parameter>>{"int"},
+                persistence::variant_option<tagged_value<bool_parameter>>{
+                        "bool"},
+                persistence::variant_option<tagged_value<enum_parameter>>{
+                        "enum"},
         };
 
 void

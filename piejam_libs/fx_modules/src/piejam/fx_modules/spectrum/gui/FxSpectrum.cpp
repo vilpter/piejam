@@ -15,7 +15,7 @@
 #include <piejam/gui/model/SpectrumGenerator.h>
 #include <piejam/gui/model/StreamProcessor.h>
 #include <piejam/renew.h>
-#include <piejam/runtime/parameters_map.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/selectors.h>
 #include <piejam/switch_cast.h>
 
@@ -82,8 +82,7 @@ FxSpectrum::FxSpectrum(
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
-    auto const parameters =
-            runtime::parameters_map_view<parameter_key>(this->parameters());
+    auto const parameters = this->parameters().view_by<parameter_key>();
 
     makeParameter(
             m_impl->spectrumProcessor.first.active,

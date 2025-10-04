@@ -28,9 +28,8 @@ using update_state_action = ui::update_state_action<state>;
 
 struct locations;
 
-using parameter_processor_factory = boost::mp11::mp_rename<
-        boost::mp11::mp_map_keys<parameters_fwd_t>,
-        processors::parameter_processor_factory>;
+using parameter_processor_factory = boost::mp11::
+        mp_rename<parameters_fwd_t, processors::parameter_processor_factory>;
 
 class parameter_factory;
 

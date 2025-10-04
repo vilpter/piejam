@@ -12,12 +12,13 @@
 #include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/EnumParameter.h>
 #include <piejam/gui/model/FloatParameter.h>
+#include <piejam/gui/model/IntParameter.h>
 #include <piejam/gui/model/ScopeGenerator.h>
 #include <piejam/gui/model/StreamProcessor.h>
 #include <piejam/gui/model/StreamSamplesCache.h>
 #include <piejam/gui/model/WaveformGenerator.h>
 #include <piejam/renew.h>
-#include <piejam/runtime/parameters_map.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/selectors.h>
 
 namespace piejam::fx_modules::scope::gui
@@ -139,8 +140,7 @@ FxScope::FxScope(
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
-    auto const parameters =
-            runtime::parameters_map_view<parameter_key>(this->parameters());
+    auto const parameters = this->parameters().view_by<parameter_key>();
 
     makeParameter(
             m_impl->mode,

@@ -34,8 +34,7 @@ FloatParameter::onSubscribe()
 
     auto const float_param_id = paramId();
 
-    observe(runtime::selectors::make_float_parameter_value_selector(
-                    float_param_id),
+    observe(runtime::selectors::make_parameter_value_selector(float_param_id),
             [this](float const value) {
                 setValue(static_cast<double>(value));
             });

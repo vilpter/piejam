@@ -204,17 +204,24 @@ auto make_fx_module_streams_selector(fx::module_id)
 auto make_audio_stream_selector(audio_stream_id)
         -> selector<audio_stream_buffer>;
 
-auto make_bool_parameter_value_selector(bool_parameter_id) -> selector<bool>;
-auto make_float_parameter_value_selector(float_parameter_id) -> selector<float>;
 auto make_float_parameter_normalized_value_selector(float_parameter_id)
         -> selector<float>;
 auto make_float_parameter_bipolar_selector(float_parameter_id)
         -> selector<bool>;
-auto make_int_parameter_value_selector(int_parameter_id) -> selector<int>;
-auto make_int_parameter_min_selector(int_parameter_id) -> selector<int>;
-auto make_int_parameter_max_selector(int_parameter_id) -> selector<int>;
-auto make_int_parameter_enum_values_selector(int_parameter_id)
+auto make_enum_parameter_values_selector(enum_parameter_id)
         -> selector<std::vector<std::pair<std::string, int>>>;
+
+template <class P>
+auto make_parameter_min_selector(parameter::id_t<P>)
+        -> selector<parameter::value_type_t<P>>;
+
+template <class P>
+auto make_parameter_max_selector(parameter::id_t<P>)
+        -> selector<parameter::value_type_t<P>>;
+
+template <class P>
+auto make_parameter_value_selector(parameter::id_t<P>)
+        -> selector<parameter::value_type_t<P>>;
 
 auto make_parameter_is_midi_assignable_selector(parameter_id) -> selector<bool>;
 

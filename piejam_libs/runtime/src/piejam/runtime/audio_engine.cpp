@@ -545,13 +545,12 @@ make_graph(
                     mixer_channel_aux_send->connect(g);
 
                     auto aux_send_fader_tap =
-                            static_cast<mixer::aux_send_fader_tap>(
-                                    params.at(aux_send.fader_tap).get());
+                            params.at(aux_send.fader_tap)
+                                    .as<mixer::aux_send_fader_tap>();
                     auto aux_channel_fader_tap =
-                            static_cast<mixer::aux_channel_fader_tap>(
-                                    params.at(mixer_state.aux_channels.at(aux)
-                                                      .default_fader_tap)
-                                            .get());
+                            params.at(mixer_state.aux_channels.at(aux)
+                                              .default_fader_tap)
+                                    .as<mixer::aux_channel_fader_tap>();
 
                     auto const [out_L, out_R] = [&]() {
                         switch (aux_send_fader_tap)
@@ -606,7 +605,7 @@ connect_midi(
         audio::engine::graph& g,
         processor_map const& procs,
         audio::engine::processor* midi_learn_output_proc,
-        parameter_processor_factory const& param_procs,
+        parameter_processor_factory& param_procs,
         midi_assignments_map const& assignments)
 {
     auto* const midi_in_proc = procs.find(engine_processors::midi_input).get();
@@ -652,13 +651,11 @@ connect_midi(
                                 {*midi_assign_proc, out_index++},
                                 {*midi_conv_proc, 0});
 
-                        if (auto param_proc =
-                                    param_procs.find_processor(param_id))
-                        {
-                            g.event.insert(
-                                    {*midi_conv_proc, 0},
-                                    {*param_proc, 0});
-                        }
+                        auto param_proc =
+                                param_procs.find_or_make_processor(param_id);
+                        BOOST_ASSERT(param_proc);
+
+                        g.event.insert({*midi_conv_proc, 0}, {*param_proc, 0});
                     },
                     id);
         }
@@ -759,26 +756,23 @@ template <class P>
 void
 audio_engine::set_parameter_value(
         parameter::id_t<P> const id,
-        typename P::value_type const& value) const
+        parameter::value_type_t<P> const value) const
 {
     m_impl->param_procs.set(id, value);
 }
 
+template void audio_engine::set_parameter_value(bool_parameter_id, bool) const;
 template void
-audio_engine::set_parameter_value(bool_parameter_id, bool const&) const;
-
-template void
-audio_engine::set_parameter_value(float_parameter_id, float const&) const;
-
-template void
-audio_engine::set_parameter_value(int_parameter_id, int const&) const;
+audio_engine::set_parameter_value(float_parameter_id, float) const;
+template void audio_engine::set_parameter_value(int_parameter_id, int) const;
+template void audio_engine::set_parameter_value(enum_parameter_id, int) const;
 
 template <class P>
 auto
 audio_engine::get_parameter_update(parameter::id_t<P> const id) const
-        -> std::optional<typename P::value_type>
+        -> std::optional<parameter::value_type_t<P>>
 {
-    using value_type = typename P::value_type;
+    using value_type = parameter::value_type_t<P>;
     std::optional<value_type> result;
     m_impl->param_procs.consume(id, [&result](value_type const& lvl) {
         result = lvl;
@@ -793,6 +787,9 @@ template auto audio_engine::get_parameter_update(float_parameter_id) const
         -> std::optional<float>;
 
 template auto audio_engine::get_parameter_update(int_parameter_id) const
+        -> std::optional<int>;
+
+template auto audio_engine::get_parameter_update(enum_parameter_id) const
         -> std::optional<int>;
 
 auto

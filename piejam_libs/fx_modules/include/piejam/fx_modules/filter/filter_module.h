@@ -26,7 +26,6 @@ enum class type
     hp4,
     br,
 
-    _default = lp2,
     _min = bypass,
     _max = br,
 };

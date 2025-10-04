@@ -19,7 +19,6 @@ enum class mode_mono : int
     free,
     trigger,
 
-    _default = trigger,
     _min = free,
     _max = trigger,
 };
@@ -30,7 +29,6 @@ enum class mode_stereo : int
     trigger_a,
     trigger_b,
 
-    _default = trigger_a,
     _min = free,
     _max = trigger_b,
 };
@@ -40,7 +38,6 @@ enum class trigger_slope : int
     rising_edge,
     falling_edge,
 
-    _default = rising_edge,
     _min = rising_edge,
     _max = falling_edge,
 };

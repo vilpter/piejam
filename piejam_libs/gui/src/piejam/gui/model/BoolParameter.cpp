@@ -6,7 +6,6 @@
 
 #include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/selectors.h>
-#include <piejam/runtime/ui/thunk_action.h>
 
 namespace piejam::gui::model
 {
@@ -29,7 +28,7 @@ BoolParameter::onSubscribe()
 {
     Parameter::onSubscribe();
 
-    observe(runtime::selectors::make_bool_parameter_value_selector(paramId()),
+    observe(runtime::selectors::make_parameter_value_selector(paramId()),
             [this](bool const value) { setValue(value); });
 }
 

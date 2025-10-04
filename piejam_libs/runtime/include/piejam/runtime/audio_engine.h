@@ -34,13 +34,13 @@ public:
             unsigned num_device_output_channels);
 
     template <class P>
-    void set_parameter_value(parameter::id_t<P>, typename P::value_type const&)
+    void set_parameter_value(parameter::id_t<P>, parameter::value_type_t<P>)
             const;
 
     template <class P>
     [[nodiscard]]
     auto get_parameter_update(parameter::id_t<P>) const
-            -> std::optional<typename P::value_type>;
+            -> std::optional<parameter::value_type_t<P>>;
 
     [[nodiscard]]
     auto get_learned_midi() const -> std::optional<midi::external_event>;

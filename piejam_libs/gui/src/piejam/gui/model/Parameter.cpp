@@ -4,11 +4,7 @@
 
 #include <piejam/gui/model/Parameter.h>
 
-#include <piejam/gui/model/BoolParameter.h>
-#include <piejam/gui/model/FloatParameter.h>
-#include <piejam/gui/model/IntParameter.h>
 #include <piejam/gui/model/MidiAssignable.h>
-#include <piejam/gui/model/StereoLevel.h>
 
 #include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/selectors.h>
@@ -19,16 +15,6 @@
 
 namespace piejam::gui::model
 {
-
-namespace
-{
-
-using parameter_id_to_FxParameter = boost::mp11::mp_list<
-        boost::mp11::mp_list<runtime::bool_parameter_id, BoolParameter>,
-        boost::mp11::mp_list<runtime::float_parameter_id, FloatParameter>,
-        boost::mp11::mp_list<runtime::int_parameter_id, IntParameter>>;
-
-} // namespace
 
 Parameter::Parameter(
         runtime::state_access const& state_access,
@@ -48,19 +34,6 @@ Parameter::Parameter(
 }
 
 Parameter::~Parameter() = default;
-
-auto
-Parameter::type() const noexcept -> Type
-{
-    return std::visit(
-            []<class T>(T const&) -> Type {
-                return boost::mp11::mp_at_c<
-                        boost::mp11::
-                                mp_map_find<parameter_id_to_FxParameter, T>,
-                        1>::StaticType;
-            },
-            m_paramId);
-}
 
 void
 Parameter::onSubscribe()
@@ -88,27 +61,6 @@ auto
 Parameter::paramId() const -> ParameterId
 {
     return m_paramId;
-}
-
-auto
-makeParameter(
-        runtime::state_access const& state_access,
-        piejam::gui::model::ParameterId const& paramId)
-        -> std::unique_ptr<Parameter>
-{
-    return std::visit(
-            [&]<class ParamId>(ParamId const typed_param_id)
-                    -> std::unique_ptr<Parameter> {
-                using FxParameterType = boost::mp11::mp_at_c<
-                        boost::mp11::mp_map_find<
-                                parameter_id_to_FxParameter,
-                                ParamId>,
-                        1>;
-                return std::make_unique<FxParameterType>(
-                        state_access,
-                        typed_param_id);
-            },
-            paramId);
 }
 
 } // namespace piejam::gui::model

@@ -44,6 +44,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/audio_engine_middleware.h
     include/piejam/runtime/audio_stream.h
     include/piejam/runtime/audio_stream_id.h
+    include/piejam/runtime/bool_parameter.h
     include/piejam/runtime/channel_index_pair.h
     include/piejam/runtime/components/make_fx.h
     include/piejam/runtime/components/mixer_channel.h
@@ -55,6 +56,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/external_audio.h
     include/piejam/runtime/external_audio_fwd.h
     include/piejam/runtime/fader_mapping.h
+    include/piejam/runtime/float_parameter.h
     include/piejam/runtime/fwd.h
     include/piejam/runtime/fx/fwd.h
     include/piejam/runtime/fx/get_parameter_name.h
@@ -63,6 +65,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/fx/module.h
     include/piejam/runtime/fx/registry.h
     include/piejam/runtime/fx/unavailable_ladspa.h
+    include/piejam/runtime/int_parameter.h
     include/piejam/runtime/internal_fx_component_factory.h
     include/piejam/runtime/internal_fx_module_factory.h
     include/piejam/runtime/ladspa_fx/ladspa_fx_component.h
@@ -80,23 +83,21 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/mixer.h
     include/piejam/runtime/mixer_fwd.h
     include/piejam/runtime/parameter/assignment.h
-    include/piejam/runtime/parameter/bool_descriptor.h
-    include/piejam/runtime/parameter/float_descriptor.h
-    include/piejam/runtime/parameter/float_normalize.h
+    include/piejam/runtime/parameter/descriptor.h
+    include/piejam/runtime/parameter/flags.h
     include/piejam/runtime/parameter/fwd.h
-    include/piejam/runtime/parameter/int_descriptor.h
+    include/piejam/runtime/parameter/map.h
     include/piejam/runtime/parameter/store.h
     include/piejam/runtime/parameter_factory.h
     include/piejam/runtime/parameter_processor_factory.h
     include/piejam/runtime/parameters.h
-
     include/piejam/runtime/persistence/access.h
     include/piejam/runtime/persistence/app_config.h
     include/piejam/runtime/persistence/fwd.h
     include/piejam/runtime/persistence/fx_internal_id.h
+    include/piejam/runtime/persistence/optional.h
     include/piejam/runtime/persistence/parameter_midi_assignments.h
     include/piejam/runtime/persistence/parameter_value_assignments.h
-    include/piejam/runtime/persistence/optional.h
     include/piejam/runtime/persistence/session.h
     include/piejam/runtime/persistence/strong_type.h
     include/piejam/runtime/persistence/variant.h
@@ -176,8 +177,6 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/state.cpp
     src/piejam/runtime/state_access.cpp
     src/piejam/runtime/thunk_action.cpp
-    include/piejam/runtime/parameters_map.h
-    include/piejam/runtime/parameter/flags.h
 )
 
 find_package(nlohmann_json REQUIRED)

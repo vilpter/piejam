@@ -4,13 +4,15 @@
 
 #include <piejam/runtime/ladspa_fx/ladspa_fx_module.h>
 
-#include <piejam/ladspa/port_descriptor.h>
+#include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/enum_parameter.h>
+#include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/fx/module.h>
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/float_normalize.h>
-#include <piejam/runtime/parameter/int_descriptor.h>
+#include <piejam/runtime/int_parameter.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_factory.h>
+
+#include <piejam/ladspa/port_descriptor.h>
 
 #include <boost/container/flat_map.hpp>
 
@@ -52,27 +54,23 @@ private:
     {
         parameter_factory params_factory{m_params};
 
-        bool const logarithmic = p.logarithmic && p.min > 0.f && p.max > 0.f;
+        auto const range_kind =
+                p.logarithmic && p.min > 0.f && p.max > 0.f
+                        ? float_parameter_range_kind::logarithmic
+                        : float_parameter_range_kind::linear;
 
         module_params.emplace(
                 port_desc.index,
-                params_factory.make_parameter(
-                        float_parameter{
-                                .name = box(port_desc.name),
+                params_factory.make_parameter(make_float_parameter(
+                        {
+                                .name = port_desc.name,
                                 .default_value = p.default_value,
+                        },
+                        {
                                 .min = p.min,
                                 .max = p.max,
-                                .to_normalized =
-                                        logarithmic
-                                                ? &parameter::to_normalized_log
-                                                : &parameter::
-                                                          to_normalized_linear,
-                                .from_normalized =
-                                        logarithmic
-                                                ? &parameter::
-                                                          from_normalized_log
-                                                : &parameter::
-                                                          from_normalized_linear}));
+                                .kind = range_kind,
+                        })));
     }
 
     void operator()(
@@ -86,12 +84,12 @@ private:
 
         module_params.emplace(
                 port_desc.index,
-                params_factory.make_parameter(
-                        int_parameter{
-                                .name = box(port_desc.name),
-                                .default_value = p.default_value,
-                                .min = p.min,
-                                .max = p.max}));
+                params_factory.make_parameter(make_int_parameter({
+                        .name = port_desc.name,
+                        .default_value = p.default_value,
+                        .min = p.min,
+                        .max = p.max,
+                })));
     }
 
     void operator()(
@@ -103,10 +101,10 @@ private:
 
         module_params.emplace(
                 port_desc.index,
-                params_factory.make_parameter(
-                        bool_parameter{
-                                .name = box(port_desc.name),
-                                .default_value = p.default_value}));
+                params_factory.make_parameter(make_bool_parameter({
+                        .name = port_desc.name,
+                        .default_value = p.default_value,
+                })));
     }
 
     parameter::store& m_params;

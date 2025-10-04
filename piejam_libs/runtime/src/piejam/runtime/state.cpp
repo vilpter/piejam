@@ -8,7 +8,6 @@
 #include <piejam/runtime/fader_mapping.h>
 #include <piejam/runtime/internal_fx_module_factory.h>
 #include <piejam/runtime/ladspa_fx/ladspa_fx_module.h>
-#include <piejam/runtime/parameter/float_normalize.h>
 #include <piejam/runtime/parameter_factory.h>
 
 #include <piejam/audio/types.h>
@@ -44,7 +43,7 @@ to_normalized_volume(float_parameter const&, float const value)
 constexpr auto
 from_normalized_volume(float_parameter const&, float const norm_value) -> float
 {
-    return fader_mapping::from_normalized_dB_maping<
+    return fader_mapping::from_normalized_dB_mapping<
             fader_mapping::volume,
             fader_mapping::min_gain_dB>(norm_value);
 }
@@ -60,7 +59,7 @@ to_normalized_send(float_parameter const&, float const value)
 constexpr auto
 from_normalized_send(float_parameter const&, float const norm_value) -> float
 {
-    return fader_mapping::from_normalized_dB_maping<
+    return fader_mapping::from_normalized_dB_mapping<
             fader_mapping::send,
             fader_mapping::min_gain_dB>(norm_value);
 }
@@ -108,18 +107,17 @@ apply_parameter_values(
 {
     for (auto&& [key, value] : values)
     {
-        if (auto it = parameters.find(key); it != parameters.end())
+        if (auto param_id = parameters.find(key); param_id)
         {
-            auto const param_id = it->second;
             std::visit(
                     boost::hof::match(
                             [&params_store]<class P>(
                                     parameter::id_t<P> id,
-                                    parameter::value_type_t<P> v) {
+                                    parameter::tagged_value<P> v) {
                                 params_store.at(id).set(v);
                             },
                             [](auto&&, auto&&) { BOOST_ASSERT(false); }),
-                    param_id,
+                    *param_id,
                     value);
         }
     }
@@ -147,15 +145,15 @@ apply_midi_assignments(
     midi_assignments_map new_assignments;
     for (auto&& [key, value] : midi_assigns)
     {
-        if (auto it = parameters.find(key); it != parameters.end())
+        if (auto param_id = parameters.find(key); param_id)
         {
             BOOST_ASSERT(
                     std::visit(
                             []<class ParamId>(ParamId) {
                                 return is_midi_assignable_v<ParamId>;
                             },
-                            it->second));
-            new_assignments.emplace(it->second, value);
+                            *param_id));
+            new_assignments.emplace(*param_id, value);
         }
     }
 
@@ -347,31 +345,32 @@ make_aux_send(
             aux_id,
             mixer::aux_send{
                     .active = ui_params_factory.make_parameter(
-                            bool_parameter{
-                                    .name = box{"Active"s},
-                                    .default_value = false,
-                                    .value_to_string =
-                                            &parameter::default_bool_to_string}
+                            make_bool_parameter({.name = "Active"})
                                     .set_flags(
                                             {parameter_flags::
                                                      audio_graph_affecting})),
                     .fader_tap = ui_params_factory.make_parameter(
-                            enum_parameter<mixer::aux_send_fader_tap>(
+                            make_enum_parameter(
                                     "Fader Tap",
+                                    mixer::aux_send_fader_tap::auto_,
                                     &mixer::aux_send::to_fader_tap_string)
                                     .set_flags(
                                             {parameter_flags::
                                                      audio_graph_affecting})),
                     .volume = ui_params_factory.make_parameter(
-                            float_parameter{
-                                    .name = box("Send"s),
-                                    .default_value = 0.f,
-                                    .min = 0.f,
-                                    .max = 1.f,
-                                    .value_to_string = &volume_to_string,
-                                    .to_normalized = &to_normalized_send,
-                                    .from_normalized =
-                                            &from_normalized_send})});
+                            make_float_parameter(
+                                    {
+                                            .name = "Send"s,
+                                            .default_value = 0.f,
+                                    },
+                                    {
+                                            .min = 0.f,
+                                            .max = 1.f,
+                                    })
+                                    .set_value_to_string(&volume_to_string)
+                                    .set_to_normalized(&to_normalized_send)
+                                    .set_from_normalized(
+                                            &from_normalized_send))});
 }
 
 template <class ParameterFactory>
@@ -451,56 +450,49 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                               mixer::channel::parameter_key>{
                             {mixer::channel::parameter_key::volume,
                              params_factory.make_parameter(
-                                     float_parameter{
-                                             .name = box("Volume"s),
-                                             .default_value = 1.f,
-                                             .min = 0.f,
-                                             .max = numeric::from_dB(6.f),
-                                             .value_to_string =
-                                                     &volume_to_string,
-                                             .to_normalized =
-                                                     &to_normalized_volume,
-                                             .from_normalized =
-                                                     &from_normalized_volume})},
+                                     make_float_parameter(
+                                             {
+                                                     .name = "Volume"sv,
+                                                     .default_value = 1.f,
+                                             },
+                                             {
+                                                     .min = 0.f,
+                                                     .max = numeric::from_dB(
+                                                             6.f),
+                                             })
+                                             .set_value_to_string(
+                                                     &volume_to_string)
+                                             .set_to_normalized(
+                                                     &to_normalized_volume)
+                                             .set_from_normalized(
+                                                     &from_normalized_volume))},
                             {mixer::channel::parameter_key::pan_balance,
                              params_factory.make_parameter(
-                                     float_parameter{
-                                             .name = box(
-                                                     std::string(bool_enum_to(
+                                     make_float_parameter(
+                                             {
+                                                     .name = bool_enum_to(
                                                              to_bus_type(type),
                                                              "Pan"sv,
-                                                             "Balance"sv))),
-                                             .default_value = 0.f,
-                                             .min = -1.f,
-                                             .max = 1.f,
-                                             .to_normalized =
-                                                     &parameter::
-                                                             to_normalized_linear_static<
-                                                                     -1.f,
-                                                                     1.f>,
-                                             .from_normalized =
-                                                     &parameter::
-                                                             from_normalized_linear_static<
-                                                                     -1.f,
-                                                                     1.f>}
-                                             .set_flags(
-                                                     parameter_flags::
-                                                             bipolar))},
+                                                             "Balance"sv),
+                                                     .default_value = 0.f,
+                                             },
+                                             linear_float_parameter_range<
+                                                     -1.f,
+                                                     1.f>{})
+                                             .set_flags({parameter_flags::
+                                                                 bipolar}))},
                             {mixer::channel::parameter_key::record,
-                             params_factory.make_parameter(
-                                     bool_parameter{
-                                             .name = box("Record"s),
-                                             .default_value = false})},
+                             params_factory.make_parameter(make_bool_parameter({
+                                     .name = "Record"sv,
+                             }))},
                             {mixer::channel::parameter_key::mute,
-                             params_factory.make_parameter(
-                                     bool_parameter{
-                                             .name = box("Mute"s),
-                                             .default_value = false})},
+                             params_factory.make_parameter(make_bool_parameter({
+                                     .name = "Mute"sv,
+                             }))},
                             {mixer::channel::parameter_key::solo,
-                             params_factory.make_parameter(
-                                     bool_parameter{
-                                             .name = box("Solo"s),
-                                             .default_value = false})},
+                             params_factory.make_parameter(make_bool_parameter({
+                                     .name = "Solo"sv,
+                             }))},
                     }
                                               .as_base()},
                     .out_stream = make_stream(st.streams, 2),
@@ -522,8 +514,9 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                 channel_id,
                 mixer::aux_channel{
                         .default_fader_tap = params_factory.make_parameter(
-                                enum_parameter<mixer::aux_channel_fader_tap>(
-                                        "Fader Tap"s,
+                                make_enum_parameter(
+                                        "Fader Tap"sv,
+                                        mixer::aux_channel_fader_tap::post,
                                         &mixer::aux_channel::
                                                 to_fader_tap_string)
                                         .set_flags(

@@ -12,13 +12,16 @@
 #include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/thread/spsc_slot.h>
 
+#include <boost/core/demangle.hpp>
+
 #include <array>
+#include <format>
 
 namespace piejam::audio::engine
 {
 
 template <class T>
-class value_io_processor final : public engine::named_processor
+class value_io_processor : public engine::named_processor
 {
 public:
     using named_processor::named_processor;
@@ -41,8 +44,9 @@ public:
 
     auto type_name() const noexcept -> std::string_view override
     {
-        using namespace std::string_view_literals;
-        return "value_io"sv;
+        static std::string s_type_name{
+                std::format("{}_io", boost::core::demangle(typeid(T).name()))};
+        return s_type_name;
     }
 
     auto num_inputs() const noexcept -> std::size_t override
@@ -56,7 +60,7 @@ public:
 
     auto event_inputs() const noexcept -> event_ports override
     {
-        static std::array s_ports{event_port(std::in_place_type<T>, "in")};
+        static std::array s_ports{event_port(std::in_place_type<T>, "ext_in")};
         return s_ports;
     }
 
@@ -81,9 +85,50 @@ public:
         }
     }
 
-private:
+protected:
     thread::spsc_slot<T> m_in_value;
     thread::spsc_slot<T> m_out_value;
+};
+
+template <class E>
+    requires std::is_scoped_enum_v<E>
+class enum_io_processor final
+    : public value_io_processor<std::underlying_type_t<E>>
+{
+    using base_t = value_io_processor<std::underlying_type_t<E>>;
+
+public:
+    using base_t::base_t;
+
+    auto type_name() const noexcept -> std::string_view override
+    {
+        using namespace std::string_view_literals;
+        return "enum_io";
+    }
+
+    auto event_outputs() const noexcept -> processor::event_ports override
+    {
+        static std::array s_ports{event_port(std::in_place_type<E>, "out")};
+        return s_ports;
+    }
+
+    void process(engine::process_context const& ctx) override
+    {
+        verify_process_context(*this, ctx);
+
+        auto& out = ctx.event_outputs.get<E>(0);
+
+        using T = std::underlying_type_t<E>;
+        this->m_in_value.consume([&out](T const& value) {
+            out.insert(0, static_cast<E>(value));
+        });
+
+        for (event<T> const& ev : ctx.event_inputs.get<T>(0))
+        {
+            this->m_out_value.push(ev.value());
+            out.insert(ev.offset(), static_cast<E>(ev.value()));
+        }
+    }
 };
 
 } // namespace piejam::audio::engine

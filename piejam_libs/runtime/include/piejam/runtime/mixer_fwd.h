@@ -66,7 +66,6 @@ enum class aux_send_fader_tap
     post,
     pre,
 
-    _default = auto_,
     _min = auto_,
     _max = pre,
 };
@@ -76,7 +75,6 @@ enum class aux_channel_fader_tap
     post,
     pre,
 
-    _default = post,
     _min = post,
     _max = pre,
 };

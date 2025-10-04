@@ -11,7 +11,6 @@
 #include <boost/container/container_fwd.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>
-#include <boost/mp11/map.hpp>
 
 #include <variant>
 
@@ -20,53 +19,40 @@ namespace piejam::runtime
 
 struct midi_assignment;
 
-using float_parameter = parameter::float_descriptor;
+struct float_parameter_tag;
+using float_parameter = parameter::descriptor<float_parameter_tag, float>;
 using float_parameter_id = parameter::id_t<float_parameter>;
 
-using bool_parameter = parameter::bool_descriptor;
-using bool_parameter_id = parameter::id_t<bool_parameter>;
-
-using int_parameter = parameter::int_descriptor;
+struct int_parameter_tag;
+using int_parameter = parameter::descriptor<int_parameter_tag, int>;
 using int_parameter_id = parameter::id_t<int_parameter>;
 
-using enum_parameter_id = int_parameter_id;
+struct bool_parameter_tag;
+using bool_parameter = parameter::descriptor<bool_parameter_tag, bool>;
+using bool_parameter_id = parameter::id_t<bool_parameter>;
+
+struct enum_parameter_tag;
+using enum_parameter = parameter::descriptor<enum_parameter_tag, int>;
+using enum_parameter_id = parameter::id_t<enum_parameter>;
 
 // Store the value type here, so we don't have to include the descriptor
 // headers.
-using parameters_fwd_t = boost::mp11::mp_list<
-        boost::mp11::mp_list<bool_parameter, bool>,
-        boost::mp11::mp_list<float_parameter, float>,
-        boost::mp11::mp_list<int_parameter, int>>;
+using parameters_fwd_t = boost::mp11::
+        mp_list<float_parameter, int_parameter, bool_parameter, enum_parameter>;
 
-using parameter_ids_t = boost::mp11::mp_transform<
-        parameter::id_t,
-        boost::mp11::mp_map_keys<parameters_fwd_t>>;
-
-template <class Parameter>
-using parameter_value_type_t = boost::mp11::mp_second<
-        boost::mp11::mp_map_find<parameters_fwd_t, Parameter>>;
+using parameter_ids_t =
+        boost::mp11::mp_transform<parameter::id_t, parameters_fwd_t>;
 
 using parameter_id = boost::mp11::mp_rename<parameter_ids_t, std::variant>;
 
 using parameter_value = boost::mp11::mp_rename<
-        boost::mp11::mp_transform<boost::mp11::mp_second, parameters_fwd_t>,
+        boost::mp11::mp_transform<parameter::tagged_value, parameters_fwd_t>,
         std::variant>;
 
-template <class ParamId>
-using is_persistable_parameter =
-        boost::mp11::mp_contains<parameter_ids_t, ParamId>;
+using parameters_map = parameter::map<parameter_id>;
 
-template <class ParamId>
-constexpr bool is_persistable_parameter_v =
-        is_persistable_parameter<ParamId>::value;
-
-using parameters_map = boost::container::flat_map<parameter::key, parameter_id>;
-
-template <class Key>
-concept parameter_enum_key = scoped_enum<Key, parameter::key>;
-
-template <parameter_enum_key Key>
-class parameters_map_by;
+template <parameter::enum_key Key>
+using parameters_map_by = parameter::map_by<Key, parameter_id>;
 
 using parameter_value_assignment = parameter::assignment<parameter_value>;
 using parameter_midi_assignment = parameter::assignment<midi_assignment>;

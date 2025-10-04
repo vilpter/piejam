@@ -23,6 +23,11 @@ public:
 
     static constexpr auto StaticType = Type::Float;
 
+    auto type() const noexcept -> Type override
+    {
+        return FloatParameter::StaticType;
+    }
+
     Q_INVOKABLE void changeValue(double);
     Q_INVOKABLE void changeNormalizedValue(double);
 

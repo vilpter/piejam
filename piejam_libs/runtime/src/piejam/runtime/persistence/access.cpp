@@ -94,12 +94,11 @@ export_parameter_values(
     {
         std::visit(
                 [&]<class ParamId>(ParamId param_id) {
-                    if constexpr (is_persistable_parameter_v<ParamId>)
-                    {
-                        result.emplace_back(
-                                key,
-                                params_store.at(param_id).get());
-                    }
+                    result.emplace_back(
+                            key,
+                            parameter::tagged_value<
+                                    boost::mp11::mp_first<ParamId>>{
+                                    params_store.at(param_id).get()});
                 },
                 param_id);
     }

@@ -4,6 +4,10 @@
 
 #include <piejam/runtime/processors/midi_to_parameter_processor.h>
 
+#include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/float_parameter.h>
+#include <piejam/runtime/int_parameter.h>
+
 #include <piejam/audio/engine/event_buffer_memory.h>
 #include <piejam/audio/engine/event_input_buffers.h>
 #include <piejam/audio/engine/event_output_buffers.h>
@@ -11,10 +15,6 @@
 #include <piejam/audio/engine/processor.h>
 #include <piejam/audio/slice.h>
 #include <piejam/midi/event.h>
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/float_normalize.h>
-#include <piejam/runtime/parameter/int_descriptor.h>
 
 #include <gtest/gtest.h>
 
@@ -49,7 +49,7 @@ struct midi_to_bool_parameter_processor_test : testing::Test
             .event_outputs = ev_out_bufs,
             .buffer_size = 16};
 
-    bool_parameter param;
+    bool_parameter param{make_bool_parameter({"foo"})};
 
     std::unique_ptr<audio::engine::processor> proc{
             make_midi_cc_to_parameter_processor(param)};
@@ -117,13 +117,9 @@ struct midi_to_float_parameter_processor_test
             .event_outputs = ev_out_bufs,
             .buffer_size = 16};
 
-    float_parameter param{
-            .name = boxed_string{},
-            .default_value = 7.f,
-            .min = 5.f,
-            .max = 10.f,
-            .to_normalized = &parameter::to_normalized_linear,
-            .from_normalized = &parameter::from_normalized_linear};
+    float_parameter param{make_float_parameter(
+            {.name = "foo", .default_value = 7.f},
+            {.min = 5.f, .max = 10.f})};
 
     std::unique_ptr<audio::engine::processor> proc{
             make_midi_cc_to_parameter_processor(param)};
@@ -186,12 +182,12 @@ struct midi_to_int_parameter_processor_test
             .event_outputs = ev_out_bufs,
             .buffer_size = 16};
 
-    int_parameter param{
-            .name = boxed_string{},
+    int_parameter param{make_int_parameter({
+            .name = "foo",
             .default_value = 10,
             .min = 10,
             .max = 19,
-    };
+    })};
 
     std::unique_ptr<audio::engine::processor> proc{
             make_midi_cc_to_parameter_processor(param)};

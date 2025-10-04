@@ -19,6 +19,7 @@ add_executable(piejam_numeric_test
     linear_map_test.cpp
     lrot_n_test.cpp
     mipp_iterator_test.cpp
+    normalize_test.cpp
     pos_mod_test.cpp
     pow_n_test.cpp
     rms_test.cpp

@@ -21,6 +21,14 @@ public:
     using const_iterator = typename Map::const_iterator;
     using iterator = typename Map::iterator;
 
+    constexpr lean_map_facade() noexcept = default;
+
+    constexpr lean_map_facade(
+            std::initializer_list<std::pair<key_type, mapped_type>> init)
+        : m_map{std::move(init)}
+    {
+    }
+
     [[nodiscard]]
     constexpr auto empty() const noexcept -> bool
     {

@@ -4,18 +4,19 @@
 
 #pragma once
 
+#include <piejam/enum.h>
+
 #include <boost/assert.hpp>
 
 #include <bitset>
-#include <type_traits>
+#include <initializer_list>
 #include <utility>
 
 namespace piejam::runtime::parameter
 {
 
 template <class E>
-concept flags_enum = std::is_scoped_enum_v<E> &&
-                     std::is_same_v<std::underlying_type_t<E>, std::size_t>;
+concept flags_enum = scoped_enum<E, std::size_t>;
 
 struct flags_set
 {
@@ -26,17 +27,20 @@ struct flags_set
     constexpr auto operator==(flags_set const&) const noexcept
             -> bool = default;
 
-    template <flags_enum... E>
-    constexpr flags_set(E... f) noexcept
+    template <flags_enum E>
+    constexpr flags_set(std::initializer_list<E> fs) noexcept
     {
-        (set(f), ...);
+        for (auto f : fs)
+        {
+            set(f);
+        }
     }
 
-    template <flags_enum... E>
-    constexpr auto set(E... f) noexcept -> flags_set&
+    template <flags_enum E>
+    constexpr auto set(E f) noexcept -> flags_set&
     {
-        BOOST_ASSERT(((std::to_underlying(f) < max_num_flags) && ...));
-        (fs.set(std::to_underlying(f)), ...);
+        BOOST_ASSERT(std::to_underlying(f) < max_num_flags);
+        m_fs.set(std::to_underlying(f));
         return *this;
     }
 
@@ -44,27 +48,11 @@ struct flags_set
     constexpr auto test(E f) const noexcept -> bool
     {
         BOOST_ASSERT(std::to_underlying(f) < max_num_flags);
-        return fs.test(std::to_underlying(f));
+        return m_fs.test(std::to_underlying(f));
     }
 
 private:
-    std::bitset<max_num_flags> fs{};
+    std::bitset<max_num_flags> m_fs{};
 };
-
-#define M_PIEJAM_DEFINE_PARAMETER_FLAGS_MEMBER(Type)                           \
-    flags_set flags{};                                                         \
-                                                                               \
-    constexpr auto set_flags(flags_set flags) & -> Type&                       \
-    {                                                                          \
-        this->flags = flags;                                                   \
-        return *this;                                                          \
-    }                                                                          \
-                                                                               \
-    [[nodiscard]]                                                              \
-    constexpr auto set_flags(flags_set flags) && -> Type&&                     \
-    {                                                                          \
-        this->flags = flags;                                                   \
-        return std::move(*this);                                               \
-    }
 
 } // namespace piejam::runtime::parameter

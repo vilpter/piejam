@@ -4,7 +4,8 @@
 
 #include <piejam/runtime/mixer.h>
 
-#include <piejam/runtime/parameter/bool_descriptor.h>
+#include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter/store.h>
 
 #include <piejam/io_pair.h>

@@ -12,8 +12,6 @@
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
 
-#include <boost/container/flat_map.hpp>
-
 namespace piejam::fx_modules::spectrum
 {
 

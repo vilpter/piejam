@@ -34,12 +34,10 @@ struct audio_engine_sync_update final
     template <class Parameter>
     using id_value_map_t = boost::container::flat_map<
             parameter::id_t<Parameter>,
-            parameter_value_type_t<Parameter>>;
+            parameter::tagged_value<Parameter>>;
 
     using parameter_values_t = boost::mp11::mp_rename<
-            boost::mp11::mp_transform<
-                    id_value_map_t,
-                    boost::mp11::mp_map_keys<parameters_fwd_t>>,
+            boost::mp11::mp_transform<id_value_map_t, parameters_fwd_t>,
             std::tuple>;
 
     parameter_values_t values;
@@ -48,7 +46,7 @@ struct audio_engine_sync_update final
     template <class P>
     void push_back(
             parameter::id_t<P> const id,
-            parameter_value_type_t<P> const value)
+            parameter::value_type_t<P> const value)
     {
         std::get<id_value_map_t<P>>(values).emplace(id, value);
     }

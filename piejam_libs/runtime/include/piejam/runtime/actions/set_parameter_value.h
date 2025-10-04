@@ -6,9 +6,6 @@
 
 #include <piejam/runtime/actions/audio_engine_action.h>
 #include <piejam/runtime/fwd.h>
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/int_descriptor.h>
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/ui/action.h>
 #include <piejam/runtime/ui/cloneable_action.h>
@@ -33,7 +30,7 @@ struct set_parameter_value final
     void reduce(state&) const override;
 
     parameter::id_t<Parameter> id{};
-    parameter::value_type_t<Parameter> value{};
+    parameter::tagged_value<Parameter> value{};
 };
 
 template <class Parameter, class V>

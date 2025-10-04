@@ -21,6 +21,11 @@ public:
 
     static constexpr auto StaticType = Type::Bool;
 
+    auto type() const noexcept -> Type override
+    {
+        return BoolParameter::StaticType;
+    }
+
     Q_INVOKABLE void changeValue(bool);
 
 private:

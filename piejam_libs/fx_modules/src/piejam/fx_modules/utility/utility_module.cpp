@@ -6,46 +6,19 @@
 
 #include <piejam/fx_modules/utility/utility_internal_id.h>
 #include <piejam/numeric/dB_convert.h>
+#include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/fx/module.h>
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/float_normalize.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/runtime/parameters_map.h>
-
-#include <format>
 
 namespace piejam::fx_modules::utility
 {
-
-namespace
-{
-
-struct dB_ival
-{
-    static constexpr auto min{-24.f};
-    static constexpr auto max{24.f};
-
-    static constexpr auto to_normalized =
-            &runtime::parameter::to_normalized_dB<min, max>;
-    static constexpr auto from_normalized =
-            &runtime::parameter::from_normalized_dB<min, max>;
-};
-
-auto
-to_dB_string(float x) -> std::string
-{
-    return std::format("{:.1f} dB", std::log10(x) * 20.f);
-}
-
-} // namespace
 
 auto
 make_module(runtime::internal_fx_module_factory_args const& args)
         -> runtime::fx::module
 {
-    using namespace std::string_literals;
-
     runtime::parameter_factory params_factory{args.params};
 
     runtime::parameters_map_by<parameter_key> parameters;
@@ -53,15 +26,15 @@ make_module(runtime::internal_fx_module_factory_args const& args)
     parameters.emplace(
             parameter_key::gain,
             params_factory.make_parameter(
-                    runtime::float_parameter{
-                            .name = box("Gain"s),
-                            .default_value = 1.f,
-                            .min = numeric::from_dB(dB_ival::min),
-                            .max = numeric::from_dB(dB_ival::max),
-                            .value_to_string = &to_dB_string,
-                            .to_normalized = dB_ival::to_normalized,
-                            .from_normalized = dB_ival::from_normalized}
-                            .set_flags(runtime::parameter_flags::bipolar)));
+                    runtime::make_float_parameter(
+                            {
+                                    .name = "Gain",
+                                    .default_value = 1.f,
+                            },
+                            runtime::dB_float_parameter_range<-24.f, 24.f>{})
+                            .set_value_to_string(
+                                    &runtime::default_float_to_dB_string)
+                            .set_flags({runtime::parameter_flags::bipolar})));
 
     switch (args.bus_type)
     {
@@ -69,30 +42,30 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             parameters.emplace(
                     parameter_key::invert,
                     params_factory.make_parameter(
-                            runtime::bool_parameter{
-                                    .name = box("Invert"s),
-                                    .default_value = false}));
+                            runtime::make_bool_parameter({
+                                    .name = "Invert",
+                            })));
             break;
 
         case audio::bus_type::stereo:
             parameters.emplace(
                     parameter_key::invert_left,
                     params_factory.make_parameter(
-                            runtime::bool_parameter{
-                                    .name = box("Invert L"s),
-                                    .default_value = false}));
+                            runtime::make_bool_parameter({
+                                    .name = "Invert L",
+                            })));
             parameters.emplace(
                     parameter_key::invert_right,
                     params_factory.make_parameter(
-                            runtime::bool_parameter{
-                                    .name = box("Invert R"s),
-                                    .default_value = false}));
+                            runtime::make_bool_parameter({
+                                    .name = "Invert R",
+                            })));
             break;
     }
 
     return runtime::fx::module{
             .fx_instance_id = internal_id(),
-            .name = box("Utility"s),
+            .name = box(std::string{"Utility"}),
             .bus_type = args.bus_type,
             .parameters = box(std::move(parameters).as_base()),
             .streams = {}};

@@ -5,6 +5,7 @@
 #include <piejam/runtime/ladspa_fx/ladspa_fx_component.h>
 
 #include <piejam/runtime/fx/module.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_processor_factory.h>
 
 #include <piejam/audio/engine/component.h>
@@ -56,11 +57,10 @@ public:
 
         for (auto&& [key, id] : fx_mod.parameters.get())
         {
-            m_param_input_procs.emplace_back(
-                    processors::find_or_make_parameter_processor(
-                            param_proc_factory,
-                            id,
-                            get_fx_param_name(id)));
+            m_param_input_procs.emplace_back(find_or_make_parameter_processor(
+                    param_proc_factory,
+                    id,
+                    get_fx_param_name(id)));
         }
 
         std::ranges::transform(
@@ -132,11 +132,10 @@ public:
 
         for (auto&& [key, id] : fx_mod.parameters.get())
         {
-            m_param_input_procs.emplace_back(
-                    processors::find_or_make_parameter_processor(
-                            param_proc_factory,
-                            id,
-                            get_fx_param_name(id)));
+            m_param_input_procs.emplace_back(find_or_make_parameter_processor(
+                    param_proc_factory,
+                    id,
+                    get_fx_param_name(id)));
         }
 
         BOOST_ASSERT(

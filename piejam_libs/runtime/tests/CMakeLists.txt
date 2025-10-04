@@ -9,6 +9,7 @@ endif()
 add_executable(piejam_runtime_test
     audio_engine_middleware_test.cpp
     dynamic_key_shared_object_map_test.cpp
+    fader_mappiing_test.cpp
     ladspa_fx_middleware_test.cpp
     ladspa_instance_manager_mock.h
     ladspa_processor_factory_mock.h
@@ -33,7 +34,6 @@ add_test(NAME piejam_runtime_test COMMAND piejam_runtime_test)
 
 install(TARGETS piejam_runtime_test RUNTIME DESTINATION bin)
 
-add_executable(piejam_runtime_render_test
-    ${CMAKE_CURRENT_SOURCE_DIR}/audio_engine_render_test.cpp)
+add_executable(piejam_runtime_render_test audio_engine_render_test.cpp)
 target_link_libraries(piejam_runtime_render_test gtest_driver piejam_runtime)
 target_compile_options(piejam_runtime_render_test PRIVATE -Wall -Wextra -Werror -pedantic-errors)

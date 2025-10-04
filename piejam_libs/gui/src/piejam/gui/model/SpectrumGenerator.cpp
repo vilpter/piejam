@@ -102,17 +102,21 @@ struct SpectrumGenerator::Impl
         auto const dft_size = static_cast<float>(m_dft.size());
         auto const two_div_dft_size = 2.f / dft_size;
 
+        constexpr auto min_level = 1.e-20f;
+
         m_dataPoints[0].level = envelope(
                 m_dataPoints[0].level,
                 std::abs(spectrum[0]) / dft_size);
-        m_dataPoints[0].level_dB = numeric::to_dB(m_dataPoints[0].level);
+        m_dataPoints[0].level_dB =
+                numeric::to_dB(m_dataPoints[0].level, min_level);
 
         for (std::size_t i = 1, e = m_dft.output_size(); i < e; ++i)
         {
             m_dataPoints[i].level = envelope(
                     m_dataPoints[i].level,
                     std::abs(spectrum[i]) * two_div_dft_size);
-            m_dataPoints[i].level_dB = numeric::to_dB(m_dataPoints[i].level);
+            m_dataPoints[i].level_dB =
+                    numeric::to_dB(m_dataPoints[i].level, min_level);
         }
 
         return m_dataPoints;

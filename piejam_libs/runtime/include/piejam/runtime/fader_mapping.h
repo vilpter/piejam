@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <piejam/functional/in_interval.h>
+#include <piejam/numeric/clamp.h>
 #include <piejam/numeric/dB_convert.h>
 #include <piejam/numeric/linear_map.h>
 
@@ -26,73 +27,81 @@ template <auto Mapping, float Min_dB>
 constexpr auto
 to_normalized_dB_mapping(float const value)
 {
-    float const value_dB = numeric::to_dB(value);
+    static_assert(Mapping.size() >= 2);
+    static_assert(
+            std::ranges::is_sorted(Mapping, {}, &normalized_dB_mapping::dB));
+
+    float value_dB = numeric::to_dB(value);
+
+    // Below minimum
     if (value_dB <= Min_dB)
     {
         return 0.f;
     }
 
-    auto first = std::ranges::begin(Mapping);
-    if (value_dB < first->dB)
+    // Above last point
+    if (value_dB >= Mapping.back().dB)
     {
-        return numeric::linear_map(
-                value_dB,
-                Min_dB,
-                first->dB,
-                0.f,
-                first->normalized);
+        return 1.f;
     }
 
-    auto lower = std::ranges::adjacent_find(
+    // Binary search for upper bound
+    auto upper_it = std::ranges::upper_bound(
             Mapping,
-            in_closed(value_dB),
-            &normalized_dB_mapping::dB);
-    BOOST_ASSERT(lower != std::ranges::end(Mapping));
-    auto const upper = std::next(lower);
-
-    return numeric::linear_map(
             value_dB,
-            lower->dB,
-            upper->dB,
-            lower->normalized,
-            upper->normalized);
+            std::less<>{},
+            &normalized_dB_mapping::dB);
+
+    BOOST_ASSERT(upper_it != Mapping.begin() && upper_it != Mapping.end());
+    auto lower_it = std::prev(upper_it);
+
+    return numeric::clamp(
+            numeric::linear_map(
+                    value_dB,
+                    lower_it->dB,
+                    upper_it->dB,
+                    lower_it->normalized,
+                    upper_it->normalized),
+            0.f,
+            1.f);
 }
 
 template <auto Mapping, float Min_dB>
 constexpr auto
-from_normalized_dB_maping(float const norm_value)
+from_normalized_dB_mapping(float const norm_value)
 {
-    if (norm_value == 0.f)
+    static_assert(Mapping.size() >= 2);
+    static_assert(
+            std::ranges::is_sorted(Mapping, {}, &normalized_dB_mapping::dB));
+
+    // Below zero
+    if (norm_value <= 0.f)
     {
         return 0.f;
     }
 
-    auto first = std::ranges::begin(Mapping);
-    if (norm_value < first->normalized)
+    if (norm_value >= 1.f)
     {
-        return numeric::from_dB(
-                numeric::linear_map(
-                        norm_value,
-                        0.f,
-                        first->normalized,
-                        Min_dB,
-                        first->dB));
+        return numeric::from_dB(Mapping.back().dB);
     }
 
-    auto lower = std::ranges::adjacent_find(
+    // Binary search for upper bound in normalized space
+    auto upper_it = std::ranges::upper_bound(
             Mapping,
-            in_closed(norm_value),
+            norm_value,
+            std::less<>{},
             &normalized_dB_mapping::normalized);
-    BOOST_ASSERT(lower != std::ranges::end(Mapping));
-    auto const upper = std::next(lower);
+
+    BOOST_ASSERT(upper_it != Mapping.begin() && upper_it != Mapping.end());
+    auto lower_it = std::prev(upper_it);
 
     return numeric::from_dB(
             numeric::linear_map(
                     norm_value,
-                    lower->normalized,
-                    upper->normalized,
-                    lower->dB,
-                    upper->dB));
+                    lower_it->normalized,
+                    upper_it->normalized,
+                    lower_it->dB,
+                    upper_it->dB));
 }
 
 inline constexpr auto volume = std::array{

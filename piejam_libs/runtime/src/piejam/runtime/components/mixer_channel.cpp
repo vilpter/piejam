@@ -4,6 +4,13 @@
 
 #include <piejam/runtime/components/mixer_channel.h>
 
+#include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/components/mute_solo.h>
+#include <piejam/runtime/float_parameter.h>
+#include <piejam/runtime/mixer.h>
+#include <piejam/runtime/parameter_processor_factory.h>
+#include <piejam/runtime/processors/stream_processor_factory.h>
+
 #include <piejam/audio/components/amplifier.h>
 #include <piejam/audio/components/identity.h>
 #include <piejam/audio/components/pan_balance.h>
@@ -15,10 +22,6 @@
 #include <piejam/audio/engine/stream_processor.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/entity_id.h>
-#include <piejam/runtime/components/mute_solo.h>
-#include <piejam/runtime/mixer.h>
-#include <piejam/runtime/parameter_processor_factory.h>
-#include <piejam/runtime/processors/stream_processor_factory.h>
 
 #include <format>
 

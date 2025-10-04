@@ -9,7 +9,7 @@
 namespace piejam
 {
 
-template <std::floating_point T, T V>
+template <std::floating_point T, T V, class Tag = void>
 struct float_constant
 {
     using value_type = T;
@@ -27,5 +27,9 @@ struct float_constant
         return value;
     }
 };
+
+template <auto F, class Tag = void>
+    requires std::floating_point<decltype(F)>
+using make_float_constant = float_constant<decltype(F), F, Tag>;
 
 } // namespace piejam

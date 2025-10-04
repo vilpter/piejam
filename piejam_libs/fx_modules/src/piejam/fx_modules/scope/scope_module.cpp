@@ -8,14 +8,12 @@
 
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
+#include <piejam/runtime/bool_parameter.h>
 #include <piejam/runtime/enum_parameter.h>
+#include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/fx/module.h>
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/float_normalize.h>
-#include <piejam/runtime/parameter/int_descriptor.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/runtime/parameters_map.h>
 
 #include <format>
 
@@ -137,149 +135,127 @@ to_stereo_channel_string(int const n) -> std::string
     }
 }
 
-struct dB_ival
-{
-    static constexpr auto min{-24.f};
-    static constexpr auto max{24.f};
-
-    static constexpr auto min_gain{std::pow(10.f, min / 20.f)};
-    static constexpr auto max_gain{std::pow(10.f, max / 20.f)};
-
-    static constexpr auto to_normalized =
-            &runtime::parameter::to_normalized_dB<min, max>;
-    static constexpr auto from_normalized =
-            &runtime::parameter::from_normalized_dB<min, max>;
-};
-
-auto
-to_dB_string(float x) -> std::string
-{
-    return std::format("{:.1f} dB", std::log10(x) * 20.f);
-}
-
 } // namespace
 
 auto
 make_module(runtime::internal_fx_module_factory_args const& args)
         -> runtime::fx::module
 {
-    using namespace std::string_literals;
-
     runtime::parameter_factory params_factory{args.params};
 
     return runtime::fx::module{
             .fx_instance_id = internal_id(),
-            .name = box("Scope"s),
+            .name = box(std::string{"Scope"}),
             .bus_type = args.bus_type,
             .parameters =
                     box(runtime::parameters_map_by<parameter_key>{
                             {parameter_key::mode,
                              params_factory.make_parameter(
                                      args.bus_type == audio::bus_type::mono
-                                             ? runtime::enum_parameter<
-                                                       mode_mono>(
-                                                       "Mode"s,
+                                             ? runtime::make_enum_parameter(
+                                                       "Mode",
+                                                       mode_mono::trigger,
                                                        &to_mode_mono_string)
-                                             : runtime::enum_parameter<
-                                                       mode_stereo>(
-                                                       "Mode"s,
+                                             : runtime::make_enum_parameter(
+                                                       "Mode",
+                                                       mode_stereo::trigger_a,
                                                        &to_mode_stereo_string))},
                             {parameter_key::trigger_slope,
                              params_factory.make_parameter(
-                                     runtime::enum_parameter<trigger_slope>(
-                                             "Slope"s,
+                                     runtime::make_enum_parameter(
+                                             "Slope",
+                                             trigger_slope::rising_edge,
                                              &to_trigger_slope_string))},
                             {parameter_key::trigger_level,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Trigger Level"s),
-                                             .default_value = 0.f,
-                                             .min = -1.f,
-                                             .max = 1.f,
-                                             .to_normalized =
-                                                     &runtime::parameter::
-                                                             to_normalized_linear,
-                                             .from_normalized =
-                                                     &runtime::parameter::
-                                                             from_normalized_linear})},
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Trigger Level",
+                                                     .default_value = 0.f,
+                                             },
+                                             runtime::
+                                                     linear_float_parameter_range<
+                                                             -1.f,
+                                                             1.f>{}))},
                             {parameter_key::hold_time,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Hold Time"s),
-                                             .default_value = 80.f,
-                                             .min = 16.f,
-                                             .max = 1600.f,
-                                             .value_to_string =
-                                                     &to_hold_time_string,
-                                             .to_normalized =
-                                                     &runtime::parameter::
-                                                             to_normalized_linear,
-                                             .from_normalized =
-                                                     &runtime::parameter::
-                                                             from_normalized_linear})},
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Hold Time",
+                                                     .default_value = 80.f,
+                                             },
+                                             runtime::
+                                                     linear_float_parameter_range<
+                                                             16.f,
+                                                             1600.f>{})
+                                             .set_value_to_string(
+                                                     &to_hold_time_string))},
                             {parameter_key::waveform_window_size,
                              params_factory.make_parameter(
-                                     runtime::enum_parameter<window_size>(
-                                             "Window Size"s,
-                                             &to_window_size_string,
-                                             window_size::large))},
+                                     runtime::make_enum_parameter(
+                                             "Window Size",
+                                             window_size::large,
+                                             &to_window_size_string))},
                             {parameter_key::scope_window_size,
                              params_factory.make_parameter(
-                                     runtime::enum_parameter<window_size>(
-                                             "Window Size"s,
-                                             &to_window_size_string,
-                                             window_size::very_small))},
+                                     runtime::make_enum_parameter(
+                                             "Window Size",
+                                             window_size::very_small,
+                                             &to_window_size_string))},
                             {parameter_key::stream_a_active,
                              params_factory.make_parameter(
-                                     runtime::bool_parameter{
-                                             .name = box("Stream A Active"s),
-                                             .default_value = true})},
+                                     runtime::make_bool_parameter({
+                                             .name = "Stream A Active",
+                                             .default_value = true,
+                                     }))},
                             {parameter_key::stream_b_active,
                              params_factory.make_parameter(
-                                     runtime::bool_parameter{
-                                             .name = box("Stream B Active"s),
-                                             .default_value = false})},
+                                     runtime::make_bool_parameter({
+                                             .name = "Stream B Active",
+                                     }))},
                             {parameter_key::channel_a,
                              params_factory.make_parameter(
-                                     runtime::enum_parameter(
-                                             "Channel A"s,
-                                             &to_stereo_channel_string,
-                                             stereo_channel::left))},
+                                     runtime::make_enum_parameter(
+                                             "Channel A",
+                                             stereo_channel::left,
+                                             &to_stereo_channel_string))},
                             {parameter_key::channel_b,
                              params_factory.make_parameter(
-                                     runtime::enum_parameter(
-                                             "Channel B"s,
-                                             &to_stereo_channel_string,
-                                             stereo_channel::right))},
+                                     runtime::make_enum_parameter(
+                                             "Channel B",
+                                             stereo_channel::right,
+                                             &to_stereo_channel_string))},
                             {parameter_key::gain_a,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Gain A"s),
-                                             .default_value = 1.f,
-                                             .min = dB_ival::min_gain,
-                                             .max = dB_ival::max_gain,
-                                             .value_to_string = &to_dB_string,
-                                             .to_normalized =
-                                                     dB_ival::to_normalized,
-                                             .from_normalized = dB_ival::
-                                                     from_normalized})},
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Gain A",
+                                                     .default_value = 1.f,
+                                             },
+                                             runtime::dB_float_parameter_range<
+                                                     -24.f,
+                                                     24.f>{})
+                                             .set_value_to_string(
+                                                     &runtime::
+                                                             default_float_to_dB_string))},
                             {parameter_key::gain_b,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Gain B"s),
-                                             .default_value = 1.f,
-                                             .min = dB_ival::min_gain,
-                                             .max = dB_ival::max_gain,
-                                             .value_to_string = &to_dB_string,
-                                             .to_normalized =
-                                                     dB_ival::to_normalized,
-                                             .from_normalized = dB_ival::
-                                                     from_normalized})},
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Gain B",
+                                                     .default_value = 1.f,
+                                             },
+                                             runtime::dB_float_parameter_range<
+                                                     -24.f,
+                                                     24.f>{})
+                                             .set_value_to_string(
+                                                     &runtime::
+                                                             default_float_to_dB_string))},
                             {parameter_key::freeze,
                              params_factory.make_parameter(
-                                     runtime::bool_parameter{
-                                             .name = box("Freeze"s),
-                                             .default_value = false})}}
+                                     runtime::make_bool_parameter({
+                                             .name = "Freeze",
+                                     }))}}
                                 .as_base()),
             .streams =
                     box(runtime::fx::module_streams{

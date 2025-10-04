@@ -2,8 +2,12 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/entity_id.h>
 #include <piejam/runtime/parameter/store.h>
+
+#include <piejam/runtime/bool_parameter.h>
+
+#include <piejam/boxed_string.h>
+#include <piejam/entity_id.h>
 
 #include <gtest/gtest.h>
 
@@ -16,18 +20,18 @@ TEST(store, add_default_get)
 
     store sut;
 
-    auto id = id_t<float_descriptor>::generate();
-    sut.emplace(id, {.name = box{"foo"s}, .default_value = 1.f});
+    auto id = id_t<bool_parameter>::generate();
+    sut.emplace(id, make_bool_parameter({"foo", true}));
 
-    EXPECT_EQ(1.f, sut.at(id).get());
+    EXPECT_EQ(true, sut.at(id).get());
 }
 
 TEST(store, add_remove)
 {
     store sut;
 
-    auto id = id_t<float_descriptor>::generate();
-    sut.emplace(id, {});
+    auto id = id_t<bool_parameter>::generate();
+    sut.emplace(id, make_bool_parameter({"foo"}));
     ASSERT_TRUE(sut.contains(id));
     sut.remove(id);
 
@@ -38,8 +42,8 @@ TEST(store, get_existing_parameter)
 {
     store sut;
 
-    auto id = id_t<float_descriptor>::generate();
-    sut.emplace(id, {});
+    auto id = id_t<bool_parameter>::generate();
+    sut.emplace(id, make_bool_parameter({"foo"}));
     EXPECT_NE(nullptr, sut.find(id));
 }
 
@@ -47,7 +51,7 @@ TEST(store, find_for_non_existing_parameter)
 {
     store sut;
 
-    EXPECT_EQ(nullptr, sut.find(parameter::id_t<float_descriptor>::generate()));
+    EXPECT_EQ(nullptr, sut.find(parameter::id_t<bool_parameter>::generate()));
 }
 
 TEST(store, get_cached_for_existing_parameter)
@@ -56,52 +60,52 @@ TEST(store, get_cached_for_existing_parameter)
 
     store sut;
 
-    auto id = id_t<float_descriptor>::generate();
-    sut.emplace(id, {.name = box{"foo"s}, .default_value = 1.f});
+    auto id = id_t<bool_parameter>::generate();
+    sut.emplace(id, make_bool_parameter({"foo", true}));
     auto desc = sut.find(id);
     ASSERT_NE(nullptr, desc);
-    EXPECT_EQ(1.f, *desc->cached());
+    EXPECT_EQ(true, *desc->cached());
 }
 
 TEST(store, set_value)
 {
     store sut;
 
-    auto id = id_t<float_descriptor>::generate();
-    sut.emplace(id, {});
+    auto id = id_t<bool_parameter>::generate();
+    sut.emplace(id, make_bool_parameter({"foo"}));
 
-    sut.at(id).set(2.f);
-    EXPECT_EQ(2.f, sut.at(id).get());
+    sut.at(id).set(true);
+    EXPECT_EQ(true, sut.at(id).get());
 }
 
 TEST(store, cached_is_updated_after_set)
 {
     store sut;
 
-    auto id = id_t<float_descriptor>::generate();
-    sut.emplace(id, {});
+    auto id = id_t<bool_parameter>::generate();
+    sut.emplace(id, make_bool_parameter({"foo"}));
 
     auto cached = sut.at(id).cached();
     ASSERT_NE(nullptr, cached);
-    EXPECT_EQ(0.f, *cached);
+    EXPECT_EQ(false, *cached);
 
-    sut.at(id).set(2.f);
+    sut.at(id).set(true);
 
-    EXPECT_EQ(2.f, *cached);
+    EXPECT_EQ(true, *cached);
 }
 
 TEST(store, equality)
 {
     store m1;
 
-    auto id = id_t<float_descriptor>::generate();
-    m1.emplace(id, {});
+    auto id = id_t<bool_parameter>::generate();
+    m1.emplace(id, make_bool_parameter({"foo"}));
 
     EXPECT_EQ(m1, m1);
 
     store m2;
 
-    m2.emplace(id, {});
+    m2.emplace(id, make_bool_parameter({"foo"}));
 
     EXPECT_NE(m1, m2);
 

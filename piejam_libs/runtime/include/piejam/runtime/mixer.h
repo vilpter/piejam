@@ -9,7 +9,7 @@
 #include <piejam/runtime/fx/fwd.h>
 #include <piejam/runtime/material_color.h>
 #include <piejam/runtime/mixer_fwd.h>
-#include <piejam/runtime/parameters_map.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/string_id.h>
 
 #include <piejam/audio/types.h>
@@ -75,7 +75,7 @@ struct channel
 
     auto parameters_view() const noexcept
     {
-        return parameters_map_view<parameter_key>(*parameters);
+        return parameters->view_by<parameter_key>();
     }
 
     auto volume() const -> float_parameter_id
@@ -114,7 +114,7 @@ struct aux_channel
                                                                    : "Post"s;
     }
 
-    int_parameter_id default_fader_tap;
+    enum_parameter_id default_fader_tap;
 
     constexpr auto operator==(aux_channel const&) const noexcept
             -> bool = default;

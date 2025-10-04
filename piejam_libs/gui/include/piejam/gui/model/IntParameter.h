@@ -23,6 +23,11 @@ public:
 
     static constexpr auto StaticType = Type::Int;
 
+    auto type() const noexcept -> Type override
+    {
+        return IntParameter::StaticType;
+    }
+
     Q_INVOKABLE void changeValue(int);
 
 private:

@@ -862,22 +862,27 @@ make_fx_parameter_value_string_selector(parameter_id const fx_param_id)
                 using cached_value_type =
                         typename parameter::store::slot<P>::cached_type;
 
-                using value_to_string_fn = typename P::value_to_string_fn;
-                using memoed_value_to_string_fn =
-                        decltype(memo(std::declval<value_to_string_fn>()));
+                using value_to_string_f = typename P::value_to_string_f;
+                using memoed_value_to_string_f =
+                        decltype(memo(std::declval<value_to_string_f>()));
 
                 return [param_id,
                         cached_value = cached_value_type{},
                         value_to_string =
-                                std::optional<memoed_value_to_string_fn>{}](
+                                std::optional<memoed_value_to_string_f>{}](
                                state const& st) mutable {
                     if (!cached_value || !value_to_string) [[unlikely]]
                     {
-                        auto const& slot = st.params.at(param_id);
+                        auto const slot = st.params.find(param_id);
+                        if (!slot)
+                        {
+                            // TODO: how can this happen
+                            return std::string{};
+                        }
 
-                        cached_value = slot.cached();
+                        cached_value = slot->cached();
                         BOOST_ASSERT(cached_value);
-                        value_to_string = memo(slot.param().value_to_string);
+                        value_to_string = memo(slot->param().value_to_string);
                     }
 
                     return (*value_to_string)(*cached_value);
@@ -921,44 +926,6 @@ make_audio_stream_selector(audio_stream_id stream_id)
     };
 }
 
-template <class P>
-auto
-make_parameter_value_selector(parameter::id_t<P> const param_id)
-        -> selector<parameter::value_type_t<P>>
-{
-    return [param_id,
-            value = std::shared_ptr<parameter::value_type_t<P> const>{}](
-                   state const& st) mutable -> parameter::value_type_t<P> {
-        if (value) [[likely]]
-        {
-            return *value;
-        }
-
-        if (auto const* const desc = st.params.find(param_id); desc)
-        {
-            value = desc->cached();
-            BOOST_ASSERT(value);
-            return *value;
-        }
-
-        return {};
-    };
-}
-
-auto
-make_bool_parameter_value_selector(bool_parameter_id const param_id)
-        -> selector<bool>
-{
-    return make_parameter_value_selector(param_id);
-}
-
-auto
-make_float_parameter_value_selector(float_parameter_id const param_id)
-        -> selector<float>
-{
-    return make_parameter_value_selector(param_id);
-}
-
 auto
 make_float_parameter_normalized_value_selector(
         float_parameter_id const param_id) -> selector<float>
@@ -986,32 +953,7 @@ make_float_parameter_bipolar_selector(float_parameter_id const fx_param_id)
 }
 
 auto
-make_int_parameter_value_selector(int_parameter_id const param_id)
-        -> selector<int>
-{
-    return make_parameter_value_selector(param_id);
-}
-
-auto
-make_int_parameter_min_selector(int_parameter_id const param_id)
-        -> selector<int>
-{
-    return [param_id](state const& st) -> int {
-        return st.params.at(param_id).param().min;
-    };
-}
-
-auto
-make_int_parameter_max_selector(int_parameter_id const param_id)
-        -> selector<int>
-{
-    return [param_id](state const& st) -> int {
-        return st.params.at(param_id).param().max;
-    };
-}
-
-auto
-make_int_parameter_enum_values_selector(int_parameter_id const param_id)
+make_enum_parameter_values_selector(enum_parameter_id const param_id)
         -> selector<std::vector<std::pair<std::string, int>>>
 {
     return [param_id](state const& st) {
@@ -1027,6 +969,63 @@ make_int_parameter_enum_values_selector(int_parameter_id const param_id)
         return result;
     };
 }
+
+template <class P>
+auto
+make_parameter_min_selector(parameter::id_t<P> param_id)
+        -> selector<parameter::value_type_t<P>>
+{
+    return [param_id](state const& st) {
+        return st.params.at(param_id).param().min;
+    };
+}
+
+template auto make_parameter_min_selector(int_parameter_id) -> selector<int>;
+template auto make_parameter_min_selector(enum_parameter_id) -> selector<int>;
+
+template <class P>
+auto
+make_parameter_max_selector(parameter::id_t<P> param_id)
+        -> selector<parameter::value_type_t<P>>
+{
+    return [param_id](state const& st) {
+        return st.params.at(param_id).param().max;
+    };
+}
+
+template auto make_parameter_max_selector(int_parameter_id) -> selector<int>;
+template auto make_parameter_max_selector(enum_parameter_id) -> selector<int>;
+
+template <class P>
+auto
+make_parameter_value_selector(parameter::id_t<P> const param_id)
+        -> selector<parameter::value_type_t<P>>
+{
+    return [param_id,
+            cached = std::shared_ptr<parameter::value_type_t<P> const>{}](
+                   state const& st) mutable -> parameter::value_type_t<P> {
+        if (cached) [[likely]]
+        {
+            return *cached;
+        }
+
+        if (auto const* const desc = st.params.find(param_id); desc)
+        {
+            cached = desc->cached();
+            BOOST_ASSERT(cached);
+            return *cached;
+        }
+
+        return {};
+    };
+}
+
+template auto make_parameter_value_selector(float_parameter_id)
+        -> selector<float>;
+template auto make_parameter_value_selector(bool_parameter_id)
+        -> selector<bool>;
+template auto make_parameter_value_selector(int_parameter_id) -> selector<int>;
+template auto make_parameter_value_selector(enum_parameter_id) -> selector<int>;
 
 auto
 make_parameter_is_midi_assignable_selector(parameter_id param_id)

@@ -4,10 +4,11 @@
 
 #pragma once
 
-#include <piejam/ladspa/fwd.h>
 #include <piejam/runtime/fx/fwd.h>
 #include <piejam/runtime/midi_assignment.h>
 #include <piejam/runtime/parameter/assignment.h>
+
+#include <piejam/ladspa/fwd.h>
 
 #include <vector>
 

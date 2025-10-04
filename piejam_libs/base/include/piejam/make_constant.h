@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include <piejam/float_constant.h>
+
+#include <type_traits>
 
 namespace piejam
 {

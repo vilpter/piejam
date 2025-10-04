@@ -6,20 +6,14 @@
 
 #include <piejam/fx_modules/dual_pan/dual_pan_internal_id.h>
 
+#include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/fx/module.h>
-#include <piejam/runtime/parameter/bool_descriptor.h>
-#include <piejam/runtime/parameter/float_descriptor.h>
-#include <piejam/runtime/parameter/float_normalize.h>
+#include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_factory.h>
-#include <piejam/runtime/parameters_map.h>
 
 namespace piejam::fx_modules::dual_pan
 {
-
-static constexpr auto s_pan_to_noramlized =
-        &runtime::parameter::to_normalized_linear_static<-1.f, 1.f>;
-static constexpr auto s_pan_from_noramlized =
-        &runtime::parameter::from_normalized_linear_static<-1.f, 1.f>;
 
 auto
 make_module(runtime::internal_fx_module_factory_args const& args)
@@ -37,44 +31,42 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                     box(runtime::parameters_map_by<parameter_key>{
                             {parameter_key::mute_left,
                              params_factory.make_parameter(
-                                     runtime::bool_parameter{
-                                             .name = box("Mute Left"s),
-                                             .default_value = false})},
+                                     runtime::make_bool_parameter({
+                                             .name = "Mute Left",
+                                     }))},
                             {parameter_key::pan_left,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Pan Left"s),
-                                             .default_value = -1.f,
-                                             .min = -1.f,
-                                             .max = 1.f,
-                                             .to_normalized =
-                                                     s_pan_to_noramlized,
-                                             .from_normalized =
-                                                     s_pan_from_noramlized,
-                                     }
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Pan Left",
+                                                     .default_value = -1.f,
+                                             },
+                                             runtime::
+                                                     linear_float_parameter_range<
+                                                             -1.f,
+                                                             1.f>{})
                                              .set_flags(
-                                                     runtime::parameter_flags::
-                                                             bipolar))},
+                                                     {runtime::parameter_flags::
+                                                              bipolar}))},
                             {parameter_key::pan_right,
                              params_factory.make_parameter(
-                                     runtime::float_parameter{
-                                             .name = box("Pan Right"s),
-                                             .default_value = 1.f,
-                                             .min = -1.f,
-                                             .max = 1.f,
-                                             .to_normalized =
-                                                     s_pan_to_noramlized,
-                                             .from_normalized =
-                                                     s_pan_from_noramlized,
-                                     }
+                                     runtime::make_float_parameter(
+                                             {
+                                                     .name = "Pan Right",
+                                                     .default_value = 1.f,
+                                             },
+                                             runtime::
+                                                     linear_float_parameter_range<
+                                                             -1.f,
+                                                             1.f>{})
                                              .set_flags(
-                                                     runtime::parameter_flags::
-                                                             bipolar))},
+                                                     {runtime::parameter_flags::
+                                                              bipolar}))},
                             {parameter_key::mute_right,
                              params_factory.make_parameter(
-                                     runtime::bool_parameter{
-                                             .name = box("Mute Right"s),
-                                             .default_value = false})}}
+                                     runtime::make_bool_parameter({
+                                             .name = "Mute Right",
+                                     }))}}
                                 .as_base()),
             .streams = {}};
 }

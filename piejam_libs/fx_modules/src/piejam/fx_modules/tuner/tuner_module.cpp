@@ -9,6 +9,7 @@
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
 #include <piejam/runtime/fx/module.h>
+#include <piejam/runtime/parameter/map.h>
 
 #include <boost/container/flat_map.hpp>
 
