@@ -7,3 +7,12 @@ repos:
     rev: v2.1.0
     hooks:
       - id: reuse
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    # Use a specific tag or SHA for 'rev'
+    # Check the repository for the latest version tag (e.g., v16.0.6)
+    rev: v20.1.8
+    hooks:
+      - id: clang-format
+        # Optionally, specify which files to run on.
+        # By default, it runs on C/C++ and related file types.
+        # files: \.(c|cc|cxx|cpp|h|hpp|txx|ipp)$

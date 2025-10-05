@@ -34,7 +34,7 @@ struct variant_option_to_json_serializer
 };
 
 static inline auto const to_json_serializer_fail_option =
-        [](auto&&) -> nlohmann::json {
+    [](auto&&) -> nlohmann::json {
     BOOST_ASSERT_MSG(false, "unknown variant type");
     throw std::runtime_error{"unable to serialize variant type"};
 };
@@ -79,16 +79,16 @@ template <class... T>
 struct variant_serializer
 {
     using to_json_serializer_t = decltype(boost::hof::match(
-            std::declval<detail::variant_option_to_json_serializer<T>>()...,
-            detail::to_json_serializer_fail_option));
+        std::declval<detail::variant_option_to_json_serializer<T>>()...,
+        detail::to_json_serializer_fail_option));
 
     using from_json_serializer_t =
-            std::tuple<detail::variant_option_from_json_serializer<T>...>;
+        std::tuple<detail::variant_option_from_json_serializer<T>...>;
 
     explicit variant_serializer(variant_option<T>... opts)
         : to_json_serializer{boost::hof::match(
-                  opts.to_json()...,
-                  detail::to_json_serializer_fail_option)}
+              opts.to_json()...,
+              detail::to_json_serializer_fail_option)}
         , from_json_serializer{opts.from_json()...}
     {
     }
@@ -102,17 +102,16 @@ struct variant_serializer
     template <class... Vs>
     auto from_json(nlohmann::json const& j, std::variant<Vs...>& var) const
     {
-        bool const found = tuple::for_each_until(
-                from_json_serializer,
-                [&](auto const& ser) {
-                    if (auto const& opt = ser(j); opt)
-                    {
-                        var = *opt;
-                        return true;
-                    }
+        bool const found =
+            tuple::for_each_until(from_json_serializer, [&](auto const& ser) {
+                if (auto const& opt = ser(j); opt)
+                {
+                    var = *opt;
+                    return true;
+                }
 
-                    return false;
-                });
+                return false;
+            });
 
         if (!found)
         {

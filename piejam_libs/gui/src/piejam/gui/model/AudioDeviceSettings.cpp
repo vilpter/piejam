@@ -51,7 +51,7 @@ struct AudioDeviceSettings::Impl
 };
 
 AudioDeviceSettings::AudioDeviceSettings(
-        runtime::state_access const& state_access)
+    runtime::state_access const& state_access)
     : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>()}
 {
@@ -75,61 +75,53 @@ AudioDeviceSettings::onSubscribe()
 {
     namespace selectors = runtime::selectors;
 
-    observe(selectors::select_sound_card,
-            [this](selectors::sound_card_choice const& choice) {
-                algorithm::apply_edit_script(
-                        algorithm::edit_script(
-                                m_impl->sound_cards,
-                                choice.available),
-                        ListModelEditScriptProcessor{
-                                m_impl->soundCards,
-                                [](runtime::selectors::sound_card_info const&
-                                           info) {
-                                    return SoundCardInfo{
-                                            .name = QString::fromStdString(
-                                                    info.name),
-                                            .numIns = static_cast<int>(
-                                                    info.num_ins),
-                                            .numOuts = static_cast<int>(
-                                                    info.num_outs),
-                                    };
-                                }});
-                m_impl->sound_cards = choice.available;
-                setSelectedSoundCardIndex(static_cast<int>(choice.current));
-            });
+    observe(
+        selectors::select_sound_card,
+        [this](selectors::sound_card_choice const& choice) {
+            algorithm::apply_edit_script(
+                algorithm::edit_script(m_impl->sound_cards, choice.available),
+                ListModelEditScriptProcessor{
+                    m_impl->soundCards,
+                    [](runtime::selectors::sound_card_info const& info) {
+                        return SoundCardInfo{
+                            .name = QString::fromStdString(info.name),
+                            .numIns = static_cast<int>(info.num_ins),
+                            .numOuts = static_cast<int>(info.num_outs),
+                        };
+                    }});
+            m_impl->sound_cards = choice.available;
+            setSelectedSoundCardIndex(static_cast<int>(choice.current));
+        });
 
-    observe(selectors::select_sample_rate,
-            [this](selectors::sample_rate_choice const& sample_rate) {
-                auto const index = algorithm::index_of(
-                        sample_rate.available,
-                        sample_rate.current);
+    observe(
+        selectors::select_sample_rate,
+        [this](selectors::sample_rate_choice const& sample_rate) {
+            auto const index =
+                algorithm::index_of(sample_rate.available, sample_rate.current);
 
-                algorithm::apply_edit_script(
-                        algorithm::edit_script(
-                                m_impl->sample_rates,
-                                sample_rate.available),
-                        ListModelEditScriptProcessor{
-                                m_impl->sampleRates,
-                                [](auto const sr) {
-                                    return QString::number(sr.value());
-                                }});
-                m_impl->sample_rates = sample_rate.available;
+            algorithm::apply_edit_script(
+                algorithm::edit_script(
+                    m_impl->sample_rates,
+                    sample_rate.available),
+                ListModelEditScriptProcessor{
+                    m_impl->sampleRates,
+                    [](auto const sr) { return QString::number(sr.value()); }});
+            m_impl->sample_rates = sample_rate.available;
 
-                setSelectedSampleRate(static_cast<int>(index));
-            });
+            setSelectedSampleRate(static_cast<int>(index));
+        });
 
-    observe(selectors::select_period_size,
-            [this](selectors::period_size_choice const& period_size) {
-                auto const index = algorithm::index_of(
-                        period_size.available,
-                        period_size.current);
-                m_impl->period_sizes = period_size.available;
-                setPeriodSizesCount(
-                        static_cast<int>(period_size.available.size()));
-                setSelectedPeriodSizeIndex(static_cast<int>(index));
-                setSelectedPeriodSize(
-                        static_cast<int>(period_size.current.value()));
-            });
+    observe(
+        selectors::select_period_size,
+        [this](selectors::period_size_choice const& period_size) {
+            auto const index =
+                algorithm::index_of(period_size.available, period_size.current);
+            m_impl->period_sizes = period_size.available;
+            setPeriodSizesCount(static_cast<int>(period_size.available.size()));
+            setSelectedPeriodSizeIndex(static_cast<int>(index));
+            setSelectedPeriodSize(
+                static_cast<int>(period_size.current.value()));
+        });
 
     observe(selectors::select_buffer_latency, [this](float const x) {
         setBufferLatency(static_cast<double>(x));

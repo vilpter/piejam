@@ -20,6 +20,6 @@ struct FxBrowserEntryInternalData
 };
 
 using FxBrowserEntryInternalDataMap =
-        registry_map<runtime::fx::internal_id, FxBrowserEntryInternalData>;
+    registry_map<runtime::fx::internal_id, FxBrowserEntryInternalData>;
 
 } // namespace piejam::gui::model

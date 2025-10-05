@@ -33,7 +33,7 @@ namespace piejam::runtime
 struct recorder_middleware::impl
 {
     using open_streams_t =
-            boost::container::flat_map<audio_stream_id, SndfileHandle>;
+        boost::container::flat_map<audio_stream_id, SndfileHandle>;
 
     std::filesystem::path recordings_dir;
     open_streams_t open_streams{};
@@ -46,15 +46,15 @@ recorder_middleware::recorder_middleware(std::filesystem::path recordings_dir)
 
 void
 recorder_middleware::operator()(
-        middleware_functors const& mw_fs,
-        action const& act)
+    middleware_functors const& mw_fs,
+    action const& act)
 {
     if (auto const* a = dynamic_cast<actions::recorder_action const*>(&act))
     {
         auto v = ui::make_action_visitor<actions::recorder_action_visitor>(
-                [this, &mw_fs](auto const& a) {
-                    process_recorder_action(mw_fs, a);
-                });
+            [this, &mw_fs](auto const& a) {
+                process_recorder_action(mw_fs, a);
+            });
         a->visit(v);
     }
     else
@@ -66,8 +66,8 @@ recorder_middleware::operator()(
 template <class Action>
 void
 recorder_middleware::process_recorder_action(
-        middleware_functors const&,
-        Action const&)
+    middleware_functors const&,
+    Action const&)
 {
     BOOST_ASSERT_MSG(false, "unhandled action");
 }
@@ -75,8 +75,8 @@ recorder_middleware::process_recorder_action(
 template <>
 void
 recorder_middleware::process_recorder_action(
-        middleware_functors const& mw_fs,
-        actions::start_recording const&)
+    middleware_functors const& mw_fs,
+    actions::start_recording const&)
 {
     auto const& st = mw_fs.get_state();
 
@@ -105,44 +105,44 @@ recorder_middleware::process_recorder_action(
         }
 
         auto filename = system::make_unique_filename(
-                take_dir,
-                *st.strings[mixer_channel.name],
-                "wav");
+            take_dir,
+            *st.strings[mixer_channel.name],
+            "wav");
 
         auto const format = SF_FORMAT_WAV | SF_FORMAT_PCM_24;
         std::size_t const num_channels =
-                audio::num_channels(to_bus_type(mixer_channel.type));
+            audio::num_channels(to_bus_type(mixer_channel.type));
         if (SndfileHandle::formatCheck(
-                    format,
-                    static_cast<int>(num_channels),
-                    st.sample_rate.as<int>()))
+                format,
+                static_cast<int>(num_channels),
+                st.sample_rate.as<int>()))
         {
             SndfileHandle sndfile(
-                    filename.string(),
-                    SFM_WRITE,
-                    format,
-                    static_cast<int>(num_channels),
-                    st.sample_rate.as<int>());
+                filename.string(),
+                SFM_WRITE,
+                format,
+                static_cast<int>(num_channels),
+                st.sample_rate.as<int>());
 
             if (sndfile)
             {
                 open_streams.emplace(
-                        mixer_channel.out_stream,
-                        std::move(sndfile));
+                    mixer_channel.out_stream,
+                    std::move(sndfile));
             }
             else
             {
                 auto const* const message = sndfile.strError();
                 spdlog::error(
-                        "Could not create file for recording: {}",
-                        message);
+                    "Could not create file for recording: {}",
+                    message);
             }
         }
         else
         {
             spdlog::error(
-                    "Could not create file for recording: Invalid file "
-                    "format.");
+                "Could not create file for recording: Invalid file "
+                "format.");
         }
     }
 
@@ -159,8 +159,8 @@ recorder_middleware::process_recorder_action(
 template <>
 void
 recorder_middleware::process_recorder_action(
-        middleware_functors const& mw_fs,
-        actions::stop_recording const&)
+    middleware_functors const& mw_fs,
+    actions::stop_recording const&)
 {
     BOOST_ASSERT(mw_fs.get_state().recording);
 
@@ -175,8 +175,8 @@ recorder_middleware::process_recorder_action(
 template <>
 void
 recorder_middleware::process_recorder_action(
-        middleware_functors const& mw_fs,
-        actions::audio_engine_sync_update const& a)
+    middleware_functors const& mw_fs,
+    actions::audio_engine_sync_update const& a)
 {
     for (auto const& [stream_id, buffer] : a.streams)
     {
@@ -185,10 +185,10 @@ recorder_middleware::process_recorder_action(
         {
             auto const num_frames = buffer->num_frames();
             BOOST_ASSERT(
-                    buffer->layout() ==
-                    audio::multichannel_layout::non_interleaved);
+                buffer->layout() ==
+                audio::multichannel_layout::non_interleaved);
             BOOST_ASSERT(
-                    buffer->num_channels() == 1 || buffer->num_channels() == 2);
+                buffer->num_channels() == 1 || buffer->num_channels() == 2);
 
             auto write_data = buffer->samples();
 
@@ -196,32 +196,31 @@ recorder_middleware::process_recorder_action(
             if (buffer->num_channels() == 2)
             {
                 auto stereo_view =
-                        buffer->view()
-                                .cast<audio::multichannel_layout_non_interleaved,
-                                      2>();
+                    buffer->view()
+                        .cast<audio::multichannel_layout_non_interleaved, 2>();
                 interleaved.resize(stereo_view.samples().size());
 
                 std::ranges::transform(
-                        numeric::mipp_range(stereo_view.channels()[0]),
-                        numeric::mipp_range(stereo_view.channels()[1]),
-                        numeric::make_mipp_iterator_x2(interleaved.data()),
-                        [](auto reg_l, auto reg_r) {
-                            return mipp::interleave(reg_l, reg_r);
-                        });
+                    numeric::mipp_range(stereo_view.channels()[0]),
+                    numeric::mipp_range(stereo_view.channels()[1]),
+                    numeric::make_mipp_iterator_x2(interleaved.data()),
+                    [](auto reg_l, auto reg_r) {
+                        return mipp::interleave(reg_l, reg_r);
+                    });
 
                 write_data = interleaved;
             }
 
             auto const written =
-                    it->second.writef(write_data.data(), num_frames);
+                it->second.writef(write_data.data(), num_frames);
             if (static_cast<std::size_t>(written) < num_frames)
             {
                 auto const frames_not_written = num_frames - written;
                 auto const* const message = it->second.strError();
                 spdlog::warn(
-                        "Could not write {} frames: {}",
-                        frames_not_written,
-                        message);
+                    "Could not write {} frames: {}",
+                    frames_not_written,
+                    message);
             }
         }
     }

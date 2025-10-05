@@ -21,17 +21,18 @@ namespace piejam::audio::engine
 
 template <graph_node Src, std::size_t... M, graph_node Dst, std::size_t... N>
 void
-connect(graph& g,
-        Src&& src,
-        endpoint_ports::from_t<M...>,
-        Dst&& dst,
-        endpoint_ports::to_t<N...>)
+connect(
+    graph& g,
+    Src&& src,
+    endpoint_ports::from_t<M...>,
+    Dst&& dst,
+    endpoint_ports::to_t<N...>)
 {
     static_assert(sizeof...(M) == sizeof...(N));
 
     (g.audio.insert(
-             src_endpoint(std::forward<Src>(src), M),
-             dst_endpoint(std::forward<Dst>(dst), N)),
+         src_endpoint(std::forward<Src>(src), M),
+         dst_endpoint(std::forward<Dst>(dst), N)),
      ...);
 }
 
@@ -44,25 +45,25 @@ connect(graph& g, Src&& src, Dst&& dst)
          ++p)
     {
         g.audio.insert(
-                src_endpoint(std::forward<Src>(src), p),
-                dst_endpoint(std::forward<Dst>(dst), p));
+            src_endpoint(std::forward<Src>(src), p),
+            dst_endpoint(std::forward<Dst>(dst), p));
     }
 }
 
 template <graph_node Src, std::size_t... M, graph_node Dst, std::size_t... N>
 void
 connect_event(
-        graph& g,
-        Src&& src,
-        endpoint_ports::from_t<M...>,
-        Dst&& dst,
-        endpoint_ports::to_t<N...>)
+    graph& g,
+    Src&& src,
+    endpoint_ports::from_t<M...>,
+    Dst&& dst,
+    endpoint_ports::to_t<N...>)
 {
     static_assert(sizeof...(M) == sizeof...(N));
 
     (g.event.insert(
-             src_event_endpoint(std::forward<Src>(src), M),
-             dst_event_endpoint(std::forward<Dst>(dst), N)),
+         src_event_endpoint(std::forward<Src>(src), M),
+         dst_event_endpoint(std::forward<Dst>(dst), N)),
      ...);
 }
 
@@ -71,14 +72,14 @@ void
 connect_event_to(graph& g, Dst&& dst, Src&&... src)
 {
     auto connect_single =
-            [&]<class SingleSrc>(SingleSrc&& s, std::size_t& dst_port) {
-                for (std::size_t src_port : range::indices(s.event_outputs()))
-                {
-                    g.event.insert(
-                            src_event_endpoint(s, src_port),
-                            dst_event_endpoint(dst, dst_port++));
-                }
-            };
+        [&]<class SingleSrc>(SingleSrc&& s, std::size_t& dst_port) {
+            for (std::size_t src_port : range::indices(s.event_outputs()))
+            {
+                g.event.insert(
+                    src_event_endpoint(s, src_port),
+                    dst_event_endpoint(dst, dst_port++));
+            }
+        };
 
     std::size_t dst_port{};
     (connect_single(src, dst_port), ...);
@@ -91,11 +92,11 @@ in_event_endpoints(Node&&... node)
     std::vector<graph_endpoint> result;
 
     (std::ranges::transform(
-             range::indices(node.event_inputs()),
-             std::back_inserter(result),
-             std::bind_front(
-                     &in_event_endpoint<Node>,
-                     std::ref(std::forward<Node>(node)))),
+         range::indices(node.event_inputs()),
+         std::back_inserter(result),
+         std::bind_front(
+             &in_event_endpoint<Node>,
+             std::ref(std::forward<Node>(node)))),
      ...);
 
     return result;
@@ -108,11 +109,11 @@ out_event_endpoints(Node&&... node)
     std::vector<graph_endpoint> result;
 
     (std::ranges::transform(
-             range::indices(node.event_outputs()),
-             std::back_inserter(result),
-             std::bind_front(
-                     &out_event_endpoint<Node>,
-                     std::ref(std::forward<Node>(node)))),
+         range::indices(node.event_outputs()),
+         std::back_inserter(result),
+         std::bind_front(
+             &out_event_endpoint<Node>,
+             std::ref(std::forward<Node>(node)))),
      ...);
 
     return result;

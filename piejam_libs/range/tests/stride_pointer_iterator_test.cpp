@@ -15,22 +15,22 @@ namespace piejam::range::test
 TEST(pointer_stride_iterator, static_asserts)
 {
     static_assert(
-            std::random_access_iterator<pointer_stride_iterator<int const>>);
+        std::random_access_iterator<pointer_stride_iterator<int const>>);
     static_assert(std::random_access_iterator<pointer_stride_iterator<int>>);
     static_assert(
-            !std::contiguous_iterator<pointer_stride_iterator<int const>>);
+        !std::contiguous_iterator<pointer_stride_iterator<int const>>);
     static_assert(!std::contiguous_iterator<pointer_stride_iterator<int>>);
 
     static_assert(
-            std::random_access_iterator<pointer_stride_iterator<int const, 2>>);
+        std::random_access_iterator<pointer_stride_iterator<int const, 2>>);
     static_assert(std::random_access_iterator<pointer_stride_iterator<int, 2>>);
     static_assert(
-            !std::contiguous_iterator<pointer_stride_iterator<int const, 2>>);
+        !std::contiguous_iterator<pointer_stride_iterator<int const, 2>>);
     static_assert(!std::contiguous_iterator<pointer_stride_iterator<int, 2>>);
 
     static_assert(std::contiguous_iterator<pointer_stride_iterator<int, 1>>);
     static_assert(
-            std::contiguous_iterator<pointer_stride_iterator<int const, 1>>);
+        std::contiguous_iterator<pointer_stride_iterator<int const, 1>>);
 }
 
 TEST(pointer_stride_iterator, pre_increment)
@@ -51,7 +51,7 @@ TEST(pointer_stride_iterator, pre_increment)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                arr.data());
+            arr.data());
 
         EXPECT_EQ(1, *it);
         ++it;
@@ -81,7 +81,7 @@ TEST(pointer_stride_iterator, post_increment)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                arr.data());
+            arr.data());
 
         EXPECT_EQ(1, *it++);
         EXPECT_EQ(3, *it);
@@ -107,7 +107,7 @@ TEST(pointer_stride_iterator, add_assign)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                arr.data());
+            arr.data());
 
         it += 2;
 
@@ -133,7 +133,7 @@ TEST(pointer_stride_iterator, pre_decrement)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                std::next(arr.data(), 6));
+            std::next(arr.data(), 6));
 
         EXPECT_EQ(7, *it);
         --it;
@@ -163,7 +163,7 @@ TEST(pointer_stride_iterator, post_decrement)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                std::next(arr.data(), 6));
+            std::next(arr.data(), 6));
 
         EXPECT_EQ(7, *it--);
         EXPECT_EQ(5, *it);
@@ -189,7 +189,7 @@ TEST(pointer_stride_iterator, subtract_assign)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                std::next(arr.data(), 6));
+            std::next(arr.data(), 6));
 
         it -= 2;
 
@@ -211,9 +211,9 @@ TEST(pointer_stride_iterator, equal)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it1(
-                arr.data());
+            arr.data());
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it2(
-                std::next(arr.data(), 2));
+            std::next(arr.data(), 2));
 
         EXPECT_TRUE(it1 == it1);
         EXPECT_FALSE(it1 == it2);
@@ -234,9 +234,9 @@ TEST(pointer_stride_iterator, not_equal)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it1(
-                arr.data());
+            arr.data());
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it2(
-                std::next(arr.data(), 2));
+            std::next(arr.data(), 2));
 
         EXPECT_FALSE(it1 != it1);
         EXPECT_TRUE(it1 != it2);
@@ -258,9 +258,9 @@ TEST(pointer_stride_iterator, less)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it1(
-                arr.data());
+            arr.data());
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it2(
-                std::next(arr.data(), 2));
+            std::next(arr.data(), 2));
 
         EXPECT_FALSE(it1 < it1);
         EXPECT_FALSE(it2 < it1);
@@ -283,9 +283,9 @@ TEST(pointer_stride_iterator, less_equal)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it1(
-                arr.data());
+            arr.data());
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it2(
-                std::next(arr.data(), 2));
+            std::next(arr.data(), 2));
 
         EXPECT_TRUE(it1 <= it1);
         EXPECT_FALSE(it2 <= it1);
@@ -308,9 +308,9 @@ TEST(pointer_stride_iterator, greater)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it1(
-                arr.data());
+            arr.data());
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it2(
-                std::next(arr.data(), 2));
+            std::next(arr.data(), 2));
 
         EXPECT_FALSE(it1 > it1);
         EXPECT_TRUE(it2 > it1);
@@ -333,9 +333,9 @@ TEST(pointer_stride_iterator, greater_equal)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it1(
-                arr.data());
+            arr.data());
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it2(
-                std::next(arr.data(), 2));
+            std::next(arr.data(), 2));
 
         EXPECT_TRUE(it1 >= it1);
         EXPECT_TRUE(it2 >= it1);
@@ -360,7 +360,7 @@ TEST(pointer_stride_iterator, add_step)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                arr.data());
+            arr.data());
 
         auto it1 = it + 2;
         auto it2 = 2 + it;
@@ -386,7 +386,7 @@ TEST(pointer_stride_iterator, subtract_step)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it(
-                std::next(arr.data(), 6));
+            std::next(arr.data(), 6));
 
         auto it1 = it - 2;
 
@@ -410,9 +410,9 @@ TEST(pointer_stride_iterator, diff)
 
     {
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it1(
-                arr.data());
+            arr.data());
         pointer_stride_iterator<decltype(arr)::value_type const, 2> it2(
-                std::next(arr.data(), 4));
+            std::next(arr.data(), 4));
 
         EXPECT_EQ(2, it2 - it1);
         EXPECT_EQ(-2, it1 - it2);

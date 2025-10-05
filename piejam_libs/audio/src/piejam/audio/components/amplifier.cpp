@@ -28,10 +28,10 @@ namespace
 
 auto
 format_name(
-        std::string_view name,
-        std::string_view param,
-        std::size_t ch,
-        std::size_t num_channels)
+    std::string_view name,
+    std::string_view param,
+    std::size_t ch,
+    std::size_t num_channels)
 {
     switch (num_channels)
     {
@@ -61,18 +61,18 @@ class amplifier final : public engine::component
 public:
     amplifier(std::size_t num_channels, std::string_view name)
         : m_gain_proc{engine::make_event_to_audio_smoother_processor(
-                  engine::default_smooth_length,
-                  std::format("{} gain", name))}
+              engine::default_smooth_length,
+              std::format("{} gain", name))}
         , m_amp_procs{algorithm::transform_to_vector(
-                  range::iota(num_channels),
-                  [=](auto ch) {
-                      return engine::make_multiply_processor(
-                              2,
-                              format_name(name, "amp", ch, num_channels));
-                  })}
+              range::iota(num_channels),
+              [=](auto ch) {
+                  return engine::make_multiply_processor(
+                      2,
+                      format_name(name, "amp", ch, num_channels));
+              })}
         , m_inputs{algorithm::transform_to_vector(
-                  m_amp_procs | boost::adaptors::indirected,
-                  engine::make_graph_endpoint<0>)}
+              m_amp_procs | boost::adaptors::indirected,
+              engine::make_graph_endpoint<0>)}
         , m_outputs{m_inputs}
     {
     }
@@ -124,26 +124,26 @@ class split_amplifier final : public engine::component
 public:
     split_amplifier(std::size_t num_channels, std::string_view name)
         : m_gain_procs{algorithm::transform_to_vector(
-                  range::iota(num_channels),
-                  [=](auto ch) {
-                      return engine::make_event_to_audio_smoother_processor(
-                              engine::default_smooth_length,
-                              format_name(name, "gain", ch, num_channels));
-                  })}
+              range::iota(num_channels),
+              [=](auto ch) {
+                  return engine::make_event_to_audio_smoother_processor(
+                      engine::default_smooth_length,
+                      format_name(name, "gain", ch, num_channels));
+              })}
         , m_amp_procs{algorithm::transform_to_vector(
-                  range::iota(num_channels),
-                  [=](auto ch) {
-                      return engine::make_multiply_processor(
-                              2,
-                              format_name(name, "amp", ch, num_channels));
-                  })}
+              range::iota(num_channels),
+              [=](auto ch) {
+                  return engine::make_multiply_processor(
+                      2,
+                      format_name(name, "amp", ch, num_channels));
+              })}
         , m_inputs{algorithm::transform_to_vector(
-                  m_amp_procs | boost::adaptors::indirected,
-                  engine::make_graph_endpoint<0>)}
+              m_amp_procs | boost::adaptors::indirected,
+              engine::make_graph_endpoint<0>)}
         , m_outputs{m_inputs}
         , m_event_inputs{algorithm::transform_to_vector(
-                  m_gain_procs | boost::adaptors::indirected,
-                  engine::make_graph_endpoint<0>)}
+              m_gain_procs | boost::adaptors::indirected,
+              engine::make_graph_endpoint<0>)}
     {
     }
 
@@ -193,14 +193,14 @@ private:
 
 auto
 make_amplifier(std::size_t num_channels, std::string_view name)
-        -> std::unique_ptr<engine::component>
+    -> std::unique_ptr<engine::component>
 {
     return std::make_unique<amplifier>(num_channels, name);
 }
 
 auto
 make_split_amplifier(std::size_t num_channels, std::string_view name)
-        -> std::unique_ptr<engine::component>
+    -> std::unique_ptr<engine::component>
 {
     return std::make_unique<split_amplifier>(num_channels, name);
 }

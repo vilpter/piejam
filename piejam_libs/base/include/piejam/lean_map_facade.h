@@ -25,7 +25,7 @@ public:
     constexpr lean_map_facade() noexcept = default;
 
     constexpr lean_map_facade(
-            std::initializer_list<std::pair<key_type, mapped_type>> init)
+        std::initializer_list<std::pair<key_type, mapped_type>> init)
         : m_map{std::move(init)}
     {
     }
@@ -126,7 +126,7 @@ public:
     }
 
     constexpr auto operator==(lean_map_facade const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 
 private:
     Map m_map;

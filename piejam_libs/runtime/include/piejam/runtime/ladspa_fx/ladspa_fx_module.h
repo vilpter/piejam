@@ -17,10 +17,10 @@ namespace piejam::runtime::ladspa_fx
 {
 
 auto make_module(
-        ladspa::instance_id,
-        std::string const& name,
-        audio::bus_type,
-        std::span<piejam::ladspa::port_descriptor const> control_inputs,
-        parameter::store&) -> fx::module;
+    ladspa::instance_id,
+    std::string const& name,
+    audio::bus_type,
+    std::span<piejam::ladspa::port_descriptor const> control_inputs,
+    parameter::store&) -> fx::module;
 
 } // namespace piejam::runtime::ladspa_fx

@@ -17,7 +17,7 @@ namespace
 {
 
 using external_midi_event_buffer =
-        audio::engine::event_buffer<midi::external_event>;
+    audio::engine::event_buffer<midi::external_event>;
 
 class midi_input_processor final : public audio::engine::named_processor
 {
@@ -67,8 +67,8 @@ public:
     auto event_outputs() const noexcept -> event_ports override
     {
         static std::array const s_event_outs{audio::engine::event_port(
-                std::in_place_type<midi::external_event>,
-                "ext_midi")};
+            std::in_place_type<midi::external_event>,
+            "ext_midi")};
 
         return s_event_outs;
     }
@@ -78,7 +78,7 @@ public:
         audio::engine::verify_process_context(*this, ctx);
 
         event_handler ev_handler(
-                ctx.event_outputs.get<midi::external_event>(0));
+            ctx.event_outputs.get<midi::external_event>(0));
         m_midi_in->process(ev_handler);
     }
 
@@ -90,7 +90,7 @@ private:
 
 auto
 make_midi_input_processor(std::unique_ptr<midi::input_event_handler> midi_in)
-        -> std::unique_ptr<audio::engine::processor>
+    -> std::unique_ptr<audio::engine::processor>
 {
     return std::make_unique<midi_input_processor>(std::move(midi_in));
 }

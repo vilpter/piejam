@@ -17,11 +17,11 @@ namespace piejam::ladspa
 {
 
 instance_manager_processor_factory::~instance_manager_processor_factory() =
-        default;
+    default;
 
 auto
 instance_manager_processor_factory::load(plugin_descriptor const& pd)
-        -> instance_id
+    -> instance_id
 {
     try
     {
@@ -46,7 +46,7 @@ instance_manager_processor_factory::unload(instance_id const& id)
 
 auto
 instance_manager_processor_factory::control_inputs(instance_id const& id) const
-        -> std::span<port_descriptor const>
+    -> std::span<port_descriptor const>
 {
     if (auto it = m_instances.find(id); it != m_instances.end())
     {
@@ -58,9 +58,9 @@ instance_manager_processor_factory::control_inputs(instance_id const& id) const
 
 auto
 instance_manager_processor_factory::make_processor(
-        instance_id const& id,
-        audio::sample_rate const sample_rate)
-        -> std::unique_ptr<audio::engine::processor>
+    instance_id const& id,
+    audio::sample_rate const sample_rate)
+    -> std::unique_ptr<audio::engine::processor>
 {
     if (auto it = m_instances.find(id); it != m_instances.end())
     {

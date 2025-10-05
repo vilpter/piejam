@@ -12,9 +12,9 @@ namespace piejam::runtime::actions
 
 struct midi_control_action_visitor
     : ui::action_visitor_interface<
-              refresh_midi_devices,
-              save_app_config,
-              apply_app_config>
+          refresh_midi_devices,
+          save_app_config,
+          apply_app_config>
 {
 };
 
@@ -25,6 +25,6 @@ struct midi_control_action
 
 template <class Action>
 using visitable_midi_control_action =
-        ui::visitable_action<Action, midi_control_action>;
+    ui::visitable_action<Action, midi_control_action>;
 
 } // namespace piejam::runtime::actions

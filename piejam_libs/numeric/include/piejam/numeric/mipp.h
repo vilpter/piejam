@@ -60,7 +60,7 @@ struct is_mipp_integral<std::uint64_t> : std::true_type
 
 template <class T>
 constexpr bool is_mipp_integral_v =
-        is_mipp_integral<std::remove_cvref_t<T>>::value;
+    is_mipp_integral<std::remove_cvref_t<T>>::value;
 
 template <class T>
 concept mipp_integral = is_mipp_integral_v<T>;

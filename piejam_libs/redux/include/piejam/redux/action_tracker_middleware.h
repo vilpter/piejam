@@ -38,16 +38,16 @@ public:
             stats_file << boost::core::demangle(ty.name()) << ", "
                        << boost::accumulators::count(acc) << ", "
                        << std::chrono::duration_cast<std::chrono::microseconds>(
-                                  boost::accumulators::mean(acc))
-                                  .count()
+                              boost::accumulators::mean(acc))
+                              .count()
                        << " us\n";
         }
     }
 
     template <class State, class Action>
     void operator()(
-            redux::middleware_functors<State, Action> const& mw_fs,
-            Action const& a)
+        redux::middleware_functors<State, Action> const& mw_fs,
+        Action const& a)
     {
         auto const started = std::chrono::steady_clock::now();
         mw_fs.next(a);
@@ -60,10 +60,10 @@ private:
     std::filesystem::path m_stats_path;
 
     using acc_t = boost::accumulators::accumulator_set<
-            std::chrono::steady_clock::duration,
-            boost::accumulators::stats<
-                    boost::accumulators::tag::count,
-                    boost::accumulators::tag::mean>>;
+        std::chrono::steady_clock::duration,
+        boost::accumulators::stats<
+            boost::accumulators::tag::count,
+            boost::accumulators::tag::mean>>;
 
     std::unordered_map<std::type_index, acc_t> m_stats;
 };

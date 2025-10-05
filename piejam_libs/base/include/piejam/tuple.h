@@ -21,11 +21,12 @@ auto
 for_each_while(Tp&& tp, F&& f) -> bool
 {
     return std::apply(
-            [fn = std::forward<F>(f)](auto&&... elems) mutable {
-                return (true && ... &&
-                        std::invoke(fn, std::forward<decltype(elems)>(elems)));
-            },
-            std::forward<Tp>(tp));
+        [fn = std::forward<F>(f)](auto&&... elems) mutable {
+            return (
+                true && ... &&
+                std::invoke(fn, std::forward<decltype(elems)>(elems)));
+        },
+        std::forward<Tp>(tp));
 }
 
 template <class Tp, class F>
@@ -33,11 +34,12 @@ auto
 for_each_until(Tp&& tp, F&& f) -> bool
 {
     return std::apply(
-            [fn = std::forward<F>(f)](auto&&... elems) mutable {
-                return (false || ... ||
-                        std::invoke(fn, std::forward<decltype(elems)>(elems)));
-            },
-            std::forward<Tp>(tp));
+        [fn = std::forward<F>(f)](auto&&... elems) mutable {
+            return (
+                false || ... ||
+                std::invoke(fn, std::forward<decltype(elems)>(elems)));
+        },
+        std::forward<Tp>(tp));
 }
 
 } // namespace piejam::tuple

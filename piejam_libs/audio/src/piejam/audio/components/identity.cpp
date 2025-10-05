@@ -26,8 +26,8 @@ class identity final : public engine::component
 public:
     explicit identity(std::size_t num_channels)
         : m_procs{algorithm::transform_to_vector(
-                  range::iota(num_channels),
-                  [](auto) { return engine::make_identity_processor(); })}
+              range::iota(num_channels),
+              [](auto) { return engine::make_identity_processor(); })}
     {
     }
 
@@ -62,11 +62,10 @@ public:
 private:
     std::vector<std::unique_ptr<engine::processor>> m_procs;
 
-    std::vector<engine::graph_endpoint> m_inputs{algorithm::transform_to_vector(
-            range::indices(m_procs),
-            [this](auto i) {
-                return engine::graph_endpoint{.proc = *m_procs[i], .port = 0};
-            })};
+    std::vector<engine::graph_endpoint> m_inputs{
+        algorithm::transform_to_vector(range::indices(m_procs), [this](auto i) {
+            return engine::graph_endpoint{.proc = *m_procs[i], .port = 0};
+        })};
     std::vector<engine::graph_endpoint> m_outputs{m_inputs};
 };
 

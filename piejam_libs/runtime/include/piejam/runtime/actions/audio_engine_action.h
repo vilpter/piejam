@@ -12,31 +12,31 @@ namespace piejam::runtime::actions
 
 struct audio_engine_action_visitor
     : ui::action_visitor_interface<
-              set_external_audio_device_bus_channel,
-              add_external_audio_device,
-              remove_external_audio_device,
-              add_mixer_channel,
-              delete_mixer_channel,
-              set_mixer_channel_route,
-              delete_fx_module,
-              insert_internal_fx_module,
-              insert_ladspa_fx_module,
-              replace_missing_ladspa_fx_module,
-              toggle_focused_fx_module_bypass,
-              set_bool_parameter,
-              set_float_parameter,
-              set_int_parameter,
-              set_enum_parameter,
-              request_audio_engine_sync,
-              request_info_update,
-              move_fx_module_up,
-              move_fx_module_down,
-              start_midi_learning,
-              stop_midi_learning,
-              update_midi_assignments,
-              start_recording,
-              stop_recording,
-              apply_session>
+          set_external_audio_device_bus_channel,
+          add_external_audio_device,
+          remove_external_audio_device,
+          add_mixer_channel,
+          delete_mixer_channel,
+          set_mixer_channel_route,
+          delete_fx_module,
+          insert_internal_fx_module,
+          insert_ladspa_fx_module,
+          replace_missing_ladspa_fx_module,
+          toggle_focused_fx_module_bypass,
+          set_bool_parameter,
+          set_float_parameter,
+          set_int_parameter,
+          set_enum_parameter,
+          request_audio_engine_sync,
+          request_info_update,
+          move_fx_module_up,
+          move_fx_module_down,
+          start_midi_learning,
+          stop_midi_learning,
+          update_midi_assignments,
+          start_recording,
+          stop_recording,
+          apply_session>
 {
 };
 
@@ -47,6 +47,6 @@ struct audio_engine_action
 
 template <class Action>
 using visitable_audio_engine_action =
-        ui::visitable_action<Action, audio_engine_action>;
+    ui::visitable_action<Action, audio_engine_action>;
 
 } // namespace piejam::runtime::actions

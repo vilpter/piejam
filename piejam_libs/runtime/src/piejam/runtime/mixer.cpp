@@ -29,9 +29,9 @@ using channels_io_t = boost::container::flat_map<channel_id, channel_io_t>;
 
 auto
 extract_channels_io(
-        io_map_t const& io_map,
-        aux_sends_t const& aux_sends,
-        parameter::store const& params) -> channels_io_t
+    io_map_t const& io_map,
+    aux_sends_t const& aux_sends,
+    parameter::store const& params) -> channels_io_t
 {
     channels_io_t result;
 
@@ -75,21 +75,21 @@ make_channels_io_graph(channels_io_t const& channels_io) -> io_graph
         result[id];
 
         if (channel_id const* const in_channel_id =
-                    std::get_if<channel_id>(&ch_io.port.in()))
+                std::get_if<channel_id>(&ch_io.port.in()))
         {
             result[*in_channel_id].children.push_back(id);
         }
 
         auto add_out_child = [&](channel_id const& out_channel_id) {
             if (std::holds_alternative<mixer::mix_input>(
-                        channels_io.at(out_channel_id).port.in()))
+                    channels_io.at(out_channel_id).port.in()))
             {
                 result[id].children.push_back(out_channel_id);
             }
         };
 
         if (auto const* const out_channel_id =
-                    std::get_if<channel_id>(&ch_io.port.out()))
+                std::get_if<channel_id>(&ch_io.port.out()))
         {
             add_out_child(*out_channel_id);
         }
@@ -147,10 +147,10 @@ has_cycle(io_graph g)
 
 auto
 is_mix_input_valid(
-        channel_id const ch_id,
-        io_map_t const& io_map,
-        aux_sends_t const& aux_sends,
-        parameter::store const& params) -> bool
+    channel_id const ch_id,
+    io_map_t const& io_map,
+    aux_sends_t const& aux_sends,
+    parameter::store const& params) -> bool
 {
     auto channels_io = extract_channels_io(io_map, aux_sends, params);
     channels_io[ch_id].port.in() = mixer::mix_input{};
@@ -159,11 +159,11 @@ is_mix_input_valid(
 
 auto
 can_toggle_aux(
-        channel_id const ch_id,
-        channel_id const aux_id,
-        io_map_t const& io_map,
-        aux_sends_t const& aux_sends,
-        parameter::store const& params) -> bool
+    channel_id const ch_id,
+    channel_id const aux_id,
+    io_map_t const& io_map,
+    aux_sends_t const& aux_sends,
+    parameter::store const& params) -> bool
 {
     auto channel_aux_sends = aux_sends.find(ch_id);
     if (!channel_aux_sends)
@@ -190,12 +190,12 @@ can_toggle_aux(
 
 auto
 valid_channels(
-        channel_id const ch_id,
-        io_direction const io_dir,
-        channels_t const& channels,
-        io_map_t const& io_map,
-        aux_sends_t const& aux_sends,
-        parameter::store const& params) -> std::vector<channel_id>
+    channel_id const ch_id,
+    io_direction const io_dir,
+    channels_t const& channels,
+    io_map_t const& io_map,
+    aux_sends_t const& aux_sends,
+    parameter::store const& params) -> std::vector<channel_id>
 {
     auto channels_io = extract_channels_io(io_map, aux_sends, params);
 
@@ -222,9 +222,8 @@ valid_channels(
             continue;
         }
 
-        auto prev_id = std::exchange(
-                channels_io[ch_id].port[io_dir],
-                mixer_channel_id);
+        auto prev_id =
+            std::exchange(channels_io[ch_id].port[io_dir], mixer_channel_id);
 
         if (!has_cycle(make_channels_io_graph(channels_io)))
         {

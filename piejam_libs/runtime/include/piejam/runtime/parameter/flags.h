@@ -25,7 +25,7 @@ struct flags_set
     constexpr flags_set() noexcept = default;
 
     constexpr auto operator==(flags_set const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 
     template <flags_enum E>
     constexpr flags_set(std::initializer_list<E> fs) noexcept

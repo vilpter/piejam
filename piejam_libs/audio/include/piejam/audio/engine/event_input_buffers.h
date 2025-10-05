@@ -53,8 +53,8 @@ public:
     {
         BOOST_ASSERT(buffer_index < m_event_buffers.size());
         BOOST_ASSERT_MSG(
-                !m_connected[buffer_index],
-                "Input already connected, event_merger needed?");
+            !m_connected[buffer_index],
+            "Input already connected, event_merger needed?");
         BOOST_ASSERT(m_event_buffers[buffer_index]->type() == ev_buf.type());
         m_event_buffers[buffer_index] = std::addressof(ev_buf);
 
@@ -65,12 +65,12 @@ public:
 
     template <class T>
     [[nodiscard]]
-    auto
-    get(std::size_t const buffer_index) const noexcept -> event_buffer<T> const&
+    auto get(std::size_t const buffer_index) const noexcept
+        -> event_buffer<T> const&
     {
         BOOST_ASSERT(buffer_index < m_event_buffers.size());
         abstract_event_buffer const* const ev_buf =
-                m_event_buffers[buffer_index];
+            m_event_buffers[buffer_index];
 
         return *boost::polymorphic_downcast<event_buffer<T> const*>(ev_buf);
     }

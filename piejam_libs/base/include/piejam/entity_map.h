@@ -86,10 +86,10 @@ public:
     {
         auto id = id_t::generate();
         m_map.emplace_hint(
-                m_map.end(),
-                std::piecewise_construct,
-                std::forward_as_tuple(id),
-                std::forward_as_tuple(std::forward<Args>(args)...));
+            m_map.end(),
+            std::piecewise_construct,
+            std::forward_as_tuple(id),
+            std::forward_as_tuple(std::forward<Args>(args)...));
         return id;
     }
 

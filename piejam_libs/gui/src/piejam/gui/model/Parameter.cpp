@@ -17,17 +17,18 @@ namespace piejam::gui::model
 {
 
 Parameter::Parameter(
-        runtime::state_access const& state_access,
-        ParameterId const& paramId)
+    runtime::state_access const& state_access,
+    ParameterId const& paramId)
     : SubscribableModel(state_access)
     , m_paramId{paramId}
 {
-    setName(QString::fromStdString(observe_once(
+    setName(
+        QString::fromStdString(observe_once(
             runtime::selectors::make_parameter_name_selector(m_paramId))));
 
     if (observe_once(
-                runtime::selectors::make_parameter_is_midi_assignable_selector(
-                        paramId)))
+            runtime::selectors::make_parameter_is_midi_assignable_selector(
+                paramId)))
     {
         m_midi = std::make_unique<MidiAssignable>(state_access, paramId);
     }
@@ -38,11 +39,11 @@ Parameter::~Parameter() = default;
 void
 Parameter::onSubscribe()
 {
-    observe(runtime::selectors::make_parameter_value_string_selector(
-                    m_paramId),
-            [this](std::string const& text) {
-                setValueString(QString::fromStdString(text));
-            });
+    observe(
+        runtime::selectors::make_parameter_value_string_selector(m_paramId),
+        [this](std::string const& text) {
+            setValueString(QString::fromStdString(text));
+        });
 }
 
 auto

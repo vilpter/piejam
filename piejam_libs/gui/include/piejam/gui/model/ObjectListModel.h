@@ -33,7 +33,7 @@ public:
     }
 
     auto data(QModelIndex const& index, int const role = Qt::DisplayRole) const
-            -> QVariant override
+        -> QVariant override
     {
         switch (role)
         {
@@ -47,8 +47,8 @@ public:
     auto roleNames() const -> QHash<int, QByteArray> override
     {
         static QHash<int, QByteArray> s_roles = {
-                {Qt::DisplayRole, "display"},
-                {ItemRole, "item"}};
+            {Qt::DisplayRole, "display"},
+            {ItemRole, "item"}};
         return s_roles;
     }
 
@@ -62,9 +62,9 @@ public:
     {
         BOOST_ASSERT(pos <= m_list.size());
         beginInsertRows(
-                QModelIndex(),
-                static_cast<int>(pos),
-                static_cast<int>(pos));
+            QModelIndex(),
+            static_cast<int>(pos),
+            static_cast<int>(pos));
         BOOST_ASSERT(item);
         insert_at(m_list, pos, std::move(item));
         endInsertRows();
@@ -74,9 +74,9 @@ public:
     {
         BOOST_ASSERT(pos < m_list.size());
         beginRemoveRows(
-                QModelIndex(),
-                static_cast<int>(pos),
-                static_cast<int>(pos));
+            QModelIndex(),
+            static_cast<int>(pos),
+            static_cast<int>(pos));
         BOOST_ASSERT(!m_list.empty());
         erase_at(m_list, pos);
         endRemoveRows();

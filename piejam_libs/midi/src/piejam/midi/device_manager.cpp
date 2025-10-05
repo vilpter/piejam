@@ -26,38 +26,35 @@ namespace piejam::midi
 namespace
 {
 
-using alsa_midi_devices_t = boost::container::flat_map<
-        std::pair<alsa::midi_client_id_t, alsa::midi_port_t>,
-        device_id_t>;
+using alsa_midi_devices_t = boost::container::
+    flat_map<std::pair<alsa::midi_client_id_t, alsa::midi_port_t>, device_id_t>;
 
 struct alsa_event_handler final : alsa::event_handler
 {
     alsa_event_handler(
-            midi::event_handler& ev_handler,
-            alsa_midi_devices_t const& devices)
+        midi::event_handler& ev_handler,
+        alsa_midi_devices_t const& devices)
         : m_ev_handler(ev_handler)
         , m_devices(devices)
     {
     }
 
     void process_cc_event(
-            alsa::midi_client_id_t const client_id,
-            alsa::midi_port_t const port,
-            std::size_t const channel,
-            std::size_t const cc_id,
-            std::size_t const value) override
+        alsa::midi_client_id_t const client_id,
+        alsa::midi_port_t const port,
+        std::size_t const channel,
+        std::size_t const cc_id,
+        std::size_t const value) override
     {
         if (auto it = m_devices.find(std::pair{client_id, port});
             it != m_devices.end())
         {
             m_ev_handler.process(
-                    midi::external_event{
-                            .device_id = it->second,
-                            .event = midi::channel_cc_event{
-                                    .channel = channel,
-                                    .data = cc_event{
-                                            .cc = cc_id,
-                                            .value = value}}});
+                midi::external_event{
+                    .device_id = it->second,
+                    .event = midi::channel_cc_event{
+                        .channel = channel,
+                        .data = cc_event{.cc = cc_id, .value = value}}});
         }
     }
 
@@ -69,20 +66,20 @@ private:
 struct alsa_input_event_handler final : input_event_handler
 {
     alsa_input_event_handler(
-            alsa::midi_io& mio,
-            std::unordered_map<device_id_t, alsa::midi_device> const& devices)
+        alsa::midi_io& mio,
+        std::unordered_map<device_id_t, alsa::midi_device> const& devices)
         : m_midi_io(mio)
     {
         m_devices.reserve(devices.size());
 
         std::ranges::transform(
-                devices,
-                std::inserter(m_devices, m_devices.end()),
-                [](auto const& d) {
-                    return std::pair{
-                            std::pair{d.second.client_id, d.second.port},
-                            d.first};
-                });
+            devices,
+            std::inserter(m_devices, m_devices.end()),
+            [](auto const& d) {
+                return std::pair{
+                    std::pair{d.second.client_id, d.second.port},
+                    d.first};
+            });
     }
 
     void process(event_handler& ev_handler) override
@@ -105,7 +102,7 @@ public:
     auto update_devices() -> std::vector<device_update> override;
 
     auto make_input_event_handler()
-            -> std::unique_ptr<input_event_handler> override;
+        -> std::unique_ptr<input_event_handler> override;
 
 private:
     auto is_update_relevant(alsa::midi_device_added const&) const -> bool
@@ -116,35 +113,35 @@ private:
     auto is_update_relevant(alsa::midi_device_removed const& op) const -> bool
     {
         return std::ranges::contains(
-                m_alsa_input_devices,
-                op.device,
-                &alsa_input_devices_t::value_type::second);
+            m_alsa_input_devices,
+            op.device,
+            &alsa_input_devices_t::value_type::second);
     }
 
     auto is_update_relevant(alsa::midi_device_event const& op) const -> bool
     {
         return std::visit(
-                [this](auto const& op) { return is_update_relevant(op); },
-                op);
+            [this](auto const& op) { return is_update_relevant(op); },
+            op);
     }
 
     auto process_midi_device_update(alsa::midi_device_added const& op)
-            -> device_update
+        -> device_update
     {
         auto new_id = device_id_t::generate();
         m_alsa_input_devices.emplace(new_id, op.device);
         return device_added{
-                .device_id = new_id,
-                .name = std::format("{}:{}", op.device.name, op.device.port)};
+            .device_id = new_id,
+            .name = std::format("{}:{}", op.device.name, op.device.port)};
     }
 
     auto process_midi_device_update(alsa::midi_device_removed const& op)
-            -> device_update
+        -> device_update
     {
         auto it = std::ranges::find(
-                m_alsa_input_devices,
-                op.device,
-                &alsa_input_devices_t::value_type::second);
+            m_alsa_input_devices,
+            op.device,
+            &alsa_input_devices_t::value_type::second);
 
         BOOST_ASSERT(it != m_alsa_input_devices.end());
 
@@ -156,19 +153,17 @@ private:
     auto process_midi_device_update(alsa::midi_device_event const& op)
     {
         return std::visit(
-                [this](auto const& op) {
-                    return process_midi_device_update(op);
-                },
-                op);
+            [this](auto const& op) { return process_midi_device_update(op); },
+            op);
     }
 
     alsa::midi_io m_midi_io;
     alsa::midi_devices m_alsa_midi_devices{
-            m_midi_io.client_id(),
-            m_midi_io.in_port()};
+        m_midi_io.client_id(),
+        m_midi_io.in_port()};
 
     using alsa_input_devices_t =
-            std::unordered_map<device_id_t, alsa::midi_device>;
+        std::unordered_map<device_id_t, alsa::midi_device>;
     alsa_input_devices_t m_alsa_input_devices;
 };
 
@@ -179,8 +174,8 @@ alsa_device_manager::activate_input_device(device_id_t const device_id) -> bool
         it != m_alsa_input_devices.end())
     {
         return m_alsa_midi_devices.connect_input(
-                it->second.client_id,
-                it->second.port);
+            it->second.client_id,
+            it->second.port);
     }
 
     return false;
@@ -193,8 +188,8 @@ alsa_device_manager::deactivate_input_device(device_id_t const device_id)
         it != m_alsa_input_devices.end())
     {
         m_alsa_midi_devices.disconnect_input(
-                it->second.client_id,
-                it->second.port);
+            it->second.client_id,
+            it->second.port);
     }
 }
 
@@ -216,11 +211,11 @@ alsa_device_manager::update_devices() -> std::vector<device_update>
 
 auto
 alsa_device_manager::make_input_event_handler()
-        -> std::unique_ptr<input_event_handler>
+    -> std::unique_ptr<input_event_handler>
 {
     return std::make_unique<alsa_input_event_handler>(
-            m_midi_io,
-            m_alsa_input_devices);
+        m_midi_io,
+        m_alsa_input_devices);
 }
 
 } // namespace

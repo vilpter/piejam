@@ -17,16 +17,17 @@ internal_id() -> runtime::fx::internal_id
 {
     using namespace std::string_literals;
 
-    static auto const id = register_module(module_registration{
+    static auto const id = register_module(
+        module_registration{
             .available_for_mono = true,
             .persistence_name = "utility"s,
             .fx_module_factory = &make_module,
             .fx_component_factory = &make_component,
             .fx_browser_entry_name = "Utility",
             .fx_browser_entry_description =
-                    "Amplify or attenuate an audio signal.",
+                "Amplify or attenuate an audio signal.",
             .fx_module_content_factory =
-                    &piejam::gui::model::makeFxModule<gui::FxUtility>,
+                &piejam::gui::model::makeFxModule<gui::FxUtility>,
             .viewSource = "/PieJam/FxChainControls/ParametersListView.qml"});
     return id;
 }

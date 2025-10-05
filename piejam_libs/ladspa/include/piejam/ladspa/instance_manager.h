@@ -21,7 +21,7 @@ public:
 
     [[nodiscard]]
     virtual auto control_inputs(instance_id const&) const
-            -> std::span<port_descriptor const> = 0;
+        -> std::span<port_descriptor const> = 0;
 };
 
 } // namespace piejam::ladspa

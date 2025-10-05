@@ -33,14 +33,14 @@ TEST(hamming, generates_known_values_double)
     hamming<double> gen(size);
 
     std::array<double, size> expected = {
-            0.08000000000000007,
-            0.25319469114498255,
-            0.6423596296199047,
-            0.9544456792351129,
-            0.9544456792351129,
-            0.6423596296199048,
-            0.25319469114498266,
-            0.08000000000000007};
+        0.08000000000000007,
+        0.25319469114498255,
+        0.6423596296199047,
+        0.9544456792351129,
+        0.9544456792351129,
+        0.6423596296199048,
+        0.25319469114498266,
+        0.08000000000000007};
 
     for (std::size_t i = 0; i < size; ++i)
     {
@@ -59,7 +59,7 @@ TEST(hamming, is_symmetric)
     for (std::size_t i = 0; i < size / 2; ++i)
     {
         EXPECT_NEAR(values[i], values[size - 1 - i], 1e-5f)
-                << " symmetry check failed at index " << i;
+            << " symmetry check failed at index " << i;
     }
 }
 
@@ -69,14 +69,14 @@ TEST(hann_generator, generates_known_values_float)
     hann<float> gen(N);
 
     float expected[N] = {
-            0.0f,
-            0.188255f,
-            0.611260f,
-            0.950484f,
-            0.950484f,
-            0.611260f,
-            0.188255f,
-            0.0f};
+        0.0f,
+        0.188255f,
+        0.611260f,
+        0.950484f,
+        0.950484f,
+        0.611260f,
+        0.188255f,
+        0.0f};
 
     for (std::size_t i = 0; i < N; ++i)
     {
@@ -90,14 +90,14 @@ TEST(hann_generator, generates_known_values_double)
     hann<double> gen(N);
 
     double expected[N] = {
-            0.0,
-            0.188255102,
-            0.611260466,
-            0.950484433,
-            0.950484433,
-            0.611260466,
-            0.188255102,
-            0.0};
+        0.0,
+        0.188255102,
+        0.611260466,
+        0.950484433,
+        0.950484433,
+        0.611260466,
+        0.188255102,
+        0.0};
 
     for (std::size_t i = 0; i < N; ++i)
     {

@@ -80,8 +80,8 @@ TEST_F(rms_level_meter_test, history_wrap)
     rms_level_meter<float> meter(sr,
                                  2ms); // ~100 samples at 48kHz
     mipp::vector<float> samples(
-            history_samples * 2,
-            0.1f); // push more than buffer
+        history_samples * 2,
+        0.1f); // push more than buffer
 
     meter.process(samples);
 

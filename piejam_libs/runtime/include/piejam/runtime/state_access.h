@@ -16,8 +16,8 @@ class state_access
 {
 public:
     state_access(
-            runtime::store& store,
-            runtime::subscriber& state_change_subscriber)
+        runtime::store& store,
+        runtime::subscriber& state_change_subscriber)
         : m_store{&store}
         , m_state_change_subscriber{state_change_subscriber}
     {
@@ -35,8 +35,8 @@ public:
     auto observe(runtime::selector<Value> sel, Handler&& h)
     {
         return m_state_change_subscriber.observe(
-                std::move(sel),
-                std::forward<Handler>(h));
+            std::move(sel),
+            std::forward<Handler>(h));
     }
 
 private:

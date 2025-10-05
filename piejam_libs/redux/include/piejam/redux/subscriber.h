@@ -43,24 +43,24 @@ public:
         std::invoke(std::forward<Handler>(handler), *last);
         auto token = std::make_shared<subscription::token>();
         return subscription(
-                m_observer.connect([sel = std::move(sel),
-                                    handler,
-                                    token = std::weak_ptr(token),
-                                    last](State const& st) mutable {
-                    auto alive = token.lock();
-                    if (!alive)
-                    {
-                        return;
-                    }
+            m_observer.connect([sel = std::move(sel),
+                                handler,
+                                token = std::weak_ptr(token),
+                                last](State const& st) mutable {
+                auto alive = token.lock();
+                if (!alive)
+                {
+                    return;
+                }
 
-                    auto current = sel(st);
-                    if (*last != current)
-                    {
-                        handler(current);
-                        *last = std::move(current);
-                    }
-                }),
-                token);
+                auto current = sel(st);
+                if (*last != current)
+                {
+                    handler(current);
+                    *last = std::move(current);
+                }
+            }),
+            token);
     }
 
     void notify(State const& st)

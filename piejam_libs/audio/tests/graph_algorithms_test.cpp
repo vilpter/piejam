@@ -57,7 +57,7 @@ TEST(remove_event_identity_processors, identity_without_output)
 
     std::array event_outs{event_port(std::in_place_type<float>)};
     ON_CALL(src, event_outputs())
-            .WillByDefault(Return(processor::event_ports{event_outs}));
+        .WillByDefault(Return(processor::event_ports{event_outs}));
     g.event.insert({src, 0}, {ident, 0});
 
     ASSERT_EQ(1, g.event.size());
@@ -76,7 +76,7 @@ TEST(remove_event_identity_processors, identity_without_input)
 
     std::array event_ins{event_port(std::in_place_type<float>)};
     ON_CALL(dst, event_inputs())
-            .WillByDefault(Return(processor::event_ports{event_ins}));
+        .WillByDefault(Return(processor::event_ports{event_ins}));
     g.event.insert({ident, 0}, {dst, 0});
 
     ASSERT_EQ(1, g.event.size());
@@ -96,11 +96,11 @@ TEST(remove_event_identity_processors, identity_between_processors)
 
     std::array event_outs{event_port(std::in_place_type<float>)};
     ON_CALL(src, event_outputs())
-            .WillByDefault(Return(processor::event_ports{event_outs}));
+        .WillByDefault(Return(processor::event_ports{event_outs}));
     g.event.insert({src, 0}, {ident, 0});
     std::array event_ins{event_port(std::in_place_type<float>)};
     ON_CALL(dst, event_inputs())
-            .WillByDefault(Return(processor::event_ports{event_ins}));
+        .WillByDefault(Return(processor::event_ports{event_ins}));
     g.event.insert({ident, 0}, {dst, 0});
 
     ASSERT_EQ(2, g.event.size());
@@ -122,11 +122,11 @@ TEST(remove_event_identity_processors, identity_in_series_between_processors)
 
     std::array event_outs{event_port(std::in_place_type<float>)};
     ON_CALL(src, event_outputs())
-            .WillByDefault(Return(processor::event_ports{event_outs}));
+        .WillByDefault(Return(processor::event_ports{event_outs}));
     g.event.insert({src, 0}, {ident1, 0});
     std::array event_ins{event_port(std::in_place_type<float>)};
     ON_CALL(dst, event_inputs())
-            .WillByDefault(Return(processor::event_ports{event_ins}));
+        .WillByDefault(Return(processor::event_ports{event_ins}));
     g.event.insert({ident2, 0}, {dst, 0});
 
     g.event.insert({ident1, 0}, {ident2, 0});
@@ -150,16 +150,16 @@ TEST(remove_event_identity_processors, two_outs_from_identity)
 
     std::array event_outs{event_port(std::in_place_type<float>)};
     ON_CALL(src, event_outputs())
-            .WillByDefault(Return(processor::event_ports{event_outs}));
+        .WillByDefault(Return(processor::event_ports{event_outs}));
     g.event.insert({src, 0}, {ident, 0});
 
     std::array event_ins{event_port(std::in_place_type<float>)};
     ON_CALL(dst1, event_inputs())
-            .WillByDefault(Return(processor::event_ports{event_ins}));
+        .WillByDefault(Return(processor::event_ports{event_ins}));
     g.event.insert({ident, 0}, {dst1, 0});
 
     ON_CALL(dst2, event_inputs())
-            .WillByDefault(Return(processor::event_ports{event_ins}));
+        .WillByDefault(Return(processor::event_ports{event_ins}));
     g.event.insert({ident, 0}, {dst2, 0});
 
     ASSERT_EQ(3, g.event.size());
@@ -169,8 +169,9 @@ TEST(remove_event_identity_processors, two_outs_from_identity)
     EXPECT_TRUE(has_event_wire(g, {src, 0}, {dst2, 0}));
 }
 
-TEST(remove_event_identity_processors,
-     two_outs_from_identity_one_goes_to_identity)
+TEST(
+    remove_event_identity_processors,
+    two_outs_from_identity_one_goes_to_identity)
 {
     using namespace testing;
 
@@ -184,17 +185,17 @@ TEST(remove_event_identity_processors,
 
     std::array event_outs{event_port(std::in_place_type<float>)};
     ON_CALL(src, event_outputs())
-            .WillByDefault(Return(processor::event_ports{event_outs}));
+        .WillByDefault(Return(processor::event_ports{event_outs}));
     g.event.insert({src, 0}, {ident1, 0});
 
     std::array event_ins{event_port(std::in_place_type<float>)};
     ON_CALL(dst1, event_inputs())
-            .WillByDefault(Return(processor::event_ports{event_ins}));
+        .WillByDefault(Return(processor::event_ports{event_ins}));
     g.event.insert({ident1, 0}, {ident2, 0});
     g.event.insert({ident2, 0}, {dst1, 0});
 
     ON_CALL(dst2, event_inputs())
-            .WillByDefault(Return(processor::event_ports{event_ins}));
+        .WillByDefault(Return(processor::event_ports{event_ins}));
     g.event.insert({ident1, 0}, {dst2, 0});
 
     ASSERT_EQ(4, g.event.size());
@@ -250,10 +251,10 @@ TEST(connect_stereo_components, with_destination_processor)
 
     ON_CALL(src_proc, num_outputs()).WillByDefault(Return(2));
     std::array src_outputs{
-            graph_endpoint{.proc = src_proc, .port = 0},
-            graph_endpoint{.proc = src_proc, .port = 1}};
+        graph_endpoint{.proc = src_proc, .port = 0},
+        graph_endpoint{.proc = src_proc, .port = 1}};
     ON_CALL(src, outputs())
-            .WillByDefault(Return(component::endpoints(src_outputs)));
+        .WillByDefault(Return(component::endpoints(src_outputs)));
     ON_CALL(dst, num_inputs()).WillByDefault(Return(2));
 
     connect(g, src, dst);
@@ -276,17 +277,17 @@ TEST(connect_stereo_components, with_destination_component)
 
     ON_CALL(src_proc, num_outputs()).WillByDefault(Return(2));
     std::array src_outputs{
-            graph_endpoint{.proc = src_proc, .port = 0},
-            graph_endpoint{.proc = src_proc, .port = 1}};
+        graph_endpoint{.proc = src_proc, .port = 0},
+        graph_endpoint{.proc = src_proc, .port = 1}};
     ON_CALL(src, outputs())
-            .WillByDefault(Return(component::endpoints(src_outputs)));
+        .WillByDefault(Return(component::endpoints(src_outputs)));
 
     ON_CALL(dst_proc, num_inputs()).WillByDefault(Return(2));
     std::array dst_inputs{
-            graph_endpoint{.proc = dst_proc, .port = 0},
-            graph_endpoint{.proc = dst_proc, .port = 1}};
+        graph_endpoint{.proc = dst_proc, .port = 0},
+        graph_endpoint{.proc = dst_proc, .port = 1}};
     ON_CALL(dst, inputs())
-            .WillByDefault(Return(component::endpoints(dst_inputs)));
+        .WillByDefault(Return(component::endpoints(dst_inputs)));
 
     connect(g, src, dst);
     EXPECT_EQ(2u, g.audio.size());
@@ -309,23 +310,23 @@ TEST(finalize_graph, connect_two_components_to_one)
     using testing::Return;
 
     std::array src1_outputs{
-            graph_endpoint{.proc = src_proc1, .port = 0},
-            graph_endpoint{.proc = src_proc1, .port = 1}};
+        graph_endpoint{.proc = src_proc1, .port = 0},
+        graph_endpoint{.proc = src_proc1, .port = 1}};
     ON_CALL(src1, outputs())
-            .WillByDefault(Return(component::endpoints(src1_outputs)));
+        .WillByDefault(Return(component::endpoints(src1_outputs)));
 
     std::array src2_outputs{
-            graph_endpoint{.proc = src_proc2, .port = 0},
-            graph_endpoint{.proc = src_proc2, .port = 1}};
+        graph_endpoint{.proc = src_proc2, .port = 0},
+        graph_endpoint{.proc = src_proc2, .port = 1}};
     ON_CALL(src2, outputs())
-            .WillByDefault(Return(component::endpoints(src2_outputs)));
+        .WillByDefault(Return(component::endpoints(src2_outputs)));
 
     ON_CALL(dst_proc, num_inputs()).WillByDefault(Return(2));
     std::array dst_inputs{
-            graph_endpoint{.proc = dst_proc, .port = 0},
-            graph_endpoint{.proc = dst_proc, .port = 1}};
+        graph_endpoint{.proc = dst_proc, .port = 0},
+        graph_endpoint{.proc = dst_proc, .port = 1}};
     ON_CALL(dst, inputs())
-            .WillByDefault(Return(component::endpoints(dst_inputs)));
+        .WillByDefault(Return(component::endpoints(dst_inputs)));
 
     connect(g, src1, dst);
     connect(g, src2, dst);

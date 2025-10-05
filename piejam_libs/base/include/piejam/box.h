@@ -32,14 +32,14 @@ inline constexpr bool is_box_dispatch_v<box<T>> = true;
 
 template <class T>
 inline constexpr bool is_box_v =
-        detail::is_box_dispatch_v<std::remove_cvref_t<T>>;
+    detail::is_box_dispatch_v<std::remove_cvref_t<T>>;
 
 namespace detail
 {
 
 template <class From, class To>
 concept convertible_to_box_value =
-        std::convertible_to<From, To> && !is_box_v<From>;
+    std::convertible_to<From, To> && !is_box_v<From>;
 
 } // namespace detail
 
@@ -50,8 +50,8 @@ public:
     using value_type = T;
 
     static_assert(
-            std::is_same_v<T, std::remove_cvref_t<T>>,
-            "T must be a non-cv, non-reference type");
+        std::is_same_v<T, std::remove_cvref_t<T>>,
+        "T must be a non-cv, non-reference type");
 
     class write_lock
     {
@@ -60,8 +60,8 @@ public:
         {
             m_box.m_value = m_value;
             BOOST_ASSERT_MSG(
-                    std::exchange(m_box.m_locked, false),
-                    "box should be locked for writing");
+                std::exchange(m_box.m_locked, false),
+                "box should be locked for writing");
         }
 
         write_lock(write_lock const&) = delete;
@@ -90,8 +90,8 @@ public:
             : m_box{b}
         {
             BOOST_ASSERT_MSG(
-                    !std::exchange(m_box.m_locked, true),
-                    "box is already locked for writing");
+                !std::exchange(m_box.m_locked, true),
+                "box is already locked for writing");
         }
 
         friend class box<T>;
@@ -177,7 +177,7 @@ private:
     static auto get_default() -> std::shared_ptr<T const>
     {
         static std::shared_ptr<T const> const s_default{
-                std::make_shared<T>(T{})};
+            std::make_shared<T>(T{})};
         return s_default;
     }
 
@@ -191,22 +191,22 @@ private:
 template <class T, class U>
     requires(!is_box_v<U> && std::equality_comparable_with<T, U>)
 auto operator==(box<T> const& lhs, U const& rhs)
-        BOOST_HOF_RETURNS(lhs.get() == rhs);
+    BOOST_HOF_RETURNS(lhs.get() == rhs);
 
 template <class T, class U>
     requires(!is_box_v<U> && std::equality_comparable_with<T, U>)
 auto operator==(U const& lhs, box<T> const& rhs)
-        BOOST_HOF_RETURNS(lhs == rhs.get());
+    BOOST_HOF_RETURNS(lhs == rhs.get());
 
 template <class T, class U>
     requires(!is_box_v<U> && std::totally_ordered_with<T, U>)
 auto operator<=>(box<T> const& lhs, U const& rhs)
-        BOOST_HOF_RETURNS(lhs.get() <=> rhs);
+    BOOST_HOF_RETURNS(lhs.get() <=> rhs);
 
 template <class T, class U>
     requires(!is_box_v<U> && std::totally_ordered_with<T, U>)
 auto operator<=>(U const& lhs, box<T> const& rhs)
-        BOOST_HOF_RETURNS(lhs <=> rhs.get());
+    BOOST_HOF_RETURNS(lhs <=> rhs.get());
 
 template <class T>
     requires(!is_box_v<T>)

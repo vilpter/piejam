@@ -30,7 +30,7 @@ scan_file(std::filesystem::path const& file) -> std::vector<plugin_descriptor>
 
     system::dll plugin(file);
     auto const ladspa_descriptor =
-            plugin.symbol<LADSPA_Descriptor_Function>("ladspa_descriptor");
+        plugin.symbol<LADSPA_Descriptor_Function>("ladspa_descriptor");
 
     for (unsigned long plugin_index{};; ++plugin_index)
     {
@@ -44,25 +44,25 @@ scan_file(std::filesystem::path const& file) -> std::vector<plugin_descriptor>
                 if (LADSPA_IS_PORT_INPUT(port_desc))
                 {
                     num_inputs +=
-                            static_cast<bool>(LADSPA_IS_PORT_AUDIO(port_desc));
+                        static_cast<bool>(LADSPA_IS_PORT_AUDIO(port_desc));
                 }
                 else if (LADSPA_IS_PORT_OUTPUT(port_desc))
                 {
                     num_outputs +=
-                            static_cast<bool>(LADSPA_IS_PORT_AUDIO(port_desc));
+                        static_cast<bool>(LADSPA_IS_PORT_AUDIO(port_desc));
                 }
             }
 
             result.push_back({
-                    .id = desc->UniqueID,
-                    .file = file,
-                    .index = plugin_index,
-                    .label = desc->Label,
-                    .name = desc->Name,
-                    .author = desc->Maker,
-                    .copyright = desc->Copyright,
-                    .num_inputs = num_inputs,
-                    .num_outputs = num_outputs,
+                .id = desc->UniqueID,
+                .file = file,
+                .index = plugin_index,
+                .label = desc->Label,
+                .name = desc->Name,
+                .author = desc->Maker,
+                .copyright = desc->Copyright,
+                .num_inputs = num_inputs,
+                .num_outputs = num_outputs,
             });
         }
         else
@@ -76,7 +76,7 @@ scan_file(std::filesystem::path const& file) -> std::vector<plugin_descriptor>
 
 auto
 scan_directory(std::filesystem::path const& dir)
-        -> std::vector<plugin_descriptor>
+    -> std::vector<plugin_descriptor>
 {
     BOOST_ASSERT(std::filesystem::exists(dir));
     BOOST_ASSERT(std::filesystem::is_directory(dir));

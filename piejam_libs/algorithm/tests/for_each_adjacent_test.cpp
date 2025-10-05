@@ -48,8 +48,8 @@ TEST(for_each_adjacent, on_range_with_multiple_elements)
 {
     std::vector<int> result;
     for_each_adjacent(
-            std::array{2, 3, 5, 7, 11, 13},
-            [&result](auto x, auto y) { result.push_back(x + y); });
+        std::array{2, 3, 5, 7, 11, 13},
+        [&result](auto x, auto y) { result.push_back(x + y); });
 
     using testing::ElementsAre;
     using testing::Matches;

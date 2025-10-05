@@ -24,8 +24,8 @@ struct entity_id
 
     constexpr entity_id() noexcept = default;
 
-    constexpr auto
-    operator==(entity_id const& other) const noexcept -> bool = default;
+    constexpr auto operator==(entity_id const& other) const noexcept
+        -> bool = default;
 
     constexpr auto operator<=>(entity_id const& other) const noexcept = default;
 

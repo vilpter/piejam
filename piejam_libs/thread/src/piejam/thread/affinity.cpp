@@ -23,7 +23,7 @@ set_affinity(unsigned int const cpu)
     cpu_set_t cpuset{};
     CPU_SET(cpu, &cpuset);
     auto const status =
-            pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
+        pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
     if (status)
     {
         throw std::system_error(status, std::generic_category());

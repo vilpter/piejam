@@ -16,10 +16,10 @@ namespace piejam::runtime::components
 {
 
 auto make_stream(
-        audio_stream_id,
-        processors::stream_processor_factory&,
-        std::size_t num_channels,
-        std::size_t buffer_capacity_per_channel,
-        std::string_view name) -> std::unique_ptr<audio::engine::component>;
+    audio_stream_id,
+    processors::stream_processor_factory&,
+    std::size_t num_channels,
+    std::size_t buffer_capacity_per_channel,
+    std::string_view name) -> std::unique_ptr<audio::engine::component>;
 
 } // namespace piejam::runtime::components

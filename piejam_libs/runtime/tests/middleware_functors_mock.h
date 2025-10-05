@@ -20,9 +20,10 @@ struct middleware_functors_mock
 inline auto
 make_middleware_functors(middleware_functors_mock& mock) -> middleware_functors
 {
-    return {[&mock]() -> state const& { return mock.get_state(); },
-            [&mock](action const& a) { mock.dispatch(a); },
-            [&mock](action const& a) { mock.next(a); }};
+    return {
+        [&mock]() -> state const& { return mock.get_state(); },
+        [&mock](action const& a) { mock.dispatch(a); },
+        [&mock](action const& a) { mock.next(a); }};
 }
 
 } // namespace piejam::runtime::test

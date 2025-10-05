@@ -41,7 +41,7 @@ namespace
 
 auto
 to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
-        -> port_type_descriptor
+    -> port_type_descriptor
 {
     auto const hint_descriptor = hint.HintDescriptor;
     if (LADSPA_IS_HINT_TOGGLED(hint_descriptor))
@@ -58,8 +58,8 @@ to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
     else if (LADSPA_IS_HINT_INTEGER(hint_descriptor))
     {
         BOOST_ASSERT_MSG(
-                !LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor),
-                "not supported");
+            !LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor),
+            "not supported");
 
         if (control_input && !LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor))
         {
@@ -67,9 +67,9 @@ to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
         }
 
         int const min =
-                LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)
-                        ? boost::numeric_cast<int>(std::round(hint.LowerBound))
-                        : std::numeric_limits<int>::min();
+            LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)
+                ? boost::numeric_cast<int>(std::round(hint.LowerBound))
+                : std::numeric_limits<int>::min();
 
         if (control_input && !LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor))
         {
@@ -77,9 +77,9 @@ to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
         }
 
         int const max =
-                LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)
-                        ? boost::numeric_cast<int>(std::round(hint.UpperBound))
-                        : std::numeric_limits<int>::max();
+            LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)
+                ? boost::numeric_cast<int>(std::round(hint.UpperBound))
+                : std::numeric_limits<int>::max();
 
         int default_value{};
         if (LADSPA_IS_HINT_HAS_DEFAULT(hint_descriptor))
@@ -111,52 +111,54 @@ to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
             else if (LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor))
             {
                 default_value =
-                        LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
-                                ? boost::numeric_cast<int>(std::round(std::exp(
-                                          std::log(hint.LowerBound) * 0.75f +
-                                          std::log(hint.UpperBound) * 0.25f)))
-                                : boost::numeric_cast<int>(std::round(
-                                          hint.LowerBound * 0.75f +
-                                          hint.UpperBound * 0.25f));
+                    LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
+                        ? boost::numeric_cast<int>(std::round(
+                              std::exp(
+                                  std::log(hint.LowerBound) * 0.75f +
+                                  std::log(hint.UpperBound) * 0.25f)))
+                        : boost::numeric_cast<int>(std::round(
+                              hint.LowerBound * 0.75f +
+                              hint.UpperBound * 0.25f));
             }
             else if (LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor))
             {
                 default_value =
-                        LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
-                                ? boost::numeric_cast<int>(std::round(std::exp(
-                                          std::log(hint.LowerBound) * 0.5f +
-                                          std::log(hint.UpperBound) * 0.5f)))
-                                : boost::numeric_cast<int>(std::round(
-                                          hint.LowerBound * 0.5f +
-                                          hint.UpperBound * 0.5f));
+                    LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
+                        ? boost::numeric_cast<int>(std::round(
+                              std::exp(
+                                  std::log(hint.LowerBound) * 0.5f +
+                                  std::log(hint.UpperBound) * 0.5f)))
+                        : boost::numeric_cast<int>(std::round(
+                              hint.LowerBound * 0.5f + hint.UpperBound * 0.5f));
             }
             else if (LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor))
             {
                 default_value =
-                        LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
-                                ? boost::numeric_cast<int>(std::round(std::exp(
-                                          std::log(hint.LowerBound) * 0.25f +
-                                          std::log(hint.UpperBound) * 0.75f)))
-                                : boost::numeric_cast<int>(std::round(
-                                          hint.LowerBound * 0.25f +
-                                          hint.UpperBound * 0.75f));
+                    LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
+                        ? boost::numeric_cast<int>(std::round(
+                              std::exp(
+                                  std::log(hint.LowerBound) * 0.25f +
+                                  std::log(hint.UpperBound) * 0.75f)))
+                        : boost::numeric_cast<int>(std::round(
+                              hint.LowerBound * 0.25f +
+                              hint.UpperBound * 0.75f));
             }
         }
 
         default_value = std::clamp(default_value, min, max);
 
         return int_port{
-                .min = min,
-                .max = max,
-                .default_value = default_value,
-                .logarithmic = static_cast<bool>(
-                        LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor))};
+            .min = min,
+            .max = max,
+            .default_value = default_value,
+            .logarithmic =
+                static_cast<bool>(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor))};
     }
     else
     {
         BOOST_ASSERT_MSG(
-                !LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor),
-                "not supported");
+            !LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor),
+            "not supported");
 
         if (control_input && !LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor))
         {
@@ -164,8 +166,8 @@ to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
         }
 
         float const min = LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)
-                                  ? hint.LowerBound
-                                  : std::numeric_limits<float>::lowest();
+                              ? hint.LowerBound
+                              : std::numeric_limits<float>::lowest();
 
         if (control_input && !LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor))
         {
@@ -173,8 +175,8 @@ to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
         }
 
         float const max = LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)
-                                  ? hint.UpperBound
-                                  : std::numeric_limits<float>::max();
+                              ? hint.UpperBound
+                              : std::numeric_limits<float>::max();
 
         float default_value{};
         if (LADSPA_IS_HINT_HAS_DEFAULT(hint_descriptor))
@@ -205,40 +207,39 @@ to_port_type_descriptor(LADSPA_PortRangeHint const& hint, bool control_input)
             }
             else if (LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor))
             {
-                default_value = LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
-                                        ? std::exp(
-                                                  std::log(min) * 0.75f +
-                                                  std::log(max) * 0.25f)
-                                        : min * 0.75f + max * 0.25f;
+                default_value =
+                    LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
+                        ? std::exp(
+                              std::log(min) * 0.75f + std::log(max) * 0.25f)
+                        : min * 0.75f + max * 0.25f;
             }
             else if (LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor))
             {
-                default_value = LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
-                                        ? std::exp(
-                                                  std::log(min) * 0.5f +
-                                                  std::log(max) * 0.5f)
-                                        : min * 0.5f + max * 0.5f;
+                default_value =
+                    LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
+                        ? std::exp(std::log(min) * 0.5f + std::log(max) * 0.5f)
+                        : min * 0.5f + max * 0.5f;
             }
             else if (LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor))
             {
-                default_value = LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
-                                        ? std::exp(
-                                                  std::log(min) * 0.25f +
-                                                  std::log(max) * 0.75f)
-                                        : min * 0.25f + max * 0.75f;
+                default_value =
+                    LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)
+                        ? std::exp(
+                              std::log(min) * 0.25f + std::log(max) * 0.75f)
+                        : min * 0.25f + max * 0.75f;
             }
         }
 
         default_value = std::clamp(default_value, min, max);
 
         bool const logarithmic =
-                static_cast<bool>(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor));
+            static_cast<bool>(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor));
 
         return float_port{
-                .min = min,
-                .max = max,
-                .default_value = default_value,
-                .logarithmic = logarithmic};
+            .min = min,
+            .max = max,
+            .default_value = default_value,
+            .logarithmic = logarithmic};
     }
 
     throw std::runtime_error("Could not retrieve port type descriptor.");
@@ -313,10 +314,10 @@ auto
 to_event_ports(std::span<port_descriptor const> descs)
 {
     return algorithm::transform_to_vector(
-            descs,
-            [](auto const& desc) -> audio::engine::event_port {
-                return std::visit(to_event_port{desc.name}, desc.type_desc);
-            });
+        descs,
+        [](auto const& desc) -> audio::engine::event_port {
+            return std::visit(to_event_port{desc.name}, desc.type_desc);
+        });
 }
 
 struct control_input
@@ -339,8 +340,8 @@ struct control_input
     }
 
     void initialize(
-            audio::engine::event_input_buffers const& ev_in_bufs,
-            std::size_t buf_index)
+        audio::engine::event_input_buffers const& ev_in_bufs,
+        std::size_t buf_index)
     {
         m_initialize(*this, ev_in_bufs, buf_index);
     }
@@ -358,21 +359,20 @@ private:
     using ev_it_pair_t = std::pair<ev_it_t<T>, ev_it_t<T>>;
 
     using iterators_t = std::
-            variant<ev_it_pair_t<bool>, ev_it_pair_t<int>, ev_it_pair_t<float>>;
+        variant<ev_it_pair_t<bool>, ev_it_pair_t<int>, ev_it_pair_t<float>>;
 
     template <class T>
     static void initialize(
-            control_input& ci,
-            audio::engine::event_input_buffers const& ev_bufs,
-            std::size_t buf_index)
+        control_input& ci,
+        audio::engine::event_input_buffers const& ev_bufs,
+        std::size_t buf_index)
     {
         auto const& ev_buf = ev_bufs.get<T>(buf_index);
 
         using ev_it_pair_t = ev_it_pair_t<T>;
 
-        ev_it_pair_t& its = ci.m_iterators.emplace<ev_it_pair_t>(
-                ev_buf.begin(),
-                ev_buf.end());
+        ev_it_pair_t& its =
+            ci.m_iterators.emplace<ev_it_pair_t>(ev_buf.begin(), ev_buf.end());
 
         ci.m_offset = its.first == its.second ? npos : its.first->offset();
     }
@@ -397,9 +397,9 @@ private:
     iterators_t m_iterators;
 
     using initialize_t = void (*)(
-            control_input&,
-            audio::engine::event_input_buffers const&,
-            std::size_t);
+        control_input&,
+        audio::engine::event_input_buffers const&,
+        std::size_t);
     using advance_t = void (*)(control_input&);
 
     initialize_t m_initialize{};
@@ -410,12 +410,12 @@ class processor final : public audio::engine::processor
 {
 public:
     processor(
-            plugin_instance instance,
-            std::string_view name,
-            std::span<port_descriptor const> audio_inputs,
-            std::span<port_descriptor const> audio_outputs,
-            std::span<port_descriptor const> control_inputs,
-            std::span<port_descriptor const> control_outputs)
+        plugin_instance instance,
+        std::string_view name,
+        std::span<port_descriptor const> audio_inputs,
+        std::span<port_descriptor const> audio_outputs,
+        std::span<port_descriptor const> control_inputs,
+        std::span<port_descriptor const> control_outputs)
         : m_instance(std::move(instance))
         , m_name(name)
         , m_input_port_indices(audio_inputs.size())
@@ -425,36 +425,36 @@ public:
         , m_constant_audio_inputs(audio_inputs.size())
     {
         std::ranges::transform(
-                audio_inputs,
-                m_input_port_indices.begin(),
-                &port_descriptor::index);
+            audio_inputs,
+            m_input_port_indices.begin(),
+            &port_descriptor::index);
 
         std::ranges::transform(
-                audio_outputs,
-                m_output_port_indices.begin(),
-                &port_descriptor::index);
+            audio_outputs,
+            m_output_port_indices.begin(),
+            &port_descriptor::index);
 
         m_control_inputs.reserve(control_inputs.size());
         for (auto const& pd : control_inputs)
         {
             std::visit(
-                    [this](auto const& port) {
-                        using value_type = decltype(port.default_value);
-                        m_control_inputs.emplace_back(
-                                std::in_place_type<value_type>);
-                    },
-                    pd.type_desc);
+                [this](auto const& port) {
+                    using value_type = decltype(port.default_value);
+                    m_control_inputs.emplace_back(
+                        std::in_place_type<value_type>);
+                },
+                pd.type_desc);
             m_instance.connect_port(
-                    pd.index,
-                    const_cast<LADSPA_Data*>(&m_control_inputs.back().data()));
+                pd.index,
+                const_cast<LADSPA_Data*>(&m_control_inputs.back().data()));
         }
 
         m_control_outputs.reserve(control_outputs.size());
         for (auto const& pd : control_outputs)
         {
             m_instance.connect_port(
-                    pd.index,
-                    &m_control_outputs.emplace_back());
+                pd.index,
+                &m_control_outputs.emplace_back());
         }
 
         m_instance.activate();
@@ -513,12 +513,12 @@ public:
         while (offset < ctx.buffer_size)
         {
             std::size_t const min_offset = std::min(
-                    std::ranges::min(
-                            m_control_inputs,
-                            std::less<>{},
-                            &control_input::offset)
-                            .offset(),
-                    ctx.buffer_size);
+                std::ranges::min(
+                    m_control_inputs,
+                    std::less<>{},
+                    &control_input::offset)
+                    .offset(),
+                ctx.buffer_size);
 
             if (offset < min_offset)
             {
@@ -527,22 +527,22 @@ public:
                 for (std::size_t i : range::indices(ctx.inputs))
                 {
                     auto sub =
-                            subslice(ctx.inputs[i].get(), offset, slice_size);
+                        subslice(ctx.inputs[i].get(), offset, slice_size);
 
                     if (sub.is_constant())
                     {
                         std::ranges::fill_n(
-                                m_constant_audio_inputs[i].begin(),
-                                slice_size,
-                                sub.constant());
+                            m_constant_audio_inputs[i].begin(),
+                            slice_size,
+                            sub.constant());
                         sub = audio::slice<float>(std::span(
-                                m_constant_audio_inputs[i].data(),
-                                slice_size));
+                            m_constant_audio_inputs[i].data(),
+                            slice_size));
                     }
 
                     m_instance.connect_port(
-                            m_input_port_indices[i],
-                            const_cast<LADSPA_Data*>(sub.span().data()));
+                        m_input_port_indices[i],
+                        const_cast<LADSPA_Data*>(sub.span().data()));
                 }
 
                 for (std::size_t i : range::indices(ctx.outputs))
@@ -576,7 +576,7 @@ private:
     std::vector<audio::engine::event_port> m_event_inputs;
     std::vector<audio::engine::event_port> m_event_outputs;
     std::vector<std::array<float, audio::max_period_size.value()>>
-            m_constant_audio_inputs;
+        m_constant_audio_inputs;
     std::vector<control_input> m_control_inputs;
     std::vector<float> m_control_outputs;
 };
@@ -588,26 +588,27 @@ public:
         : m_pd(pd)
         , m_plugin_dll(pd.file)
         , m_ladspa_desc(
-                  throw_if_null(m_plugin_dll.symbol<LADSPA_Descriptor_Function>(
-                          "ladspa_descriptor")(pd.index)))
+              throw_if_null(m_plugin_dll.symbol<LADSPA_Descriptor_Function>(
+                  "ladspa_descriptor")(pd.index)))
     {
         for (unsigned long port : range::iota(m_ladspa_desc->PortCount))
         {
             int const ladspa_port_desc = m_ladspa_desc->PortDescriptors[port];
 
             auto port_desc = port_descriptor{
-                    .index = port,
-                    .name = m_ladspa_desc->PortNames[port],
-                    .type_desc = to_port_type_descriptor(
-                            m_ladspa_desc->PortRangeHints[port],
-                            LADSPA_IS_PORT_INPUT(ladspa_port_desc) &&
-                                    LADSPA_IS_PORT_CONTROL(ladspa_port_desc))};
+                .index = port,
+                .name = m_ladspa_desc->PortNames[port],
+                .type_desc = to_port_type_descriptor(
+                    m_ladspa_desc->PortRangeHints[port],
+                    LADSPA_IS_PORT_INPUT(ladspa_port_desc) &&
+                        LADSPA_IS_PORT_CONTROL(ladspa_port_desc))};
 
             if (LADSPA_IS_PORT_INPUT(ladspa_port_desc))
             {
                 if (LADSPA_IS_PORT_AUDIO(ladspa_port_desc))
                 {
-                    BOOST_ASSERT(std::holds_alternative<float_port>(
+                    BOOST_ASSERT(
+                        std::holds_alternative<float_port>(
                             port_desc.type_desc));
                     m_ports.input.audio.push_back(std::move(port_desc));
                 }
@@ -618,14 +619,15 @@ public:
                 else
                 {
                     throw std::runtime_error(
-                            "Port is whether audio nor control.");
+                        "Port is whether audio nor control.");
                 }
             }
             else if (LADSPA_IS_PORT_OUTPUT(ladspa_port_desc))
             {
                 if (LADSPA_IS_PORT_AUDIO(ladspa_port_desc))
                 {
-                    BOOST_ASSERT(std::holds_alternative<float_port>(
+                    BOOST_ASSERT(
+                        std::holds_alternative<float_port>(
                             port_desc.type_desc));
                     m_ports.output.audio.push_back(std::move(port_desc));
                 }
@@ -636,7 +638,7 @@ public:
                 else
                 {
                     throw std::runtime_error(
-                            "Port is whether audio nor control.");
+                        "Port is whether audio nor control.");
                 }
             }
             else
@@ -657,27 +659,26 @@ public:
     }
 
     auto make_processor(audio::sample_rate const sample_rate) const
-            -> std::unique_ptr<audio::engine::processor> override
+        -> std::unique_ptr<audio::engine::processor> override
     {
-        if (LADSPA_Handle handle = m_ladspa_desc->instantiate(
-                    m_ladspa_desc,
-                    sample_rate.value()))
+        if (LADSPA_Handle handle =
+                m_ladspa_desc->instantiate(m_ladspa_desc, sample_rate.value()))
         {
             return std::make_unique<processor>(
-                    plugin_instance(*m_ladspa_desc, handle),
-                    m_pd.name,
-                    m_ports.input.audio,
-                    m_ports.output.audio,
-                    m_ports.input.control,
-                    m_ports.output.control);
+                plugin_instance(*m_ladspa_desc, handle),
+                m_pd.name,
+                m_ports.input.audio,
+                m_ports.output.audio,
+                m_ports.input.control,
+                m_ports.output.control);
         }
 
         return nullptr;
     }
 
 private:
-    static auto
-    throw_if_null(LADSPA_Descriptor const* d) -> LADSPA_Descriptor const*
+    static auto throw_if_null(LADSPA_Descriptor const* d)
+        -> LADSPA_Descriptor const*
     {
         if (!d)
         {

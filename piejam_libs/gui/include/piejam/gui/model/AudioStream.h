@@ -11,19 +11,18 @@
 namespace piejam::gui::model
 {
 
-using AudioStream = audio::multichannel_view<
-        float const,
-        audio::multichannel_layout_non_interleaved>;
+using AudioStream = audio::
+    multichannel_view<float const, audio::multichannel_layout_non_interleaved>;
 
 using MonoAudioStream = audio::multichannel_view<
-        float const,
-        audio::multichannel_layout_non_interleaved,
-        1>;
+    float const,
+    audio::multichannel_layout_non_interleaved,
+    1>;
 
 using StereoAudioStream = audio::multichannel_view<
-        float const,
-        audio::multichannel_layout_non_interleaved,
-        2>;
+    float const,
+    audio::multichannel_layout_non_interleaved,
+    2>;
 
 constexpr auto
 toLeft(StereoAudioStream stream)

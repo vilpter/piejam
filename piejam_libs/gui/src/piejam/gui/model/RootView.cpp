@@ -50,15 +50,17 @@ RootView::showPower()
 void
 RootView::onSubscribe()
 {
-    observe(runtime::selectors::select_root_view_mode,
-            [this](runtime::root_view_mode mode) {
-                setMode(static_cast<Mode>(mode));
-            });
+    observe(
+        runtime::selectors::select_root_view_mode,
+        [this](runtime::root_view_mode mode) {
+            setMode(static_cast<Mode>(mode));
+        });
 
-    observe(runtime::selectors::select_focused_fx_module,
-            [&](runtime::fx::module_id const fx_mod_id) {
-                setCanShowFxModule(fx_mod_id.valid());
-            });
+    observe(
+        runtime::selectors::select_focused_fx_module,
+        [&](runtime::fx::module_id const fx_mod_id) {
+            setCanShowFxModule(fx_mod_id.valid());
+        });
 }
 
 void

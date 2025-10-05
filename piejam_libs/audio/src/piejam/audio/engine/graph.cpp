@@ -21,10 +21,10 @@ graph::wires_map::erase(graph_endpoint const& src, graph_endpoint const& dst)
 {
     auto from_source = m_wires.equal_range(src);
     auto it = std::ranges::find_if(
-            from_source.first,
-            from_source.second,
-            equal_to(dst),
-            &value_type::second);
+        from_source.first,
+        from_source.second,
+        equal_to(dst),
+        &value_type::second);
     BOOST_ASSERT(it != m_wires.end());
     m_wires.erase(it);
 }
@@ -38,8 +38,8 @@ graph::wires_map::erase(const_iterator const& it) -> const_iterator
 template <>
 void
 graph::wires_access<graph::wire_type::audio>::insert(
-        graph_endpoint const& src,
-        graph_endpoint const& dst)
+    graph_endpoint const& src,
+    graph_endpoint const& dst)
 {
     BOOST_ASSERT(src.port < src.proc.get().num_outputs());
     BOOST_ASSERT(dst.port < dst.proc.get().num_inputs());
@@ -50,18 +50,18 @@ graph::wires_access<graph::wire_type::audio>::insert(
 template <>
 void
 graph::wires_access<graph::wire_type::event>::insert(
-        graph_endpoint const& src,
-        graph_endpoint const& dst)
+    graph_endpoint const& src,
+    graph_endpoint const& dst)
 {
     BOOST_ASSERT(src.port < src.proc.get().event_outputs().size());
     BOOST_ASSERT(dst.port < dst.proc.get().event_inputs().size());
     BOOST_ASSERT(
-            src.proc.get().event_outputs()[src.port].type() ==
-            dst.proc.get().event_inputs()[dst.port].type());
+        src.proc.get().event_outputs()[src.port].type() ==
+        dst.proc.get().event_inputs()[dst.port].type());
 
     BOOST_ASSERT_MSG(
-            std::ranges::none_of(m_wires, equal_to(dst), &value_type::second),
-            "destination endpoint already added, missing an event mixer?");
+        std::ranges::none_of(m_wires, equal_to(dst), &value_type::second),
+        "destination endpoint already added, missing an event mixer?");
 
     m_wires.emplace(src, dst);
 }

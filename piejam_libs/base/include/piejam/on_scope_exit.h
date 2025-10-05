@@ -14,7 +14,7 @@ template <class F>
 struct on_scope_exit
 {
     explicit on_scope_exit(F&& f) noexcept(
-            std::is_nothrow_move_constructible_v<F>)
+        std::is_nothrow_move_constructible_v<F>)
         : m_f{std::move(f)}
     {
     }

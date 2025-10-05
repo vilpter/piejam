@@ -26,8 +26,8 @@ class SubscribableModel : public QObject
     Q_OBJECT
 
     Q_PROPERTY(
-            bool subscribed READ subscribed WRITE setSubscribed NOTIFY
-                    subscribedChanged)
+        bool subscribed READ subscribed WRITE setSubscribed NOTIFY
+            subscribedChanged)
 
 public:
     auto subscribed() const -> bool
@@ -82,9 +82,8 @@ protected:
     template <class Value, class Handler>
     void observe(runtime::selector<Value> sel, Handler&& h)
     {
-        m_subs.emplace_back(m_state_access.observe(
-                std::move(sel),
-                std::forward<Handler>(h)));
+        m_subs.emplace_back(
+            m_state_access.observe(std::move(sel), std::forward<Handler>(h)));
     }
 
     template <class F>
@@ -100,10 +99,10 @@ protected:
     auto attachChildModel(SubscribableModel& child)
     {
         return QObject::connect(
-                this,
-                &SubscribableModel::subscribedChanged,
-                &child,
-                [this, &child]() { child.setSubscribed(subscribed()); });
+            this,
+            &SubscribableModel::subscribedChanged,
+            &child,
+            [this, &child]() { child.setSubscribed(subscribed()); });
     }
 
     template <class Model, class... Args>
@@ -122,8 +121,8 @@ protected:
 
     template <class ParameterT, class ParameterIdT>
     void makeParameter(
-            std::unique_ptr<ParameterT>& param,
-            ParameterIdT const param_id)
+        std::unique_ptr<ParameterT>& param,
+        ParameterIdT const param_id)
     {
         param = std::make_unique<ParameterT>(m_state_access, param_id);
     }

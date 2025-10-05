@@ -67,63 +67,52 @@ to_resonance_string(float const r)
 
 auto
 make_module(runtime::internal_fx_module_factory_args const& args)
-        -> runtime::fx::module
+    -> runtime::fx::module
 {
     using namespace std::string_literals;
 
     runtime::parameter_factory params_factory{args.params};
 
     return runtime::fx::module{
-            .fx_instance_id = internal_id(),
-            .name = box("Filter"s),
-            .bus_type = args.bus_type,
-            .parameters =
-                    box(runtime::parameters_map{
-                            std::in_place_type<parameter_key>,
-                            {
-                                    {parameter_key::type,
-                                     params_factory.make_parameter(
-                                             runtime::make_enum_parameter(
-                                                     "Type"s,
-                                                     type::lp2,
-                                                     &to_type_string))},
-                                    {parameter_key::cutoff,
-                                     params_factory.make_parameter(
-                                             runtime::make_float_parameter(
-                                                     {
-                                                             .name = "Cutoff",
-                                                             .default_value =
-                                                                     440.f,
-                                                     },
-                                                     runtime::
-                                                             logarithmic_float_parameter_range<
-                                                                     10.f,
-                                                                     20000.f>{})
-                                                     .set_value_to_string(
-                                                             &to_cutoff_string))},
-                                    {parameter_key::resonance,
-                                     params_factory.make_parameter(
-                                             runtime::make_float_parameter(
-                                                     {
-                                                             .name = "Resonanc"
-                                                                     "e",
-                                                             .default_value =
-                                                                     0.f,
-                                                     },
-                                                     runtime::
-                                                             linear_float_parameter_range<
-                                                                     0.f,
-                                                                     1.f>{})
-                                                     .set_value_to_string(
-                                                             &to_resonance_string))},
-                            }}),
-            .streams =
-                    box(runtime::fx::module_streams{
-                            {std::to_underlying(stream_key::in_out),
-                             make_stream(
-                                     args.streams,
-                                     num_channels(args.bus_type) * 2)},
-                    })};
+        .fx_instance_id = internal_id(),
+        .name = box("Filter"s),
+        .bus_type = args.bus_type,
+        .parameters =
+            box(runtime::parameters_map{
+                std::in_place_type<parameter_key>,
+                {
+                    {parameter_key::type,
+                     params_factory.make_parameter(
+                         runtime::make_enum_parameter(
+                             "Type"s,
+                             type::lp2,
+                             &to_type_string))},
+                    {parameter_key::cutoff,
+                     params_factory.make_parameter(
+                         runtime::make_float_parameter(
+                             {
+                                 .name = "Cutoff",
+                                 .default_value = 440.f,
+                             },
+                             runtime::logarithmic_float_parameter_range<
+                                 10.f,
+                                 20000.f>{})
+                             .set_value_to_string(&to_cutoff_string))},
+                    {parameter_key::resonance,
+                     params_factory.make_parameter(
+                         runtime::make_float_parameter(
+                             {
+                                 .name = "Resonance",
+                                 .default_value = 0.f,
+                             },
+                             runtime::linear_float_parameter_range<0.f, 1.f>{})
+                             .set_value_to_string(&to_resonance_string))},
+                }}),
+        .streams =
+            box(runtime::fx::module_streams{
+                {std::to_underlying(stream_key::in_out),
+                 make_stream(args.streams, num_channels(args.bus_type) * 2)},
+            })};
 }
 
 } // namespace piejam::fx_modules::filter

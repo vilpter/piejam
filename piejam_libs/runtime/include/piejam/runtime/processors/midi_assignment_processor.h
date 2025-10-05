@@ -13,6 +13,6 @@ namespace piejam::runtime::processors
 {
 
 auto make_midi_assignment_processor(midi_assignments_map const&)
-        -> std::unique_ptr<audio::engine::processor>;
+    -> std::unique_ptr<audio::engine::processor>;
 
 } // namespace piejam::runtime::processors

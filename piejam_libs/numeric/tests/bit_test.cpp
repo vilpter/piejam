@@ -19,16 +19,16 @@ struct bit_toggle : ::testing::Test
 };
 
 using toggle_types = ::testing::Types<
-        std::int8_t,
-        std::int16_t,
-        int24_io_t,
-        std::int32_t,
-        std::int64_t,
-        std::uint8_t,
-        std::uint16_t,
-        uint24_io_t,
-        std::uint32_t,
-        std::uint64_t>;
+    std::int8_t,
+    std::int16_t,
+    int24_io_t,
+    std::int32_t,
+    std::int64_t,
+    std::uint8_t,
+    std::uint16_t,
+    uint24_io_t,
+    std::uint32_t,
+    std::uint64_t>;
 
 TYPED_TEST_SUITE(bit_toggle, toggle_types);
 

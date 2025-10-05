@@ -38,16 +38,16 @@ using enum_parameter_id = parameter::id_t<enum_parameter>;
 // Store the value type here, so we don't have to include the descriptor
 // headers.
 using parameters_fwd_t = boost::mp11::
-        mp_list<float_parameter, int_parameter, bool_parameter, enum_parameter>;
+    mp_list<float_parameter, int_parameter, bool_parameter, enum_parameter>;
 
 using parameter_ids_t =
-        boost::mp11::mp_transform<parameter::id_t, parameters_fwd_t>;
+    boost::mp11::mp_transform<parameter::id_t, parameters_fwd_t>;
 
 using parameter_id = boost::mp11::mp_rename<parameter_ids_t, std::variant>;
 
 using parameter_value = boost::mp11::mp_rename<
-        boost::mp11::mp_transform<parameter::tagged_value, parameters_fwd_t>,
-        std::variant>;
+    boost::mp11::mp_transform<parameter::tagged_value, parameters_fwd_t>,
+    std::variant>;
 
 using parameters_map = parameter::map<parameter_id>;
 

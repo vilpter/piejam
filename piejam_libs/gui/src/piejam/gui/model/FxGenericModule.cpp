@@ -25,27 +25,27 @@ namespace
 {
 
 using IdToModel = boost::mp11::mp_list<
-        boost::mp11::mp_list<runtime::bool_parameter_id, BoolParameter>,
-        boost::mp11::mp_list<runtime::enum_parameter_id, EnumParameter>,
-        boost::mp11::mp_list<runtime::float_parameter_id, FloatParameter>,
-        boost::mp11::mp_list<runtime::int_parameter_id, IntParameter>>;
+    boost::mp11::mp_list<runtime::bool_parameter_id, BoolParameter>,
+    boost::mp11::mp_list<runtime::enum_parameter_id, EnumParameter>,
+    boost::mp11::mp_list<runtime::float_parameter_id, FloatParameter>,
+    boost::mp11::mp_list<runtime::int_parameter_id, IntParameter>>;
 
 auto
 makeParameter(
-        runtime::state_access const& state_access,
-        piejam::gui::model::ParameterId const& paramId)
-        -> std::unique_ptr<Parameter>
+    runtime::state_access const& state_access,
+    piejam::gui::model::ParameterId const& paramId)
+    -> std::unique_ptr<Parameter>
 {
     return std::visit(
-            [&]<class ParamId>(ParamId const typed_param_id)
-                    -> std::unique_ptr<Parameter> {
-                using ParameterModel = boost::mp11::mp_second<
-                        boost::mp11::mp_map_find<IdToModel, ParamId>>;
-                return std::make_unique<ParameterModel>(
-                        state_access,
-                        typed_param_id);
-            },
-            paramId);
+        [&]<class ParamId>(
+            ParamId const typed_param_id) -> std::unique_ptr<Parameter> {
+            using ParameterModel = boost::mp11::mp_second<
+                boost::mp11::mp_map_find<IdToModel, ParamId>>;
+            return std::make_unique<ParameterModel>(
+                state_access,
+                typed_param_id);
+        },
+        paramId);
 }
 
 } // namespace
@@ -56,16 +56,16 @@ struct FxGenericModule::Impl
 };
 
 FxGenericModule::FxGenericModule(
-        runtime::state_access const& state_access,
-        runtime::fx::module_id const fx_mod_id)
+    runtime::state_access const& state_access,
+    runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>()}
 {
     for (auto const& [key, paramId] : parameters())
     {
         m_impl->parametersList.add(
-                m_impl->parametersList.size(),
-                model::makeParameter(state_access, paramId));
+            m_impl->parametersList.size(),
+            model::makeParameter(state_access, paramId));
     }
 }
 

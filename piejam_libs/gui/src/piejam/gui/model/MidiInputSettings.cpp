@@ -35,20 +35,21 @@ MidiInputSettings::devices() const noexcept -> QAbstractListModel*
 void
 MidiInputSettings::onSubscribe()
 {
-    observe(runtime::selectors::select_midi_input_devices,
-            [this](auto const& devs) {
-                algorithm::apply_edit_script(
-                        algorithm::edit_script(*m_impl->device_ids, *devs),
-                        ListModelEditScriptProcessor{
-                                m_impl->devices,
-                                [this](midi::device_id_t device_id) {
-                                    return std::make_unique<MidiDeviceConfig>(
-                                            state_access(),
-                                            device_id);
-                                }});
+    observe(
+        runtime::selectors::select_midi_input_devices,
+        [this](auto const& devs) {
+            algorithm::apply_edit_script(
+                algorithm::edit_script(*m_impl->device_ids, *devs),
+                ListModelEditScriptProcessor{
+                    m_impl->devices,
+                    [this](midi::device_id_t device_id) {
+                        return std::make_unique<MidiDeviceConfig>(
+                            state_access(),
+                            device_id);
+                    }});
 
-                m_impl->device_ids = devs;
-            });
+            m_impl->device_ids = devs;
+        });
 }
 
 } // namespace piejam::gui::model

@@ -114,7 +114,7 @@ private:
 
 auto
 make_mix_processor(std::size_t const num_inputs, std::string_view const name)
-        -> std::unique_ptr<processor>
+    -> std::unique_ptr<processor>
 {
     switch (num_inputs)
     {
@@ -140,11 +140,11 @@ is_mix_processor(processor const& proc) noexcept
 #define BOOST_PP_LOCAL_MACRO(n) std::type_index(typeid(mix_processor<n>)),
 #include BOOST_PP_LOCAL_ITERATE()
 
-            std::type_index(typeid(mix_processor<npos>))};
+        std::type_index(typeid(mix_processor<npos>))};
 
     return std::ranges::any_of(
-            mix_processor_typeids,
-            equal_to(std::type_index(typeid(proc))));
+        mix_processor_typeids,
+        equal_to(std::type_index(typeid(proc))));
 }
 
 #undef PIEJAM_MAX_NUM_FIXED_INPUTS_MIX_PROCESSOR

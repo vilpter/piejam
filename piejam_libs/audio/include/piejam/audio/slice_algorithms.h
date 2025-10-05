@@ -33,15 +33,15 @@ struct slice_add
     }
 
     constexpr auto operator()(
-            typename slice<T>::constant_t const l_c,
-            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
+        typename slice<T>::constant_t const l_c,
+        typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
         return l_c + r_c;
     }
 
     constexpr auto operator()(
-            typename slice<T>::span_t const l_buf,
-            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
+        typename slice<T>::span_t const l_buf,
+        typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
         switch (switch_cast(r_c))
         {
@@ -52,35 +52,35 @@ struct slice_add
                 BOOST_ASSERT(l_buf.size() == m_out.size());
 
                 std::transform(
-                        numeric::mipp_begin(l_buf),
-                        numeric::mipp_end(l_buf),
-                        numeric::mipp_begin(m_out),
-                        bhof::capture(mipp::Reg<T>(r_c))(std::plus<>{}));
+                    numeric::mipp_begin(l_buf),
+                    numeric::mipp_end(l_buf),
+                    numeric::mipp_begin(m_out),
+                    bhof::capture(mipp::Reg<T>(r_c))(std::plus<>{}));
 
                 return m_out;
         }
     }
 
     constexpr auto operator()(
-            typename slice<T>::constant_t const l_c,
-            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
+        typename slice<T>::constant_t const l_c,
+        typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         return (*this)(r_buf, l_c);
     }
 
     constexpr auto operator()(
-            typename slice<T>::span_t const l_buf,
-            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
+        typename slice<T>::span_t const l_buf,
+        typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         BOOST_ASSERT(l_buf.size() == r_buf.size());
         BOOST_ASSERT(l_buf.size() == m_out.size());
 
         std::transform(
-                numeric::mipp_begin(l_buf),
-                numeric::mipp_end(l_buf),
-                numeric::mipp_begin(r_buf),
-                numeric::mipp_begin(m_out),
-                std::plus<>{});
+            numeric::mipp_begin(l_buf),
+            numeric::mipp_end(l_buf),
+            numeric::mipp_begin(r_buf),
+            numeric::mipp_begin(m_out),
+            std::plus<>{});
 
         return m_out;
     }
@@ -98,15 +98,15 @@ struct slice_multiply
     }
 
     constexpr auto operator()(
-            typename slice<T>::constant_t const l_c,
-            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
+        typename slice<T>::constant_t const l_c,
+        typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
         return l_c * r_c;
     }
 
     constexpr auto operator()(
-            typename slice<T>::span_t const l_buf,
-            typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
+        typename slice<T>::span_t const l_buf,
+        typename slice<T>::constant_t const r_c) const noexcept -> slice<T>
     {
         switch (switch_cast(r_c))
         {
@@ -120,45 +120,45 @@ struct slice_multiply
                 BOOST_ASSERT(l_buf.size() == m_out.size());
 
                 std::transform(
-                        numeric::mipp_begin(l_buf),
-                        numeric::mipp_end(l_buf),
-                        numeric::mipp_begin(m_out),
-                        bhof::capture(mipp::Reg<T>(T{}))(std::minus<>{}));
+                    numeric::mipp_begin(l_buf),
+                    numeric::mipp_end(l_buf),
+                    numeric::mipp_begin(m_out),
+                    bhof::capture(mipp::Reg<T>(T{}))(std::minus<>{}));
                 return m_out;
 
             default:
                 BOOST_ASSERT(l_buf.size() == m_out.size());
 
                 std::transform(
-                        numeric::mipp_begin(l_buf),
-                        numeric::mipp_end(l_buf),
-                        numeric::mipp_begin(m_out),
-                        bhof::capture(mipp::Reg<T>(r_c))(std::multiplies<>{}));
+                    numeric::mipp_begin(l_buf),
+                    numeric::mipp_end(l_buf),
+                    numeric::mipp_begin(m_out),
+                    bhof::capture(mipp::Reg<T>(r_c))(std::multiplies<>{}));
 
                 return m_out;
         }
     }
 
     constexpr auto operator()(
-            typename slice<T>::constant_t const l_c,
-            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
+        typename slice<T>::constant_t const l_c,
+        typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         return (*this)(r_buf, l_c);
     }
 
     constexpr auto operator()(
-            typename slice<T>::span_t const l_buf,
-            typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
+        typename slice<T>::span_t const l_buf,
+        typename slice<T>::span_t const r_buf) const noexcept -> slice<T>
     {
         BOOST_ASSERT(l_buf.size() == r_buf.size());
         BOOST_ASSERT(l_buf.size() == m_out.size());
 
         std::transform(
-                numeric::mipp_begin(l_buf),
-                numeric::mipp_end(l_buf),
-                numeric::mipp_begin(r_buf),
-                numeric::mipp_begin(m_out),
-                std::multiplies<>{});
+            numeric::mipp_begin(l_buf),
+            numeric::mipp_end(l_buf),
+            numeric::mipp_begin(r_buf),
+            numeric::mipp_begin(m_out),
+            std::multiplies<>{});
 
         return m_out;
     }
@@ -171,9 +171,9 @@ template <class T>
 struct slice_clamp
 {
     constexpr slice_clamp(
-            T const min,
-            T const max,
-            std::span<T> const out) noexcept
+        T const min,
+        T const max,
+        std::span<T> const out) noexcept
         : m_min(min)
         , m_max(max)
         , m_out(out)
@@ -193,10 +193,10 @@ struct slice_clamp
     {
         BOOST_ASSERT(mipp::isAligned(buf.data()));
         std::transform(
-                numeric::mipp_begin(buf),
-                numeric::mipp_end(buf),
-                numeric::mipp_begin(m_out),
-                numeric::simd::clamp(m_min, m_max));
+            numeric::mipp_begin(buf),
+            numeric::mipp_end(buf),
+            numeric::mipp_begin(m_out),
+            numeric::simd::clamp(m_min, m_max));
         return m_out;
     }
 
@@ -267,7 +267,7 @@ private:
 template <class T>
 constexpr auto
 add(slice<T> const& l, slice<T> const& r, std::span<T> const out) noexcept
-        -> slice<T>
+    -> slice<T>
 {
     return visit(detail::slice_add<T>(out), l, r);
 }
@@ -275,17 +275,18 @@ add(slice<T> const& l, slice<T> const& r, std::span<T> const out) noexcept
 template <class T>
 constexpr auto
 multiply(slice<T> const& l, slice<T> const& r, std::span<T> const out) noexcept
-        -> slice<T>
+    -> slice<T>
 {
     return visit(detail::slice_multiply<T>(out), l, r);
 }
 
 template <class T>
 constexpr auto
-clamp(slice<T> const& s,
-      T const min,
-      T const max,
-      std::span<T> const out) noexcept -> slice<T>
+clamp(
+    slice<T> const& s,
+    T const min,
+    T const max,
+    std::span<T> const out) noexcept -> slice<T>
 {
     return visit(detail::slice_clamp<T>(min, max, out), s);
 }
@@ -300,9 +301,9 @@ copy(slice<T> const& s, std::span<T> const out) noexcept
 template <class T>
 constexpr auto
 subslice(
-        slice<T> const& s,
-        std::size_t const offset,
-        std::size_t const size) noexcept -> slice<T>
+    slice<T> const& s,
+    std::size_t const offset,
+    std::size_t const size) noexcept -> slice<T>
 {
     return visit(detail::subslice<T>(offset, size), s);
 }

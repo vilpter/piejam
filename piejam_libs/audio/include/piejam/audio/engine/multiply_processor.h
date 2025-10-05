@@ -13,6 +13,6 @@ namespace piejam::audio::engine
 {
 
 auto make_multiply_processor(std::size_t num_inputs, std::string_view name = {})
-        -> std::unique_ptr<processor>;
+    -> std::unique_ptr<processor>;
 
 } // namespace piejam::audio::engine

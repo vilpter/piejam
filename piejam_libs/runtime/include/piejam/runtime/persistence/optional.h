@@ -18,9 +18,9 @@ namespace detail
 template <class T>
 void
 optional_to_json(
-        nlohmann::json& j,
-        std::optional<T> const& value,
-        std::string_view const name)
+    nlohmann::json& j,
+    std::optional<T> const& value,
+    std::string_view const name)
 {
     if (value)
     {
@@ -31,9 +31,9 @@ optional_to_json(
 template <class T>
 void
 optional_from_json(
-        nlohmann::json const& j,
-        std::optional<T>& value,
-        std::string_view const name)
+    nlohmann::json const& j,
+    std::optional<T>& value,
+    std::string_view const name)
 {
     if (j.contains(name))
     {

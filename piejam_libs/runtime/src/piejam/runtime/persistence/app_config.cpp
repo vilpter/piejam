@@ -15,14 +15,14 @@ namespace piejam::audio
 {
 
 M_PIEJAM_PERSISTENCE_DEFINE_STRONG_TYPE_SERIALIER(
-        sample_rate,
-        unsigned,
-        "sample_rate");
+    sample_rate,
+    unsigned,
+    "sample_rate");
 
 M_PIEJAM_PERSISTENCE_DEFINE_STRONG_TYPE_SERIALIER(
-        period_size,
-        unsigned,
-        "period_size");
+    period_size,
+    unsigned,
+    "period_size");
 
 } // namespace piejam::audio
 
@@ -39,16 +39,16 @@ get_version(nlohmann::json const& conf) -> unsigned
 }
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        app_config,
-        sound_card,
-        sample_rate,
-        period_size,
-        enabled_midi_input_devices,
-        rec_session);
+    app_config,
+    sound_card,
+    sample_rate,
+    period_size,
+    enabled_midi_input_devices,
+    rec_session);
 
 using upgrade_function = void (*)(nlohmann::json&);
 using upgrade_functions_array =
-        std::array<upgrade_function, current_app_config_version>;
+    std::array<upgrade_function, current_app_config_version>;
 
 template <size_t Version>
 static void upgrade(nlohmann::json&);
@@ -56,7 +56,7 @@ static void upgrade(nlohmann::json&);
 template <size_t... I>
 static auto
 make_upgrade_functions_array(std::index_sequence<I...>)
-        -> upgrade_functions_array
+    -> upgrade_functions_array
 {
     return upgrade_functions_array{{upgrade<I>...}};
 }
@@ -65,7 +65,7 @@ static auto
 make_upgrade_functions_array() -> upgrade_functions_array
 {
     return make_upgrade_functions_array(
-            std::make_index_sequence<current_app_config_version>());
+        std::make_index_sequence<current_app_config_version>());
 }
 
 static void
@@ -117,8 +117,8 @@ void
 save_app_config(std::ostream& out, app_config const& conf)
 {
     nlohmann::json const json_conf = {
-            {s_key_version, current_app_config_version},
-            {s_key_app_config, conf}};
+        {s_key_version, current_app_config_version},
+        {s_key_app_config, conf}};
     out << json_conf.dump(4) << '\n';
 }
 

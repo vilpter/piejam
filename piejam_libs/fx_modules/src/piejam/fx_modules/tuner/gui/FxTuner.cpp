@@ -44,83 +44,81 @@ struct FxTuner::Impl
 };
 
 FxTuner::FxTuner(
-        runtime::state_access const& state_access,
-        runtime::fx::module_id const fx_mod_id)
+    runtime::state_access const& state_access,
+    runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
     makeStream(
-            m_impl->stream,
-            streams().at(std::to_underlying(stream_key::input)));
+        m_impl->stream,
+        streams().at(std::to_underlying(stream_key::input)));
 
     QObject::connect(
-            m_impl->stream.get(),
-            &AudioStreamProvider::captured,
-            this,
-            [this](AudioStream captured) {
-                float const detectedFrequency =
-                        m_impl->busType == BusType::Mono
-                                ? m_impl->pitchGenerator.process(
-                                          captured.samples())
-                                : m_impl->pitchGenerator.process(toMiddle(
-                                          captured.channels_cast<2>()));
+        m_impl->stream.get(),
+        &AudioStreamProvider::captured,
+        this,
+        [this](AudioStream captured) {
+            float const detectedFrequency =
+                m_impl->busType == BusType::Mono
+                    ? m_impl->pitchGenerator.process(captured.samples())
+                    : m_impl->pitchGenerator.process(
+                          toMiddle(captured.channels_cast<2>()));
 
-                if (detectedFrequency != m_detectedFrequency)
+            if (detectedFrequency != m_detectedFrequency)
+            {
+                setDetectedFrequency(detectedFrequency);
+
+                if (detectedFrequency > 0.f)
                 {
-                    setDetectedFrequency(detectedFrequency);
+                    auto pitch =
+                        audio::pitch::from_frequency(detectedFrequency);
 
-                    if (detectedFrequency > 0.f)
-                    {
-                        auto pitch =
-                                audio::pitch::from_frequency(detectedFrequency);
+                    auto pc = [](audio::pitchclass pc) {
+                        switch (pc)
+                        {
+                            case audio::pitchclass::A:
+                                return "A";
+                            case audio::pitchclass::A_sharp:
+                                return "A#";
+                            case audio::pitchclass::B:
+                                return "B";
+                            case audio::pitchclass::C:
+                                return "C";
+                            case audio::pitchclass::C_sharp:
+                                return "C#";
+                            case audio::pitchclass::D:
+                                return "D";
+                            case audio::pitchclass::D_sharp:
+                                return "D#";
+                            case audio::pitchclass::E:
+                                return "E";
+                            case audio::pitchclass::F:
+                                return "F";
+                            case audio::pitchclass::F_sharp:
+                                return "F#";
+                            case audio::pitchclass::G:
+                                return "G";
+                            case audio::pitchclass::G_sharp:
+                                return "G#";
+                        }
 
-                        auto pc = [](audio::pitchclass pc) {
-                            switch (pc)
-                            {
-                                case audio::pitchclass::A:
-                                    return "A";
-                                case audio::pitchclass::A_sharp:
-                                    return "A#";
-                                case audio::pitchclass::B:
-                                    return "B";
-                                case audio::pitchclass::C:
-                                    return "C";
-                                case audio::pitchclass::C_sharp:
-                                    return "C#";
-                                case audio::pitchclass::D:
-                                    return "D";
-                                case audio::pitchclass::D_sharp:
-                                    return "D#";
-                                case audio::pitchclass::E:
-                                    return "E";
-                                case audio::pitchclass::F:
-                                    return "F";
-                                case audio::pitchclass::F_sharp:
-                                    return "F#";
-                                case audio::pitchclass::G:
-                                    return "G";
-                                case audio::pitchclass::G_sharp:
-                                    return "G#";
-                            }
+                        return "--";
+                    }(pitch.pitchclass_);
 
-                            return "--";
-                        }(pitch.pitchclass_);
+                    setDetectedPitch(
+                        QString::fromStdString(
+                            std::format("{}{}", pc, pitch.octave)));
 
-                        setDetectedPitch(
-                                QString::fromStdString(
-                                        std::format("{}{}", pc, pitch.octave)));
-
-                        setDetectedCents(
-                                static_cast<int>(std::round(pitch.cents)));
-                    }
-                    else
-                    {
-                        static QString s_empty{"--"};
-                        setDetectedPitch(s_empty);
-                        setDetectedCents(0);
-                    }
+                    setDetectedCents(static_cast<int>(std::round(pitch.cents)));
                 }
-            });
+                else
+                {
+                    static QString s_empty{"--"};
+                    setDetectedPitch(s_empty);
+                    setDetectedCents(0);
+                }
+            }
+        });
 }
 
 auto
@@ -133,7 +131,7 @@ void
 FxTuner::onSubscribe()
 {
     m_impl->updateSampleRate(
-            observe_once(runtime::selectors::select_sample_rate)->current);
+        observe_once(runtime::selectors::select_sample_rate)->current);
 }
 
 } // namespace piejam::fx_modules::tuner::gui

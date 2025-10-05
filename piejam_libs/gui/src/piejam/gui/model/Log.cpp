@@ -23,17 +23,16 @@ Log::Log(runtime::state_access const& state_access)
     , m_impl{make_pimpl<Impl>()}
 {
     spdlog::default_logger()->sinks().push_back(
-            std::make_shared<log::generic_log_sink_mt>(
-                    [this](spdlog::details::log_msg const& msg) {
-                        auto qtMsg = QString::fromStdString(
-                                std::format(
-                                        "[{}] {}",
-                                        spdlog::level::to_string_view(
-                                                msg.level),
-                                        msg.payload));
-                        m_impl->messages.add(m_impl->messages.size(), qtMsg);
-                    },
-                    []() {}));
+        std::make_shared<log::generic_log_sink_mt>(
+            [this](spdlog::details::log_msg const& msg) {
+                auto qtMsg = QString::fromStdString(
+                    std::format(
+                        "[{}] {}",
+                        spdlog::level::to_string_view(msg.level),
+                        msg.payload));
+                m_impl->messages.add(m_impl->messages.size(), qtMsg);
+            },
+            []() {}));
 }
 
 auto

@@ -31,13 +31,13 @@ struct rms_fn
         }
 
         return std::sqrt(
-                std::transform_reduce(
-                        std::ranges::begin(in),
-                        std::ranges::end(in),
-                        T{},
-                        std::plus<>{},
-                        numeric::pow_n<2>) /
-                std::ranges::size(in));
+            std::transform_reduce(
+                std::ranges::begin(in),
+                std::ranges::end(in),
+                T{},
+                std::plus<>{},
+                numeric::pow_n<2>) /
+            std::ranges::size(in));
     }
 };
 

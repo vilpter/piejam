@@ -21,20 +21,20 @@ class ModelManager final : public QObject
     Q_OBJECT
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::AudioDeviceSettings*,
-            audioDeviceSettings)
+        piejam::gui::model::AudioDeviceSettings*,
+        audioDeviceSettings)
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::AudioInputOutputSettings*,
-            audioInputSettings)
+        piejam::gui::model::AudioInputOutputSettings*,
+        audioInputSettings)
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::AudioInputOutputSettings*,
-            audioOutputSettings)
+        piejam::gui::model::AudioInputOutputSettings*,
+        audioOutputSettings)
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::MidiInputSettings*,
-            midiInputSettings)
+        piejam::gui::model::MidiInputSettings*,
+        midiInputSettings)
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Mixer*, mixer)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Info*, info)

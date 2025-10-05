@@ -33,7 +33,7 @@ namespace
 
 auto
 refine_hw_params(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
-        -> std::error_code
+    -> std::error_code
 {
     hw_params.cmask = 0u;
     return fd.ioctl(SNDRV_PCM_IOCTL_HW_REFINE, hw_params);
@@ -53,12 +53,12 @@ mask_bit(unsigned const i) noexcept -> unsigned
 
 constexpr auto
 test_mask_bit(
-        snd_pcm_hw_params const& params,
-        unsigned const mask,
-        unsigned const bit) noexcept -> bool
+    snd_pcm_hw_params const& params,
+    unsigned const mask,
+    unsigned const bit) noexcept -> bool
 {
     return params.masks[mask - SNDRV_PCM_HW_PARAM_FIRST_MASK]
-                   .bits[mask_offset(bit)] &
+               .bits[mask_offset(bit)] &
            mask_bit(bit);
 }
 
@@ -72,31 +72,31 @@ test_mask_bit(snd_pcm_hw_params const& params, unsigned const mask) noexcept
 
 constexpr void
 set_mask_bit(
-        snd_pcm_hw_params& params,
-        unsigned const mask,
-        unsigned const bit) noexcept
+    snd_pcm_hw_params& params,
+    unsigned const mask,
+    unsigned const bit) noexcept
 {
     params.masks[mask - SNDRV_PCM_HW_PARAM_FIRST_MASK].bits[mask_offset(bit)] =
-            mask_bit(bit);
+        mask_bit(bit);
     params.rmask |= (1u << mask);
 }
 
 constexpr auto
 get_interval(
-        snd_pcm_hw_params const& params,
-        unsigned const ival_index) noexcept -> snd_interval const&
+    snd_pcm_hw_params const& params,
+    unsigned const ival_index) noexcept -> snd_interval const&
 {
     return params.intervals[ival_index - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL];
 }
 
 constexpr void
 set_interval_value(
-        snd_pcm_hw_params& params,
-        unsigned const ival_index,
-        unsigned const value) noexcept
+    snd_pcm_hw_params& params,
+    unsigned const ival_index,
+    unsigned const value) noexcept
 {
     snd_interval& ival =
-            params.intervals[ival_index - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL];
+        params.intervals[ival_index - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL];
     ival.min = value;
     ival.max = value;
     ival.openmin = 0;
@@ -107,19 +107,19 @@ set_interval_value(
 
 constexpr auto
 test_interval_value(
-        snd_pcm_hw_params params,
-        unsigned const ival_index,
-        unsigned const value) noexcept -> bool
+    snd_pcm_hw_params params,
+    unsigned const ival_index,
+    unsigned const value) noexcept -> bool
 {
     auto const& ival =
-            params.intervals[ival_index - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL];
+        params.intervals[ival_index - SNDRV_PCM_HW_PARAM_FIRST_INTERVAL];
     return ival.min <= value && value <= ival.max;
 }
 
 constexpr auto
 test_interval_value(
-        snd_pcm_hw_params const& params,
-        unsigned const ival_index) noexcept
+    snd_pcm_hw_params const& params,
+    unsigned const ival_index) noexcept
 {
     return [&params, ival_index](unsigned const value) -> bool {
         return test_interval_value(params, ival_index, value);
@@ -183,17 +183,17 @@ alsa_to_pcm_format(unsigned alsa_format) noexcept -> pcm_format
 
 auto
 set_access_mode(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
-        -> bool
+    -> bool
 {
     if (test_mask_bit(
-                hw_params,
-                SNDRV_PCM_HW_PARAM_ACCESS,
-                SNDRV_PCM_ACCESS_RW_INTERLEAVED))
+            hw_params,
+            SNDRV_PCM_HW_PARAM_ACCESS,
+            SNDRV_PCM_ACCESS_RW_INTERLEAVED))
     {
         set_mask_bit(
-                hw_params,
-                SNDRV_PCM_HW_PARAM_ACCESS,
-                SNDRV_PCM_ACCESS_RW_INTERLEAVED);
+            hw_params,
+            SNDRV_PCM_HW_PARAM_ACCESS,
+            SNDRV_PCM_ACCESS_RW_INTERLEAVED);
 
         if (!refine_hw_params(fd, hw_params))
         {
@@ -206,27 +206,27 @@ set_access_mode(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
 
 auto
 set_pcm_format(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
-        -> pcm_format
+    -> pcm_format
 {
     static constexpr std::array preferred_formats{
-            SNDRV_PCM_FORMAT_S32_LE,
-            SNDRV_PCM_FORMAT_U32_LE,
-            SNDRV_PCM_FORMAT_S32_BE,
-            SNDRV_PCM_FORMAT_U32_BE,
-            SNDRV_PCM_FORMAT_S24_3LE,
-            SNDRV_PCM_FORMAT_S24_3BE,
-            SNDRV_PCM_FORMAT_U24_3LE,
-            SNDRV_PCM_FORMAT_U24_3BE,
-            SNDRV_PCM_FORMAT_S16_LE,
-            SNDRV_PCM_FORMAT_U16_LE,
-            SNDRV_PCM_FORMAT_S16_BE,
-            SNDRV_PCM_FORMAT_U16_BE,
-            SNDRV_PCM_FORMAT_S8,
-            SNDRV_PCM_FORMAT_U8};
+        SNDRV_PCM_FORMAT_S32_LE,
+        SNDRV_PCM_FORMAT_U32_LE,
+        SNDRV_PCM_FORMAT_S32_BE,
+        SNDRV_PCM_FORMAT_U32_BE,
+        SNDRV_PCM_FORMAT_S24_3LE,
+        SNDRV_PCM_FORMAT_S24_3BE,
+        SNDRV_PCM_FORMAT_U24_3LE,
+        SNDRV_PCM_FORMAT_U24_3BE,
+        SNDRV_PCM_FORMAT_S16_LE,
+        SNDRV_PCM_FORMAT_U16_LE,
+        SNDRV_PCM_FORMAT_S16_BE,
+        SNDRV_PCM_FORMAT_U16_BE,
+        SNDRV_PCM_FORMAT_S8,
+        SNDRV_PCM_FORMAT_U8};
 
     auto const it_format = std::ranges::find_if(
-            preferred_formats,
-            test_mask_bit(hw_params, SNDRV_PCM_HW_PARAM_FORMAT));
+        preferred_formats,
+        test_mask_bit(hw_params, SNDRV_PCM_HW_PARAM_FORMAT));
 
     if (it_format == preferred_formats.end())
     {
@@ -245,10 +245,10 @@ set_pcm_format(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
 
 auto
 set_num_channels(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
-        -> unsigned
+    -> unsigned
 {
     auto num_channels =
-            get_interval(hw_params, SNDRV_PCM_HW_PARAM_CHANNELS).max;
+        get_interval(hw_params, SNDRV_PCM_HW_PARAM_CHANNELS).max;
 
     set_interval_value(hw_params, SNDRV_PCM_HW_PARAM_CHANNELS, num_channels);
 
@@ -262,9 +262,9 @@ set_num_channels(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
 
 auto
 set_sample_rate(
-        system::device& fd,
-        snd_pcm_hw_params& hw_params,
-        audio::sample_rate sr) noexcept -> std::error_code
+    system::device& fd,
+    snd_pcm_hw_params& hw_params,
+    audio::sample_rate sr) noexcept -> std::error_code
 {
     set_interval_value(hw_params, SNDRV_PCM_HW_PARAM_RATE, sr.value());
     return refine_hw_params(fd, hw_params);
@@ -272,9 +272,9 @@ set_sample_rate(
 
 auto
 set_period_size(
-        system::device& fd,
-        snd_pcm_hw_params& hw_params,
-        audio::period_size psz) noexcept -> std::error_code
+    system::device& fd,
+    snd_pcm_hw_params& hw_params,
+    audio::period_size psz) noexcept -> std::error_code
 {
     set_interval_value(hw_params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE, psz.value());
     return refine_hw_params(fd, hw_params);
@@ -282,14 +282,14 @@ set_period_size(
 
 auto
 set_period_count(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
-        -> unsigned
+    -> unsigned
 {
     unsigned const max_period_count =
-            get_interval(hw_params, SNDRV_PCM_HW_PARAM_PERIODS).max;
+        get_interval(hw_params, SNDRV_PCM_HW_PARAM_PERIODS).max;
     auto availabe_period_counts = std::views::iota(2u, max_period_count + 1);
     auto ideal_period_count = std::ranges::find_if(
-            availabe_period_counts,
-            test_interval_value(hw_params, SNDRV_PCM_HW_PARAM_PERIODS));
+        availabe_period_counts,
+        test_interval_value(hw_params, SNDRV_PCM_HW_PARAM_PERIODS));
 
     if (ideal_period_count == availabe_period_counts.end())
     {
@@ -297,9 +297,9 @@ set_period_count(system::device& fd, snd_pcm_hw_params& hw_params) noexcept
     }
 
     set_interval_value(
-            hw_params,
-            SNDRV_PCM_HW_PARAM_PERIODS,
-            *ideal_period_count);
+        hw_params,
+        SNDRV_PCM_HW_PARAM_PERIODS,
+        *ideal_period_count);
     if (refine_hw_params(fd, hw_params))
     {
         return 0u;
@@ -327,19 +327,17 @@ get_num_channels(std::filesystem::path const& pcm_device_path) -> unsigned
 
 auto
 get_hw_params(
-        std::filesystem::path const& pcm_device_path,
-        sample_rate const sample_rate,
-        period_size const period_size) -> sound_card_hw_params
+    std::filesystem::path const& pcm_device_path,
+    sample_rate const sample_rate,
+    period_size const period_size) -> sound_card_hw_params
 {
     if (pcm_device_path.empty())
     {
         static sound_card_hw_params dummy_hw_params{
-                .sample_rates =
-                        {preferred_sample_rates.begin(),
-                         preferred_sample_rates.end()},
-                .period_sizes =
-                        {preferred_period_sizes.begin(),
-                         preferred_period_sizes.end()},
+            .sample_rates =
+                {preferred_sample_rates.begin(), preferred_sample_rates.end()},
+            .period_sizes =
+                {preferred_period_sizes.begin(), preferred_period_sizes.end()},
         };
         return dummy_hw_params;
     }
@@ -368,10 +366,10 @@ get_hw_params(
 
     BOOST_ASSERT(result.sample_rates.empty());
     std::ranges::copy_if(
-            preferred_sample_rates,
-            std::back_inserter(result.sample_rates),
-            test_interval_value(hw_params, SNDRV_PCM_HW_PARAM_RATE),
-            &audio::sample_rate::value);
+        preferred_sample_rates,
+        std::back_inserter(result.sample_rates),
+        test_interval_value(hw_params, SNDRV_PCM_HW_PARAM_RATE),
+        &audio::sample_rate::value);
 
     if (sample_rate.valid() &&
         std::ranges::contains(result.sample_rates, sample_rate))
@@ -384,10 +382,10 @@ get_hw_params(
 
     BOOST_ASSERT(result.period_sizes.empty());
     std::ranges::copy_if(
-            preferred_period_sizes,
-            std::back_inserter(result.period_sizes),
-            test_interval_value(hw_params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE),
-            &audio::period_size::value);
+        preferred_period_sizes,
+        std::back_inserter(result.period_sizes),
+        test_interval_value(hw_params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE),
+        &audio::period_size::value);
 
     if (period_size.valid() &&
         std::ranges::contains(result.period_sizes, period_size))
@@ -403,7 +401,7 @@ get_hw_params(
 
 auto
 set_hw_params(system::device& fd, sound_card_config const& sc_config)
-        -> set_hw_params_result
+    -> set_hw_params_result
 {
     set_hw_params_result result;
 
@@ -429,7 +427,7 @@ set_hw_params(system::device& fd, sound_card_config const& sc_config)
     if (result.num_channels == 0)
     {
         throw std::runtime_error(
-                "failed to configure sound card, number of channels");
+            "failed to configure sound card, number of channels");
     }
 
     BOOST_ASSERT(sc_config.sample_rate.valid());
@@ -448,15 +446,13 @@ set_hw_params(system::device& fd, sound_card_config const& sc_config)
     if (result.period_count == 0)
     {
         throw std::runtime_error(
-                "failed to configure sound card, period count");
+            "failed to configure sound card, period count");
     }
 
     if (auto err = fd.ioctl(SNDRV_PCM_IOCTL_HW_PARAMS, hw_params))
     {
         throw std::runtime_error(
-                std::format(
-                        "failed to configure sound card: {}",
-                        err.message()));
+            std::format("failed to configure sound card: {}", err.message()));
     }
 
     return result;

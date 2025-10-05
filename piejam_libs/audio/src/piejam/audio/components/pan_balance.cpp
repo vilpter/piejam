@@ -28,8 +28,8 @@ class pan_balance final : public engine::component
 {
 public:
     explicit pan_balance(
-            std::unique_ptr<engine::processor> converter_proc,
-            std::unique_ptr<engine::component> amp_comp)
+        std::unique_ptr<engine::processor> converter_proc,
+        std::unique_ptr<engine::component> amp_comp)
         : m_converter_proc(std::move(converter_proc))
         , m_amp_comp(std::move(amp_comp))
     {
@@ -65,11 +65,11 @@ public:
 
         using namespace engine::endpoint_ports;
         engine::connect_event(
-                g,
-                *m_converter_proc,
-                from<0, 1>,
-                *m_amp_comp,
-                to<0, 1>);
+            g,
+            *m_converter_proc,
+            from<0, 1>,
+            *m_amp_comp,
+            to<0, 1>);
     }
 
 private:
@@ -77,32 +77,32 @@ private:
     std::unique_ptr<engine::component> m_amp_comp;
 
     std::vector<engine::graph_endpoint> m_event_inputs{
-            engine::in_event_endpoints(*m_converter_proc)};
+        engine::in_event_endpoints(*m_converter_proc)};
 };
 
 } // namespace
 
 auto
 make_pan(
-        std::unique_ptr<engine::processor> pan_converter,
-        std::string_view name) -> std::unique_ptr<engine::component>
+    std::unique_ptr<engine::processor> pan_converter,
+    std::string_view name) -> std::unique_ptr<engine::component>
 {
     using namespace engine::endpoint_ports;
     return std::make_unique<pan_balance>(
-            std::move(pan_converter),
-            make_remap_input_channels(
-                    make_stereo_split_amplifier(std::format("pan {}", name)),
-                    to<0, 1>));
+        std::move(pan_converter),
+        make_remap_input_channels(
+            make_stereo_split_amplifier(std::format("pan {}", name)),
+            to<0, 1>));
 }
 
 auto
 make_balance(
-        std::unique_ptr<engine::processor> balance_converter,
-        std::string_view name) -> std::unique_ptr<engine::component>
+    std::unique_ptr<engine::processor> balance_converter,
+    std::string_view name) -> std::unique_ptr<engine::component>
 {
     return std::make_unique<pan_balance>(
-            std::move(balance_converter),
-            make_stereo_split_amplifier(std::format("balance {}", name)));
+        std::move(balance_converter),
+        make_stereo_split_amplifier(std::format("balance {}", name)));
 }
 
 } // namespace piejam::audio::components

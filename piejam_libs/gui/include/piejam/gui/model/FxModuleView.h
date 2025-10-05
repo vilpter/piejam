@@ -25,8 +25,8 @@ class FxModuleView : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(bool, bypassed, setBypassed)
 
     Q_PROPERTY(
-            piejam::gui::model::FxModule* content READ content NOTIFY
-                    contentChanged FINAL)
+        piejam::gui::model::FxModule* content READ content NOTIFY contentChanged
+            FINAL)
 
 public:
     FxModuleView(runtime::state_access const&);

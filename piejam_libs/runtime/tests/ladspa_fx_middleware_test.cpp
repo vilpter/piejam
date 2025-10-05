@@ -47,8 +47,9 @@ TEST_F(ladspa_fx_middleware_test, unknown_action_is_passed_to_next)
     sut(make_middleware_functors(mf_mock), action);
 }
 
-TEST_F(ladspa_fx_middleware_test,
-       produce_missing_ladspa_fx_action_if_plugin_id_not_found_in_registry)
+TEST_F(
+    ladspa_fx_middleware_test,
+    produce_missing_ladspa_fx_action_if_plugin_id_not_found_in_registry)
 {
     using testing::Field;
     using testing::ReturnRef;
@@ -62,20 +63,21 @@ TEST_F(ladspa_fx_middleware_test,
     ladspa::plugin_id_t const plug_id{23};
 
     EXPECT_CALL(
-            mf_mock,
-            next(WhenDynamicCastTo<
-                    actions::insert_missing_ladspa_fx_module const&>(Field(
-                    &actions::insert_missing_ladspa_fx_module::
-                            unavailable_ladspa,
-                    Field(&fx::unavailable_ladspa::plugin_id, plug_id)))));
+        mf_mock,
+        next(
+            WhenDynamicCastTo<
+                actions::insert_missing_ladspa_fx_module const&>(Field(
+                &actions::insert_missing_ladspa_fx_module::unavailable_ladspa,
+                Field(&fx::unavailable_ladspa::plugin_id, plug_id)))));
 
     actions::load_ladspa_fx_plugin action;
     action.plugin_id = plug_id;
     sut(make_middleware_functors(mf_mock), action);
 }
 
-TEST_F(ladspa_fx_middleware_test,
-       produce_missing_ladspa_fx_action_if_plugin_could_not_be_loaded)
+TEST_F(
+    ladspa_fx_middleware_test,
+    produce_missing_ladspa_fx_action_if_plugin_could_not_be_loaded)
 {
     using testing::Field;
     using testing::ReturnRef;
@@ -93,20 +95,21 @@ TEST_F(ladspa_fx_middleware_test,
     EXPECT_CALL(lfx_ctrl_mock, load(plugin_desc));
 
     EXPECT_CALL(
-            mf_mock,
-            next(WhenDynamicCastTo<
-                    actions::insert_missing_ladspa_fx_module const&>(Field(
-                    &actions::insert_missing_ladspa_fx_module::
-                            unavailable_ladspa,
-                    Field(&fx::unavailable_ladspa::plugin_id, plug_id)))));
+        mf_mock,
+        next(
+            WhenDynamicCastTo<
+                actions::insert_missing_ladspa_fx_module const&>(Field(
+                &actions::insert_missing_ladspa_fx_module::unavailable_ladspa,
+                Field(&fx::unavailable_ladspa::plugin_id, plug_id)))));
 
     actions::load_ladspa_fx_plugin action;
     action.plugin_id = plug_id;
     sut(make_middleware_functors(mf_mock), action);
 }
 
-TEST_F(ladspa_fx_middleware_test,
-       produce_insert_ladspa_fx_action_on_successful_plugin_load)
+TEST_F(
+    ladspa_fx_middleware_test,
+    produce_insert_ladspa_fx_action_on_successful_plugin_load)
 {
     using testing::Field;
     using testing::Return;
@@ -126,10 +129,11 @@ TEST_F(ladspa_fx_middleware_test,
     EXPECT_CALL(lfx_ctrl_mock, load(plugin_desc)).WillOnce(Return(instance_id));
     EXPECT_CALL(lfx_ctrl_mock, control_inputs(instance_id));
     EXPECT_CALL(
-            mf_mock,
-            next(WhenDynamicCastTo<actions::insert_ladspa_fx_module const&>(
-                    Field(&actions::insert_ladspa_fx_module::instance_id,
-                          instance_id))));
+        mf_mock,
+        next(
+            WhenDynamicCastTo<actions::insert_ladspa_fx_module const&>(Field(
+                &actions::insert_ladspa_fx_module::instance_id,
+                instance_id))));
 
     actions::load_ladspa_fx_plugin action;
     action.plugin_id = plug_id;

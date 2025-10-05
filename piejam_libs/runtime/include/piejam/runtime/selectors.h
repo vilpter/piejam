@@ -46,11 +46,11 @@ struct choice_model
 };
 
 using sample_rate_choice =
-        choice_model<audio::sample_rates_t, audio::sample_rate>;
+    choice_model<audio::sample_rates_t, audio::sample_rate>;
 extern selector<box<sample_rate_choice>> const select_sample_rate;
 
 using period_size_choice =
-        choice_model<audio::period_sizes_t, audio::period_size>;
+    choice_model<audio::period_sizes_t, audio::period_size>;
 extern selector<box<period_size_choice>> const select_period_size;
 
 extern selector<float> const select_buffer_latency;
@@ -65,58 +65,58 @@ struct sound_card_info
 };
 
 using sound_card_choice =
-        choice_model<std::vector<sound_card_info>, std::size_t>;
+    choice_model<std::vector<sound_card_info>, std::size_t>;
 extern selector<box<sound_card_choice>> const select_sound_card;
 
 auto make_num_device_channels_selector(io_direction) -> selector<std::size_t>;
 
 auto make_external_audio_device_ids_selector(io_direction)
-        -> selector<box<external_audio::device_ids_t>>;
+    -> selector<box<external_audio::device_ids_t>>;
 
 auto make_external_audio_device_name_selector(external_audio::device_id)
-        -> selector<string_id>;
+    -> selector<string_id>;
 
 auto make_external_audio_device_bus_type_selector(external_audio::device_id)
-        -> selector<audio::bus_type>;
+    -> selector<audio::bus_type>;
 
 auto make_external_audio_device_bus_channel_selector(
-        external_audio::device_id,
-        audio::bus_channel) -> selector<std::size_t>;
+    external_audio::device_id,
+    audio::bus_channel) -> selector<std::size_t>;
 
 extern selector<box<mixer::channel_ids_t>> const select_mixer_aux_channels;
 extern selector<box<mixer::channel_ids_t>> const select_mixer_user_channels;
 extern selector<mixer::channel_id> const select_mixer_main_channel;
 
 auto make_mixer_channel_type_selector(mixer::channel_id)
-        -> selector<mixer::channel_type>;
+    -> selector<mixer::channel_type>;
 auto make_mixer_channel_color_selector(mixer::channel_id)
-        -> selector<material_color>;
+    -> selector<material_color>;
 auto make_mixer_channel_volume_parameter_selector(mixer::channel_id)
-        -> selector<float_parameter_id>;
+    -> selector<float_parameter_id>;
 auto make_mixer_channel_pan_balance_parameter_selector(mixer::channel_id)
-        -> selector<float_parameter_id>;
+    -> selector<float_parameter_id>;
 auto make_mixer_channel_record_parameter_selector(mixer::channel_id)
-        -> selector<bool_parameter_id>;
+    -> selector<bool_parameter_id>;
 auto make_mixer_channel_mute_parameter_selector(mixer::channel_id)
-        -> selector<bool_parameter_id>;
+    -> selector<bool_parameter_id>;
 auto make_mixer_channel_solo_parameter_selector(mixer::channel_id)
-        -> selector<bool_parameter_id>;
+    -> selector<bool_parameter_id>;
 auto make_mixer_channel_out_stream_selector(mixer::channel_id)
-        -> selector<audio_stream_id>;
+    -> selector<audio_stream_id>;
 auto make_aux_send_volume_parameter_selector(
-        mixer::channel_id,
-        mixer::channel_id aux_id) -> selector<float_parameter_id>;
+    mixer::channel_id,
+    mixer::channel_id aux_id) -> selector<float_parameter_id>;
 auto make_aux_send_active_selector(mixer::channel_id, mixer::channel_id aux_id)
-        -> selector<bool_parameter_id>;
+    -> selector<bool_parameter_id>;
 auto
 make_aux_send_fader_tap_selector(mixer::channel_id, mixer::channel_id aux_id)
-        -> selector<enum_parameter_id>;
+    -> selector<enum_parameter_id>;
 auto
 make_can_toggle_aux_send_selector(mixer::channel_id, mixer::channel_id aux_id)
-        -> selector<bool>;
+    -> selector<bool>;
 
 auto make_aux_channel_default_fader_tap_parameter_selector(mixer::channel_id)
-        -> selector<enum_parameter_id>;
+    -> selector<enum_parameter_id>;
 
 struct mixer_device_route
 {
@@ -132,11 +132,11 @@ struct mixer_channel_route
     string_id name;
 
     auto operator==(mixer_channel_route const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 };
 
 auto make_mixer_channel_mix_input_is_valid_selector(mixer::channel_id)
-        -> selector<bool>;
+    -> selector<bool>;
 
 struct selected_route
 {
@@ -152,28 +152,28 @@ struct selected_route
 };
 
 auto make_mixer_channel_selected_route_selector(mixer::channel_id, io_direction)
-        -> selector<selected_route>;
+    -> selector<selected_route>;
 
 auto make_mixer_device_routes_selector(mixer::channel_type, io_direction)
-        -> selector<boxed_vector<mixer_device_route>>;
+    -> selector<boxed_vector<mixer_device_route>>;
 
 auto make_mixer_channel_routes_selector(mixer::channel_id, io_direction)
-        -> selector<boxed_vector<mixer_channel_route>>;
+    -> selector<boxed_vector<mixer_channel_route>>;
 
 auto make_mixer_channel_name_selector(mixer::channel_id) -> selector<string_id>;
 
 auto make_mixer_channel_name_string_selector(mixer::channel_id)
-        -> selector<boxed_string>;
+    -> selector<boxed_string>;
 
 auto make_mixer_channel_can_move_left_selector(mixer::channel_id)
-        -> selector<bool>;
+    -> selector<bool>;
 auto make_mixer_channel_can_move_right_selector(mixer::channel_id)
-        -> selector<bool>;
+    -> selector<bool>;
 
 extern selector<box<midi::device_ids_t>> const select_midi_input_devices;
 
 auto make_midi_device_name_selector(midi::device_id_t)
-        -> selector<boxed_string>;
+    -> selector<boxed_string>;
 
 auto make_midi_device_enabled_selector(midi::device_id_t) -> selector<bool>;
 
@@ -182,48 +182,48 @@ auto make_muted_by_solo_selector(mixer::channel_id) -> selector<bool>;
 auto make_fx_chain_selector(mixer::channel_id) -> selector<box<fx::chain_t>>;
 
 auto make_fx_module_instance_id_selector(fx::module_id)
-        -> selector<fx::instance_id>;
+    -> selector<fx::instance_id>;
 auto make_fx_module_name_selector(fx::module_id) -> selector<boxed_string>;
 auto make_fx_module_bus_type_selector(fx::module_id)
-        -> selector<audio::bus_type>;
+    -> selector<audio::bus_type>;
 auto make_fx_module_bypass_selector(fx::module_id) -> selector<bool>;
 auto make_fx_module_parameters_selector(fx::module_id)
-        -> selector<box<parameters_map>>;
+    -> selector<box<parameters_map>>;
 auto make_fx_module_can_move_up_selector(mixer::channel_id) -> selector<bool>;
 auto make_fx_module_can_move_down_selector(mixer::channel_id) -> selector<bool>;
 auto make_parameter_name_selector(parameter_id) -> selector<boxed_string>;
 auto make_parameter_value_string_selector(parameter_id)
-        -> selector<std::string>;
+    -> selector<std::string>;
 auto make_fx_module_streams_selector(fx::module_id)
-        -> selector<box<fx::module_streams>>;
+    -> selector<box<fx::module_streams>>;
 auto make_audio_stream_selector(audio_stream_id)
-        -> selector<audio_stream_buffer>;
+    -> selector<audio_stream_buffer>;
 
 auto make_float_parameter_bipolar_selector(float_parameter_id)
-        -> selector<bool>;
+    -> selector<bool>;
 auto make_enum_parameter_values_selector(enum_parameter_id)
-        -> selector<std::vector<std::pair<std::string, int>>>;
+    -> selector<std::vector<std::pair<std::string, int>>>;
 
 template <class P>
 auto make_parameter_min_selector(parameter::id_t<P>)
-        -> selector<parameter::value_type_t<P>>;
+    -> selector<parameter::value_type_t<P>>;
 
 template <class P>
 auto make_parameter_max_selector(parameter::id_t<P>)
-        -> selector<parameter::value_type_t<P>>;
+    -> selector<parameter::value_type_t<P>>;
 
 template <class P>
 auto make_parameter_value_selector(parameter::id_t<P>)
-        -> selector<parameter::value_type_t<P>>;
+    -> selector<parameter::value_type_t<P>>;
 
 template <class P>
 auto make_parameter_normalized_value_selector(parameter::id_t<P>)
-        -> selector<float>;
+    -> selector<float>;
 
 auto make_parameter_is_midi_assignable_selector(parameter_id) -> selector<bool>;
 
 auto make_midi_assignment_selector(midi_assignment_id)
-        -> selector<std::optional<midi_assignment>>;
+    -> selector<std::optional<midi_assignment>>;
 
 extern selector<bool> const select_midi_learning;
 

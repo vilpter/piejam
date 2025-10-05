@@ -16,8 +16,8 @@ class FxBrowserEntryInternal final : public FxBrowserEntry
 {
 public:
     FxBrowserEntryInternal(
-            runtime::state_access const&,
-            runtime::fx::internal_id);
+        runtime::state_access const&,
+        runtime::fx::internal_id);
 
     void appendModule() override;
 

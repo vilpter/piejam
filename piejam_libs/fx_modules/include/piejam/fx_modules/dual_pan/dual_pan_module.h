@@ -21,6 +21,6 @@ enum class parameter_key : runtime::parameter::key
 };
 
 auto make_module(runtime::internal_fx_module_factory_args const&)
-        -> runtime::fx::module;
+    -> runtime::fx::module;
 
 } // namespace piejam::fx_modules::dual_pan

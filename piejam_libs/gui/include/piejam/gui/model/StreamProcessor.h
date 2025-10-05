@@ -31,15 +31,15 @@ struct StreamProcessor
         {
             case switch_cast(1.f):
                 static_cast<Derived&>(*this).process(
-                        std::forward<Samples>(samples));
+                    std::forward<Samples>(samples));
                 break;
 
             default:
                 static_cast<Derived&>(*this).process(
-                        boost::make_iterator_range(
-                                std::begin(samples),
-                                std::end(samples)) |
-                        std::views::transform(multiplies(g)));
+                    boost::make_iterator_range(
+                        std::begin(samples),
+                        std::end(samples)) |
+                    std::views::transform(multiplies(g)));
                 break;
         }
     }

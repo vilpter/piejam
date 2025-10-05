@@ -57,10 +57,10 @@ TEST(for_each_visit_test, move_only_visitor)
 
         ~move_only_visitor() = default;
 
-        auto
-        operator=(move_only_visitor const&) -> move_only_visitor& = delete; // no copy
-        auto
-        operator=(move_only_visitor&&) -> move_only_visitor& = default; // allow move
+        auto operator=(move_only_visitor const&)
+            -> move_only_visitor& = delete; // no copy
+        auto operator=(move_only_visitor&&)
+            -> move_only_visitor& = default; // allow move
 
         void operator()(std::unique_ptr<int>& ptr)
         {

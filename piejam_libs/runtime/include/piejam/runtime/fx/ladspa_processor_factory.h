@@ -15,7 +15,7 @@ namespace piejam::runtime::fx
 {
 
 using simple_ladspa_processor_factory =
-        std::function<std::unique_ptr<audio::engine::processor>(
-                ladspa::instance_id)>;
+    std::function<std::unique_ptr<audio::engine::processor>(
+        ladspa::instance_id)>;
 
 } // namespace piejam::runtime::fx

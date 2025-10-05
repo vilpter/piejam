@@ -82,16 +82,16 @@ struct Spectrum::Impl
     std::vector<QPointF> spectrumPoints;
 
     auto calcSpectrum(
-            piejam::gui::model::SpectrumDataPoints const& dataPoints,
-            float const height)
+        piejam::gui::model::SpectrumDataPoints const& dataPoints,
+        float const height)
     {
         std::vector<QPointF> result;
 
         for (auto const& dataPoint : dataPoints)
         {
             result.emplace_back(
-                    frequencyScale.frequencyToPosition(dataPoint.frequency_Hz),
-                    height - levelScale.levelToPosition(dataPoint.level_dB));
+                frequencyScale.frequencyToPosition(dataPoint.frequency_Hz),
+                height - levelScale.levelToPosition(dataPoint.level_dB));
         }
 
         return result;
@@ -120,16 +120,15 @@ Spectrum::Spectrum(QQuickItem* parent)
         if (m_spectrum)
         {
             m_impl->spectrumDataChangedConnection = QObject::connect(
-                    m_spectrum,
-                    &piejam::gui::model::SpectrumSlot::changed,
-                    this,
-                    [this]() {
-                        m_impl->spectrumPoints = m_impl->calcSpectrum(
-                                m_spectrum->get(),
-                                height());
-                        m_impl->spectrumDirty = true;
-                        update();
-                    });
+                m_spectrum,
+                &piejam::gui::model::SpectrumSlot::changed,
+                this,
+                [this]() {
+                    m_impl->spectrumPoints =
+                        m_impl->calcSpectrum(m_spectrum->get(), height());
+                    m_impl->spectrumDirty = true;
+                    update();
+                });
         }
         else
         {
@@ -144,7 +143,7 @@ Spectrum::Spectrum(QQuickItem* parent)
 
 auto
 Spectrum::updatePaintNode(QSGNode* const oldNode, UpdatePaintNodeData*)
-        -> QSGNode*
+    -> QSGNode*
 {
     QSGGeometryNode* node{};
     QSGGeometry* geometry{};
@@ -154,9 +153,8 @@ Spectrum::updatePaintNode(QSGNode* const oldNode, UpdatePaintNodeData*)
     if (!oldNode)
     {
         node = new QSGGeometryNode();
-        geometry = new QSGGeometry(
-                QSGGeometry::defaultAttributes_Point2D(),
-                dataSize);
+        geometry =
+            new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), dataSize);
 
         geometry->setDrawingMode(QSGGeometry::DrawLineStrip);
         geometry->setLineWidth(2);
@@ -173,7 +171,7 @@ Spectrum::updatePaintNode(QSGNode* const oldNode, UpdatePaintNodeData*)
         node = boost::polymorphic_downcast<QSGGeometryNode*>(oldNode);
         geometry = node->geometry();
         material = boost::polymorphic_downcast<QSGFlatColorMaterial*>(
-                node->material());
+            node->material());
 
         if (dataSize != geometry->vertexCount())
         {

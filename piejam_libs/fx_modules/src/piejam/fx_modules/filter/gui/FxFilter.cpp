@@ -56,67 +56,61 @@ struct FxFilter::Impl
 };
 
 FxFilter::FxFilter(
-        runtime::state_access const& state_access,
-        runtime::fx::module_id const fx_mod_id)
+    runtime::state_access const& state_access,
+    runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(bool_enum_to<BusType>(observe_once(
-              runtime::selectors::make_fx_module_bus_type_selector(
-                      fx_mod_id))))}
+          runtime::selectors::make_fx_module_bus_type_selector(fx_mod_id))))}
 {
     auto const& parameters = this->parameters();
 
     makeParameter(
-            m_impl->filterTypeParam,
-            parameters.get<runtime::enum_parameter_id>(parameter_key::type));
+        m_impl->filterTypeParam,
+        parameters.get<runtime::enum_parameter_id>(parameter_key::type));
 
     makeParameter(
-            m_impl->cutoffParam,
-            parameters.get<runtime::float_parameter_id>(parameter_key::cutoff));
+        m_impl->cutoffParam,
+        parameters.get<runtime::float_parameter_id>(parameter_key::cutoff));
 
     makeParameter(
-            m_impl->resonanceParam,
-            parameters.get<runtime::float_parameter_id>(
-                    parameter_key::resonance));
+        m_impl->resonanceParam,
+        parameters.get<runtime::float_parameter_id>(parameter_key::resonance));
 
     makeStream(
-            m_impl->inOutStream,
-            streams().at(std::to_underlying(stream_key::in_out)));
+        m_impl->inOutStream,
+        streams().at(std::to_underlying(stream_key::in_out)));
 
     if (m_impl->busType == BusType::Mono)
     {
         QObject::connect(
-                m_impl->inOutStream.get(),
-                &AudioStreamProvider::captured,
-                this,
-                [this](AudioStream captured) {
-                    BOOST_ASSERT(captured.num_channels() == 2);
+            m_impl->inOutStream.get(),
+            &AudioStreamProvider::captured,
+            this,
+            [this](AudioStream captured) {
+                BOOST_ASSERT(captured.num_channels() == 2);
 
-                    m_impl->spectrumIn.update(
-                            m_impl->spectrumInGenerator.process(
-                                    captured.channels_cast<2>().channels()[0]));
-                    m_impl->spectrumOut.update(
-                            m_impl->spectrumOutGenerator.process(
-                                    captured.channels_cast<2>().channels()[1]));
-                });
+                m_impl->spectrumIn.update(m_impl->spectrumInGenerator.process(
+                    captured.channels_cast<2>().channels()[0]));
+                m_impl->spectrumOut.update(m_impl->spectrumOutGenerator.process(
+                    captured.channels_cast<2>().channels()[1]));
+            });
     }
     else
     {
         QObject::connect(
-                m_impl->inOutStream.get(),
-                &AudioStreamProvider::captured,
-                this,
-                [this](AudioStream captured) {
-                    BOOST_ASSERT(captured.num_channels() == 4);
+            m_impl->inOutStream.get(),
+            &AudioStreamProvider::captured,
+            this,
+            [this](AudioStream captured) {
+                BOOST_ASSERT(captured.num_channels() == 4);
 
-                    m_impl->spectrumIn.update(
-                            m_impl->spectrumInGenerator.process(
-                                    toMiddle(captured.channels_subview(0, 2)
-                                                     .channels_cast<2>())));
-                    m_impl->spectrumOut.update(
-                            m_impl->spectrumOutGenerator.process(
-                                    toMiddle(captured.channels_subview(2, 2)
-                                                     .channels_cast<2>())));
-                });
+                m_impl->spectrumIn.update(
+                    m_impl->spectrumInGenerator.process(toMiddle(
+                        captured.channels_subview(0, 2).channels_cast<2>())));
+                m_impl->spectrumOut.update(
+                    m_impl->spectrumOutGenerator.process(toMiddle(
+                        captured.channels_subview(2, 2).channels_cast<2>())));
+            });
     }
 }
 
@@ -124,7 +118,7 @@ void
 FxFilter::onSubscribe()
 {
     m_impl->updateSampleRate(
-            observe_once(runtime::selectors::select_sample_rate)->current);
+        observe_once(runtime::selectors::select_sample_rate)->current);
 }
 
 auto

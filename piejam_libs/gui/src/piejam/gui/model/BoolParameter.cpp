@@ -11,8 +11,8 @@ namespace piejam::gui::model
 {
 
 BoolParameter::BoolParameter(
-        runtime::state_access const& state_access,
-        runtime::bool_parameter_id param_id)
+    runtime::state_access const& state_access,
+    runtime::bool_parameter_id param_id)
     : Parameter(state_access, param_id)
 {
 }
@@ -28,8 +28,9 @@ BoolParameter::onSubscribe()
 {
     Parameter::onSubscribe();
 
-    observe(runtime::selectors::make_parameter_value_selector(paramId()),
-            [this](bool const value) { setValue(value); });
+    observe(
+        runtime::selectors::make_parameter_value_selector(paramId()),
+        [this](bool const value) { setValue(value); });
 }
 
 void

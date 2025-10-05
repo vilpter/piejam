@@ -25,25 +25,24 @@ struct FxModuleView::Impl
 
 auto
 makeModuleContent(
-        runtime::state_access const& state_access,
-        runtime::fx::module_id const fx_mod_id) -> std::unique_ptr<FxModule>
+    runtime::state_access const& state_access,
+    runtime::fx::module_id const fx_mod_id) -> std::unique_ptr<FxModule>
 {
     auto const fx_instance_id = state_access.observe_once(
-            runtime::selectors::make_fx_module_instance_id_selector(fx_mod_id));
+        runtime::selectors::make_fx_module_instance_id_selector(fx_mod_id));
 
     return std::visit(
-            boost::hof::match(
-                    [&](runtime::fx::internal_id fx_type)
-                            -> std::unique_ptr<FxModule> {
-                        return FxModuleFactories::lookup(
-                                fx_type)(state_access, fx_mod_id);
-                    },
-                    [&](auto const&) -> std::unique_ptr<FxModule> {
-                        return std::make_unique<FxGenericModule>(
-                                state_access,
-                                fx_mod_id);
-                    }),
-            fx_instance_id);
+        boost::hof::match(
+            [&](runtime::fx::internal_id fx_type) -> std::unique_ptr<FxModule> {
+                return FxModuleFactories::lookup(
+                    fx_type)(state_access, fx_mod_id);
+            },
+            [&](auto const&) -> std::unique_ptr<FxModule> {
+                return std::make_unique<FxGenericModule>(
+                    state_access,
+                    fx_mod_id);
+            }),
+        fx_instance_id);
 }
 
 FxModuleView::FxModuleView(runtime::state_access const& state_access)
@@ -62,35 +61,36 @@ void
 FxModuleView::onSubscribe()
 {
     setColor(
-            static_cast<MaterialColor>(observe_once(
-                    runtime::selectors::select_focused_fx_module_color)));
+        static_cast<MaterialColor>(
+            observe_once(runtime::selectors::select_focused_fx_module_color)));
 
     setChainName(
-            QString::fromStdString(observe_once(
-                    runtime::selectors::make_mixer_channel_name_string_selector(
-                            observe_once(
-                                    runtime::selectors::
-                                            select_focused_fx_chain)))));
+        QString::fromStdString(observe_once(
+            runtime::selectors::make_mixer_channel_name_string_selector(
+                observe_once(runtime::selectors::select_focused_fx_chain)))));
 
-    setName(QString::fromStdString(
+    setName(
+        QString::fromStdString(
             *observe_once(runtime::selectors::select_focused_fx_module_name)));
 
-    observe(runtime::selectors::select_focused_fx_module_bypassed,
-            [this](bool x) { setBypassed(x); });
+    observe(
+        runtime::selectors::select_focused_fx_module_bypassed,
+        [this](bool x) { setBypassed(x); });
 
-    observe(runtime::selectors::select_focused_fx_module,
-            [this](runtime::fx::module_id const fx_mod_id) {
-                if (m_impl->fx_mod_id != fx_mod_id)
-                {
-                    m_impl->fx_mod_id = fx_mod_id;
+    observe(
+        runtime::selectors::select_focused_fx_module,
+        [this](runtime::fx::module_id const fx_mod_id) {
+            if (m_impl->fx_mod_id != fx_mod_id)
+            {
+                m_impl->fx_mod_id = fx_mod_id;
 
-                    auto content = makeModuleContent(state_access(), fx_mod_id);
+                auto content = makeModuleContent(state_access(), fx_mod_id);
 
-                    std::swap(m_impl->content, content);
+                std::swap(m_impl->content, content);
 
-                    emit contentChanged();
-                }
-            });
+                emit contentChanged();
+            }
+        });
 }
 
 void

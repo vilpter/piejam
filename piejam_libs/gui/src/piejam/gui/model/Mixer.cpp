@@ -18,8 +18,9 @@ namespace piejam::gui::model
 
 struct Mixer::Impl
 {
-    Impl(runtime::state_access const& state_access,
-         runtime::mixer::channel_id main_channel)
+    Impl(
+        runtime::state_access const& state_access,
+        runtime::mixer::channel_id main_channel)
         : mainChannel{state_access, main_channel}
     {
     }
@@ -33,8 +34,8 @@ struct Mixer::Impl
 Mixer::Mixer(runtime::state_access const& state_access)
     : SubscribableModel{state_access}
     , m_impl{make_pimpl<Impl>(
-              state_access,
-              observe_once(runtime::selectors::select_mixer_main_channel))}
+          state_access,
+          observe_once(runtime::selectors::select_mixer_main_channel))}
 {
 }
 
@@ -53,22 +54,23 @@ Mixer::mainChannel() const noexcept -> MixerChannelModels*
 void
 Mixer::onSubscribe()
 {
-    observe(runtime::selectors::select_mixer_user_channels,
-            [this](box<runtime::mixer::channel_ids_t> const& user_channel_ids) {
-                algorithm::apply_edit_script(
-                        algorithm::edit_script(
-                                *m_impl->user_channel_ids,
-                                *user_channel_ids),
-                        ListModelEditScriptProcessor{
-                                m_impl->userChannels,
-                                [this](auto const& channel_id) {
-                                    return std::make_unique<MixerChannelModels>(
-                                            state_access(),
-                                            channel_id);
-                                }});
+    observe(
+        runtime::selectors::select_mixer_user_channels,
+        [this](box<runtime::mixer::channel_ids_t> const& user_channel_ids) {
+            algorithm::apply_edit_script(
+                algorithm::edit_script(
+                    *m_impl->user_channel_ids,
+                    *user_channel_ids),
+                ListModelEditScriptProcessor{
+                    m_impl->userChannels,
+                    [this](auto const& channel_id) {
+                        return std::make_unique<MixerChannelModels>(
+                            state_access(),
+                            channel_id);
+                    }});
 
-                m_impl->user_channel_ids = user_channel_ids;
-            });
+            m_impl->user_channel_ids = user_channel_ids;
+        });
 }
 
 void
@@ -91,9 +93,9 @@ Mixer::addAuxChannel(QString const& newChannelName)
 
 void
 Mixer::addChannel(
-        QString const& name,
-        runtime::mixer::channel_type type,
-        bool auto_assign_input)
+    QString const& name,
+    runtime::mixer::channel_type type,
+    bool auto_assign_input)
 {
     runtime::actions::add_mixer_channel action;
     action.name = name.toStdString();

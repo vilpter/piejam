@@ -22,14 +22,14 @@ struct channel_info
 };
 
 using channel_infos =
-        boost::container::flat_map<mixer::channel_id, channel_info>;
+    boost::container::flat_map<mixer::channel_id, channel_info>;
 
 auto
 gather_channel_infos(
-        mixer::channels_t const& channels,
-        mixer::io_map_t const& io_map,
-        mixer::aux_sends_t const& aux_sends,
-        parameter::store const& params)
+    mixer::channels_t const& channels,
+    mixer::io_map_t const& io_map,
+    mixer::aux_sends_t const& aux_sends,
+    parameter::store const& params)
 {
     std::size_t const num_channels = channels.size();
 
@@ -41,7 +41,7 @@ gather_channel_infos(
             target_id)
         {
             if (std::holds_alternative<mixer::mix_input>(
-                        io_map.at(*target_id).in()))
+                    io_map.at(*target_id).in()))
             {
                 result[current].children.insert(*target_id);
                 result[*target_id].mixins.insert(current);
@@ -58,7 +58,7 @@ gather_channel_infos(
         info.solo_param = channel.solo();
 
         if (auto const* const in_id =
-                    std::get_if<mixer::channel_id>(&io_map.at(id).in());
+                std::get_if<mixer::channel_id>(&io_map.at(id).in());
             in_id)
         {
             result[*in_id].children.insert(id);
@@ -83,16 +83,16 @@ gather_channel_infos(
 
 void
 gather_solo_group(
-        mixer::channel_id id,
-        channel_infos const& infos,
-        solo_group& g)
+    mixer::channel_id id,
+    channel_infos const& infos,
+    solo_group& g)
 {
     auto info = infos.find(id);
     BOOST_ASSERT(info != infos.end());
     g.mutes.insert(
-            boost::container::ordered_unique_range,
-            info->second.mixins.begin(),
-            info->second.mixins.end());
+        boost::container::ordered_unique_range,
+        info->second.mixins.begin(),
+        info->second.mixins.end());
     g.unmutes.insert(id);
 
     for (auto child : info->second.children)
@@ -105,10 +105,10 @@ gather_solo_group(
 
 auto
 solo_groups(
-        mixer::channels_t const& channels,
-        mixer::io_map_t const& io_map,
-        mixer::aux_sends_t const& aux_sends,
-        parameter::store const& params) -> solo_groups_t
+    mixer::channels_t const& channels,
+    mixer::io_map_t const& io_map,
+    mixer::aux_sends_t const& aux_sends,
+    parameter::store const& params) -> solo_groups_t
 {
     auto infos = gather_channel_infos(channels, io_map, aux_sends, params);
 

@@ -27,17 +27,17 @@ struct compose_fn
     {
         // Compose the inner functions first
         auto inner_composed =
-                (*this)(std::forward<G>(g), std::forward<Rest>(rest)...);
+            (*this)(std::forward<G>(g), std::forward<Rest>(rest)...);
 
         // Extract argument types of the innermost function
         using args_t = boost::callable_traits::args_t<
-                std::remove_cvref_t<decltype(inner_composed)>>;
+            std::remove_cvref_t<decltype(inner_composed)>>;
 
         // Dispatch helper: fixes argument types of lambda to match innermost
         return dispatch(
-                std::forward<F>(f),
-                std::move(inner_composed),
-                std::in_place_type<args_t>);
+            std::forward<F>(f),
+            std::move(inner_composed),
+            std::in_place_type<args_t>);
     }
 
 private:
@@ -47,11 +47,11 @@ private:
     {
         return [f = std::forward<F>(f),
                 c = std::forward<Composed>(c)](Args... args) mutable
-                       -> std::invoke_result_t<
-                               std::remove_reference_t<F>,
-                               std::invoke_result_t<
-                                       std::remove_reference_t<Composed>,
-                                       Args...>> {
+                   -> std::invoke_result_t<
+                       std::remove_reference_t<F>,
+                       std::invoke_result_t<
+                           std::remove_reference_t<Composed>,
+                           Args...>> {
             return std::invoke(f, std::invoke(c, std::forward<Args>(args)...));
         };
     }

@@ -42,9 +42,9 @@ public:
     void add_child(task_id_t parent, task_id_t child);
 
     auto make_runnable(
-            std::span<rt_task_executor> = {},
-            std::size_t event_memory_size = (1u << 16))
-            -> std::unique_ptr<dag_executor>;
+        std::span<rt_task_executor> = {},
+        std::size_t event_memory_size = (1u << 16))
+        -> std::unique_ptr<dag_executor>;
 
 private:
     std::size_t m_free_id{};

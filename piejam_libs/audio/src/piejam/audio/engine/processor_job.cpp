@@ -29,7 +29,7 @@ processor_job::processor_job(processor& proc)
     , m_outputs(m_output_buffers.begin(), m_output_buffers.end())
     , m_results(m_proc.num_outputs())
     , m_process_context(
-              {m_inputs, m_outputs, m_results, m_event_inputs, m_event_outputs})
+          {m_inputs, m_outputs, m_results, m_event_inputs, m_event_outputs})
 {
     BOOST_ASSERT((std::ranges::all_of(m_output_buffers, [](auto const& b) {
         return mipp::isAligned(b.data());
@@ -54,7 +54,7 @@ processor_job::result_ref(std::size_t const index) const -> slice<float> const&
 
 auto
 processor_job::event_result_ref(std::size_t const index)
-        -> abstract_event_buffer const&
+    -> abstract_event_buffer const&
 {
     return m_event_outputs.get(index);
 }
@@ -68,8 +68,8 @@ processor_job::connect_result(std::size_t const index, slice<float> const& res)
 
 void
 processor_job::connect_event_result(
-        std::size_t const index,
-        abstract_event_buffer const& ev_buf)
+    std::size_t const index,
+    abstract_event_buffer const& ev_buf)
 {
     m_event_inputs.set(index, ev_buf);
 }

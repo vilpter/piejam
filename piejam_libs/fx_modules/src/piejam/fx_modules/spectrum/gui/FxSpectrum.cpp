@@ -35,7 +35,7 @@ struct SpectrumProcessor : StreamProcessor<SpectrumProcessor>
     void process(Samples&& samples)
     {
         spectrum.update(
-                spectrumGenerator.process(std::forward<Samples>(samples)));
+            spectrumGenerator.process(std::forward<Samples>(samples)));
     }
 
     void updateSampleRate(audio::sample_rate sr)
@@ -77,110 +77,106 @@ struct FxSpectrum::Impl
 };
 
 FxSpectrum::FxSpectrum(
-        runtime::state_access const& state_access,
-        runtime::fx::module_id const fx_mod_id)
+    runtime::state_access const& state_access,
+    runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
     auto const& parameters = this->parameters();
 
     makeParameter(
-            m_impl->spectrumProcessor.first.active,
-            parameters.get<runtime::bool_parameter_id>(
-                    parameter_key::stream_a_active));
+        m_impl->spectrumProcessor.first.active,
+        parameters.get<runtime::bool_parameter_id>(
+            parameter_key::stream_a_active));
 
     makeParameter(
-            m_impl->spectrumProcessor.second.active,
-            parameters.get<runtime::bool_parameter_id>(
-                    parameter_key::stream_b_active));
+        m_impl->spectrumProcessor.second.active,
+        parameters.get<runtime::bool_parameter_id>(
+            parameter_key::stream_b_active));
 
     makeParameter(
-            m_impl->spectrumProcessor.first.channel,
-            parameters.get<runtime::enum_parameter_id>(
-                    parameter_key::channel_a));
+        m_impl->spectrumProcessor.first.channel,
+        parameters.get<runtime::enum_parameter_id>(parameter_key::channel_a));
 
     makeParameter(
-            m_impl->spectrumProcessor.second.channel,
-            parameters.get<runtime::enum_parameter_id>(
-                    parameter_key::channel_b));
+        m_impl->spectrumProcessor.second.channel,
+        parameters.get<runtime::enum_parameter_id>(parameter_key::channel_b));
 
     makeParameter(
-            m_impl->spectrumProcessor.first.gain,
-            parameters.get<runtime::float_parameter_id>(parameter_key::gain_a));
+        m_impl->spectrumProcessor.first.gain,
+        parameters.get<runtime::float_parameter_id>(parameter_key::gain_a));
 
     makeParameter(
-            m_impl->spectrumProcessor.second.gain,
-            parameters.get<runtime::float_parameter_id>(parameter_key::gain_b));
+        m_impl->spectrumProcessor.second.gain,
+        parameters.get<runtime::float_parameter_id>(parameter_key::gain_b));
 
     makeParameter(
-            m_impl->freeze,
-            parameters.get<runtime::bool_parameter_id>(parameter_key::freeze));
+        m_impl->freeze,
+        parameters.get<runtime::bool_parameter_id>(parameter_key::freeze));
 
     makeStream(
-            m_impl->stream,
-            streams().at(std::to_underlying(stream_key::input)));
+        m_impl->stream,
+        streams().at(std::to_underlying(stream_key::input)));
 
     if (m_impl->busType == BusType::Mono)
     {
         QObject::connect(
-                m_impl->stream.get(),
-                &AudioStreamProvider::captured,
-                this,
-                [this](AudioStream captured) {
-                    if (m_impl->freeze->value())
-                    {
-                        return;
-                    }
+            m_impl->stream.get(),
+            &AudioStreamProvider::captured,
+            this,
+            [this](AudioStream captured) {
+                if (m_impl->freeze->value())
+                {
+                    return;
+                }
 
-                    BOOST_ASSERT(captured.num_channels() == 1);
-                    m_impl->spectrumProcessor.first.processSamples(
-                            captured.samples());
-                });
+                BOOST_ASSERT(captured.num_channels() == 1);
+                m_impl->spectrumProcessor.first.processSamples(
+                    captured.samples());
+            });
     }
     else
     {
         QObject::connect(
-                m_impl->stream.get(),
-                &AudioStreamProvider::captured,
-                this,
-                [this](AudioStream captured) {
-                    if (m_impl->freeze->value())
-                    {
-                        return;
-                    }
+            m_impl->stream.get(),
+            &AudioStreamProvider::captured,
+            this,
+            [this](AudioStream captured) {
+                if (m_impl->freeze->value())
+                {
+                    return;
+                }
 
-                    auto captured_stereo = captured.channels_cast<2>();
-                    m_impl->spectrumProcessor.first.processStereo(
-                            captured_stereo);
-                    m_impl->spectrumProcessor.second.processStereo(
-                            captured_stereo);
-                });
+                auto captured_stereo = captured.channels_cast<2>();
+                m_impl->spectrumProcessor.first.processStereo(captured_stereo);
+                m_impl->spectrumProcessor.second.processStereo(captured_stereo);
+            });
 
         auto const clear_fn = [this]() { clear(); };
 
         QObject::connect(
-                m_impl->spectrumProcessor.first.active.get(),
-                &BoolParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->spectrumProcessor.first.active.get(),
+            &BoolParameter::valueChanged,
+            this,
+            clear_fn);
 
         QObject::connect(
-                m_impl->spectrumProcessor.first.channel.get(),
-                &EnumParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->spectrumProcessor.first.channel.get(),
+            &EnumParameter::valueChanged,
+            this,
+            clear_fn);
 
         QObject::connect(
-                m_impl->spectrumProcessor.second.active.get(),
-                &BoolParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->spectrumProcessor.second.active.get(),
+            &BoolParameter::valueChanged,
+            this,
+            clear_fn);
 
         QObject::connect(
-                m_impl->spectrumProcessor.second.channel.get(),
-                &EnumParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->spectrumProcessor.second.channel.get(),
+            &EnumParameter::valueChanged,
+            this,
+            clear_fn);
     }
 }
 
@@ -255,7 +251,7 @@ void
 FxSpectrum::onSubscribe()
 {
     m_impl->updateSampleRate(
-            observe_once(runtime::selectors::select_sample_rate)->current);
+        observe_once(runtime::selectors::select_sample_rate)->current);
 }
 
 } // namespace piejam::fx_modules::spectrum::gui

@@ -15,7 +15,7 @@ namespace
 {
 
 using internal_fx_names_map =
-        boost::bimaps::bimap<piejam::runtime::fx::internal_id, std::string>;
+    boost::bimaps::bimap<piejam::runtime::fx::internal_id, std::string>;
 
 auto
 internal_fx_names() -> internal_fx_names_map&
@@ -60,9 +60,10 @@ void
 register_internal_fx(fx::internal_id id, std::string name)
 {
     using value_type = typename internal_fx_names_map::value_type;
-    BOOST_VERIFY(internal_fx_names()
-                         .insert(value_type{std::move(id), std::move(name)})
-                         .second);
+    BOOST_VERIFY(
+        internal_fx_names()
+            .insert(value_type{std::move(id), std::move(name)})
+            .second);
 }
 
 } // namespace piejam::runtime::persistence

@@ -59,8 +59,8 @@ public:
     void process(process_context const&) override
     {
         BOOST_ASSERT_MSG(
-                false,
-                "Should be removed from graph before executing.");
+            false,
+            "Should be removed from graph before executing.");
     }
 
 private:

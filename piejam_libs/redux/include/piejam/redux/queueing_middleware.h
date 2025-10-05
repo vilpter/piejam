@@ -30,9 +30,9 @@ public:
             m_dispatching = true;
 
             using flag_resetter =
-                    std::unique_ptr<bool, decltype([](bool* flag) {
-                                        *flag = false;
-                                    })>;
+                std::unique_ptr<bool, decltype([](bool* flag) {
+                                    *flag = false;
+                                })>;
             flag_resetter reset_dispatching{&m_dispatching};
 
             mw_fs.next(a);

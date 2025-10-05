@@ -12,10 +12,10 @@ namespace piejam::runtime::actions
 
 struct persistence_action_visitor
     : ui::action_visitor_interface<
-              load_app_config,
-              save_app_config,
-              load_session,
-              save_session>
+          load_app_config,
+          save_app_config,
+          load_session,
+          save_session>
 {
 };
 
@@ -26,6 +26,6 @@ struct persistence_action
 
 template <class Action>
 using visitable_persistence_action =
-        ui::visitable_action<Action, persistence_action>;
+    ui::visitable_action<Action, persistence_action>;
 
 } // namespace piejam::runtime::actions

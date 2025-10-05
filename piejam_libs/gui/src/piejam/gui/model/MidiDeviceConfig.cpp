@@ -12,8 +12,8 @@ namespace piejam::gui::model
 {
 
 MidiDeviceConfig::MidiDeviceConfig(
-        runtime::state_access const& state_access,
-        midi::device_id_t device_id)
+    runtime::state_access const& state_access,
+    midi::device_id_t device_id)
     : SubscribableModel(state_access)
     , m_device_id(std::move(device_id))
 {
@@ -22,13 +22,15 @@ MidiDeviceConfig::MidiDeviceConfig(
 void
 MidiDeviceConfig::onSubscribe()
 {
-    observe(runtime::selectors::make_midi_device_name_selector(m_device_id),
-            [this](std::string const& name) {
-                setName(QString::fromStdString(name));
-            });
+    observe(
+        runtime::selectors::make_midi_device_name_selector(m_device_id),
+        [this](std::string const& name) {
+            setName(QString::fromStdString(name));
+        });
 
-    observe(runtime::selectors::make_midi_device_enabled_selector(m_device_id),
-            [this](bool const x) { setEnabled(x); });
+    observe(
+        runtime::selectors::make_midi_device_enabled_selector(m_device_id),
+        [this](bool const x) { setEnabled(x); });
 }
 
 void

@@ -20,11 +20,11 @@ struct io_pair
     using value_type = T;
 
     constexpr io_pair() noexcept(std::is_nothrow_default_constructible_v<T>) =
-            default;
+        default;
 
     template <std::convertible_to<T> I, std::convertible_to<T> O>
     constexpr io_pair(I&& i, O&& o) noexcept(
-            noexcept(T{std::forward<I>(i)}) && noexcept(T{std::forward<O>(o)}))
+        noexcept(T{std::forward<I>(i)}) && noexcept(T{std::forward<O>(o)}))
         : m_p{std::forward<I>(i), std::forward<O>(o)}
     {
     }

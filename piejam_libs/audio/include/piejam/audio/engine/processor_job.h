@@ -34,8 +34,8 @@ public:
 
     auto event_result_ref(std::size_t index) -> abstract_event_buffer const&;
     void connect_event_result(
-            std::size_t index,
-            abstract_event_buffer const& ev_buf);
+        std::size_t index,
+        abstract_event_buffer const& ev_buf);
 
     void clear_event_output_buffers();
 

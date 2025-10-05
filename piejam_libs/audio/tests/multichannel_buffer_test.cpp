@@ -13,9 +13,9 @@ namespace piejam::audio::test
 TEST(multichannel_buffer, non_interleaved_channels)
 {
     multichannel_buffer buf{
-            multichannel_layout::non_interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::non_interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto channels = buf.channels();
     ASSERT_EQ(2, channels.major_size());
@@ -26,13 +26,12 @@ TEST(multichannel_buffer, non_interleaved_channels)
 TEST(multichannel_buffer, non_interleaved_channels_after_cast)
 {
     multichannel_buffer buf{
-            multichannel_layout::non_interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::non_interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
-    auto channels = buf.view()
-                            .cast<multichannel_layout_non_interleaved, 2>()
-                            .channels();
+    auto channels =
+        buf.view().cast<multichannel_layout_non_interleaved, 2>().channels();
     ASSERT_EQ(2, channels.major_size());
     EXPECT_THAT(channels[0], testing::ElementsAre(1.f, 2.f, 3.f));
     EXPECT_THAT(channels[1], testing::ElementsAre(4.f, 5.f, 6.f));
@@ -41,9 +40,9 @@ TEST(multichannel_buffer, non_interleaved_channels_after_cast)
 TEST(multichannel_buffer, interleaved_channels)
 {
     multichannel_buffer buf{
-            multichannel_layout::interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto channels = buf.channels();
     ASSERT_EQ(2, channels.major_size());
@@ -54,12 +53,12 @@ TEST(multichannel_buffer, interleaved_channels)
 TEST(multichannel_buffer, interleaved_channels_after_cast)
 {
     multichannel_buffer buf{
-            multichannel_layout::interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto channels =
-            buf.view().cast<multichannel_layout_interleaved, 2>().channels();
+        buf.view().cast<multichannel_layout_interleaved, 2>().channels();
     ASSERT_EQ(2, channels.major_size());
     EXPECT_THAT(channels[0], testing::ElementsAre(1.f, 3.f, 5.f));
     EXPECT_THAT(channels[1], testing::ElementsAre(2.f, 4.f, 6.f));
@@ -68,9 +67,9 @@ TEST(multichannel_buffer, interleaved_channels_after_cast)
 TEST(multichannel_buffer, non_interleaved_frames)
 {
     multichannel_buffer buf{
-            multichannel_layout::non_interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::non_interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto frames = buf.frames();
     ASSERT_EQ(3, frames.major_size());
@@ -82,12 +81,12 @@ TEST(multichannel_buffer, non_interleaved_frames)
 TEST(multichannel_buffer, non_interleaved_frames_after_cast)
 {
     multichannel_buffer buf{
-            multichannel_layout::non_interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::non_interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto frames =
-            buf.view().cast<multichannel_layout_non_interleaved, 2>().frames();
+        buf.view().cast<multichannel_layout_non_interleaved, 2>().frames();
     ASSERT_EQ(3, frames.major_size());
     EXPECT_THAT(frames[0], testing::ElementsAre(1.f, 4.f));
     EXPECT_THAT(frames[1], testing::ElementsAre(2.f, 5.f));
@@ -97,9 +96,9 @@ TEST(multichannel_buffer, non_interleaved_frames_after_cast)
 TEST(multichannel_buffer, interleaved_frames)
 {
     multichannel_buffer buf{
-            multichannel_layout::interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto frames = buf.frames();
     ASSERT_EQ(3, frames.major_size());
@@ -111,12 +110,12 @@ TEST(multichannel_buffer, interleaved_frames)
 TEST(multichannel_buffer, interleaved_frames_after_cast)
 {
     multichannel_buffer buf{
-            multichannel_layout::interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto frames =
-            buf.view().cast<multichannel_layout_interleaved, 2>().frames();
+        buf.view().cast<multichannel_layout_interleaved, 2>().frames();
     ASSERT_EQ(3, frames.major_size());
     EXPECT_THAT(frames[0], testing::ElementsAre(1.f, 2.f));
     EXPECT_THAT(frames[1], testing::ElementsAre(3.f, 4.f));
@@ -126,9 +125,9 @@ TEST(multichannel_buffer, interleaved_frames_after_cast)
 TEST(multichannel_view, non_interleaved_channels_subview)
 {
     multichannel_buffer buf{
-            multichannel_layout::non_interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::non_interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto channels = buf.view().channels_subview(1, 1).channels();
     ASSERT_EQ(1, channels.major_size());
@@ -138,9 +137,9 @@ TEST(multichannel_view, non_interleaved_channels_subview)
 TEST(multichannel_view, interleaved_frames_subview)
 {
     multichannel_buffer buf{
-            multichannel_layout::interleaved,
-            2,
-            multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
+        multichannel_layout::interleaved,
+        2,
+        multichannel_buffer<float>::vector{1.f, 2.f, 3.f, 4.f, 5.f, 6.f}};
 
     auto frames = buf.view().frames_subview(1, 2).frames();
     ASSERT_EQ(2, frames.major_size());

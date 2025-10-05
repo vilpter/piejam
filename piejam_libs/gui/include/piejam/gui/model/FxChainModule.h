@@ -24,9 +24,9 @@ class FxChainModule : public SubscribableModel
 
 public:
     FxChainModule(
-            runtime::state_access const&,
-            runtime::mixer::channel_id fx_chain_id,
-            runtime::fx::module_id);
+        runtime::state_access const&,
+        runtime::mixer::channel_id fx_chain_id,
+        runtime::fx::module_id);
 
     Q_INVOKABLE void remove();
     Q_INVOKABLE void focus();

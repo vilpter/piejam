@@ -19,10 +19,10 @@ namespace
 
 auto
 findTrigger(
-        std::span<float const> samples,
-        std::size_t const windowSize,
-        TriggerSlope const trigger,
-        float triggerLevel)
+    std::span<float const> samples,
+    std::size_t const windowSize,
+    TriggerSlope const trigger,
+    float triggerLevel)
 {
     if (samples.empty())
     {
@@ -33,20 +33,19 @@ findTrigger(
 
     auto itFirst = samples.begin();
     auto itLast = std::next(
-            samples.begin(),
-            static_cast<std::ranges::range_difference_t<ScopeSlot::Samples>>(
-                    samples.size() - windowSize));
+        samples.begin(),
+        static_cast<std::ranges::range_difference_t<ScopeSlot::Samples>>(
+            samples.size() - windowSize));
 
-    auto itFound =
-            trigger == TriggerSlope::RisingEdge
-                    ? std::adjacent_find(
-                              itFirst,
-                              itLast,
-                              std::bind_front(rising_edge, triggerLevel))
-                    : std::adjacent_find(
-                              itFirst,
-                              itLast,
-                              std::bind_front(falling_edge, triggerLevel));
+    auto itFound = trigger == TriggerSlope::RisingEdge
+                       ? std::adjacent_find(
+                             itFirst,
+                             itLast,
+                             std::bind_front(rising_edge, triggerLevel))
+                       : std::adjacent_find(
+                             itFirst,
+                             itLast,
+                             std::bind_front(falling_edge, triggerLevel));
 
     if (itFound == itLast)
     {
@@ -60,17 +59,17 @@ findTrigger(
 
 auto
 ScopeGenerator::process(
-        std::size_t triggerStream,
-        Streams streams,
-        std::size_t windowSize,
-        TriggerSlope triggerSlope,
-        float triggerLevel,
-        std::size_t capturedFrames,
-        std::size_t holdTimeInFrames) -> Streams
+    std::size_t triggerStream,
+    Streams streams,
+    std::size_t windowSize,
+    TriggerSlope triggerSlope,
+    float triggerLevel,
+    std::size_t capturedFrames,
+    std::size_t holdTimeInFrames) -> Streams
 {
     BOOST_ASSERT(
-            streams.empty() || streams.size() == 1 ||
-            streams[0].size() == streams[1].size());
+        streams.empty() || streams.size() == 1 ||
+        streams[0].size() == streams[1].size());
 
     auto const triggerStreamSamples = streams[triggerStream];
 
@@ -81,23 +80,21 @@ ScopeGenerator::process(
         case State::WaitingForTrigger:
         {
             auto it = findTrigger(
-                    triggerStreamSamples,
-                    windowSize,
-                    triggerSlope,
-                    triggerLevel);
+                triggerStreamSamples,
+                windowSize,
+                triggerSlope,
+                triggerLevel);
             if (it != triggerStreamSamples.end())
             {
                 auto offset = std::distance(triggerStreamSamples.begin(), it);
                 std::ranges::transform(
-                        streams,
-                        std::back_inserter(result),
-                        [=](std::span<float const> stream) {
-                            auto r = std::span{
-                                    stream.data() + offset,
-                                    windowSize};
-                            BOOST_ASSERT(r.end() <= stream.end());
-                            return r;
-                        });
+                    streams,
+                    std::back_inserter(result),
+                    [=](std::span<float const> stream) {
+                        auto r = std::span{stream.data() + offset, windowSize};
+                        BOOST_ASSERT(r.end() <= stream.end());
+                        return r;
+                    });
 
                 m_state = State::Hold;
                 m_holdCapturedSize = 0;

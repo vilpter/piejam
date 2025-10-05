@@ -48,11 +48,11 @@ process::swap_executor(std::unique_ptr<dag_executor> next_dag_executor) -> bool
     auto prev_executor_future = m_prev_executor.get_future();
 
     m_next_executor.store(
-            next_dag_executor.release(),
-            std::memory_order_release);
+        next_dag_executor.release(),
+        std::memory_order_release);
 
     if (auto const status =
-                prev_executor_future.wait_for(std::chrono::milliseconds(200));
+            prev_executor_future.wait_for(std::chrono::milliseconds(200));
         status == std::future_status::ready)
     {
         prev_executor_future.get();
@@ -65,10 +65,10 @@ process::swap_executor(std::unique_ptr<dag_executor> next_dag_executor) -> bool
 
 auto
 process::operator()(std::size_t const buffer_size) noexcept
-        -> std::chrono::nanoseconds
+    -> std::chrono::nanoseconds
 {
     if (auto next_dag_executor = std::unique_ptr<dag_executor>(
-                m_next_executor.exchange(nullptr, std::memory_order_acq_rel)))
+            m_next_executor.exchange(nullptr, std::memory_order_acq_rel)))
     {
         std::swap(m_executor, next_dag_executor);
         m_prev_executor.set_value(std::move(next_dag_executor));

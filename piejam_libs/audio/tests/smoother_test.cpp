@@ -85,7 +85,7 @@ TEST(smoother, iterator_category_is_input_iterator)
     static_assert(std::is_same_v<
                   std::input_iterator_tag,
                   std::iterator_traits<
-                          dsp::smoother<float>::iterator>::iterator_category>);
+                      dsp::smoother<float>::iterator>::iterator_category>);
 }
 
 } // namespace piejam::audio::test

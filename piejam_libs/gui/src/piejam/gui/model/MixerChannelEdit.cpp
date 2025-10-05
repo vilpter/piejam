@@ -18,8 +18,9 @@ namespace piejam::gui::model
 
 struct MixerChannelEdit::Impl
 {
-    Impl(runtime::state_access const& state_access,
-         runtime::mixer::channel_id const id)
+    Impl(
+        runtime::state_access const& state_access,
+        runtime::mixer::channel_id const id)
         : in{state_access, id, io_direction::input}
         , out{state_access, id, io_direction::output}
     {
@@ -30,8 +31,8 @@ struct MixerChannelEdit::Impl
 };
 
 MixerChannelEdit::MixerChannelEdit(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const id)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id const id)
     : MixerChannel{state_access, id}
     , m_impl{make_pimpl<Impl>(state_access, id)}
 {
@@ -54,13 +55,15 @@ MixerChannelEdit::onSubscribe()
 {
     MixerChannel::onSubscribe();
 
-    observe(runtime::selectors::make_mixer_channel_can_move_left_selector(
-                    channel_id()),
-            [this](bool const x) { setCanMoveLeft(x); });
+    observe(
+        runtime::selectors::make_mixer_channel_can_move_left_selector(
+            channel_id()),
+        [this](bool const x) { setCanMoveLeft(x); });
 
-    observe(runtime::selectors::make_mixer_channel_can_move_right_selector(
-                    channel_id()),
-            [this](bool const x) { setCanMoveRight(x); });
+    observe(
+        runtime::selectors::make_mixer_channel_can_move_right_selector(
+            channel_id()),
+        [this](bool const x) { setCanMoveRight(x); });
 }
 
 void
@@ -68,7 +71,7 @@ MixerChannelEdit::changeName(QString const& name)
 {
     runtime::actions::set_string action;
     action.id = observe_once(
-            runtime::selectors::make_mixer_channel_name_selector(channel_id()));
+        runtime::selectors::make_mixer_channel_name_selector(channel_id()));
     action.str = box{name.toStdString()};
     dispatch(action);
 }

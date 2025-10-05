@@ -14,8 +14,8 @@ namespace piejam
 template <class T, std::predicate<T const&> P, class V>
 auto
 set_if(T& t, P&& pred, V&& value) noexcept(
-        noexcept(std::invoke(std::forward<P>(pred), t)) &&
-        noexcept(t = std::forward<V>(value))) -> bool
+    noexcept(std::invoke(std::forward<P>(pred), t)) &&
+    noexcept(t = std::forward<V>(value))) -> bool
 {
     if (std::invoke(std::forward<P>(pred), t))
     {

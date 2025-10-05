@@ -26,9 +26,9 @@ public:
     using value_type = T;
 
     explicit peak_level_meter(
-            sample_rate sr,
-            std::chrono::duration<T> peak_decay_time = default_peak_decay_time,
-            T min_level = default_min_level)
+        sample_rate sr,
+        std::chrono::duration<T> peak_decay_time = default_peak_decay_time,
+        T min_level = default_min_level)
         : m_min_level{min_level}
         , m_g_release{std::exp(T{-1} / (peak_decay_time.count() * sr.as<T>()))}
     {
@@ -38,8 +38,8 @@ public:
     {
         auto const abs_x = std::abs(x);
         m_peak_level = abs_x > m_peak_level
-                               ? abs_x
-                               : abs_x + m_g_release * (m_peak_level - abs_x);
+                           ? abs_x
+                           : abs_x + m_g_release * (m_peak_level - abs_x);
     }
 
     [[nodiscard]]

@@ -20,8 +20,9 @@ namespace piejam::system
 
 device::device(std::filesystem::path const& pathname, blocking b)
     : m_fd(
-              ::open(pathname.c_str(),
-                     O_RDONLY | (b == blocking::off ? O_NONBLOCK : 0)))
+          ::open(
+              pathname.c_str(),
+              O_RDONLY | (b == blocking::off ? O_NONBLOCK : 0)))
 {
     if (m_fd < 0)
     {
@@ -68,9 +69,9 @@ device::ioctl(unsigned long const request) noexcept -> std::error_code
 
 auto
 device::ioctl(
-        unsigned long const request,
-        void* const p,
-        [[maybe_unused]] std::size_t const size) noexcept -> std::error_code
+    unsigned long const request,
+    void* const p,
+    [[maybe_unused]] std::size_t const size) noexcept -> std::error_code
 {
     BOOST_ASSERT(m_fd != invalid);
     BOOST_ASSERT(_IOC_SIZE(request) == size);
@@ -86,17 +87,17 @@ device::ioctl(
 template <>
 auto
 device::ioctl(unsigned long request, device const& other) noexcept
-        -> std::error_code
+    -> std::error_code
 {
     return ioctl(
-            request,
-            reinterpret_cast<void*>(other.m_fd),
-            sizeof(other.m_fd));
+        request,
+        reinterpret_cast<void*>(other.m_fd),
+        sizeof(other.m_fd));
 }
 
 auto
 device::read(std::span<std::byte> const buffer) noexcept
-        -> outcome::std_result<std::size_t>
+    -> outcome::std_result<std::size_t>
 {
     ssize_t res{};
     do
@@ -114,7 +115,7 @@ device::read(std::span<std::byte> const buffer) noexcept
 
 auto
 device::read_fully(std::span<std::byte> buffer) noexcept
-        -> outcome::std_result<void>
+    -> outcome::std_result<void>
 {
     std::size_t total = 0;
 
@@ -168,7 +169,7 @@ device::set_nonblock(bool const set) -> std::error_code
 
 auto
 device::poll(std::chrono::milliseconds timeout) noexcept
-        -> outcome::std_result<bool>
+    -> outcome::std_result<bool>
 {
     BOOST_ASSERT(m_fd != invalid);
 

@@ -16,7 +16,7 @@ namespace piejam::runtime::processors::test
 using int_param_fake = parameter::descriptor<struct int_param_fake_tag, int>;
 
 using float_param_fake =
-        parameter::descriptor<struct float_param_fake_tag, float>;
+    parameter::descriptor<struct float_param_fake_tag, float>;
 
 using factory_t = parameter_processor_factory<int_param_fake, float_param_fake>;
 
@@ -31,8 +31,9 @@ TEST(parameter_processor_factory, make_and_find)
     EXPECT_EQ(proc.get(), found_proc.get());
 }
 
-TEST(parameter_processor_factory,
-     initialize_will_send_an_event_to_out_on_process)
+TEST(
+    parameter_processor_factory,
+    initialize_will_send_an_event_to_out_on_process)
 {
     factory_t sut;
     auto id = parameter::id_t<int_param_fake>::generate();
@@ -40,14 +41,13 @@ TEST(parameter_processor_factory,
 
     int value{5};
     sut.initialize(
-            boost::hof::match(
-                    [&](parameter::id_t<int_param_fake> param_id)
-                            -> int const* {
-                        return param_id == id ? &value : nullptr;
-                    },
-                    [](parameter::id_t<float_param_fake>) -> float const* {
-                        return nullptr;
-                    }));
+        boost::hof::match(
+            [&](parameter::id_t<int_param_fake> param_id) -> int const* {
+                return param_id == id ? &value : nullptr;
+            },
+            [](parameter::id_t<float_param_fake>) -> float const* {
+                return nullptr;
+            }));
 
     audio::engine::processor_test_environment test_env(*proc, 16);
 
@@ -59,16 +59,18 @@ TEST(parameter_processor_factory,
     EXPECT_EQ(value, ev_out.begin()->value());
 }
 
-TEST(parameter_processor_factory,
-     initialize_without_a_value_will_not_send_anything)
+TEST(
+    parameter_processor_factory,
+    initialize_without_a_value_will_not_send_anything)
 {
     factory_t sut;
     auto id = parameter::id_t<int_param_fake>::generate();
     auto proc = sut.find_or_make_processor(id);
 
     sut.initialize(
-            []<class P>(parameter::id_t<P>)
-                    -> parameter::value_type_t<P> const* { return nullptr; });
+        []<class P>(parameter::id_t<P>) -> parameter::value_type_t<P> const* {
+            return nullptr;
+        });
 
     audio::engine::processor_test_environment test_env(*proc, 16);
 
@@ -132,8 +134,9 @@ TEST(parameter_processor_factory, consume_incoming_event)
     EXPECT_TRUE(consume_called);
 }
 
-TEST(parameter_processor_factory,
-     consume_functor_is_not_called_for_non_existing_processor)
+TEST(
+    parameter_processor_factory,
+    consume_functor_is_not_called_for_non_existing_processor)
 {
     factory_t sut;
 
@@ -148,7 +151,7 @@ TEST(parameter_processor_factory, clear_expired)
     auto id = parameter::id_t<int_param_fake>::generate();
 
     std::weak_ptr<audio::engine::processor> proc =
-            sut.find_or_make_processor(id);
+        sut.find_or_make_processor(id);
 
     sut.clear_expired();
     EXPECT_FALSE(proc.lock());

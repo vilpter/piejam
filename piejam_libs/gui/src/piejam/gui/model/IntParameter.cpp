@@ -11,16 +11,16 @@ namespace piejam::gui::model
 {
 
 IntParameter::IntParameter(
-        runtime::state_access const& state_access,
-        runtime::int_parameter_id param_id)
+    runtime::state_access const& state_access,
+    runtime::int_parameter_id param_id)
     : Parameter{state_access, param_id}
 
 {
     setMinValue(observe_once(
-            runtime::selectors::make_parameter_min_selector(param_id)));
+        runtime::selectors::make_parameter_min_selector(param_id)));
 
     setMaxValue(observe_once(
-            runtime::selectors::make_parameter_max_selector(param_id)));
+        runtime::selectors::make_parameter_max_selector(param_id)));
 }
 
 auto
@@ -34,8 +34,9 @@ IntParameter::onSubscribe()
 {
     Parameter::onSubscribe();
 
-    observe(runtime::selectors::make_parameter_value_selector(paramId()),
-            [this](int const value) { setValue(value); });
+    observe(
+        runtime::selectors::make_parameter_value_selector(paramId()),
+        [this](int const value) { setValue(value); });
 }
 
 void

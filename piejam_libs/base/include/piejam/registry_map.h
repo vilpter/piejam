@@ -19,7 +19,7 @@ public:
     static void add_entry(Key key, Value value)
     {
         BOOST_VERIFY(
-                mapping().emplace(std::move(key), std::move(value)).second);
+            mapping().emplace(std::move(key), std::move(value)).second);
     }
 
     static auto lookup(Key const& key) -> Value const&

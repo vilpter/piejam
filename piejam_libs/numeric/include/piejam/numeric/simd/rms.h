@@ -34,14 +34,14 @@ struct rms_fn
         auto const rng = mipp_range(std::span{in});
 
         return std::sqrt(
-                mipp::sum(
-                        std::transform_reduce(
-                                std::ranges::begin(rng),
-                                std::ranges::end(rng),
-                                mipp::Reg<T>(T{}),
-                                std::plus<>{},
-                                pow_n<2>)) /
-                std::ranges::size(in));
+            mipp::sum(
+                std::transform_reduce(
+                    std::ranges::begin(rng),
+                    std::ranges::end(rng),
+                    mipp::Reg<T>(T{}),
+                    std::plus<>{},
+                    pow_n<2>)) /
+            std::ranges::size(in));
     }
 };
 

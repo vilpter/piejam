@@ -45,9 +45,9 @@ struct mute_solo_processor_test
     audio::engine::event_input_buffers ev_in_bufs;
     audio::engine::event_output_buffers ev_out_bufs;
     audio::engine::process_context ctx{
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = 16};
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = 16};
 
     std::unique_ptr<audio::engine::processor> proc{make_mute_solo_processor()};
 };
@@ -72,13 +72,13 @@ TEST_P(mute_solo_processor_test, mute_events_at_same_offset)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        values,
-        mute_solo_processor_test,
-        testing::Values(
-                std::make_tuple(false, false, 1.f),
-                std::make_tuple(true, false, 0.f),
-                std::make_tuple(false, true, 0.f),
-                std::make_tuple(true, true, 0.f)));
+    values,
+    mute_solo_processor_test,
+    testing::Values(
+        std::make_tuple(false, false, 1.f),
+        std::make_tuple(true, false, 0.f),
+        std::make_tuple(false, true, 0.f),
+        std::make_tuple(true, true, 0.f)));
 
 TEST_F(mute_solo_processor_test, multiple_events)
 {

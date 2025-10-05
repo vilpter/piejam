@@ -25,11 +25,11 @@ class stream_ring_buffer
 {
 public:
     using multichannel_buffer_t =
-            multichannel_buffer<T, multichannel_layout_non_interleaved>;
+        multichannel_buffer<T, multichannel_layout_non_interleaved>;
 
     stream_ring_buffer(
-            std::size_t const num_channels,
-            std::size_t const capacity_per_channel)
+        std::size_t const num_channels,
+        std::size_t const capacity_per_channel)
         : m_num_channels{num_channels}
         , m_capacity_per_channel{capacity_per_channel + 1}
         , m_buffer(m_num_channels * m_capacity_per_channel)
@@ -37,20 +37,18 @@ public:
     }
 
     //! returns frames written
-    auto
-    write(std::span<std::reference_wrapper<slice<T> const> const> const data,
-          std::size_t size_per_channel) -> std::size_t
+    auto write(
+        std::span<std::reference_wrapper<slice<T> const> const> const data,
+        std::size_t size_per_channel) -> std::size_t
     {
         BOOST_ASSERT(data.size() == m_num_channels);
 
         std::size_t const write_index =
-                m_write_index.load(std::memory_order_acquire);
+            m_write_index.load(std::memory_order_acquire);
         std::size_t const read_index = m_read_index.load();
 
-        std::size_t const available = write_available(
-                write_index,
-                read_index,
-                m_capacity_per_channel);
+        std::size_t const available =
+            write_available(write_index, read_index, m_capacity_per_channel);
 
         if (available == 0)
         {
@@ -72,10 +70,12 @@ public:
                 slice<T> src_data = data[ch];
                 auto dst_data = m_buffer_multi_channel_view[ch];
 
-                copy(subslice(src_data, 0, middle),
-                     std::span<float>{dst_data.data() + write_index, middle});
-                copy(subslice(src_data, middle, rest_size),
-                     std::span<float>{dst_data.data(), rest_size});
+                copy(
+                    subslice(src_data, 0, middle),
+                    std::span<float>{dst_data.data() + write_index, middle});
+                copy(
+                    subslice(src_data, middle, rest_size),
+                    std::span<float>{dst_data.data(), rest_size});
             }
 
             new_write_index -= m_capacity_per_channel;
@@ -87,10 +87,11 @@ public:
                 slice<T> src_data = data[ch];
                 auto dst_data = m_buffer_multi_channel_view[ch];
 
-                copy(subslice(src_data, 0, write_size),
-                     std::span<float>{
-                             dst_data.data() + write_index,
-                             write_size});
+                copy(
+                    subslice(src_data, 0, write_size),
+                    std::span<float>{
+                        dst_data.data() + write_index,
+                        write_size});
             }
 
             if (new_write_index == m_capacity_per_channel)
@@ -106,7 +107,7 @@ public:
     auto consume() -> multichannel_buffer_t
     {
         std::size_t const read_index =
-                m_read_index.load(std::memory_order_acquire);
+            m_read_index.load(std::memory_order_acquire);
         std::size_t const write_index = m_write_index.load();
 
         if (write_index == read_index)
@@ -120,16 +121,16 @@ public:
         if (write_index < read_index)
         {
             frames_to_consume =
-                    m_capacity_per_channel - read_index + write_index;
+                m_capacity_per_channel - read_index + write_index;
             result.reserve(frames_to_consume * m_num_channels);
 
             for (auto d = m_buffer.data(), e = d + m_buffer.size(); d < e;
                  d += m_capacity_per_channel)
             {
                 result.insert(
-                        result.end(),
-                        d + read_index,
-                        d + m_capacity_per_channel);
+                    result.end(),
+                    d + read_index,
+                    d + m_capacity_per_channel);
 
                 result.insert(result.end(), d, d + write_index);
             }
@@ -154,20 +155,20 @@ public:
 
 private:
     static auto write_available(
-            std::size_t const write_index,
-            std::size_t const read_index,
-            std::size_t const max_size) -> std::size_t
+        std::size_t const write_index,
+        std::size_t const read_index,
+        std::size_t const max_size) -> std::size_t
     {
         std::size_t const avail = read_index - write_index - 1;
         return write_index >= read_index ? avail + max_size : avail;
     }
 
     using write_stream_view = range::table_view<
-            float,
-            std::dynamic_extent,
-            std::dynamic_extent,
-            range::dynamic_stride,
-            1>;
+        float,
+        std::dynamic_extent,
+        std::dynamic_extent,
+        range::dynamic_stride,
+        1>;
 
     std::size_t const m_num_channels;
     std::size_t const m_capacity_per_channel;
@@ -175,12 +176,12 @@ private:
     alignas(thread::cache_line_size) std::atomic_size_t m_read_index{};
     alignas(thread::cache_line_size) std::vector<float> m_buffer;
     write_stream_view const m_buffer_multi_channel_view{
-            m_buffer.data(),
-            m_num_channels,
-            m_capacity_per_channel,
-            static_cast<range::table_view<float>::difference_type>(
-                    m_capacity_per_channel),
-            1};
+        m_buffer.data(),
+        m_num_channels,
+        m_capacity_per_channel,
+        static_cast<range::table_view<float>::difference_type>(
+            m_capacity_per_channel),
+        1};
 };
 
 } // namespace piejam::audio::engine

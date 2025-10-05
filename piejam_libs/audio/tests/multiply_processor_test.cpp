@@ -37,8 +37,9 @@ struct multiply_processor_2_inputs : public ::testing::Test
     std::unique_ptr<processor> sut{make_multiply_processor(2)};
 };
 
-TEST_F(multiply_processor_2_inputs,
-       multiplying_constants_will_result_in_constant)
+TEST_F(
+    multiply_processor_2_inputs,
+    multiplying_constants_will_result_in_constant)
 {
     in1 = {.23f};
     in2 = {.58f};
@@ -49,11 +50,12 @@ TEST_F(multiply_processor_2_inputs,
     EXPECT_FLOAT_EQ(.23f * .58f, results[0].constant());
 }
 
-TEST_F(multiply_processor_2_inputs,
-       multiply_buffer_and_constant_result_will_be_written_into_output_buffer)
+TEST_F(
+    multiply_processor_2_inputs,
+    multiply_buffer_and_constant_result_will_be_written_into_output_buffer)
 {
     alignas(mipp::RequiredAlignment)
-            std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
+        std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
     in1 = {in1_buf};
     in2 = {.77f};
 
@@ -71,11 +73,12 @@ TEST_F(multiply_processor_2_inputs,
     EXPECT_FLOAT_EQ(.99f * .77f, results[0].span()[7]);
 }
 
-TEST_F(multiply_processor_2_inputs,
-       multiply_buffer_and_silence_will_result_in_silence)
+TEST_F(
+    multiply_processor_2_inputs,
+    multiply_buffer_and_silence_will_result_in_silence)
 {
     alignas(mipp::RequiredAlignment)
-            std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
+        std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
     in1 = {in1_buf};
 
     sut->process(ctx);
@@ -84,14 +87,15 @@ TEST_F(multiply_processor_2_inputs,
     EXPECT_FLOAT_EQ(0.f, results[0].constant());
 }
 
-TEST_F(multiply_processor_2_inputs,
-       multiply_two_buffers_result_will_be_in_the_output)
+TEST_F(
+    multiply_processor_2_inputs,
+    multiply_two_buffers_result_will_be_in_the_output)
 {
     alignas(mipp::RequiredAlignment)
-            std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
+        std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
     in1 = {in1_buf};
     alignas(mipp::RequiredAlignment)
-            std::array in2_buf{.99f, .77f, .58f, .23f, .99f, .77f, .58f, .23f};
+        std::array in2_buf{.99f, .77f, .58f, .23f, .99f, .77f, .58f, .23f};
     in2 = {in2_buf};
 
     sut->process(ctx);
@@ -121,9 +125,9 @@ TEST(mix_processor, multiply_three_non_silence_channels)
     in_buf2.fill(0.58f);
     slice<float> in_buf2_slice(in_buf2);
     std::vector<std::reference_wrapper<slice<float> const>> in{
-            in_buf1_slice,
-            in_buf2_slice,
-            in_buf2_slice};
+        in_buf1_slice,
+        in_buf2_slice,
+        in_buf2_slice};
     alignas(mipp::RequiredAlignment) std::array<float, buffer_size> out_buf{};
     std::vector<std::span<float>> out{out_buf};
     std::vector<slice<float>> result{out[0]};
@@ -151,15 +155,15 @@ TEST(mix_processor, multiply_eight_non_silence_and_one_constant_channel)
     slice<float> in_buf_slice(in_buf);
 
     std::vector<std::reference_wrapper<slice<float> const>> in{
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice,
-            constant_slice,
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice};
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice,
+        constant_slice,
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice};
     alignas(mipp::RequiredAlignment) std::array<float, buffer_size> out_buf{};
     std::vector<std::span<float>> out{out_buf};
     std::vector<slice<float>> result{out[0]};
@@ -169,8 +173,8 @@ TEST(mix_processor, multiply_eight_non_silence_and_one_constant_channel)
     sut->process({in, out, result, {}, {}, buffer_size});
 
     ASSERT_EQ(buffer_size, result[0].span().size());
-    float const expected = 0.23f * 0.23f * 0.23f * 0.23f * 0.58f * 0.23f *
-                           0.23f * 0.23f * 0.23f;
+    float const expected =
+        0.23f * 0.23f * 0.23f * 0.23f * 0.58f * 0.23f * 0.23f * 0.23f * 0.23f;
     for (auto const v : result[0].span())
     {
         EXPECT_FLOAT_EQ(expected, v);
@@ -203,8 +207,8 @@ TEST_P(multiply_processor_properties_test, event_outputs)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        verify,
-        multiply_processor_properties_test,
-        testing::Range<std::size_t>(2u, 10u));
+    verify,
+    multiply_processor_properties_test,
+    testing::Range<std::size_t>(2u, 10u));
 
 } // namespace piejam::audio::engine::test

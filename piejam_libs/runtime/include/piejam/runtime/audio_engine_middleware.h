@@ -25,11 +25,11 @@ class audio_engine_middleware final
 {
 public:
     audio_engine_middleware(
-            thread::configuration const& audio_thread_config,
-            std::span<thread::configuration const> wt_configs,
-            audio::sound_card_manager&,
-            ladspa::processor_factory&,
-            std::unique_ptr<midi_input_controller>);
+        thread::configuration const& audio_thread_config,
+        std::span<thread::configuration const> wt_configs,
+        audio::sound_card_manager&,
+        ladspa::processor_factory&,
+        std::unique_ptr<midi_input_controller>);
     audio_engine_middleware(audio_engine_middleware&&) noexcept = default;
     ~audio_engine_middleware();
 
@@ -44,8 +44,8 @@ private:
 
     template <class Parameter>
     void process_engine_action(
-            middleware_functors const&,
-            actions::set_parameter_value<Parameter> const&);
+        middleware_functors const&,
+        actions::set_parameter_value<Parameter> const&);
 
     void close_sound_card();
     void open_sound_card(state const&);

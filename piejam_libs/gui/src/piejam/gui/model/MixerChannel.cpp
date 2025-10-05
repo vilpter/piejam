@@ -33,16 +33,16 @@ toChannelType(runtime::mixer::channel_type t) -> ChannelType
 } // namespace
 
 MixerChannel::MixerChannel(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const id)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id const id)
     : SubscribableModel{state_access}
     , m_color{static_cast<MaterialColor>(observe_once(
-              runtime::selectors::make_mixer_channel_color_selector(id)))}
+          runtime::selectors::make_mixer_channel_color_selector(id)))}
     , m_channel_id{id}
     , m_channelType{toChannelType(observe_once(
-              runtime::selectors::make_mixer_channel_type_selector(id)))}
+          runtime::selectors::make_mixer_channel_type_selector(id)))}
     , m_busType{bool_enum_to<BusType>(to_bus_type(observe_once(
-              runtime::selectors::make_mixer_channel_type_selector(id))))}
+          runtime::selectors::make_mixer_channel_type_selector(id))))}
 {
 }
 
@@ -63,16 +63,18 @@ MixerChannel::busType() const noexcept -> BusType
 void
 MixerChannel::onSubscribe()
 {
-    observe(runtime::selectors::make_mixer_channel_name_string_selector(
-                    m_channel_id),
-            [this](boxed_string const& name) {
-                setName(QString::fromStdString(*name));
-            });
+    observe(
+        runtime::selectors::make_mixer_channel_name_string_selector(
+            m_channel_id),
+        [this](boxed_string const& name) {
+            setName(QString::fromStdString(*name));
+        });
 
-    observe(runtime::selectors::make_mixer_channel_color_selector(m_channel_id),
-            [this](runtime::material_color color) {
-                setColor(static_cast<MaterialColor>(color));
-            });
+    observe(
+        runtime::selectors::make_mixer_channel_color_selector(m_channel_id),
+        [this](runtime::material_color color) {
+            setColor(static_cast<MaterialColor>(color));
+        });
 }
 
 } // namespace piejam::gui::model

@@ -65,14 +65,14 @@ struct single_action_visitor : virtual IVisitor
 template <class F, class IVisitor, class... Action>
 struct action_visitor final
     : detail::single_action_visitor<
-              action_visitor<F, IVisitor, Action...>,
-              IVisitor,
-              Action>...
+          action_visitor<F, IVisitor, Action...>,
+          IVisitor,
+          Action>...
 {
     using detail::single_action_visitor<
-            action_visitor<F, IVisitor, Action...>,
-            IVisitor,
-            Action>::operator()...;
+        action_visitor<F, IVisitor, Action...>,
+        IVisitor,
+        Action>::operator()...;
 
     F f;
 
@@ -93,8 +93,7 @@ struct to_action_visitor<F, IVisitor, std::tuple<Actions...>>
 
 template <class F, class IVisitor>
 using to_action_visitor_t =
-        typename to_action_visitor<F, IVisitor, typename IVisitor::actions_t>::
-                type;
+    typename to_action_visitor<F, IVisitor, typename IVisitor::actions_t>::type;
 
 } // namespace detail
 
@@ -104,7 +103,7 @@ make_action_visitor(Fs&&... fs)
 {
     using F = decltype(boost::hof::match(std::forward<Fs>(fs)...));
     return detail::to_action_visitor_t<F, IVisitor>(
-            boost::hof::match(std::forward<Fs>(fs)...));
+        boost::hof::match(std::forward<Fs>(fs)...));
 }
 
 } // namespace piejam::runtime::ui

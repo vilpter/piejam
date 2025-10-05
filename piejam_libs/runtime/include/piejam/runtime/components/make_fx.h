@@ -17,14 +17,13 @@
 namespace piejam::runtime::components
 {
 
-auto
-make_fx(fx::module const&,
-        fx::get_parameter_name const&,
-        fx::simple_ladspa_processor_factory const&,
-        parameter_processor_factory&,
-        processors::stream_processor_factory&,
-        audio::sample_rate,
-        std::string_view name = {})
-        -> std::unique_ptr<audio::engine::component>;
+auto make_fx(
+    fx::module const&,
+    fx::get_parameter_name const&,
+    fx::simple_ladspa_processor_factory const&,
+    parameter_processor_factory&,
+    processors::stream_processor_factory&,
+    audio::sample_rate,
+    std::string_view name = {}) -> std::unique_ptr<audio::engine::component>;
 
 } // namespace piejam::runtime::components

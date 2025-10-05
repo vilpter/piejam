@@ -10,9 +10,9 @@ namespace piejam::audio::engine
 {
 
 stream_processor::stream_processor(
-        std::size_t const num_channels,
-        std::size_t const capacity_per_channel,
-        std::string_view const name)
+    std::size_t const num_channels,
+    std::size_t const capacity_per_channel,
+    std::string_view const name)
     : named_processor(name)
     , m_num_channels(num_channels)
     , m_buffer(num_channels, capacity_per_channel)
@@ -30,14 +30,14 @@ stream_processor::process(process_context const& ctx)
 
 auto
 make_stream_processor(
-        std::size_t const num_channels,
-        std::size_t const capacity_per_channel,
-        std::string_view const name) -> std::unique_ptr<stream_processor>
+    std::size_t const num_channels,
+    std::size_t const capacity_per_channel,
+    std::string_view const name) -> std::unique_ptr<stream_processor>
 {
     return std::make_unique<stream_processor>(
-            num_channels,
-            capacity_per_channel,
-            name);
+        num_channels,
+        capacity_per_channel,
+        name);
 }
 
 } // namespace piejam::audio::engine

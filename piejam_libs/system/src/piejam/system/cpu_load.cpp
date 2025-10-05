@@ -28,10 +28,9 @@ parse_cpu_line(std::string line) -> std::pair<cpu_name_t, cpu_load_data>
     std::istringstream iss(line);
 
     iss >> result.first >> result.second.user >> result.second.nice >>
-            result.second.system >> result.second.idle >>
-            result.second.iowait >> result.second.irq >>
-            result.second.softirq >> result.second.steal >>
-            result.second.guest >> result.second.guest_nice;
+        result.second.system >> result.second.idle >> result.second.iowait >>
+        result.second.irq >> result.second.softirq >> result.second.steal >>
+        result.second.guest >> result.second.guest_nice;
 
     return result;
 }

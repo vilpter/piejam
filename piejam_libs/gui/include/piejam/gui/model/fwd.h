@@ -46,7 +46,7 @@ class AuxChannel;
 
 class ExternalAudioDeviceConfig;
 using ExternalAudioDeviceConfigList =
-        ObjectListModel<ExternalAudioDeviceConfig>;
+    ObjectListModel<ExternalAudioDeviceConfig>;
 
 class Parameter;
 using FxParametersList = ObjectListModel<Parameter>;

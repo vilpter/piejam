@@ -41,11 +41,11 @@ struct event_to_audio_smoother_processor_test : testing::Test
     std::array<std::span<float>, 1> outputs{out0};
     std::array<slice<float>, 1> results;
     audio::engine::process_context ctx{
-            .outputs = outputs,
-            .results = results,
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = buffer_size};
+        .outputs = outputs,
+        .results = results,
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = buffer_size};
 };
 
 TEST_F(event_to_audio_smoother_processor_test, num_io)
@@ -99,17 +99,20 @@ TEST_F(event_to_audio_smoother_processor_test, rampup_inside_buffer)
     ASSERT_TRUE(ctx.results[0].is_span());
     EXPECT_EQ(out0.data(), ctx.results[0].span().data());
 
-    EXPECT_TRUE(std::ranges::all_of(
+    EXPECT_TRUE(
+        std::ranges::all_of(
             out0.begin(),
             std::next(out0.begin(), offset),
             equal_to(0.f)));
 
-    EXPECT_TRUE(algorithm::all_of_adjacent(
+    EXPECT_TRUE(
+        algorithm::all_of_adjacent(
             std::next(out0.begin(), offset),
             std::next(out0.begin(), offset + default_smooth_length),
             std::less{}));
 
-    EXPECT_TRUE(std::ranges::all_of(
+    EXPECT_TRUE(
+        std::ranges::all_of(
             std::next(out0.begin(), offset + default_smooth_length),
             out0.end(),
             equal_to(1.f)));
@@ -140,12 +143,14 @@ TEST_F(event_to_audio_smoother_processor_test, ramp_over_process_boundary)
     ASSERT_TRUE(ctx.results[0].is_span());
     EXPECT_EQ(out0.data(), ctx.results[0].span().data());
 
-    EXPECT_TRUE(std::ranges::all_of(
+    EXPECT_TRUE(
+        std::ranges::all_of(
             out0.begin(),
             std::next(out0.begin(), buffer_size - offset),
             equal_to(0.f)));
 
-    EXPECT_TRUE(algorithm::all_of_adjacent(
+    EXPECT_TRUE(
+        algorithm::all_of_adjacent(
             std::next(out0.begin(), buffer_size - offset),
             out0.end(),
             std::less{}));
@@ -153,17 +158,19 @@ TEST_F(event_to_audio_smoother_processor_test, ramp_over_process_boundary)
     ev_in_buf.clear();
     sut->process(ctx);
 
-    EXPECT_TRUE(algorithm::all_of_adjacent(
+    EXPECT_TRUE(
+        algorithm::all_of_adjacent(
             out0.begin(),
             std::next(
-                    out0.begin(),
-                    default_smooth_length - offset + 1), // +1?
+                out0.begin(),
+                default_smooth_length - offset + 1), // +1?
             std::less{}));
 
-    EXPECT_TRUE(std::ranges::all_of(
+    EXPECT_TRUE(
+        std::ranges::all_of(
             std::next(
-                    out0.begin(),
-                    default_smooth_length - offset + 1), // +1?
+                out0.begin(),
+                default_smooth_length - offset + 1), // +1?
             out0.end(),
             equal_to(1.f)));
 }

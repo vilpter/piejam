@@ -16,7 +16,7 @@ namespace piejam::audio::components
 // audio out: num_channels
 // event in: gain
 auto make_amplifier(std::size_t num_channels, std::string_view name)
-        -> std::unique_ptr<engine::component>;
+    -> std::unique_ptr<engine::component>;
 
 inline auto
 make_mono_amplifier(std::string_view name) -> std::unique_ptr<engine::component>
@@ -26,7 +26,7 @@ make_mono_amplifier(std::string_view name) -> std::unique_ptr<engine::component>
 
 inline auto
 make_stereo_amplifier(std::string_view name)
-        -> std::unique_ptr<engine::component>
+    -> std::unique_ptr<engine::component>
 {
     return make_amplifier(2, name);
 }
@@ -35,11 +35,11 @@ make_stereo_amplifier(std::string_view name)
 // audio out: num_channels
 // event in: gain x num_channels
 auto make_split_amplifier(std::size_t num_channels, std::string_view name)
-        -> std::unique_ptr<engine::component>;
+    -> std::unique_ptr<engine::component>;
 
 inline auto
 make_stereo_split_amplifier(std::string_view name)
-        -> std::unique_ptr<engine::component>
+    -> std::unique_ptr<engine::component>
 {
     return make_split_amplifier(2, name);
 }

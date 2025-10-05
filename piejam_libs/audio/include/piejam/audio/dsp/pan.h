@@ -21,8 +21,9 @@ sinusoidal_constant_power_pan_exact(T pan_pos) -> pair<T>
     constexpr T one_div_sqrt2 = T{1} / std::numbers::sqrt2_v<T>;
     T const cos_pan_pos = std::cos(pan_pos * pi_div_4);
     T const sin_pan_pos = std::sin(pan_pos * pi_div_4);
-    return {one_div_sqrt2 * (cos_pan_pos - sin_pan_pos),
-            one_div_sqrt2 * (cos_pan_pos + sin_pan_pos)};
+    return {
+        one_div_sqrt2 * (cos_pan_pos - sin_pan_pos),
+        one_div_sqrt2 * (cos_pan_pos + sin_pan_pos)};
 }
 
 // left = 1/sqrt(2) (cos(x×π/4) - sin(x×π/4))

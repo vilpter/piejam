@@ -34,8 +34,8 @@ struct unwrap_const_addressof
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator()(std::reference_wrapper<T> const& t) const noexcept -> R
+    constexpr auto operator()(std::reference_wrapper<T> const& t) const noexcept
+        -> R
     {
         return std::addressof(t.get());
     }
@@ -52,26 +52,26 @@ struct unwrap_const_addressof
 
 template <class T>
 inline constexpr auto address_equal_to =
-        boost::hof::proj(detail::unwrap_const_addressof<T>{}, equal_to);
+    boost::hof::proj(detail::unwrap_const_addressof<T>{}, equal_to);
 
 template <class T>
 inline constexpr auto address_not_equal_to =
-        boost::hof::proj(detail::unwrap_const_addressof<T>{}, not_equal_to);
+    boost::hof::proj(detail::unwrap_const_addressof<T>{}, not_equal_to);
 
 template <class T>
 inline constexpr auto address_greater =
-        boost::hof::proj(detail::unwrap_const_addressof<T>{}, greater);
+    boost::hof::proj(detail::unwrap_const_addressof<T>{}, greater);
 
 template <class T>
 inline constexpr auto address_greater_equal =
-        boost::hof::proj(detail::unwrap_const_addressof<T>{}, greater_equal);
+    boost::hof::proj(detail::unwrap_const_addressof<T>{}, greater_equal);
 
 template <class T>
 inline constexpr auto address_less =
-        boost::hof::proj(detail::unwrap_const_addressof<T>{}, less);
+    boost::hof::proj(detail::unwrap_const_addressof<T>{}, less);
 
 template <class T>
 inline constexpr auto address_less_equal =
-        boost::hof::proj(detail::unwrap_const_addressof<T>{}, less_equal);
+    boost::hof::proj(detail::unwrap_const_addressof<T>{}, less_equal);
 
 } // namespace piejam

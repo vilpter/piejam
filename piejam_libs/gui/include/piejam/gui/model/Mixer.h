@@ -23,8 +23,8 @@ class Mixer final : public SubscribableModel
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, userChannels)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::MixerChannelModels*,
-            mainChannel)
+        piejam::gui::model::MixerChannelModels*,
+        mainChannel)
 
 public:
     Mixer(runtime::state_access const&);
@@ -37,9 +37,9 @@ private:
     void onSubscribe() override;
 
     void addChannel(
-            QString const& name,
-            runtime::mixer::channel_type,
-            bool auto_assign_input);
+        QString const& name,
+        runtime::mixer::channel_type,
+        bool auto_assign_input);
 
     struct Impl;
     pimpl<Impl> const m_impl;

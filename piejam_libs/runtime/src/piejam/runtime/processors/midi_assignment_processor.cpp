@@ -20,7 +20,7 @@ namespace
 {
 
 using external_midi_event_buffer =
-        audio::engine::event_buffer<midi::external_event>;
+    audio::engine::event_buffer<midi::external_event>;
 
 class midi_assignment_processor final : public audio::engine::named_processor
 {
@@ -34,11 +34,8 @@ public:
             {
                 case midi_assignment::type::cc:
                     m_output_ports.emplace_back(
-                            std::in_place_type<midi::cc_event>,
-                            std::format(
-                                    "{} CC {}",
-                                    ass.channel,
-                                    ass.control_id));
+                        std::in_place_type<midi::cc_event>,
+                        std::format("{} CC {}", ass.channel, ass.control_id));
                     break;
             }
         }
@@ -62,8 +59,8 @@ public:
     auto event_inputs() const noexcept -> event_ports override
     {
         static std::array const s_ports{audio::engine::event_port(
-                std::in_place_type<midi::external_event>,
-                "ext_midi")};
+            std::in_place_type<midi::external_event>,
+            "ext_midi")};
 
         return s_ports;
     }
@@ -80,24 +77,24 @@ public:
         for (auto const& ev : ctx.event_inputs.get<midi::external_event>(0))
         {
             std::visit(
-                    [this, &ctx, offset = ev.offset()](auto const& midi_ev) {
-                        process_event(ctx, offset, midi_ev);
-                    },
-                    ev.value().event);
+                [this, &ctx, offset = ev.offset()](auto const& midi_ev) {
+                    process_event(ctx, offset, midi_ev);
+                },
+                ev.value().event);
         }
     }
 
     void process_event(
-            audio::engine::process_context const& ctx,
-            std::size_t const offset,
-            midi::channel_cc_event const& ev)
+        audio::engine::process_context const& ctx,
+        std::size_t const offset,
+        midi::channel_cc_event const& ev)
     {
         auto const out_index = algorithm::index_of(
-                m_midi_assignments,
-                midi_assignment{
-                        .channel = ev.channel,
-                        .control_type = midi_assignment::type::cc,
-                        .control_id = ev.data.cc});
+            m_midi_assignments,
+            midi_assignment{
+                .channel = ev.channel,
+                .control_type = midi_assignment::type::cc,
+                .control_id = ev.data.cc});
 
         if (out_index != algorithm::npos)
         {
@@ -109,14 +106,14 @@ public:
 private:
     static auto
     make_midi_assignments_vector(midi_assignments_map const& assignments)
-            -> std::vector<midi_assignment>
+        -> std::vector<midi_assignment>
     {
         std::vector<midi_assignment> result;
         result.reserve(assignments.size());
 
         std::ranges::copy(
-                std::views::values(assignments),
-                std::back_inserter(result));
+            std::views::values(assignments),
+            std::back_inserter(result));
 
         return result;
     }
@@ -129,7 +126,7 @@ private:
 
 auto
 make_midi_assignment_processor(midi_assignments_map const& midi_assigns)
-        -> std::unique_ptr<audio::engine::processor>
+    -> std::unique_ptr<audio::engine::processor>
 {
     return std::make_unique<midi_assignment_processor>(midi_assigns);
 }

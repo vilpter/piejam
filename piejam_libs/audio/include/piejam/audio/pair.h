@@ -28,21 +28,21 @@ struct pair
 
     template <class U>
     explicit constexpr pair(U const& u) noexcept(
-            std::is_nothrow_constructible_v<T, U>)
+        std::is_nothrow_constructible_v<T, U>)
         : left(u)
         , right(u)
     {
     }
 
     constexpr pair(T const& l, T const& r) noexcept(
-            std::is_nothrow_copy_constructible_v<T>)
+        std::is_nothrow_copy_constructible_v<T>)
         : left(l)
         , right(r)
     {
     }
 
     constexpr pair(T&& l, T&& r) noexcept(
-            std::is_nothrow_move_constructible_v<T>)
+        std::is_nothrow_move_constructible_v<T>)
         : left(std::move(l))
         , right(std::move(r))
     {

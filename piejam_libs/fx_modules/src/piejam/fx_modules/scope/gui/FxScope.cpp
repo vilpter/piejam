@@ -37,7 +37,7 @@ struct ScopeStreamProcessor : StreamProcessor<ScopeStreamProcessor>
         if (processAsWaveform)
         {
             waveform.update(
-                    waveformGenerator.process(std::forward<Samples>(samples)));
+                waveformGenerator.process(std::forward<Samples>(samples)));
         }
         else
         {
@@ -93,7 +93,7 @@ struct FxScope::Impl
     auto holdTimeInFrames() const noexcept -> std::size_t
     {
         return sample_rate.samples_for_duration(
-                std::chrono::milliseconds{static_cast<int>(holdTime->value())});
+            std::chrono::milliseconds{static_cast<int>(holdTime->value())});
     }
 
     void updateSampleRate(audio::sample_rate sr)
@@ -135,207 +135,198 @@ struct FxScope::Impl
 };
 
 FxScope::FxScope(
-        runtime::state_access const& state_access,
-        runtime::fx::module_id const fx_mod_id)
+    runtime::state_access const& state_access,
+    runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
     auto const& parameters = this->parameters();
 
     makeParameter(
-            m_impl->mode,
-            parameters.get<runtime::enum_parameter_id>(parameter_key::mode));
+        m_impl->mode,
+        parameters.get<runtime::enum_parameter_id>(parameter_key::mode));
 
     makeParameter(
-            m_impl->triggerSlope,
-            parameters.get<runtime::enum_parameter_id>(
-                    parameter_key::trigger_slope));
+        m_impl->triggerSlope,
+        parameters.get<runtime::enum_parameter_id>(
+            parameter_key::trigger_slope));
 
     makeParameter(
-            m_impl->triggerLevel,
-            parameters.get<runtime::float_parameter_id>(
-                    parameter_key::trigger_level));
+        m_impl->triggerLevel,
+        parameters.get<runtime::float_parameter_id>(
+            parameter_key::trigger_level));
 
     makeParameter(
-            m_impl->holdTime,
-            parameters.get<runtime::float_parameter_id>(
-                    parameter_key::hold_time));
+        m_impl->holdTime,
+        parameters.get<runtime::float_parameter_id>(parameter_key::hold_time));
 
     makeParameter(
-            m_impl->waveformResolution,
-            parameters.get<runtime::enum_parameter_id>(
-                    parameter_key::waveform_window_size));
+        m_impl->waveformResolution,
+        parameters.get<runtime::enum_parameter_id>(
+            parameter_key::waveform_window_size));
 
     makeParameter(
-            m_impl->scopeResolution,
-            parameters.get<runtime::enum_parameter_id>(
-                    parameter_key::scope_window_size));
+        m_impl->scopeResolution,
+        parameters.get<runtime::enum_parameter_id>(
+            parameter_key::scope_window_size));
 
     makeParameter(
-            m_impl->streamProcessor.first.active,
-            parameters.get<runtime::bool_parameter_id>(
-                    parameter_key::stream_a_active));
+        m_impl->streamProcessor.first.active,
+        parameters.get<runtime::bool_parameter_id>(
+            parameter_key::stream_a_active));
 
     makeParameter(
-            m_impl->streamProcessor.second.active,
-            parameters.get<runtime::bool_parameter_id>(
-                    parameter_key::stream_b_active));
+        m_impl->streamProcessor.second.active,
+        parameters.get<runtime::bool_parameter_id>(
+            parameter_key::stream_b_active));
 
     makeParameter(
-            m_impl->streamProcessor.first.channel,
-            parameters.get<runtime::enum_parameter_id>(
-                    parameter_key::channel_a));
+        m_impl->streamProcessor.first.channel,
+        parameters.get<runtime::enum_parameter_id>(parameter_key::channel_a));
 
     makeParameter(
-            m_impl->streamProcessor.second.channel,
-            parameters.get<runtime::enum_parameter_id>(
-                    parameter_key::channel_b));
+        m_impl->streamProcessor.second.channel,
+        parameters.get<runtime::enum_parameter_id>(parameter_key::channel_b));
 
     makeParameter(
-            m_impl->streamProcessor.first.gain,
-            parameters.get<runtime::float_parameter_id>(parameter_key::gain_a));
+        m_impl->streamProcessor.first.gain,
+        parameters.get<runtime::float_parameter_id>(parameter_key::gain_a));
 
     makeParameter(
-            m_impl->streamProcessor.second.gain,
-            parameters.get<runtime::float_parameter_id>(parameter_key::gain_b));
+        m_impl->streamProcessor.second.gain,
+        parameters.get<runtime::float_parameter_id>(parameter_key::gain_b));
 
     makeParameter(
-            m_impl->freeze,
-            parameters.get<runtime::bool_parameter_id>(parameter_key::freeze));
+        m_impl->freeze,
+        parameters.get<runtime::bool_parameter_id>(parameter_key::freeze));
 
     makeStream(
-            m_impl->stream,
-            streams().at(std::to_underlying(stream_key::input)));
+        m_impl->stream,
+        streams().at(std::to_underlying(stream_key::input)));
 
     auto clear_fn = [this]() { clear(); };
 
     if (m_impl->busType == BusType::Mono)
     {
         QObject::connect(
-                m_impl->stream.get(),
-                &AudioStreamProvider::captured,
-                this,
-                [this](AudioStream captured) {
-                    if (m_impl->freeze->value())
+            m_impl->stream.get(),
+            &AudioStreamProvider::captured,
+            this,
+            [this](AudioStream captured) {
+                if (m_impl->freeze->value())
+                {
+                    return;
+                }
+
+                BOOST_ASSERT(captured.num_channels() == 1);
+                m_impl->streamProcessor.first.processSamples(
+                    captured.samples());
+
+                if (m_impl->modeEnum() != Mode::Free)
+                {
+                    auto scope = m_impl->scopeGenerator.process(
+                        0,
+                        {m_impl->streamProcessor.first.scopeCache.cached()},
+                        m_viewSize,
+                        m_impl->triggerSlopeEnum(),
+                        m_impl->triggerLevel->valueF(),
+                        captured.num_frames(),
+                        m_impl->holdTimeInFrames());
+
+                    if (scope.size() == 1)
                     {
-                        return;
+                        m_impl->streamProcessor.first.scope.update(scope[0]);
                     }
-
-                    BOOST_ASSERT(captured.num_channels() == 1);
-                    m_impl->streamProcessor.first.processSamples(
-                            captured.samples());
-
-                    if (m_impl->modeEnum() != Mode::Free)
-                    {
-                        auto scope = m_impl->scopeGenerator.process(
-                                0,
-                                {m_impl->streamProcessor.first.scopeCache
-                                         .cached()},
-                                m_viewSize,
-                                m_impl->triggerSlopeEnum(),
-                                m_impl->triggerLevel->valueF(),
-                                captured.num_frames(),
-                                m_impl->holdTimeInFrames());
-
-                        if (scope.size() == 1)
-                        {
-                            m_impl->streamProcessor.first.scope.update(
-                                    scope[0]);
-                        }
-                    }
-                });
+                }
+            });
     }
     else
     {
         QObject::connect(
-                m_impl->stream.get(),
-                &AudioStreamProvider::captured,
-                this,
-                [this](AudioStream captured) {
-                    if (m_impl->freeze->value())
+            m_impl->stream.get(),
+            &AudioStreamProvider::captured,
+            this,
+            [this](AudioStream captured) {
+                if (m_impl->freeze->value())
+                {
+                    return;
+                }
+
+                auto stereo_captured = captured.channels_cast<2>();
+
+                m_impl->streamProcessor.first.processStereo(stereo_captured);
+                m_impl->streamProcessor.second.processStereo(stereo_captured);
+
+                if (m_impl->modeEnum() != Mode::Free)
+                {
+                    auto scopeSamples = m_impl->scopeGenerator.process(
+                        m_impl->modeEnum() == Mode::TriggerB,
+                        {m_impl->streamProcessor.first.scopeCache.cached(),
+                         m_impl->streamProcessor.second.scopeCache.cached()},
+                        m_viewSize,
+                        m_impl->triggerSlopeEnum(),
+                        m_impl->triggerLevel->value(),
+                        captured.num_frames(),
+                        m_impl->holdTimeInFrames());
+
+                    if (scopeSamples.size() == 2)
                     {
-                        return;
+                        m_impl->streamProcessor.first.scope.update(
+                            scopeSamples[0]);
+                        m_impl->streamProcessor.second.scope.update(
+                            scopeSamples[1]);
                     }
-
-                    auto stereo_captured = captured.channels_cast<2>();
-
-                    m_impl->streamProcessor.first.processStereo(
-                            stereo_captured);
-                    m_impl->streamProcessor.second.processStereo(
-                            stereo_captured);
-
-                    if (m_impl->modeEnum() != Mode::Free)
-                    {
-                        auto scopeSamples = m_impl->scopeGenerator.process(
-                                m_impl->modeEnum() == Mode::TriggerB,
-                                {m_impl->streamProcessor.first.scopeCache
-                                         .cached(),
-                                 m_impl->streamProcessor.second.scopeCache
-                                         .cached()},
-                                m_viewSize,
-                                m_impl->triggerSlopeEnum(),
-                                m_impl->triggerLevel->value(),
-                                captured.num_frames(),
-                                m_impl->holdTimeInFrames());
-
-                        if (scopeSamples.size() == 2)
-                        {
-                            m_impl->streamProcessor.first.scope.update(
-                                    scopeSamples[0]);
-                            m_impl->streamProcessor.second.scope.update(
-                                    scopeSamples[1]);
-                        }
-                    }
-                });
+                }
+            });
 
         QObject::connect(
-                m_impl->streamProcessor.first.active.get(),
-                &BoolParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->streamProcessor.first.active.get(),
+            &BoolParameter::valueChanged,
+            this,
+            clear_fn);
 
         QObject::connect(
-                m_impl->streamProcessor.first.channel.get(),
-                &EnumParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->streamProcessor.first.channel.get(),
+            &EnumParameter::valueChanged,
+            this,
+            clear_fn);
 
         QObject::connect(
-                m_impl->streamProcessor.second.active.get(),
-                &BoolParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->streamProcessor.second.active.get(),
+            &BoolParameter::valueChanged,
+            this,
+            clear_fn);
 
         QObject::connect(
-                m_impl->streamProcessor.second.channel.get(),
-                &EnumParameter::valueChanged,
-                this,
-                clear_fn);
+            m_impl->streamProcessor.second.channel.get(),
+            &EnumParameter::valueChanged,
+            this,
+            clear_fn);
     }
 
     QObject::connect(
-            m_impl->mode.get(),
-            &EnumParameter::valueChanged,
-            this,
-            [this]() {
-                m_impl->updateMode();
-                clear();
-            });
+        m_impl->mode.get(),
+        &EnumParameter::valueChanged,
+        this,
+        [this]() {
+            m_impl->updateMode();
+            clear();
+        });
 
     QObject::connect(
-            m_impl->waveformResolution.get(),
-            &EnumParameter::valueChanged,
-            this,
-            [this]() { m_impl->updateWaveformGenerator(); });
+        m_impl->waveformResolution.get(),
+        &EnumParameter::valueChanged,
+        this,
+        [this]() { m_impl->updateWaveformGenerator(); });
 
     QObject::connect(
-            m_impl->scopeResolution.get(),
-            &EnumParameter::valueChanged,
-            this,
-            [this]() {
-                m_impl->updateScopeSamplesCache(m_viewSize);
-                clear();
-            });
+        m_impl->scopeResolution.get(),
+        &EnumParameter::valueChanged,
+        this,
+        [this]() {
+            m_impl->updateScopeSamplesCache(m_viewSize);
+            clear();
+        });
 
     QObject::connect(this, &FxScope::viewSizeChanged, this, [this]() {
         m_impl->updateWaveform(m_viewSize);
@@ -469,7 +460,7 @@ void
 FxScope::onSubscribe()
 {
     auto sample_rate =
-            observe_once(runtime::selectors::select_sample_rate)->current;
+        observe_once(runtime::selectors::select_sample_rate)->current;
     m_impl->updateSampleRate(sample_rate);
     setSampleRate(sample_rate.as<double>());
 }

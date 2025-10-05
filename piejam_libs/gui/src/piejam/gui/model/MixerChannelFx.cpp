@@ -25,8 +25,8 @@ struct MixerChannelFx::Impl
 };
 
 MixerChannelFx::MixerChannelFx(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const mixer_channel_id)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id const mixer_channel_id)
     : MixerChannel{state_access, mixer_channel_id}
     , m_impl{make_pimpl<Impl>()}
 {
@@ -67,35 +67,36 @@ MixerChannelFx::onSubscribe()
 {
     MixerChannel::onSubscribe();
 
-    observe(runtime::selectors::select_focused_fx_chain,
-            [this](auto const mixer_channel_id) {
-                setFocused(channel_id() == mixer_channel_id);
-            });
+    observe(
+        runtime::selectors::select_focused_fx_chain,
+        [this](auto const mixer_channel_id) {
+            setFocused(channel_id() == mixer_channel_id);
+        });
 
-    observe(runtime::selectors::make_fx_module_can_move_up_selector(
-                    channel_id()),
-            [this](bool const x) { setCanMoveUpFxModule(x); });
+    observe(
+        runtime::selectors::make_fx_module_can_move_up_selector(channel_id()),
+        [this](bool const x) { setCanMoveUpFxModule(x); });
 
-    observe(runtime::selectors::make_fx_module_can_move_down_selector(
-                    channel_id()),
-            [this](bool const x) { setCanMoveDownFxModule(x); });
+    observe(
+        runtime::selectors::make_fx_module_can_move_down_selector(channel_id()),
+        [this](bool const x) { setCanMoveDownFxModule(x); });
 
-    observe(runtime::selectors::make_fx_chain_selector(channel_id()),
-            [this](auto const& fx_chain) {
-                algorithm::apply_edit_script(
-                        algorithm::edit_script(*m_impl->fx_chain, *fx_chain),
-                        ListModelEditScriptProcessor{
-                                m_impl->modules,
-                                [this](runtime::fx::module_id const&
-                                               fx_mod_id) {
-                                    return std::make_unique<FxChainModule>(
-                                            state_access(),
-                                            channel_id(),
-                                            fx_mod_id);
-                                }});
+    observe(
+        runtime::selectors::make_fx_chain_selector(channel_id()),
+        [this](auto const& fx_chain) {
+            algorithm::apply_edit_script(
+                algorithm::edit_script(*m_impl->fx_chain, *fx_chain),
+                ListModelEditScriptProcessor{
+                    m_impl->modules,
+                    [this](runtime::fx::module_id const& fx_mod_id) {
+                        return std::make_unique<FxChainModule>(
+                            state_access(),
+                            channel_id(),
+                            fx_mod_id);
+                    }});
 
-                m_impl->fx_chain = fx_chain;
-            });
+            m_impl->fx_chain = fx_chain;
+        });
 }
 
 } // namespace piejam::gui::model

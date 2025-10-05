@@ -29,8 +29,8 @@ class solo_switch_processor final : public audio::engine::named_processor
 {
 public:
     solo_switch_processor(
-            solo_groups_t const& solo_groups,
-            std::string_view const name = {})
+        solo_groups_t const& solo_groups,
+        std::string_view const name = {})
         : named_processor(name)
         , m_solo_group_state{solo_groups}
     {
@@ -105,34 +105,34 @@ private:
     solo_group_state m_solo_group_state;
 
     std::vector<audio::engine::event_port> m_event_inputs{
-            algorithm::transform_to_vector(
-                    range::iota(m_solo_group_state.mutes().size()),
-                    [](std::size_t const member_index) {
-                        return audio::engine::event_port(
-                                std::in_place_type<bool>,
-                                std::format("in{}", member_index));
-                    })};
+        algorithm::transform_to_vector(
+            range::iota(m_solo_group_state.mutes().size()),
+            [](std::size_t const member_index) {
+                return audio::engine::event_port(
+                    std::in_place_type<bool>,
+                    std::format("in{}", member_index));
+            })};
 
     std::vector<audio::engine::event_port> m_event_outputs{
-            algorithm::transform_to_vector(
-                    range::iota(m_solo_group_state.mutes().size()),
-                    [](std::size_t const member_index) {
-                        return audio::engine::event_port(
-                                std::in_place_type<bool>,
-                                std::format("out{}", member_index));
-                    })};
+        algorithm::transform_to_vector(
+            range::iota(m_solo_group_state.mutes().size()),
+            [](std::size_t const member_index) {
+                return audio::engine::event_port(
+                    std::in_place_type<bool>,
+                    std::format("out{}", member_index));
+            })};
 };
 
 class solo_switch final : public audio::engine::component
 {
 public:
     solo_switch(
-            solo_groups_t const& solo_groups,
-            parameter_processor_factory& param_procs,
-            std::string_view const name)
+        solo_groups_t const& solo_groups,
+        parameter_processor_factory& param_procs,
+        std::string_view const name)
         : m_solo_inputs(make_solo_inputs(solo_groups, param_procs))
         , m_solo_switch_proc(
-                  std::make_unique<solo_switch_processor>(solo_groups, name))
+              std::make_unique<solo_switch_processor>(solo_groups, name))
     {
     }
 
@@ -161,28 +161,27 @@ public:
         for (std::size_t const index : range::indices(m_solo_inputs))
         {
             g.event.insert(
-                    audio::engine::graph_endpoint{
-                            .proc = *m_solo_inputs[index],
-                            .port = 0},
-                    audio::engine::graph_endpoint{
-                            .proc = *m_solo_switch_proc,
-                            .port = index});
+                audio::engine::graph_endpoint{
+                    .proc = *m_solo_inputs[index],
+                    .port = 0},
+                audio::engine::graph_endpoint{
+                    .proc = *m_solo_switch_proc,
+                    .port = index});
         }
     }
 
 private:
     static auto make_solo_inputs(
-            solo_groups_t const& solo_groups,
-            parameter_processor_factory& param_procs)
-            -> std::vector<std::shared_ptr<audio::engine::processor>>
+        solo_groups_t const& solo_groups,
+        parameter_processor_factory& param_procs)
+        -> std::vector<std::shared_ptr<audio::engine::processor>>
     {
         std::vector<std::shared_ptr<audio::engine::processor>> result;
 
         for (auto const& [channel_id, group] : solo_groups)
         {
-            result.emplace_back(param_procs.find_or_make_processor(
-                    group.solo_param,
-                    "solo"));
+            result.emplace_back(
+                param_procs.find_or_make_processor(group.solo_param, "solo"));
         }
 
         return result;
@@ -192,23 +191,22 @@ private:
     std::unique_ptr<audio::engine::processor> m_solo_switch_proc;
 
     std::vector<audio::engine::graph_endpoint> m_event_outputs{
-            algorithm::transform_to_vector(
-                    range::indices(m_solo_switch_proc->event_outputs()),
-                    [this](auto const index) {
-                        return audio::engine::graph_endpoint{
-                                .proc = *m_solo_switch_proc,
-                                .port = index};
-                    })};
+        algorithm::transform_to_vector(
+            range::indices(m_solo_switch_proc->event_outputs()),
+            [this](auto const index) {
+                return audio::engine::graph_endpoint{
+                    .proc = *m_solo_switch_proc,
+                    .port = index};
+            })};
 };
 
 } // namespace
 
 auto
 make_solo_switch(
-        solo_groups_t const& solo_group,
-        parameter_processor_factory& param_procs,
-        std::string_view const name)
-        -> std::unique_ptr<audio::engine::component>
+    solo_groups_t const& solo_group,
+    parameter_processor_factory& param_procs,
+    std::string_view const name) -> std::unique_ptr<audio::engine::component>
 {
     return std::make_unique<solo_switch>(solo_group, param_procs, name);
 }

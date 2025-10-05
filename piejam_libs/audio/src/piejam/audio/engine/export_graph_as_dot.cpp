@@ -72,20 +72,19 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
             for (std::size_t i = 0; i < p.num_inputs(); ++i)
             {
                 os << std::format(
-                              R"(<td port="ai{}" bgcolor="{}">a{}</td>)",
-                              i,
-                              audio_color,
-                              i)
+                          R"(<td port="ai{}" bgcolor="{}">a{}</td>)",
+                          i,
+                          audio_color,
+                          i)
                    << '\n';
             }
             for (std::size_t i = 0; i < num_event_inputs; ++i)
             {
                 os << std::format(
-                              R"(<td port="ei{}" bgcolor="{}">{}</td>)",
-                              i,
-                              event_color,
-                              algorithm::escape_html(
-                                      p.event_inputs()[i].name()))
+                          R"(<td port="ei{}" bgcolor="{}">{}</td>)",
+                          i,
+                          event_color,
+                          algorithm::escape_html(p.event_inputs()[i].name()))
                    << '\n';
             }
             os << "</tr>" << '\n';
@@ -93,12 +92,12 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
 
         os << "<tr>" << '\n';
         os << std::format(
-                "<td colspan=\"{}\">{}:{}</td>",
-                std::max(
-                        p.num_inputs() + num_event_inputs,
-                        p.num_outputs() + p.event_outputs().size()),
-                p.type_name(),
-                algorithm::escape_html(p.name()));
+            "<td colspan=\"{}\">{}:{}</td>",
+            std::max(
+                p.num_inputs() + num_event_inputs,
+                p.num_outputs() + p.event_outputs().size()),
+            p.type_name(),
+            algorithm::escape_html(p.name()));
         os << "</tr>" << '\n';
 
         if (p.num_outputs() || num_event_outputs)
@@ -107,20 +106,19 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
             for (std::size_t i = 0; i < p.num_outputs(); ++i)
             {
                 os << std::format(
-                              R"(<td port="ao{}" bgcolor="{}">a{}</td>)",
-                              i,
-                              audio_color,
-                              i)
+                          R"(<td port="ao{}" bgcolor="{}">a{}</td>)",
+                          i,
+                          audio_color,
+                          i)
                    << '\n';
             }
             for (std::size_t i = 0; i < num_event_outputs; ++i)
             {
                 os << std::format(
-                              R"(<td port="eo{}" bgcolor="{}">{}</td>)",
-                              i,
-                              event_color,
-                              algorithm::escape_html(
-                                      p.event_outputs()[i].name()))
+                          R"(<td port="eo{}" bgcolor="{}">{}</td>)",
+                          i,
+                          event_color,
+                          algorithm::escape_html(p.event_outputs()[i].name()))
                    << '\n';
             }
             os << "</tr>" << '\n';
@@ -129,11 +127,9 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
         os << "</table>>]" << '\n';
     }
 
-    constexpr auto print_wire = [](auto& ss,
-                                   auto const& w,
-                                   auto&& wire_type,
-                                   auto&& color) {
-        ss << std::format(
+    constexpr auto print_wire =
+        [](auto& ss, auto const& w, auto&& wire_type, auto&& color) {
+            ss << std::format(
                       "{}_{}:{}o{} -> {}_{}:{}i{} [color=\"{}\"]",
                       w.first.proc.get().type_name(),
                       static_cast<void*>(std::addressof(w.first.proc.get())),
@@ -144,8 +140,8 @@ export_graph_as_dot(graph const& g, std::ostream& os) -> std::ostream&
                       wire_type,
                       w.second.port,
                       color)
-           << '\n';
-    };
+               << '\n';
+        };
 
     for (auto const& w : g.audio)
     {

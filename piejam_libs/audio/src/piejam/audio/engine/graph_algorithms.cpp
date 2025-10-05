@@ -29,7 +29,7 @@ namespace
 
 auto
 connected_source(graph::wires_map const& ws, graph_endpoint const& dst)
-        -> std::optional<graph_endpoint>
+    -> std::optional<graph_endpoint>
 {
     auto it = std::ranges::find(ws, dst, &graph::wires_map::value_type::second);
     if (it != ws.end())
@@ -42,46 +42,46 @@ connected_source(graph::wires_map const& ws, graph_endpoint const& dst)
 
 auto
 has_wire(
-        graph::wires_map const& ws,
-        graph_endpoint const& src,
-        graph_endpoint const& dst) -> bool
+    graph::wires_map const& ws,
+    graph_endpoint const& src,
+    graph_endpoint const& dst) -> bool
 {
     return std::ranges::contains(
-            boost::make_iterator_range(ws.equal_range(src)),
-            dst,
-            &graph::wires_map::value_type::second);
+        boost::make_iterator_range(ws.equal_range(src)),
+        dst,
+        &graph::wires_map::value_type::second);
 }
 
 } // namespace
 
 auto
 connected_source(graph const& g, graph_endpoint const& dst)
-        -> std::optional<graph_endpoint>
+    -> std::optional<graph_endpoint>
 {
     return connected_source(g.audio, dst);
 }
 
 auto
 connected_event_source(graph const& g, graph_endpoint const& dst)
-        -> std::optional<graph_endpoint>
+    -> std::optional<graph_endpoint>
 {
     return connected_source(g.event, dst);
 }
 
 auto
 has_audio_wire(
-        graph const& g,
-        graph_endpoint const& src,
-        graph_endpoint const& dst) -> bool
+    graph const& g,
+    graph_endpoint const& src,
+    graph_endpoint const& dst) -> bool
 {
     return has_wire(g.audio, src, dst);
 }
 
 auto
 has_event_wire(
-        graph const& g,
-        graph_endpoint const& src,
-        graph_endpoint const& dst) -> bool
+    graph const& g,
+    graph_endpoint const& src,
+    graph_endpoint const& dst) -> bool
 {
     return has_wire(g.event, src, dst);
 }
@@ -194,8 +194,8 @@ insert_mixer(graph& g) -> mix_processors
             while (it != it_up)
             {
                 g.audio.insert(
-                        it->second->first,
-                        graph_endpoint{.proc = *mixer, .port = port++});
+                    it->second->first,
+                    graph_endpoint{.proc = *mixer, .port = port++});
                 g.audio.erase(it->second);
                 ++it;
             }

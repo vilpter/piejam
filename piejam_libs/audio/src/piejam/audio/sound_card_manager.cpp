@@ -31,13 +31,12 @@ public:
     }
 
     auto get_hw_params(
-            sound_card_descriptor const& d,
-            sample_rate const sample_rate,
-            period_size const period_size)
-            -> sound_card_hw_params override
+        sound_card_descriptor const& d,
+        sample_rate const sample_rate,
+        period_size const period_size) -> sound_card_hw_params override
     {
         auto const& [in, out] =
-                std::any_cast<alsa::stream_descriptors>(d.impl_data);
+            std::any_cast<alsa::stream_descriptors>(d.impl_data);
 
         sound_card_hw_params result;
 
@@ -45,31 +44,30 @@ public:
         auto out_params = alsa::get_hw_params(out, sample_rate, period_size);
 
         std::ranges::set_intersection(
-                in_params.sample_rates,
-                out_params.sample_rates,
-                std::back_inserter(result.sample_rates),
-                {},
-                &sample_rate::value,
-                &sample_rate::value);
+            in_params.sample_rates,
+            out_params.sample_rates,
+            std::back_inserter(result.sample_rates),
+            {},
+            &sample_rate::value,
+            &sample_rate::value);
 
         std::ranges::set_intersection(
-                in_params.period_sizes,
-                out_params.period_sizes,
-                std::back_inserter(result.period_sizes),
-                {},
-                &period_size::value,
-                &period_size::value);
+            in_params.period_sizes,
+            out_params.period_sizes,
+            std::back_inserter(result.period_sizes),
+            {},
+            &period_size::value,
+            &period_size::value);
 
         return result;
     }
 
     auto make_io_process(
-            sound_card_descriptor const& d,
-            sound_card_config const& config)
-            -> std::unique_ptr<io_process> override
+        sound_card_descriptor const& d,
+        sound_card_config const& config) -> std::unique_ptr<io_process> override
     {
         auto const& [in, out] =
-                std::any_cast<alsa::stream_descriptors>(d.impl_data);
+            std::any_cast<alsa::stream_descriptors>(d.impl_data);
         return std::make_unique<alsa::pcm_io>(in, out, config);
     }
 };

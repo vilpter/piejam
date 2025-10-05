@@ -16,10 +16,10 @@ struct
     template <class T, class P, class C>
     [[nodiscard]]
     constexpr auto operator()(T&& threshold, P&& prev, C&& curr) const
-            BOOST_HOF_RETURNS(in_right_open(
-                    std::forward<T>(threshold),
-                    std::forward<P>(prev),
-                    std::forward<C>(curr)))
+        BOOST_HOF_RETURNS(in_right_open(
+            std::forward<T>(threshold),
+            std::forward<P>(prev),
+            std::forward<C>(curr)))
 } const rising_edge;
 
 struct
@@ -27,10 +27,10 @@ struct
     template <class T, class P, class C>
     [[nodiscard]]
     constexpr auto operator()(T&& threshold, P&& prev, C&& curr) const
-            BOOST_HOF_RETURNS(in_left_open(
-                    std::forward<T>(threshold),
-                    std::forward<C>(curr),
-                    std::forward<P>(prev)))
+        BOOST_HOF_RETURNS(in_left_open(
+            std::forward<T>(threshold),
+            std::forward<C>(curr),
+            std::forward<P>(prev)))
 } const falling_edge;
 
 } // namespace piejam

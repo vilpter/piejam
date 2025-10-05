@@ -61,31 +61,28 @@ struct pitch
         constexpr float A4_freq = 440.f;
 
         float const semitones_interval_f =
-                interval_from_frequency<semitones_per_octave>(
-                        frequency,
-                        A4_freq);
+            interval_from_frequency<semitones_per_octave>(frequency, A4_freq);
         int const semitones_interval =
-                static_cast<int>(std::round(semitones_interval_f));
+            static_cast<int>(std::round(semitones_interval_f));
 
         result.pitchclass_ = static_cast<pitchclass>(
-                numeric::pos_mod(semitones_interval, semitones_per_octave));
+            numeric::pos_mod(semitones_interval, semitones_per_octave));
 
         constexpr int base_octave = 4;
         constexpr int octave_start_offset = 9;
         constexpr int octaves_calc_offset = 8;
 
         result.octave =
-                (semitones_interval + base_octave * semitones_per_octave +
-                 octaves_calc_offset * semitones_per_octave +
-                 octave_start_offset) /
-                        semitones_per_octave -
-                octaves_calc_offset;
+            (semitones_interval + base_octave * semitones_per_octave +
+             octaves_calc_offset * semitones_per_octave + octave_start_offset) /
+                semitones_per_octave -
+            octaves_calc_offset;
 
         result.cents = interval_from_frequency<cents_per_octave>(
-                frequency,
-                frequency_from_interval<semitones_per_octave>(
-                        static_cast<float>(semitones_interval),
-                        A4_freq));
+            frequency,
+            frequency_from_interval<semitones_per_octave>(
+                static_cast<float>(semitones_interval),
+                A4_freq));
 
         return result;
     }

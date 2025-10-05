@@ -43,7 +43,7 @@ public:
     }
 
     auto data(QModelIndex const& index, int const role = Qt::DisplayRole) const
-            -> QVariant override
+        -> QVariant override
     {
         BOOST_ASSERT(index.row() < static_cast<int>(m_list.size()));
 
@@ -61,8 +61,8 @@ public:
     auto roleNames() const -> QHash<int, QByteArray> override
     {
         static QHash<int, QByteArray> s_roles = {
-                {Qt::DisplayRole, "text"},
-                {ValueRole, "value"}};
+            {Qt::DisplayRole, "text"},
+            {ValueRole, "value"}};
         return s_roles;
     }
 

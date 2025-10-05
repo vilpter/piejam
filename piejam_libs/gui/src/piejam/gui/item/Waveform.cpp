@@ -39,8 +39,7 @@ public:
     auto compare(QSGMaterial const* const other) const noexcept -> int override
     {
         auto const* const material =
-                boost::polymorphic_downcast<WaveformPointMaterial const*>(
-                        other);
+            boost::polymorphic_downcast<WaveformPointMaterial const*>(other);
         return m_color.rgba() - material->color().rgba();
     }
 
@@ -86,30 +85,30 @@ public:
     }
 
     void updateState(
-            RenderState const& state,
-            QSGMaterial* newEffect,
-            QSGMaterial* oldEffect) override
+        RenderState const& state,
+        QSGMaterial* newEffect,
+        QSGMaterial* oldEffect) override
     {
         Q_ASSERT(program()->isLinked());
 
         Q_ASSERT(
-                oldEffect == nullptr || newEffect->type() == oldEffect->type());
+            oldEffect == nullptr || newEffect->type() == oldEffect->type());
         auto* const oldMaterial =
-                boost::polymorphic_downcast<WaveformPointMaterial*>(oldEffect);
+            boost::polymorphic_downcast<WaveformPointMaterial*>(oldEffect);
         auto* const newMaterial =
-                boost::polymorphic_downcast<WaveformPointMaterial*>(newEffect);
+            boost::polymorphic_downcast<WaveformPointMaterial*>(newEffect);
         QColor const& c = newMaterial->color();
 
         if (oldMaterial == nullptr || c != oldMaterial->color() ||
             state.isOpacityDirty())
         {
             auto const opacity =
-                    static_cast<qreal>(state.opacity()) * c.alphaF();
+                static_cast<qreal>(state.opacity()) * c.alphaF();
             QVector4D v(
-                    c.redF() * opacity,
-                    c.greenF() * opacity,
-                    c.blueF() * opacity,
-                    opacity);
+                c.redF() * opacity,
+                c.greenF() * opacity,
+                c.blueF() * opacity,
+                opacity);
             program()->setUniformValue(m_idColor, v);
         }
 
@@ -138,11 +137,11 @@ WaveformPointMaterial::createShader() const -> QSGMaterialShader*
 
 auto
 updateGeometry(
-        QSGNode* const oldNode,
-        model::WaveformSlot const* const waveformData,
-        QColor const& color,
-        bool& dirtyGeometry,
-        bool& dirtyMaterial) -> QSGNode*
+    QSGNode* const oldNode,
+    model::WaveformSlot const* const waveformData,
+    QColor const& color,
+    bool& dirtyGeometry,
+    bool& dirtyMaterial) -> QSGNode*
 {
     QSGGeometryNode* node{};
     QSGGeometry* geometry{};
@@ -164,8 +163,8 @@ updateGeometry(
         node = new QSGGeometryNode;
 
         geometry = new QSGGeometry(
-                QSGGeometry::defaultAttributes_Point2D(),
-                numLines * 2);
+            QSGGeometry::defaultAttributes_Point2D(),
+            numLines * 2);
         setVertexX(geometry->vertexDataAsPoint2D(), geometry->vertexCount());
         geometry->setDrawingMode(QSGGeometry::DrawLines);
         node->setGeometry(geometry);
@@ -178,8 +177,8 @@ updateGeometry(
 
         pointsNode = new QSGGeometryNode;
         pointsGeometry = new QSGGeometry(
-                QSGGeometry::defaultAttributes_Point2D(),
-                geometry->vertexCount());
+            QSGGeometry::defaultAttributes_Point2D(),
+            geometry->vertexCount());
         pointsGeometry->setDrawingMode(QSGGeometry::DrawPoints);
         pointsNode->setGeometry(pointsGeometry);
         pointsNode->setFlag(QSGNode::OwnsGeometry);
@@ -197,16 +196,16 @@ updateGeometry(
         geometry = node->geometry();
 
         BOOST_ASSERT(node->childCount() == 1);
-        pointsNode = boost::polymorphic_downcast<QSGGeometryNode*>(
-                node->firstChild());
+        pointsNode =
+            boost::polymorphic_downcast<QSGGeometryNode*>(node->firstChild());
         pointsGeometry = pointsNode->geometry();
 
         if (static_cast<std::size_t>(geometry->vertexCount()) != numLines * 2)
         {
             geometry->allocate(numLines * 2);
             setVertexX(
-                    geometry->vertexDataAsPoint2D(),
-                    geometry->vertexCount());
+                geometry->vertexDataAsPoint2D(),
+                geometry->vertexCount());
 
             pointsGeometry->allocate(geometry->vertexCount());
         }
@@ -224,9 +223,9 @@ updateGeometry(
             }
 
             std::copy_n(
-                    geometry->vertexDataAsPoint2D(),
-                    geometry->vertexCount(),
-                    pointsGeometry->vertexDataAsPoint2D());
+                geometry->vertexDataAsPoint2D(),
+                geometry->vertexCount(),
+                pointsGeometry->vertexDataAsPoint2D());
         }
 
         node->markDirty(QSGNode::DirtyGeometry);
@@ -238,10 +237,10 @@ updateGeometry(
     if (dirtyMaterial)
     {
         boost::polymorphic_downcast<QSGFlatColorMaterial*>(node->material())
-                ->setColor(color);
+            ->setColor(color);
         boost::polymorphic_downcast<WaveformPointMaterial*>(
-                pointsNode->material())
-                ->setColor(color);
+            pointsNode->material())
+            ->setColor(color);
 
         node->markDirty(QSGNode::DirtyMaterial);
         pointsNode->markDirty(QSGNode::DirtyMaterial);
@@ -295,13 +294,13 @@ Waveform::setWaveform(model::WaveformSlot* x)
         if (m_impl->waveform)
         {
             m_impl->waveformChangedConnection = QObject::connect(
-                    m_impl->waveform,
-                    &model::WaveformSlot::changed,
-                    this,
-                    [this]() {
-                        m_impl->waveformDirty = true;
-                        update();
-                    });
+                m_impl->waveform,
+                &model::WaveformSlot::changed,
+                this,
+                [this]() {
+                    m_impl->waveformDirty = true;
+                    update();
+                });
         }
         else
         {
@@ -334,7 +333,7 @@ Waveform::setColor(QColor const& c)
 
 auto
 Waveform::updatePaintNode(QSGNode* const oldNode, UpdatePaintNodeData*)
-        -> QSGNode*
+    -> QSGNode*
 {
     QSGTransformNode* node{};
 
@@ -342,11 +341,11 @@ Waveform::updatePaintNode(QSGNode* const oldNode, UpdatePaintNodeData*)
     {
         node = new QSGTransformNode();
         node->appendChildNode(updateGeometry(
-                nullptr,
-                m_impl->waveform,
-                m_impl->color,
-                m_impl->waveformDirty,
-                m_impl->colorDirty));
+            nullptr,
+            m_impl->waveform,
+            m_impl->color,
+            m_impl->waveformDirty,
+            m_impl->colorDirty));
 
         updateTransformMatrix(*node);
     }
@@ -361,12 +360,12 @@ Waveform::updatePaintNode(QSGNode* const oldNode, UpdatePaintNodeData*)
         auto* geometryNode = node->firstChild();
         BOOST_ASSERT(geometryNode);
         BOOST_VERIFY(
-                geometryNode == updateGeometry(
-                                        geometryNode,
-                                        m_impl->waveform,
-                                        m_impl->color,
-                                        m_impl->waveformDirty,
-                                        m_impl->colorDirty));
+            geometryNode == updateGeometry(
+                                geometryNode,
+                                m_impl->waveform,
+                                m_impl->color,
+                                m_impl->waveformDirty,
+                                m_impl->colorDirty));
     }
 
     return node;

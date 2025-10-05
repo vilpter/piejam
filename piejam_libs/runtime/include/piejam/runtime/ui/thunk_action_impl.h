@@ -12,8 +12,8 @@ namespace piejam::runtime::ui
 template <class State>
 void
 thunk_action<State>::operator()(
-        get_state_f const& get_state,
-        dispatch_f const& dispatch) const
+    get_state_f const& get_state,
+    dispatch_f const& dispatch) const
 {
     m_thunk(get_state, dispatch);
 }

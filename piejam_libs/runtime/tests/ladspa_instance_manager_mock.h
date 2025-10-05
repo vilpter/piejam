@@ -16,10 +16,10 @@ struct ladspa_instance_manager_mock : public ladspa::instance_manager
     MOCK_METHOD(ladspa::instance_id, load, (ladspa::plugin_descriptor const&));
     MOCK_METHOD(void, unload, (ladspa::instance_id const&));
     MOCK_METHOD(
-            std::span<ladspa::port_descriptor const>,
-            control_inputs,
-            (ladspa::instance_id const&),
-            (const));
+        std::span<ladspa::port_descriptor const>,
+        control_inputs,
+        (ladspa::instance_id const&),
+        (const));
 };
 
 } // namespace piejam::runtime::test

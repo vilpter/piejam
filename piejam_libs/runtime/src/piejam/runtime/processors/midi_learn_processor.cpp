@@ -39,8 +39,8 @@ public:
     auto event_inputs() const noexcept -> event_ports override
     {
         static std::array const s_ports{audio::engine::event_port(
-                std::in_place_type<midi::external_event>,
-                "event_in")};
+            std::in_place_type<midi::external_event>,
+            "event_in")};
 
         return s_ports;
     }
@@ -48,12 +48,12 @@ public:
     auto event_outputs() const noexcept -> event_ports override
     {
         static std::array const s_ports{
-                audio::engine::event_port(
-                        std::in_place_type<midi::external_event>,
-                        "learned"),
-                audio::engine::event_port(
-                        std::in_place_type<midi::external_event>,
-                        "out")};
+            audio::engine::event_port(
+                std::in_place_type<midi::external_event>,
+                "learned"),
+            audio::engine::event_port(
+                std::in_place_type<midi::external_event>,
+                "out")};
 
         return s_ports;
     }

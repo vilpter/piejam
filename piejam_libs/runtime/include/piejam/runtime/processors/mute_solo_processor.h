@@ -14,6 +14,6 @@ namespace piejam::runtime::processors
 {
 
 auto make_mute_solo_processor(std::string_view name = {})
-        -> std::unique_ptr<audio::engine::processor>;
+    -> std::unique_ptr<audio::engine::processor>;
 
 } // namespace piejam::runtime::processors

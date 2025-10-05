@@ -25,10 +25,10 @@ struct solo_group
 using solo_groups_t = boost::container::flat_map<mixer::channel_id, solo_group>;
 
 auto solo_groups(
-        mixer::channels_t const&,
-        mixer::io_map_t const&,
-        mixer::aux_sends_t const&,
-        parameter::store const&) -> solo_groups_t;
+    mixer::channels_t const&,
+    mixer::io_map_t const&,
+    mixer::aux_sends_t const&,
+    parameter::store const&) -> solo_groups_t;
 
 class solo_group_state
 {

@@ -11,8 +11,8 @@ namespace piejam::gui::model
 {
 
 String::String(
-        runtime::state_access const& state_access,
-        runtime::string_id string_id)
+    runtime::state_access const& state_access,
+    runtime::string_id string_id)
     : SubscribableModel{state_access}
     , m_string_id{string_id}
 {
@@ -21,8 +21,9 @@ String::String(
 void
 String::onSubscribe()
 {
-    observe(runtime::selectors::make_string_selector(m_string_id),
-            [this](boxed_string s) { setValue(QString::fromStdString(s)); });
+    observe(
+        runtime::selectors::make_string_selector(m_string_id),
+        [this](boxed_string s) { setValue(QString::fromStdString(s)); });
 }
 
 void

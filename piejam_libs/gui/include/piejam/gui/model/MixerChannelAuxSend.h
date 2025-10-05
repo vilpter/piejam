@@ -25,8 +25,8 @@ class MixerChannelAuxSend final : public MixerChannel
 
 public:
     MixerChannelAuxSend(
-            runtime::state_access const&,
-            runtime::mixer::channel_id);
+        runtime::state_access const&,
+        runtime::mixer::channel_id);
 
 private:
     void onSubscribe() override;

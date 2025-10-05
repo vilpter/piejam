@@ -22,9 +22,10 @@ class pcm_io final : public piejam::audio::io_process
 {
 public:
     pcm_io() noexcept;
-    pcm_io(std::filesystem::path const& in,
-           std::filesystem::path const& out,
-           sound_card_config const& sc_config);
+    pcm_io(
+        std::filesystem::path const& in,
+        std::filesystem::path const& out,
+        sound_card_config const& sc_config);
     ~pcm_io() override;
 
     [[nodiscard]]
@@ -34,10 +35,10 @@ public:
     [[nodiscard]]
     auto is_running() const noexcept -> bool override;
 
-    void
-    start(thread::configuration const&,
-          init_process_function const&,
-          process_function) override;
+    void start(
+        thread::configuration const&,
+        init_process_function const&,
+        process_function) override;
 
     void stop() override;
 

@@ -19,18 +19,21 @@ Info::Info(runtime::state_access const& state_access)
 void
 Info::onSubscribe()
 {
-    observe(runtime::selectors::select_recording,
-            [this](bool const x) { setRecording(x); });
+    observe(runtime::selectors::select_recording, [this](bool const x) {
+        setRecording(x);
+    });
 
     observe(runtime::selectors::select_xruns, [this](std::size_t const xruns) {
         setXruns(static_cast<unsigned>(xruns));
     });
 
-    observe(runtime::selectors::select_cpu_load,
-            [this](float const cpu_load) { setAudioLoad(cpu_load); });
+    observe(runtime::selectors::select_cpu_load, [this](float const cpu_load) {
+        setAudioLoad(cpu_load);
+    });
 
-    observe(runtime::selectors::select_midi_learning,
-            [this](bool const midi_learning) { setMidiLearn(midi_learning); });
+    observe(
+        runtime::selectors::select_midi_learning,
+        [this](bool const midi_learning) { setMidiLearn(midi_learning); });
 
     requestUpdates(std::chrono::milliseconds{40}, [this]() {
         dispatch(runtime::actions::request_info_update{});

@@ -26,20 +26,20 @@ class FxScope final : public piejam::gui::model::FxModule
     M_PIEJAM_GUI_WRITABLE_PROPERTY(int, viewSize, setViewSize)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, mode)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::EnumParameter*,
-            triggerSlope)
+        piejam::gui::model::EnumParameter*,
+        triggerSlope)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::FloatParameter*,
-            triggerLevel)
+        piejam::gui::model::FloatParameter*,
+        triggerLevel)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::FloatParameter*,
-            holdTime)
+        piejam::gui::model::FloatParameter*,
+        holdTime)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::EnumParameter*,
-            waveformWindowSize)
+        piejam::gui::model::EnumParameter*,
+        waveformWindowSize)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::EnumParameter*,
-            scopeWindowSize)
+        piejam::gui::model::EnumParameter*,
+        scopeWindowSize)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeA)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeB)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, channelA)

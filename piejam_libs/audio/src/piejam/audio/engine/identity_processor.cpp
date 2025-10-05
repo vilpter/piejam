@@ -56,8 +56,8 @@ public:
     void process(process_context const& ctx) override
     {
         BOOST_ASSERT_MSG(
-                false,
-                "Should be removed from graph before executing.");
+            false,
+            "Should be removed from graph before executing.");
 
         verify_process_context(*this, ctx);
 
@@ -69,7 +69,7 @@ public:
 
 auto
 make_identity_processor(std::string_view const name)
-        -> std::unique_ptr<processor>
+    -> std::unique_ptr<processor>
 {
     return std::make_unique<identity_processor>(name);
 }

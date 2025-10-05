@@ -19,16 +19,16 @@ toQString(runtime::midi_assignment const& ass) -> QString
     {
         case runtime::midi_assignment::type::cc:
             return QString("CC %1 @%2")
-                    .arg(ass.control_id)
-                    .arg(ass.channel + 1);
+                .arg(ass.control_id)
+                .arg(ass.channel + 1);
     }
 
     __builtin_unreachable();
 }
 
 MidiAssignable::MidiAssignable(
-        runtime::state_access const& state_access,
-        runtime::midi_assignment_id const& assignment_id)
+    runtime::state_access const& state_access,
+    runtime::midi_assignment_id const& assignment_id)
     : SubscribableModel(state_access)
     , m_assignment_id(assignment_id)
 {
@@ -38,10 +38,11 @@ MidiAssignable::MidiAssignable(
 void
 MidiAssignable::onSubscribe()
 {
-    observe(runtime::selectors::make_midi_assignment_selector(m_assignment_id),
-            [this](std::optional<runtime::midi_assignment> const& ass) {
-                setAssignment(ass ? toQString(*ass) : QString());
-            });
+    observe(
+        runtime::selectors::make_midi_assignment_selector(m_assignment_id),
+        [this](std::optional<runtime::midi_assignment> const& ass) {
+            setAssignment(ass ? toQString(*ass) : QString());
+        });
 }
 
 void

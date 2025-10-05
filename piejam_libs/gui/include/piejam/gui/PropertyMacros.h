@@ -14,10 +14,8 @@ private:                                                                       \
     type m_##name{};                                                           \
                                                                                \
 public:                                                                        \
-    using name##_property_t = std::conditional_t<                              \
-            std::is_trivially_copyable_v<type>,                                \
-            type,                                                              \
-            type const&>;                                                      \
+    using name##_property_t = std::                                            \
+        conditional_t<std::is_trivially_copyable_v<type>, type, type const&>;  \
                                                                                \
     Q_SIGNAL void name##Changed();                                             \
     auto name() const noexcept -> name##_property_t                            \
@@ -41,10 +39,8 @@ private:                                                                       \
     Q_PROPERTY(type name READ name CONSTANT FINAL)                             \
                                                                                \
 public:                                                                        \
-    using name##_property_t = std::conditional_t<                              \
-            std::is_trivially_copyable_v<type>,                                \
-            type,                                                              \
-            type const&>;                                                      \
+    using name##_property_t = std::                                            \
+        conditional_t<std::is_trivially_copyable_v<type>, type, type const&>;  \
                                                                                \
     auto name() const noexcept -> name##_property_t;                           \
                                                                                \
@@ -53,14 +49,12 @@ private:
 #define M_PIEJAM_GUI_WRITABLE_PROPERTY(type, name, setterName)                 \
 private:                                                                       \
     Q_PROPERTY(                                                                \
-            type name READ name WRITE setterName NOTIFY name##Changed FINAL)   \
+        type name READ name WRITE setterName NOTIFY name##Changed FINAL)       \
     type m_##name{};                                                           \
                                                                                \
 public:                                                                        \
-    using name##_property_t = std::conditional_t<                              \
-            std::is_trivially_copyable_v<type>,                                \
-            type,                                                              \
-            type const&>;                                                      \
+    using name##_property_t = std::                                            \
+        conditional_t<std::is_trivially_copyable_v<type>, type, type const&>;  \
                                                                                \
     Q_SIGNAL void name##Changed();                                             \
     auto name() const noexcept -> name##_property_t                            \

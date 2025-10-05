@@ -25,9 +25,9 @@ auto
 multiply(process_context const& ctx)
 {
     return multiply(
-            ctx.inputs[N - 1].get(),
-            multiply<N - 1>(ctx),
-            ctx.outputs[0]);
+        ctx.inputs[N - 1].get(),
+        multiply<N - 1>(ctx),
+        ctx.outputs[0]);
 }
 
 template <>
@@ -112,8 +112,8 @@ private:
 
 auto
 make_multiply_processor(
-        std::size_t const num_inputs,
-        std::string_view const name) -> std::unique_ptr<processor>
+    std::size_t const num_inputs,
+    std::string_view const name) -> std::unique_ptr<processor>
 {
     switch (num_inputs)
     {

@@ -29,8 +29,8 @@ template <integral Target, integral Source>
 constexpr auto
 sign_map(Source const x) noexcept -> Target
     requires(
-            (is_signed_v<Target> != is_signed_v<Source>) &&
-            (sizeof(Target) == sizeof(Source)))
+        (is_signed_v<Target> != is_signed_v<Source>) &&
+        (sizeof(Target) == sizeof(Source)))
 {
     // toggle the sign bit
     return static_cast<Target>(bit::toggle<sign_bit<Source>>(x));

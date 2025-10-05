@@ -108,15 +108,15 @@ visit(Visitor&& v, slice<T> const s1, slice<U> const s2)
             {
                 case slice_kind::constant:
                     return std::invoke(
-                            std::forward<Visitor>(v),
-                            s1.constant(),
-                            s2.constant());
+                        std::forward<Visitor>(v),
+                        s1.constant(),
+                        s2.constant());
 
                 case slice_kind::span:
                     return std::invoke(
-                            std::forward<Visitor>(v),
-                            s1.constant(),
-                            s2.span());
+                        std::forward<Visitor>(v),
+                        s1.constant(),
+                        s2.span());
             }
 
         case slice_kind::span:
@@ -124,15 +124,15 @@ visit(Visitor&& v, slice<T> const s1, slice<U> const s2)
             {
                 case slice_kind::constant:
                     return std::invoke(
-                            std::forward<Visitor>(v),
-                            s1.span(),
-                            s2.constant());
+                        std::forward<Visitor>(v),
+                        s1.span(),
+                        s2.constant());
 
                 case slice_kind::span:
                     return std::invoke(
-                            std::forward<Visitor>(v),
-                            s1.span(),
-                            s2.span());
+                        std::forward<Visitor>(v),
+                        s1.span(),
+                        s2.span());
             }
     }
 }

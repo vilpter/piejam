@@ -17,7 +17,7 @@ struct fsqradd_fn
     template <std::floating_point T>
     [[nodiscard]]
     constexpr auto operator()(mipp::Reg<T> v, mipp::Reg<T> a) const noexcept
-            -> mipp::Reg<T>
+        -> mipp::Reg<T>
     {
         return mipp::fmadd(v, v, a);
     }

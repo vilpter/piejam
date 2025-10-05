@@ -19,7 +19,7 @@ scan_for_sound_cards() -> thunk_action
 {
     return [](auto&& get_state, auto&& dispatch) {
         auto scanned_sound_cards =
-                audio::get_default_sound_card_manager().get_sound_cards();
+            audio::get_default_sound_card_manager().get_sound_cards();
 
         if (!std::ranges::equal(scanned_sound_cards, *get_state().sound_cards))
         {

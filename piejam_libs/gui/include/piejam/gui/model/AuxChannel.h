@@ -19,8 +19,8 @@ class AuxChannel final : public SubscribableModel
     Q_OBJECT
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::EnumParameter*,
-            defaultFaderTap)
+        piejam::gui::model::EnumParameter*,
+        defaultFaderTap)
 
 public:
     AuxChannel(runtime::state_access const&, runtime::mixer::channel_id aux_id);

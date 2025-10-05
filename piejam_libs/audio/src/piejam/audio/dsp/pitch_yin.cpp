@@ -25,21 +25,21 @@ namespace
 
 template <std::size_t N>
 std::array<mipp::Msk<N>, N> precomputed_masks =
-        []<std::size_t... Offset>(std::index_sequence<Offset...>) {
-            return std::array{[]<std::size_t... I>(
-                                      std::index_sequence<I...>,
-                                      std::size_t offset) {
-                return mipp::Msk<N>{I < (N - offset)...};
-            }(std::make_index_sequence<N>{}, Offset)...};
-        }(std::make_index_sequence<N>{});
+    []<std::size_t... Offset>(std::index_sequence<Offset...>) {
+        return std::array{[]<std::size_t... I>(
+                              std::index_sequence<I...>,
+                              std::size_t offset) {
+            return mipp::Msk<N>{I < (N - offset)...};
+        }(std::make_index_sequence<N>{}, Offset)...};
+    }(std::make_index_sequence<N>{});
 
 template <std::floating_point T>
 [[nodiscard]]
 constexpr auto
 sqr_difference_sum(
-        std::span<T const> const in,
-        std::size_t const e,
-        std::size_t const tau) -> T
+    std::span<T const> const in,
+    std::size_t const e,
+    std::size_t const tau) -> T
 {
     constexpr auto N = mipp::N<T>();
     auto const data = in.data();
@@ -47,15 +47,13 @@ sqr_difference_sum(
     if (offset == 0)
     {
         return mipp::sum(
-                std::transform_reduce(
-                        numeric::mipp_iterator{data},
-                        numeric::mipp_iterator{data + e},
-                        numeric::mipp_iterator{data + tau},
-                        mipp::Reg<T>(T{}),
-                        std::plus<>{},
-                        boost::hof::compose(
-                                numeric::pow_n<2>,
-                                std::minus<>{})));
+            std::transform_reduce(
+                numeric::mipp_iterator{data},
+                numeric::mipp_iterator{data + e},
+                numeric::mipp_iterator{data + tau},
+                mipp::Reg<T>(T{}),
+                std::plus<>{},
+                boost::hof::compose(numeric::pow_n<2>, std::minus<>{})));
     }
     else
     {
@@ -67,15 +65,15 @@ sqr_difference_sum(
         mipp::Reg<T> reg_lo = numeric::simd::lrot_n(*it_tau, offset);
 
         for (auto reg_i : std::ranges::subrange(
-                     numeric::mipp_iterator{data},
-                     numeric::mipp_iterator{data + e}))
+                 numeric::mipp_iterator{data},
+                 numeric::mipp_iterator{data + e}))
         {
             ++it_tau;
             mipp::Reg<T> reg_hi = numeric::simd::lrot_n(*it_tau, offset);
 
             sums = numeric::simd::fsqradd(
-                    reg_i - mipp::select(mask, reg_lo, reg_hi),
-                    sums);
+                reg_i - mipp::select(mask, reg_lo, reg_hi),
+                sums);
 
             reg_lo = reg_hi;
         }

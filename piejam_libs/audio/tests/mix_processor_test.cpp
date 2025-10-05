@@ -48,11 +48,12 @@ TEST_F(mix_processor_2_inputs, mixing_constants_will_result_in_constant)
     EXPECT_FLOAT_EQ(.23f + .58f, results[0].constant());
 }
 
-TEST_F(mix_processor_2_inputs,
-       mix_buffer_and_constant_result_will_be_written_into_output_buffer)
+TEST_F(
+    mix_processor_2_inputs,
+    mix_buffer_and_constant_result_will_be_written_into_output_buffer)
 {
     alignas(mipp::RequiredAlignment)
-            std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
+        std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
     in1 = {in1_buf};
     in2 = {.77f};
 
@@ -70,11 +71,12 @@ TEST_F(mix_processor_2_inputs,
     EXPECT_FLOAT_EQ(.99f + .77f, results[0].span()[7]);
 }
 
-TEST_F(mix_processor_2_inputs,
-       mix_buffer_and_silence_result_will_point_to_the_input_buffer)
+TEST_F(
+    mix_processor_2_inputs,
+    mix_buffer_and_silence_result_will_point_to_the_input_buffer)
 {
     alignas(mipp::RequiredAlignment)
-            std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
+        std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
     in1 = {in1_buf};
 
     sut->process(ctx);
@@ -87,10 +89,10 @@ TEST_F(mix_processor_2_inputs,
 TEST_F(mix_processor_2_inputs, mix_two_buffers_result_will_be_in_the_output)
 {
     alignas(mipp::RequiredAlignment)
-            std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
+        std::array in1_buf{.23f, .58f, .77f, .99f, .23f, .58f, .77f, .99f};
     in1 = {in1_buf};
     alignas(mipp::RequiredAlignment)
-            std::array in2_buf{.99f, .77f, .58f, .23f, .99f, .77f, .58f, .23f};
+        std::array in2_buf{.99f, .77f, .58f, .23f, .99f, .77f, .58f, .23f};
     in2 = {in2_buf};
 
     sut->process(ctx);
@@ -133,8 +135,8 @@ TEST(mix_processor, mix_one_silence_one_non_silence_channel)
     slice<float> in_buf_span(in_buf);
 
     std::vector<std::reference_wrapper<slice<float> const>> in{
-            silence,
-            in_buf_span};
+        silence,
+        in_buf_span};
     alignas(mipp::RequiredAlignment) std::array out_buf{0.f};
     std::vector<std::span<float>> out{out_buf};
     std::vector<slice<float>> result{out[0]};
@@ -160,8 +162,8 @@ TEST(mix_processor, mix_two_non_silence_channels)
     in_buf2.fill(0.58f);
     slice<float> in_buf2_span(in_buf2);
     std::vector<std::reference_wrapper<slice<float> const>> in{
-            in_buf1_span,
-            in_buf2_span};
+        in_buf1_span,
+        in_buf2_span};
     alignas(mipp::RequiredAlignment) std::array<float, buffer_size> out_buf{};
     std::vector<std::span<float>> out{out_buf};
     std::vector<slice<float>> result{out[0]};
@@ -186,9 +188,9 @@ TEST(mix_processor, mix_two_silence_one_non_silence_channel)
     alignas(mipp::RequiredAlignment) std::array in_buf{0.23f};
     slice<float> in_buf_span(in_buf);
     std::vector<std::reference_wrapper<slice<float> const>> in{
-            silence,
-            silence,
-            in_buf_span};
+        silence,
+        silence,
+        in_buf_span};
     alignas(mipp::RequiredAlignment) std::array out_buf{0.f};
     std::vector<std::span<float>> out{out_buf};
     std::vector<slice<float>> result{out[0]};
@@ -216,9 +218,9 @@ TEST(mix_processor, mix_one_silence_two_non_silence_channels)
     in_buf2.fill(0.58f);
     slice<float> in_buf2_span(in_buf2);
     std::vector<std::reference_wrapper<slice<float> const>> in{
-            in_buf1_span,
-            silence,
-            in_buf2_span};
+        in_buf1_span,
+        silence,
+        in_buf2_span};
     alignas(mipp::RequiredAlignment) std::array<float, buffer_size> out_buf{};
     std::vector<std::span<float>> out{out_buf};
     std::vector<slice<float>> result{out[0]};
@@ -246,15 +248,15 @@ TEST(mix_processor, mix_one_silence_and_eight_buffers)
     slice<float> in_buf_slice(in_buf);
 
     std::vector<std::reference_wrapper<slice<float> const>> in{
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice,
-            silence,
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice,
-            in_buf_slice};
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice,
+        silence,
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice,
+        in_buf_slice};
     alignas(mipp::RequiredAlignment) std::array<float, buffer_size> out_buf{};
     std::vector<std::span<float>> out{out_buf};
     std::vector<slice<float>> result{out[0]};
@@ -301,8 +303,8 @@ TEST_P(mix_processor_properties_test, event_outputs)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        verify,
-        mix_processor_properties_test,
-        testing::Range<std::size_t>(2u, 10u));
+    verify,
+    mix_processor_properties_test,
+    testing::Range<std::size_t>(2u, 10u));
 
 } // namespace piejam::audio::engine::test

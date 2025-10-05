@@ -125,22 +125,22 @@ main(int argc, char* argv[]) -> int
     spdlog::set_level(spdlog::level::level_enum::debug);
 
     auto log_file_directory =
-            QStandardPaths::writableLocation(
-                    QStandardPaths::StandardLocation::HomeLocation)
-                    .toStdString();
+        QStandardPaths::writableLocation(
+            QStandardPaths::StandardLocation::HomeLocation)
+            .toStdString();
     std::filesystem::create_directories(log_file_directory);
     spdlog::default_logger()->sinks().push_back(
-            std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-                    log_file_directory + "/piejam.log",
-                    true));
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+            log_file_directory + "/piejam.log",
+            true));
 
     runtime::locations locs;
     locs.config_dir = QStandardPaths::writableLocation(
-                              QStandardPaths::StandardLocation::ConfigLocation)
-                              .toStdString();
+                          QStandardPaths::StandardLocation::ConfigLocation)
+                          .toStdString();
     locs.home_dir = QStandardPaths::writableLocation(
-                            QStandardPaths::StandardLocation::HomeLocation)
-                            .toStdString();
+                        QStandardPaths::StandardLocation::HomeLocation)
+                        .toStdString();
     locs.rec_dir = locs.home_dir / "recordings";
 
     QGuiApplication app(argc, argv);
@@ -151,79 +151,76 @@ main(int argc, char* argv[]) -> int
     ladspa::instance_manager_processor_factory ladspa_manager;
 
     using middleware_factory =
-            redux::middleware_factory<runtime::state, runtime::action>;
+        redux::middleware_factory<runtime::state, runtime::action>;
 
     runtime::store store(
-            [](runtime::state& st, runtime::action const& a) -> void {
-                if (auto const* const ra =
-                            dynamic_cast<runtime::reducible_action const*>(&a);
-                    ra)
-                {
-                    ra->reduce(st);
-                }
-                else
-                {
-                    auto const action_name =
-                            boost::core::demangle(typeid(a).name());
-                    spdlog::warn(
-                            "non-reducible action detected: {}",
-                            action_name);
-                }
-            },
-            runtime::make_initial_state());
+        [](runtime::state& st, runtime::action const& a) -> void {
+            if (auto const* const ra =
+                    dynamic_cast<runtime::reducible_action const*>(&a);
+                ra)
+            {
+                ra->reduce(st);
+            }
+            else
+            {
+                auto const action_name =
+                    boost::core::demangle(typeid(a).name());
+                spdlog::warn("non-reducible action detected: {}", action_name);
+            }
+        },
+        runtime::make_initial_state());
 
     store.apply_middleware(
-            middleware_factory::make<runtime::persistence_middleware>());
+        middleware_factory::make<runtime::persistence_middleware>());
 
     store.apply_middleware(
-            middleware_factory::make<runtime::recorder_middleware>(
-                    locs.rec_dir));
+        middleware_factory::make<runtime::recorder_middleware>(locs.rec_dir));
 
     auto audio_workers = piejam::algorithm::transform_to_vector(
-            piejam::range::iota(hw_threads - 1),
-            [=](std::size_t const i) {
-                std::size_t const cpu = (3 + i) % hw_threads;
-                return thread::configuration{
-                        .affinity = cpu,
-                        .realtime_priority = realtime_priority,
-                        .name = "audio_worker_" + std::to_string(i)};
-            });
+        piejam::range::iota(hw_threads - 1),
+        [=](std::size_t const i) {
+            std::size_t const cpu = (3 + i) % hw_threads;
+            return thread::configuration{
+                .affinity = cpu,
+                .realtime_priority = realtime_priority,
+                .name = "audio_worker_" + std::to_string(i)};
+        });
 
     store.apply_middleware(
-            middleware_factory::make<runtime::audio_engine_middleware>(
-                    thread::configuration{
-                            .affinity = hw_threads > 2 ? 2 : 0,
-                            .realtime_priority = realtime_priority,
-                            .name = "audio_main"},
-                    audio_workers,
-                    audio::get_default_sound_card_manager(),
-                    ladspa_manager,
-                    runtime::make_midi_input_controller(*midi_device_manager)));
+        middleware_factory::make<runtime::audio_engine_middleware>(
+            thread::configuration{
+                .affinity = hw_threads > 2 ? 2 : 0,
+                .realtime_priority = realtime_priority,
+                .name = "audio_main"},
+            audio_workers,
+            audio::get_default_sound_card_manager(),
+            ladspa_manager,
+            runtime::make_midi_input_controller(*midi_device_manager)));
 
     store.apply_middleware(
-            middleware_factory::make<runtime::midi_control_middleware>(
-                    [&midi_device_manager]() {
-                        return midi_device_manager->update_devices();
-                    }));
+        middleware_factory::make<runtime::midi_control_middleware>(
+            [&midi_device_manager]() {
+                return midi_device_manager->update_devices();
+            }));
 
     store.apply_middleware(
-            middleware_factory::make<runtime::ladspa_fx_middleware>(
-                    ladspa_manager));
+        middleware_factory::make<runtime::ladspa_fx_middleware>(
+            ladspa_manager));
 
     store.apply_middleware(middleware_factory::make<redux::thunk_middleware>());
 
     store.apply_middleware(
-            middleware_factory::make<
-                    redux::queueing_middleware<runtime::action>>());
+        middleware_factory::make<
+            redux::queueing_middleware<runtime::action>>());
 
     store.apply_middleware(
-            middleware_factory::make<
-                    redux::thread_delegate_middleware<QtThreadDelegator>>(
-                    std::this_thread::get_id(),
-                    QtThreadDelegator{&app}));
+        middleware_factory::make<
+            redux::thread_delegate_middleware<QtThreadDelegator>>(
+            std::this_thread::get_id(),
+            QtThreadDelegator{&app}));
 
     runtime::subscriber state_change_subscriber(
-            [&store]() -> runtime::state const& { return store.state(); });
+        [&store]() -> runtime::state const& { return store.state(); });
 
     store.subscribe([&state_change_subscriber](auto const& state) {
         state_change_subscriber.notify(state);
@@ -232,7 +229,7 @@ main(int argc, char* argv[]) -> int
     store.dispatch(runtime::actions::scan_ladspa_fx_plugins("/usr/lib/ladspa"));
 
     gui::ModelManager modelManager(
-            runtime::state_access{store, state_change_subscriber});
+        runtime::state_access{store, state_change_subscriber});
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
@@ -245,9 +242,9 @@ main(int argc, char* argv[]) -> int
     }
 
     QObject::connect(
-            &engine,
-            &QQmlApplicationEngine::quit,
-            &QGuiApplication::quit);
+        &engine,
+        &QQmlApplicationEngine::quit,
+        &QGuiApplication::quit);
 
     auto session_file = locs.home_dir / "last.pjs";
 
@@ -269,13 +266,13 @@ main(int argc, char* argv[]) -> int
             avg_cpu_load.update();
             auto cpu_load_per_core = avg_cpu_load.per_core();
             modelManager.info()->setCpuLoad(
-                    QList<float>(
-                            cpu_load_per_core.begin(),
-                            cpu_load_per_core.end()));
+                QList<float>(
+                    cpu_load_per_core.begin(),
+                    cpu_load_per_core.end()));
 
             modelManager.info()->setDiskUsage(
-                    static_cast<int>(std::round(
-                            system::disk_usage(locs.home_dir) * 100)));
+                static_cast<int>(
+                    std::round(system::disk_usage(locs.home_dir) * 100)));
         });
         timer->start(std::chrono::seconds(1));
     }

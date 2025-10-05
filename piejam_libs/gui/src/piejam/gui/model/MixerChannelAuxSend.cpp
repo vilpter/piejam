@@ -24,8 +24,8 @@ struct MixerChannelAuxSend::Impl
 };
 
 MixerChannelAuxSend::MixerChannelAuxSend(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const id)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id const id)
     : MixerChannel{state_access, id}
     , m_impl{make_pimpl<Impl>()}
 {
@@ -58,23 +58,22 @@ MixerChannelAuxSend::onSubscribe()
 
     if (channelType() != ChannelType::Aux)
     {
-        observe(runtime::selectors::select_mixer_aux_channels,
-                [this](box<runtime::mixer::channel_ids_t> const& send_ids) {
-                    algorithm::apply_edit_script(
-                            algorithm::edit_script(
-                                    *m_impl->send_ids,
-                                    *send_ids),
-                            ListModelEditScriptProcessor{
-                                    *m_impl->auxSends,
-                                    [this](auto const& send_id) {
-                                        return std::make_unique<AuxSend>(
-                                                state_access(),
-                                                channel_id(),
-                                                send_id);
-                                    }});
+        observe(
+            runtime::selectors::select_mixer_aux_channels,
+            [this](box<runtime::mixer::channel_ids_t> const& send_ids) {
+                algorithm::apply_edit_script(
+                    algorithm::edit_script(*m_impl->send_ids, *send_ids),
+                    ListModelEditScriptProcessor{
+                        *m_impl->auxSends,
+                        [this](auto const& send_id) {
+                            return std::make_unique<AuxSend>(
+                                state_access(),
+                                channel_id(),
+                                send_id);
+                        }});
 
-                    m_impl->send_ids = send_ids;
-                });
+                m_impl->send_ids = send_ids;
+            });
     }
 }
 

@@ -27,17 +27,17 @@ namespace
 template <std::floating_point T>
 auto
 calcPeakLevel(
-        std::span<T const> const samples,
-        T const currentLevel,
-        audio::sample_rate const sr) -> T
+    std::span<T const> const samples,
+    T const currentLevel,
+    audio::sample_rate const sr) -> T
 {
     T const blockPeak = mipp::hmax(
-            std::transform_reduce(
-                    numeric::mipp_begin(samples),
-                    numeric::mipp_end(samples),
-                    mipp::Reg<T>(T{}),
-                    numeric::simd::max,
-                    numeric::simd::abs));
+        std::transform_reduce(
+            numeric::mipp_begin(samples),
+            numeric::mipp_end(samples),
+            mipp::Reg<T>(T{}),
+            numeric::simd::max,
+            numeric::simd::abs));
 
     T const dt = static_cast<T>(samples.size()) / sr.as<T>();
     constexpr T tau = T{0.2}; // 200ms
@@ -50,9 +50,9 @@ calcPeakLevel(
 template <std::floating_point T>
 auto
 calcRmsLevel(
-        std::span<T const> const samples,
-        T const currentLevel,
-        audio::sample_rate const sr) -> T
+    std::span<T const> const samples,
+    T const currentLevel,
+    audio::sample_rate const sr) -> T
 {
     T const blockRms = numeric::simd::rms(samples);
 
@@ -97,18 +97,18 @@ struct MixerChannelPerform::Impl
     void updatePeakLevel(std::span<float const> ch)
     {
         peakLevel.setLevel<C>(static_cast<double>(calcPeakLevel<float>(
-                ch,
-                static_cast<float>(peakLevel.level<C>()),
-                sample_rate)));
+            ch,
+            static_cast<float>(peakLevel.level<C>()),
+            sample_rate)));
     }
 
     template <audio::pair_channel C>
     void updateRmsLevel(std::span<float const> ch)
     {
         rmsLevel.setLevel<C>(static_cast<double>(calcRmsLevel<float>(
-                ch,
-                static_cast<float>(rmsLevel.level<C>()),
-                sample_rate)));
+            ch,
+            static_cast<float>(rmsLevel.level<C>()),
+            sample_rate)));
     }
 
     void resetLevelMeter()
@@ -119,65 +119,63 @@ struct MixerChannelPerform::Impl
 };
 
 MixerChannelPerform::MixerChannelPerform(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const id)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id const id)
     : MixerChannel{state_access, id}
     , m_impl{make_pimpl<Impl>()}
 {
     makeStream(
-            m_impl->outStream,
-            observe_once(
-                    runtime::selectors::make_mixer_channel_out_stream_selector(
-                            id)));
+        m_impl->outStream,
+        observe_once(
+            runtime::selectors::make_mixer_channel_out_stream_selector(id)));
 
     QObject::connect(
-            m_impl->outStream.get(),
-            &AudioStreamProvider::captured,
-            this,
-            [this](AudioStream captured) {
-                auto captured_stereo = captured.channels_cast<2>();
+        m_impl->outStream.get(),
+        &AudioStreamProvider::captured,
+        this,
+        [this](AudioStream captured) {
+            auto captured_stereo = captured.channels_cast<2>();
 
-                m_impl->updatePeakLevel<audio::pair_channel::left>(
-                        captured_stereo.channels()[0]);
-                m_impl->updatePeakLevel<audio::pair_channel::right>(
-                        captured_stereo.channels()[1]);
+            m_impl->updatePeakLevel<audio::pair_channel::left>(
+                captured_stereo.channels()[0]);
+            m_impl->updatePeakLevel<audio::pair_channel::right>(
+                captured_stereo.channels()[1]);
 
-                m_impl->updateRmsLevel<audio::pair_channel::left>(
-                        captured_stereo.channels()[0]);
-                m_impl->updateRmsLevel<audio::pair_channel::right>(
-                        captured_stereo.channels()[1]);
-            });
-
-    makeParameter(
-            m_impl->volume,
-            observe_once(
-                    runtime::selectors::
-                            make_mixer_channel_volume_parameter_selector(id)));
+            m_impl->updateRmsLevel<audio::pair_channel::left>(
+                captured_stereo.channels()[0]);
+            m_impl->updateRmsLevel<audio::pair_channel::right>(
+                captured_stereo.channels()[1]);
+        });
 
     makeParameter(
-            m_impl->panBalance,
-            observe_once(
-                    runtime::selectors::
-                            make_mixer_channel_pan_balance_parameter_selector(
-                                    id)));
+        m_impl->volume,
+        observe_once(
+            runtime::selectors::make_mixer_channel_volume_parameter_selector(
+                id)));
 
     makeParameter(
-            m_impl->record,
-            observe_once(
-                    runtime::selectors::
-                            make_mixer_channel_record_parameter_selector(id)));
+        m_impl->panBalance,
+        observe_once(
+            runtime::selectors::
+                make_mixer_channel_pan_balance_parameter_selector(id)));
 
     makeParameter(
-            m_impl->solo,
-            observe_once(
-                    runtime::selectors::
-                            make_mixer_channel_solo_parameter_selector(id)));
+        m_impl->record,
+        observe_once(
+            runtime::selectors::make_mixer_channel_record_parameter_selector(
+                id)));
 
     makeParameter(
-            m_impl->mute,
-            observe_once(
-                    runtime::selectors::
-                            make_mixer_channel_mute_parameter_selector(id)));
+        m_impl->solo,
+        observe_once(
+            runtime::selectors::make_mixer_channel_solo_parameter_selector(
+                id)));
+
+    makeParameter(
+        m_impl->mute,
+        observe_once(
+            runtime::selectors::make_mixer_channel_mute_parameter_selector(
+                id)));
 }
 
 auto
@@ -230,10 +228,11 @@ MixerChannelPerform::onSubscribe()
     MixerChannel::onSubscribe();
 
     m_impl->updateSampleRate(
-            observe_once(runtime::selectors::select_sample_rate)->current);
+        observe_once(runtime::selectors::select_sample_rate)->current);
 
-    observe(runtime::selectors::make_muted_by_solo_selector(channel_id()),
-            [this](bool x) { setMutedBySolo(x); });
+    observe(
+        runtime::selectors::make_muted_by_solo_selector(channel_id()),
+        [this](bool x) { setMutedBySolo(x); });
 }
 
 } // namespace piejam::gui::model

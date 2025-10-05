@@ -13,6 +13,6 @@ namespace piejam::runtime::processors
 {
 
 auto make_midi_input_processor(std::unique_ptr<midi::input_event_handler>)
-        -> std::unique_ptr<audio::engine::processor>;
+    -> std::unique_ptr<audio::engine::processor>;
 
 } // namespace piejam::runtime::processors

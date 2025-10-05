@@ -16,12 +16,15 @@ namespace piejam::gui::model
 class MixerDbScales : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(piejam::gui::model::DbScaleData* levelMeterScale READ
-                       levelMeterScale CONSTANT)
-    Q_PROPERTY(piejam::gui::model::DbScaleData* volumeFaderScale READ
-                       volumeFaderScale CONSTANT)
-    Q_PROPERTY(piejam::gui::model::DbScaleData* sendFaderScale READ
-                       sendFaderScale CONSTANT)
+    Q_PROPERTY(
+        piejam::gui::model::DbScaleData* levelMeterScale READ levelMeterScale
+            CONSTANT)
+    Q_PROPERTY(
+        piejam::gui::model::DbScaleData* volumeFaderScale READ volumeFaderScale
+            CONSTANT)
+    Q_PROPERTY(
+        piejam::gui::model::DbScaleData* sendFaderScale READ sendFaderScale
+            CONSTANT)
 public:
     MixerDbScales();
     ~MixerDbScales() override;

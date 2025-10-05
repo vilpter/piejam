@@ -30,12 +30,12 @@ struct strong_type_serializer
 } // namespace piejam::runtime::persistence
 
 #define M_PIEJAM_PERSISTENCE_DEFINE_STRONG_TYPE_SERIALIER(                     \
-        StrongType,                                                            \
-        UnderlyingType,                                                        \
-        ValueKey)                                                              \
+    StrongType,                                                                \
+    UnderlyingType,                                                            \
+    ValueKey)                                                                  \
     static piejam::runtime::persistence::strong_type_serializer<               \
-            StrongType,                                                        \
-            UnderlyingType> const s_##StrongType{ValueKey};                    \
+        StrongType,                                                            \
+        UnderlyingType> const s_##StrongType{ValueKey};                        \
                                                                                \
     void to_json(nlohmann::json& j, StrongType const& x)                       \
     {                                                                          \

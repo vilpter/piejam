@@ -43,8 +43,8 @@ TEST(dll, getting_unknown_symbol_will_throw)
 {
     dll sut(PIEJAM_SYSTEM_TEST_DLL);
     EXPECT_THROW(
-            sut.symbol<void()>("function_which_doesnt_exist"),
-            std::system_error);
+        sut.symbol<void()>("function_which_doesnt_exist"),
+        std::system_error);
 }
 
 } // namespace piejam::system::test

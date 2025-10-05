@@ -18,22 +18,20 @@ namespace piejam::fx_modules::tuner
 
 auto
 make_module(runtime::internal_fx_module_factory_args const& args)
-        -> runtime::fx::module
+    -> runtime::fx::module
 {
     using namespace std::string_literals;
 
     return runtime::fx::module{
-            .fx_instance_id = internal_id(),
-            .name = box("Tuner"s),
-            .bus_type = args.bus_type,
-            .parameters = {},
-            .streams =
-                    box(runtime::fx::module_streams{
-                            {std::to_underlying(stream_key::input),
-                             make_stream(
-                                     args.streams,
-                                     audio::num_channels(args.bus_type))},
-                    })};
+        .fx_instance_id = internal_id(),
+        .name = box("Tuner"s),
+        .bus_type = args.bus_type,
+        .parameters = {},
+        .streams =
+            box(runtime::fx::module_streams{
+                {std::to_underlying(stream_key::input),
+                 make_stream(args.streams, audio::num_channels(args.bus_type))},
+            })};
 }
 
 } // namespace piejam::fx_modules::tuner

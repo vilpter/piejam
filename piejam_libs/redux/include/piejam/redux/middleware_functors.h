@@ -17,9 +17,9 @@ class middleware_functors
 {
 public:
     template <
-            concepts::get_state<State> GetState,
-            concepts::dispatch<Action> Dispatch,
-            concepts::next<Action> Next>
+        concepts::get_state<State> GetState,
+        concepts::dispatch<Action> Dispatch,
+        concepts::next<Action> Next>
     middleware_functors(GetState&& get_state, Dispatch&& dispatch, Next&& next)
         : m_get_state{std::forward<GetState>(get_state)}
         , m_dispatch{std::forward<Dispatch>(dispatch)}

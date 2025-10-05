@@ -25,15 +25,15 @@ namespace piejam::runtime
 
 void
 persistence_middleware::operator()(
-        middleware_functors const& mw_fs,
-        action const& a)
+    middleware_functors const& mw_fs,
+    action const& a)
 {
     if (auto action = dynamic_cast<actions::persistence_action const*>(&a))
     {
         auto v = ui::make_action_visitor<actions::persistence_action_visitor>(
-                [this, &mw_fs](auto const& a) {
-                    process_persistence_action(mw_fs, a);
-                });
+            [this, &mw_fs](auto const& a) {
+                process_persistence_action(mw_fs, a);
+            });
 
         action->visit(v);
     }
@@ -46,8 +46,8 @@ persistence_middleware::operator()(
 template <class Action>
 void
 persistence_middleware::process_persistence_action(
-        middleware_functors const&,
-        Action const&)
+    middleware_functors const&,
+    Action const&)
 {
     BOOST_ASSERT_MSG(false, "unhandled action");
 }
@@ -55,8 +55,8 @@ persistence_middleware::process_persistence_action(
 template <>
 void
 persistence_middleware::process_persistence_action(
-        middleware_functors const& mw_fs,
-        actions::load_app_config const& a)
+    middleware_functors const& mw_fs,
+    actions::load_app_config const& a)
 {
     if (!std::filesystem::exists(a.file))
     {
@@ -85,20 +85,20 @@ persistence_middleware::process_persistence_action(
 template <>
 void
 persistence_middleware::process_persistence_action(
-        middleware_functors const& mw_fs,
-        actions::save_app_config const& a)
+    middleware_functors const& mw_fs,
+    actions::save_app_config const& a)
 {
     persistence::save_app_config(
-            a.file,
-            a.enabled_midi_devices,
-            mw_fs.get_state());
+        a.file,
+        a.enabled_midi_devices,
+        mw_fs.get_state());
 }
 
 template <>
 void
 persistence_middleware::process_persistence_action(
-        middleware_functors const& mw_fs,
-        actions::load_session const& a)
+    middleware_functors const& mw_fs,
+    actions::load_session const& a)
 {
     if (!std::filesystem::exists(a.file))
     {
@@ -127,8 +127,8 @@ persistence_middleware::process_persistence_action(
 template <>
 void
 persistence_middleware::process_persistence_action(
-        middleware_functors const& mw_fs,
-        actions::save_session const& a)
+    middleware_functors const& mw_fs,
+    actions::save_session const& a)
 {
     persistence::save_session(a.file, mw_fs.get_state());
 }

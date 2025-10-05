@@ -18,7 +18,7 @@ struct align_down_fn
     template <std::unsigned_integral T, std::unsigned_integral N>
     [[nodiscard]]
     constexpr auto operator()(T x, N n) const noexcept
-            -> std::common_type_t<T, N>
+        -> std::common_type_t<T, N>
     {
         BOOST_ASSERT(n != 0);
         using CT = std::common_type_t<T, N>;
@@ -34,7 +34,7 @@ struct align_up_fn
     template <std::unsigned_integral T, std::unsigned_integral N>
     [[nodiscard]]
     constexpr auto operator()(T x, N n) const noexcept
-            -> std::common_type_t<T, N>
+        -> std::common_type_t<T, N>
     {
         BOOST_ASSERT(n != 0);
         using CT = std::common_type_t<T, N>;
@@ -51,7 +51,7 @@ struct align_nearest_fn
     template <std::unsigned_integral T, std::unsigned_integral N>
     [[nodiscard]]
     constexpr auto operator()(T x, N n) const noexcept
-            -> std::common_type_t<T, N>
+        -> std::common_type_t<T, N>
     {
         BOOST_ASSERT(n != 0);
         using CT = std::common_type_t<T, N>;

@@ -36,8 +36,9 @@ TEST(stream_ring_buffer, write_only_until_max_capacity)
     EXPECT_EQ(2u, buf.write(inputs, 4));
 }
 
-TEST(stream_ring_buffer,
-     write_only_until_max_capacity_on_consecutive_writes_on_border)
+TEST(
+    stream_ring_buffer,
+    write_only_until_max_capacity_on_consecutive_writes_on_border)
 {
     stream_ring_buffer<float> buf(1, 4);
 
@@ -81,8 +82,8 @@ TEST(stream_ring_buffer, consume_multi_channel)
     ASSERT_EQ(2, result.num_channels());
     EXPECT_THAT(result.channels()[0], testing::ElementsAreArray(ch0_data));
     EXPECT_THAT(
-            result.channels()[1],
-            testing::ElementsAre(23.f, 23.f, 23.f, 23.f));
+        result.channels()[1],
+        testing::ElementsAre(23.f, 23.f, 23.f, 23.f));
 }
 
 TEST(stream_ring_buffer, consume_on_border_will_call_the_functor_twice)
@@ -112,8 +113,9 @@ TEST(stream_ring_buffer, consume_on_border_will_call_the_functor_twice)
     EXPECT_THAT(result.channels()[1], testing::ElementsAreArray(ch1_data));
 }
 
-TEST(stream_ring_buffer,
-     write_to_full_capacity_consume_on_border_will_call_the_functor_twice)
+TEST(
+    stream_ring_buffer,
+    write_to_full_capacity_consume_on_border_will_call_the_functor_twice)
 {
     stream_ring_buffer<float> buf(2, 6);
 
@@ -138,11 +140,11 @@ TEST(stream_ring_buffer,
     ASSERT_EQ(2u, result.num_channels());
     // ring-buffer was full, last element was dropped
     EXPECT_THAT(
-            result.channels()[0],
-            testing::ElementsAre(0.f, 1.f, 2.f, 3.f, 4.f, 5.f));
+        result.channels()[0],
+        testing::ElementsAre(0.f, 1.f, 2.f, 3.f, 4.f, 5.f));
     EXPECT_THAT(
-            result.channels()[1],
-            testing::ElementsAre(6.f, 5.f, 4.f, 3.f, 2.f, 1.f));
+        result.channels()[1],
+        testing::ElementsAre(6.f, 5.f, 4.f, 3.f, 2.f, 1.f));
 }
 
 TEST(stream_ring_buffer, write_over_full_capacity)
@@ -165,11 +167,11 @@ TEST(stream_ring_buffer, write_over_full_capacity)
     ASSERT_EQ(2u, result.num_channels());
     // ring-buffer was full, last element was dropped
     EXPECT_THAT(
-            result.channels()[0],
-            testing::ElementsAre(0.f, 1.f, 2.f, 3.f, 4.f, 5.f));
+        result.channels()[0],
+        testing::ElementsAre(0.f, 1.f, 2.f, 3.f, 4.f, 5.f));
     EXPECT_THAT(
-            result.channels()[1],
-            testing::ElementsAre(6.f, 5.f, 4.f, 3.f, 2.f, 1.f));
+        result.channels()[1],
+        testing::ElementsAre(6.f, 5.f, 4.f, 3.f, 2.f, 1.f));
 }
 
 } // namespace piejam::audio::engine::test

@@ -13,7 +13,7 @@ namespace piejam::runtime
 
 auto
 make_stream(audio_streams_store_t& streams, std::size_t num_channels)
-        -> audio_stream_id
+    -> audio_stream_id
 {
     auto id = audio_stream_id::generate();
     streams.emplace(id, std::in_place, num_channels);

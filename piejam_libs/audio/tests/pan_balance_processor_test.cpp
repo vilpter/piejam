@@ -37,11 +37,11 @@ struct pan_balance_processor_test : public testing::TestWithParam<float>
     audio::engine::event_output_buffers ev_out_bufs;
     static constexpr std::size_t buffer_size{16};
     audio::engine::process_context ctx{
-            .outputs = {},
-            .results = {},
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = buffer_size};
+        .outputs = {},
+        .results = {},
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = buffer_size};
 };
 
 TEST_P(pan_balance_processor_test, pan)
@@ -89,9 +89,9 @@ TEST_P(pan_balance_processor_test, balance)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        verify,
-        pan_balance_processor_test,
-        testing::Values(0.f, -1.f, -0.5f, 1.f, 0.5f));
+    verify,
+    pan_balance_processor_test,
+    testing::Values(0.f, -1.f, -0.5f, 1.f, 0.5f));
 
 TEST_F(pan_balance_processor_test, pan_empty_input)
 {

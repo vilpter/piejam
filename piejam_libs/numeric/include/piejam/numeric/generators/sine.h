@@ -17,10 +17,10 @@ class sine
 {
 public:
     constexpr sine(
-            T frequency,
-            T sample_rate,
-            T amplitude_ = T{1},
-            T phase_ = T{0}) noexcept
+        T frequency,
+        T sample_rate,
+        T amplitude_ = T{1},
+        T phase_ = T{0}) noexcept
         : m_amplitude(amplitude_)
         , m_phase(phase_)
         , m_phase_increment(constants::two_pi<T> * frequency / sample_rate)

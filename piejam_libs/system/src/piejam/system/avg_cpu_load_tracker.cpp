@@ -36,10 +36,10 @@ avg_cpu_load_tracker::update()
     m_total_avg = calc_avg_load(prev_total, m_total_data);
 
     std::ranges::transform(
-            prev_per_core,
-            m_per_core_data,
-            m_per_core_avg.begin(),
-            &calc_avg_load);
+        prev_per_core,
+        m_per_core_data,
+        m_per_core_avg.begin(),
+        &calc_avg_load);
 }
 
 } // namespace piejam::system

@@ -43,12 +43,12 @@ expected_rotation(std::vector<T> const& v, std::size_t n)
 }
 
 using test_types = ::testing::Types<
-        float,
-        double,
-        std::int32_t,
-        std::int64_t,
-        std::uint32_t,
-        std::uint64_t>;
+    float,
+    double,
+    std::int32_t,
+    std::int64_t,
+    std::uint32_t,
+    std::uint64_t>;
 
 } // namespace
 

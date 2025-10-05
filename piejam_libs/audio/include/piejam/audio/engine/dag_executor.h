@@ -16,7 +16,7 @@ public:
     virtual ~dag_executor() = default;
 
     virtual auto operator()(std::size_t buffer_size)
-            -> std::chrono::nanoseconds = 0;
+        -> std::chrono::nanoseconds = 0;
 };
 
 } // namespace piejam::audio::engine

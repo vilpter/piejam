@@ -43,8 +43,8 @@ public:
 
     template <class T>
         requires(
-                std::is_floating_point_v<T> ||
-                (std::is_integral_v<T> && sizeof(T) >= sizeof(std::uint32_t)))
+            std::is_floating_point_v<T> ||
+            (std::is_integral_v<T> && sizeof(T) >= sizeof(std::uint32_t)))
     [[nodiscard]]
     constexpr auto as() const noexcept -> T
     {
@@ -54,37 +54,37 @@ public:
     template <class Period = std::ratio<1>, std::floating_point Rep = double>
     constexpr auto
     duration_for_samples(std::size_t const samples) const noexcept
-            -> std::chrono::duration<Rep, Period>
+        -> std::chrono::duration<Rep, Period>
     {
         return std::chrono::duration<Rep>(
-                (static_cast<Rep>(samples) / static_cast<Rep>(m_value)));
+            (static_cast<Rep>(samples) / static_cast<Rep>(m_value)));
     }
 
     template <class Rep, class Period>
     constexpr auto samples_for_duration(
-            std::chrono::duration<Rep, Period> const& dur) const noexcept
-            -> std::size_t
+        std::chrono::duration<Rep, Period> const& dur) const noexcept
+        -> std::size_t
     {
         return static_cast<std::size_t>(
-                m_value * std::chrono::duration<double>(dur).count());
+            m_value * std::chrono::duration<double>(dur).count());
     }
 
     constexpr auto operator==(sample_rate const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 
 private:
     storage_type m_value{};
 };
 
 inline constexpr std::array preferred_sample_rates{
-        sample_rate(44100u),
-        sample_rate(48000u),
-        sample_rate(88200u),
-        sample_rate(96000u),
-        sample_rate(176400u),
-        sample_rate(192000u)};
+    sample_rate(44100u),
+    sample_rate(48000u),
+    sample_rate(88200u),
+    sample_rate(96000u),
+    sample_rate(176400u),
+    sample_rate(192000u)};
 
-using sample_rates_t = boost::container::
-        static_vector<sample_rate, preferred_sample_rates.size()>;
+using sample_rates_t =
+    boost::container::static_vector<sample_rate, preferred_sample_rates.size()>;
 
 } // namespace piejam::audio

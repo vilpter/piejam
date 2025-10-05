@@ -30,12 +30,12 @@ public:
     using base_iterator = typename map_t::const_iterator;
     struct const_iterator
         : public boost::stl_interfaces::proxy_iterator_interface<
-                  typename base_iterator::iterator_category,
-                  std::pair<id_type const&, data_type const&>>
+              typename base_iterator::iterator_category,
+              std::pair<id_type const&, data_type const&>>
     {
         using base_t = boost::stl_interfaces::proxy_iterator_interface<
-                typename base_iterator::iterator_category,
-                std::pair<id_type const&, data_type const&>>;
+            typename base_iterator::iterator_category,
+            std::pair<id_type const&, data_type const&>>;
 
         const_iterator() noexcept = default;
 
@@ -134,21 +134,19 @@ public:
     auto insert(id_type id, data_type value) -> bool
     {
         return m_map
-                .insert(std::pair{
-                        id,
-                        std::make_shared<data_type>(std::move(value))})
-                .second;
+            .insert(
+                std::pair{id, std::make_shared<data_type>(std::move(value))})
+            .second;
     }
 
     template <class... Args>
     auto emplace(id_type id, Args&&... args) -> bool
     {
         return m_map
-                .emplace(
-                        id,
-                        std::make_shared<data_type>(
-                                std::forward<Args>(args)...))
-                .second;
+            .emplace(
+                id,
+                std::make_shared<data_type>(std::forward<Args>(args)...))
+            .second;
     }
 
     void erase(id_type id)
@@ -163,7 +161,7 @@ private:
 template <class Entity, class Data>
 auto
 insert(entity_data_map<entity_id<Entity>, std::decay_t<Data>>& m, Data&& value)
-        -> entity_id<Entity>
+    -> entity_id<Entity>
 {
     auto id = entity_id<Entity>::generate();
     BOOST_VERIFY(m.insert(id, std::forward<Data>(value)));

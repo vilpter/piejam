@@ -14,6 +14,6 @@ namespace piejam::runtime::fx
 {
 
 using ladspa_instances =
-        std::unordered_map<ladspa::instance_id, ladspa::plugin_descriptor>;
+    std::unordered_map<ladspa::instance_id, ladspa::plugin_descriptor>;
 
 } // namespace piejam::runtime::fx

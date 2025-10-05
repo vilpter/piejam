@@ -58,8 +58,8 @@ public:
         m_mute_solo_amp->connect(g);
 
         g.event.insert(
-                {*m_mute_solo_proc, 0},
-                m_mute_solo_amp->event_inputs()[0]);
+            {*m_mute_solo_proc, 0},
+            m_mute_solo_amp->event_inputs()[0]);
     }
 
 private:
@@ -67,16 +67,16 @@ private:
     std::unique_ptr<audio::engine::component> m_mute_solo_amp;
 
     std::array<audio::engine::graph_endpoint, 3> m_event_inputs{
-            {{*m_mute_solo_proc, 0},
-             {*m_mute_solo_proc, 1},
-             {*m_mute_solo_proc, 2}}};
+        {{*m_mute_solo_proc, 0},
+         {*m_mute_solo_proc, 1},
+         {*m_mute_solo_proc, 2}}};
 };
 
 } // namespace
 
 auto
 make_mute_solo(std::string_view const name)
-        -> std::unique_ptr<audio::engine::component>
+    -> std::unique_ptr<audio::engine::component>
 {
     return std::make_unique<mute_solo>(name);
 }

@@ -56,9 +56,9 @@ TEST(dag, split_and_merge_graph)
 
     auto parent_id = sut.add_task([&x](auto const&) { x = 5; });
     auto child1_id =
-            sut.add_child_task(parent_id, [&y](auto const&) { y = 2; });
+        sut.add_child_task(parent_id, [&y](auto const&) { y = 2; });
     auto child2_id =
-            sut.add_child_task(parent_id, [&z](auto const&) { z = 3; });
+        sut.add_child_task(parent_id, [&z](auto const&) { z = 3; });
     auto result_id = sut.add_child_task(child1_id, [&x, &y, &z](auto const&) {
         x += y + z;
     });
@@ -75,9 +75,9 @@ TEST(dag, split_and_merge_graph_mt)
 
     auto parent_id = sut.add_task([&x](auto const&) { x = 5; });
     auto child1_id =
-            sut.add_child_task(parent_id, [&y](auto const&) { y = 2; });
+        sut.add_child_task(parent_id, [&y](auto const&) { y = 2; });
     auto child2_id =
-            sut.add_child_task(parent_id, [&z](auto const&) { z = 3; });
+        sut.add_child_task(parent_id, [&z](auto const&) { z = 3; });
     auto result_id = sut.add_child_task(child1_id, [&x, &y, &z](auto const&) {
         x += y + z;
     });

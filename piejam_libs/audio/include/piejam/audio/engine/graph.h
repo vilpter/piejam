@@ -59,7 +59,7 @@ public:
         auto erase(const_iterator const&) -> const_iterator;
 
         template <
-                std::predicate<graph_endpoint const&, graph_endpoint const&> P>
+            std::predicate<graph_endpoint const&, graph_endpoint const&> P>
         void erase_if(P&& p)
         {
             std::erase_if(m_wires, boost::hof::unpack(std::forward<P>(p)));

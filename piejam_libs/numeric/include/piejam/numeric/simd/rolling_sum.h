@@ -69,7 +69,7 @@ public:
         else
         {
             auto samples_first =
-                    mipp_iterator{samples_data + samples_size - window_size};
+                mipp_iterator{samples_data + samples_size - window_size};
             auto samples_last = mipp_iterator{samples_data + samples_size};
 
             mipp::Reg<T> acc(T{});
@@ -99,9 +99,9 @@ public:
 private:
     template <class SamplesIterator, class SumIterator>
     constexpr void update_segment(
-            SamplesIterator samples_first,
-            SamplesIterator samples_last,
-            SumIterator sum_first) noexcept
+        SamplesIterator samples_first,
+        SamplesIterator samples_last,
+        SumIterator sum_first) noexcept
     {
         mipp::Reg<T> sub(T{});
         mipp::Reg<T> add(T{});
@@ -129,7 +129,7 @@ private:
     }
 
     constexpr auto ring_buffer_split(std::size_t num_samples) noexcept
-            -> std::tuple<std::span<T>, std::span<T>>
+        -> std::tuple<std::span<T>, std::span<T>>
     {
         auto const window_data = m_window.data();
         auto const window_size = m_window.size();
@@ -144,8 +144,8 @@ private:
         {
             auto size = window_size - m_pos;
             return std::tuple{
-                    std::span{first, size},
-                    std::span{window_data, num_samples - size}};
+                std::span{first, size},
+                std::span{window_data, num_samples - size}};
         }
     }
 

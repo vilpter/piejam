@@ -20,17 +20,17 @@ namespace piejam::gui::model
 {
 
 using FxModuleFactory = std::function<std::unique_ptr<FxModule>(
-        runtime::state_access const&,
-        runtime::fx::module_id)>;
+    runtime::state_access const&,
+    runtime::fx::module_id)>;
 
 using FxModuleFactories =
-        registry_map<runtime::fx::internal_id, FxModuleFactory>;
+    registry_map<runtime::fx::internal_id, FxModuleFactory>;
 
 template <class T>
 auto
 makeFxModule(
-        runtime::state_access const& state_access,
-        runtime::fx::module_id fx_mod_id) -> std::unique_ptr<FxModule>
+    runtime::state_access const& state_access,
+    runtime::fx::module_id fx_mod_id) -> std::unique_ptr<FxModule>
 {
     return std::make_unique<T>(state_access, fx_mod_id);
 }

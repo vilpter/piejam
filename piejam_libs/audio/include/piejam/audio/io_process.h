@@ -25,10 +25,10 @@ public:
     [[nodiscard]]
     virtual auto is_running() const noexcept -> bool = 0;
 
-    virtual void
-    start(thread::configuration const&,
-          init_process_function const&,
-          process_function) = 0;
+    virtual void start(
+        thread::configuration const&,
+        init_process_function const&,
+        process_function) = 0;
 
     virtual void stop() = 0;
 

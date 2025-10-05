@@ -17,7 +17,8 @@ internal_id() -> runtime::fx::internal_id
 {
     using namespace std::string_literals;
 
-    static auto const id = register_module(module_registration{
+    static auto const id = register_module(
+        module_registration{
             .available_for_mono = true,
             .persistence_name = "tuner"s,
             .fx_module_factory = &make_module,
@@ -25,7 +26,7 @@ internal_id() -> runtime::fx::internal_id
             .fx_browser_entry_name = "Tuner",
             .fx_browser_entry_description = "Detect pitch of an audio signal.",
             .fx_module_content_factory =
-                    &piejam::gui::model::makeFxModule<gui::FxTuner>,
+                &piejam::gui::model::makeFxModule<gui::FxTuner>,
             .viewSource = "/PieJam.FxModules/TunerView.qml"});
     return id;
 }

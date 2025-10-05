@@ -21,23 +21,23 @@ TEST(output_processor, input_is_propagated_to_outputs)
     mipp::vector<float> data({0.f, 0.f, 0.f, 0.f});
     output_processor sut;
     auto converter = pcm_output_buffer_converter(
-            [&data](float c, std::size_t size) {
-                std::ranges::fill_n(data.begin(), c, size);
-            },
-            [&data](std::span<float const> buf) {
-                std::ranges::copy(buf, data.begin());
-            });
+        [&data](float c, std::size_t size) {
+            std::ranges::fill_n(data.begin(), c, size);
+        },
+        [&data](std::span<float const> buf) {
+            std::ranges::copy(buf, data.begin());
+        });
     sut.set_output(converter);
 
     alignas(mipp::RequiredAlignment) std::array<float, 4> in_buf{
-            0.23f,
-            0.58f,
-            0.77f,
-            0.91f};
+        0.23f,
+        0.58f,
+        0.77f,
+        0.91f};
     std::vector<slice<float>> in_spans{in_buf};
     std::vector<std::reference_wrapper<slice<float> const>> inputs{
-            in_spans.begin(),
-            in_spans.end()};
+        in_spans.begin(),
+        in_spans.end()};
 
     sut.process({inputs, {}, {}, {}, {}, 4});
 

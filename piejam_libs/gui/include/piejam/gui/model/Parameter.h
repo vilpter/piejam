@@ -25,8 +25,8 @@ class Parameter : public SubscribableModel
 
 public:
     Parameter(
-            runtime::state_access const&,
-            piejam::gui::model::ParameterId const&);
+        runtime::state_access const&,
+        piejam::gui::model::ParameterId const&);
     ~Parameter();
 
     auto paramId() const -> ParameterId;

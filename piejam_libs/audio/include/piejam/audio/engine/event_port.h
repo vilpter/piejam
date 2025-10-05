@@ -41,7 +41,7 @@ public:
 
     [[nodiscard]]
     auto make_event_buffer(std::pmr::memory_resource*& event_memory) const
-            -> std::unique_ptr<abstract_event_buffer>
+        -> std::unique_ptr<abstract_event_buffer>
     {
         return m_make_event_buffer(event_memory);
     }
@@ -55,7 +55,7 @@ public:
 private:
     template <class T>
     static auto make_event_buffer(std::pmr::memory_resource*& event_memory)
-            -> std::unique_ptr<abstract_event_buffer>
+        -> std::unique_ptr<abstract_event_buffer>
     {
         return std::make_unique<event_buffer<T>>(event_memory);
     }
@@ -68,8 +68,8 @@ private:
         return s_empty_event_buffer;
     }
 
-    using make_event_buffer_fn_t = std::unique_ptr<abstract_event_buffer> (*)(
-            std::pmr::memory_resource*&);
+    using make_event_buffer_fn_t =
+        std::unique_ptr<abstract_event_buffer> (*)(std::pmr::memory_resource*&);
 
     using empty_event_buffer_fn_t = abstract_event_buffer const& (*)();
 

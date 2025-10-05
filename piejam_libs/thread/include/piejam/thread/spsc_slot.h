@@ -37,12 +37,12 @@ public:
 
     template <std::invocable<T const&> F>
     void consume(F&& f) noexcept(
-            noexcept(std::invoke(std::forward<F>(f), std::declval<T>())))
+        noexcept(std::invoke(std::forward<F>(f), std::declval<T>())))
     {
         if (marked(m_swap_pos.load(std::memory_order_relaxed)))
         {
             m_read =
-                    pos(m_swap_pos.exchange(m_read, std::memory_order_acq_rel));
+                pos(m_swap_pos.exchange(m_read, std::memory_order_acq_rel));
             std::invoke(std::forward<F>(f), m_store[m_read].value);
         }
     }
@@ -62,8 +62,8 @@ public:
 private:
     void commit() noexcept
     {
-        m_write = pos(
-                m_swap_pos.exchange(mark(m_write), std::memory_order_acq_rel));
+        m_write =
+            pos(m_swap_pos.exchange(mark(m_write), std::memory_order_acq_rel));
     }
 
     static constexpr auto mark(std::size_t const x) noexcept -> std::size_t

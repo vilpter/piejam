@@ -50,8 +50,9 @@ TEST(graph_endpoint_less_compare, different_proc_and_same_ports)
     EXPECT_FALSE(sut_r < sut_l);
 }
 
-TEST(graph_endpoint_less_compare,
-     different_proc_and_different_ports_first_lower)
+TEST(
+    graph_endpoint_less_compare,
+    different_proc_and_different_ports_first_lower)
 {
     processor_mock proc_l;
     processor_mock proc_r;
@@ -62,8 +63,9 @@ TEST(graph_endpoint_less_compare,
     EXPECT_FALSE(sut_r < sut_l);
 }
 
-TEST(graph_endpoint_less_compare,
-     different_proc_and_different_ports_second_lower)
+TEST(
+    graph_endpoint_less_compare,
+    different_proc_and_different_ports_second_lower)
 {
     processor_mock proc_l;
     processor_mock proc_r;
@@ -144,9 +146,9 @@ TEST(graph, add_event_wire)
     std::array src_outs{event_port(std::in_place_type<float>, "src_out")};
     std::array dst_ins{event_port(std::in_place_type<float>, "dst_in")};
     ON_CALL(proc_src, event_outputs())
-            .WillByDefault(::testing::Return(processor::event_ports{src_outs}));
+        .WillByDefault(::testing::Return(processor::event_ports{src_outs}));
     ON_CALL(proc_dst, event_inputs())
-            .WillByDefault(::testing::Return(processor::event_ports{dst_ins}));
+        .WillByDefault(::testing::Return(processor::event_ports{dst_ins}));
     graph_endpoint src{proc_src, 0};
     graph_endpoint dst{proc_dst, 0};
     graph sut;

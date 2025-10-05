@@ -19,8 +19,9 @@ class Scope : public QQuickItem
 
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 
-    Q_PROPERTY(piejam::gui::model::ScopeSlot* scope READ scope WRITE setScope
-                       NOTIFY scopeChanged FINAL)
+    Q_PROPERTY(
+        piejam::gui::model::ScopeSlot* scope READ scope WRITE setScope NOTIFY
+            scopeChanged FINAL)
 
     Q_PROPERTY(float peakLevel READ peakLevel NOTIFY peakLevelChanged FINAL)
 

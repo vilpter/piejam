@@ -17,16 +17,17 @@ internal_id() -> runtime::fx::internal_id
 {
     using namespace std::string_literals;
 
-    static auto const s_id = register_module(module_registration{
+    static auto const s_id = register_module(
+        module_registration{
             .available_for_mono = true,
             .persistence_name = "scope"s,
             .fx_module_factory = &make_module,
             .fx_component_factory = &make_component,
             .fx_browser_entry_name = "Oscilloscope",
             .fx_browser_entry_description =
-                    "Observe waveform of an audio signal.",
+                "Observe waveform of an audio signal.",
             .fx_module_content_factory =
-                    &piejam::gui::model::makeFxModule<gui::FxScope>,
+                &piejam::gui::model::makeFxModule<gui::FxScope>,
             .viewSource = "/PieJam.FxModules/ScopeView.qml"});
 
     return s_id;

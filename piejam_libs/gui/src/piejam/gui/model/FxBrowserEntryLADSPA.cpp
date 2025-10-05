@@ -15,8 +15,8 @@ namespace piejam::gui::model
 {
 
 FxBrowserEntryLADSPA::FxBrowserEntryLADSPA(
-        runtime::state_access const& state_access,
-        ladspa::plugin_descriptor const& plugin_desc)
+    runtime::state_access const& state_access,
+    ladspa::plugin_descriptor const& plugin_desc)
     : FxBrowserEntry(state_access)
     , m_pd(plugin_desc)
 {
@@ -33,7 +33,7 @@ FxBrowserEntryLADSPA::FxBrowserEntryLADSPA(
     if (!m_pd.copyright.empty())
     {
         setDescription(QString("Copyright / License: %1")
-                               .arg(QString::fromStdString(m_pd.copyright)));
+                           .arg(QString::fromStdString(m_pd.copyright)));
     }
 }
 
@@ -47,7 +47,7 @@ FxBrowserEntryLADSPA::appendModule()
 {
     runtime::actions::load_ladspa_fx_plugin action;
     action.fx_chain_id =
-            observe_once(runtime::selectors::select_fx_browser_fx_chain);
+        observe_once(runtime::selectors::select_fx_browser_fx_chain);
     action.position = npos;
     action.plugin_id = m_pd.id;
     action.name = m_pd.name;

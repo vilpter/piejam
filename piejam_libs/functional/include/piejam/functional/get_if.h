@@ -11,10 +11,10 @@ namespace piejam
 
 template <std::size_t I>
 inline constexpr auto get_if_by_index =
-        [](auto&& x) BOOST_HOF_RETURNS(get_if<I>(std::forward<decltype(x)>(x)));
+    [](auto&& x) BOOST_HOF_RETURNS(get_if<I>(std::forward<decltype(x)>(x)));
 
 template <class T>
 inline constexpr auto get_if_by_type =
-        [](auto&& x) BOOST_HOF_RETURNS(get_if<T>(std::forward<decltype(x)>(x)));
+    [](auto&& x) BOOST_HOF_RETURNS(get_if<T>(std::forward<decltype(x)>(x)));
 
 } // namespace piejam

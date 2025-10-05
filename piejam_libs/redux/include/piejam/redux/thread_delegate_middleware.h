@@ -18,8 +18,8 @@ class thread_delegate_middleware
 {
 public:
     thread_delegate_middleware(
-            std::thread::id delegate_to_id,
-            DelegateMethod delegate_method)
+        std::thread::id delegate_to_id,
+        DelegateMethod delegate_method)
         : m_delegate_to_id(delegate_to_id)
         , m_delegate_method(std::move(delegate_method))
     {
@@ -47,6 +47,6 @@ private:
 
 template <class DelegateMethod>
 thread_delegate_middleware(std::thread::id, DelegateMethod)
-        -> thread_delegate_middleware<DelegateMethod>;
+    -> thread_delegate_middleware<DelegateMethod>;
 
 } // namespace piejam::redux

@@ -32,15 +32,14 @@ public:
     using value_type = mipp::Reg<std::remove_const_t<T>>;
 
     explicit constexpr rms_level_meter(
-            sample_rate sr,
-            std::chrono::duration<T> rms_measure_time =
-                    default_rms_measure_time,
-            T min_level = default_min_level)
+        sample_rate sr,
+        std::chrono::duration<T> rms_measure_time = default_rms_measure_time,
+        T min_level = default_min_level)
         : m_min_level{min_level}
         , m_rolling_sqr_sum(
-                  numeric::align_down(
-                          sr.samples_for_duration(rms_measure_time),
-                          static_cast<std::size_t>(mipp::N<T>())))
+              numeric::align_down(
+                  sr.samples_for_duration(rms_measure_time),
+                  static_cast<std::size_t>(mipp::N<T>())))
     {
     }
 
@@ -59,10 +58,9 @@ public:
     constexpr auto level() const noexcept -> T
     {
         return numeric::flush_to_zero_if(
-                std::sqrt(
-                        std::max(m_rolling_sqr_sum.sum(), T{0}) /
-                        m_sqr_history_size),
-                less(m_min_level));
+            std::sqrt(
+                std::max(m_rolling_sqr_sum.sum(), T{0}) / m_sqr_history_size),
+            less(m_min_level));
     }
 
     constexpr void reset() noexcept
@@ -73,7 +71,7 @@ public:
 private:
     T m_min_level;
     numeric::simd::rolling_sum<decltype(numeric::pow_n<2>), T>
-            m_rolling_sqr_sum;
+        m_rolling_sqr_sum;
 
     T m_sqr_history_size{static_cast<T>(m_rolling_sqr_sum.window_size())};
 };

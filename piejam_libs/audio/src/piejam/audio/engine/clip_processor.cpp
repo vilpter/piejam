@@ -54,7 +54,7 @@ public:
         verify_process_context(*this, ctx);
 
         ctx.results[0] =
-                clamp(ctx.inputs[0].get(), m_min, m_max, ctx.outputs[0]);
+            clamp(ctx.inputs[0].get(), m_min, m_max, ctx.outputs[0]);
     }
 
 private:
@@ -66,9 +66,9 @@ private:
 
 auto
 make_clip_processor(
-        float const min,
-        float const max,
-        std::string_view const name) -> std::unique_ptr<processor>
+    float const min,
+    float const max,
+    std::string_view const name) -> std::unique_ptr<processor>
 {
     return std::make_unique<clip_processor>(min, max, name);
 }

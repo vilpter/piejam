@@ -18,7 +18,7 @@ struct clamp_fn
     [[nodiscard]]
     constexpr auto
     operator()(mipp::Reg<T> v, mipp::Reg<T> lo, mipp::Reg<T> hi) const noexcept
-            -> mipp::Reg<T>
+        -> mipp::Reg<T>
     {
         return mipp::max(lo, mipp::min(hi, v));
     }

@@ -24,7 +24,7 @@ using unavailable_ladspa_id = entity_id<unavailable_ladspa>;
 using unavailable_ladspa_plugins = boxed_map<entity_map<unavailable_ladspa>>;
 
 using instance_id =
-        std::variant<internal_id, ladspa::instance_id, unavailable_ladspa_id>;
+    std::variant<internal_id, ladspa::instance_id, unavailable_ladspa_id>;
 
 class ladspa_manager;
 

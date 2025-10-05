@@ -37,35 +37,35 @@ struct audio_engine_render_test : public ::testing::Test
     std::vector<audio::pair<float>> output;
 
     std::vector<audio::pcm_input_buffer_converter> in_converter{
-            audio::pcm_input_buffer_converter{
-                    [this](std::span<float> const buffer) {
-                        std::ranges::copy(audio_in_left, buffer.begin());
-                    }},
-            audio::pcm_input_buffer_converter{
-                    [this](std::span<float> const buffer) {
-                        std::ranges::copy(audio_in_right, buffer.begin());
-                    }}};
+        audio::pcm_input_buffer_converter{
+            [this](std::span<float> const buffer) {
+                std::ranges::copy(audio_in_left, buffer.begin());
+            }},
+        audio::pcm_input_buffer_converter{
+            [this](std::span<float> const buffer) {
+                std::ranges::copy(audio_in_right, buffer.begin());
+            }}};
     std::vector<audio::pcm_output_buffer_converter> out_converter{
-            audio::pcm_output_buffer_converter{
-                    [this](float c, std::size_t size) {
-                        std::ranges::fill_n(audio_out_left.begin(), c, size);
-                    },
-                    [this](std::span<float const> buffer) {
-                        std::ranges::copy(buffer, audio_out_left.begin());
-                    }},
-            audio::pcm_output_buffer_converter{
-                    [this](float c, std::size_t size) {
-                        std::ranges::fill_n(audio_out_right.begin(), c, size);
-                    },
-                    [this](std::span<float const> buffer) {
-                        std::ranges::copy(buffer, audio_out_right.begin());
-                    }}};
+        audio::pcm_output_buffer_converter{
+            [this](float c, std::size_t size) {
+                std::ranges::fill_n(audio_out_left.begin(), c, size);
+            },
+            [this](std::span<float const> buffer) {
+                std::ranges::copy(buffer, audio_out_left.begin());
+            }},
+        audio::pcm_output_buffer_converter{
+            [this](float c, std::size_t size) {
+                std::ranges::fill_n(audio_out_right.begin(), c, size);
+            },
+            [this](std::span<float const> buffer) {
+                std::ranges::copy(buffer, audio_out_right.begin());
+            }}};
 
     void fill_sine()
     {
         std::ranges::generate(audio_in_left, [this]() -> float {
             return std::sin(
-                    (sine_wave_pos++ / sample_rate.as<float>()) * M_PI_2);
+                (sine_wave_pos++ / sample_rate.as<float>()) * M_PI_2);
         });
     }
 

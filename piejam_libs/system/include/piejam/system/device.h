@@ -53,17 +53,17 @@ public:
 
     [[nodiscard]]
     auto read(std::span<std::byte> buffer) noexcept
-            -> outcome::std_result<std::size_t>;
+        -> outcome::std_result<std::size_t>;
 
     template <class T, std::size_t Extent>
     [[nodiscard]]
     auto read(std::span<T, Extent> buffer) noexcept
-            -> outcome::std_result<std::span<T>>
+        -> outcome::std_result<std::span<T>>
     {
-        auto res =
-                read(std::span<std::byte>{
-                        reinterpret_cast<std::byte*>(buffer.data()),
-                        buffer.size_bytes()});
+        auto res = read(
+            std::span<std::byte>{
+                reinterpret_cast<std::byte*>(buffer.data()),
+                buffer.size_bytes()});
         if (!res)
         {
             return res.error();
@@ -82,9 +82,7 @@ public:
     auto read(T& x) noexcept -> outcome::std_result<void>
     {
         return read_fully(
-                std::span<std::byte>{
-                        reinterpret_cast<std::byte*>(&x),
-                        sizeof(T)});
+            std::span<std::byte>{reinterpret_cast<std::byte*>(&x), sizeof(T)});
     }
 
     [[nodiscard]]
@@ -94,15 +92,15 @@ public:
     //! timed out.
     [[nodiscard]]
     auto poll(std::chrono::milliseconds timeout) noexcept
-            -> outcome::std_result<bool>;
+        -> outcome::std_result<bool>;
 
 private:
     [[nodiscard]]
     auto ioctl(unsigned long request, void* p, std::size_t size) noexcept
-            -> std::error_code;
+        -> std::error_code;
 
     auto read_fully(std::span<std::byte> buffer) noexcept
-            -> outcome::std_result<void>;
+        -> outcome::std_result<void>;
 
     static constexpr int invalid = -1;
 
@@ -111,11 +109,11 @@ private:
 
 template <>
 auto device::ioctl(unsigned long request, device&) noexcept
-        -> std::error_code = delete;
+    -> std::error_code = delete;
 
 template <>
 [[nodiscard]]
 auto device::ioctl(unsigned long request, device const& other) noexcept
-        -> std::error_code;
+    -> std::error_code;
 
 } // namespace piejam::system

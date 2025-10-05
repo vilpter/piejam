@@ -80,14 +80,13 @@ TEST(table_view, compile_time_minor_step)
     std::array arr{1, 2, 3, 0, 4, 5, 6, 0};
 
     using tv_t =
-            table_view<int, std::dynamic_extent, std::dynamic_extent, 0, 1>;
+        table_view<int, std::dynamic_extent, std::dynamic_extent, 0, 1>;
     tv_t sut(arr.data(), 2, 3, 4, 1);
 
     ASSERT_EQ(2, sut.major_size());
 
-    static_assert(std::is_same_v<
-                  std::span<int>,
-                  std::remove_cvref_t<decltype(sut[0])>>);
+    static_assert(
+        std::is_same_v<std::span<int>, std::remove_cvref_t<decltype(sut[0])>>);
 
     static_assert(std::is_same_v<
                   std::span<int>,
@@ -104,7 +103,7 @@ TEST(table_view, compile_time_major_step)
     std::array arr{1, 2, 3, 0, 4, 5, 6, 0};
 
     table_view<int, std::dynamic_extent, std::dynamic_extent, 4, 0>
-            sut(arr.data(), 2, 3, 4, 1);
+        sut(arr.data(), 2, 3, 4, 1);
 
     ASSERT_EQ(2, sut.major_size());
     EXPECT_THAT(sut[0], testing::ElementsAre(1, 2, 3));

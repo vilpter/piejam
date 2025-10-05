@@ -36,7 +36,7 @@ TYPED_TEST(rolling_sum_test, full_window_update_computes_correct_sum)
 
     auto s = rs.update(samples);
     TypeParam expected =
-            std::accumulate(samples.begin(), samples.end(), TypeParam{0});
+        std::accumulate(samples.begin(), samples.end(), TypeParam{0});
 
     EXPECT_NEAR(s, expected, TypeParam(1e-5));
     EXPECT_NEAR(rs.sum(), expected, TypeParam(1e-5));
@@ -61,7 +61,7 @@ TYPED_TEST(rolling_sum_test, rolling_update_sliding_window)
     std::vector<TypeParam> all(window + mipp::N<TypeParam>());
     std::iota(all.begin(), all.end(), TypeParam{1});
     TypeParam expected =
-            std::accumulate(all.end() - window, all.end(), TypeParam{0});
+        std::accumulate(all.end() - window, all.end(), TypeParam{0});
 
     EXPECT_NEAR(s, expected, TypeParam(1e-5));
 }

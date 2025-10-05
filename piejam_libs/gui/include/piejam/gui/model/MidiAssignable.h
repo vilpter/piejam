@@ -18,8 +18,8 @@ class MidiAssignable final : public SubscribableModel
 
 public:
     MidiAssignable(
-            runtime::state_access const&,
-            runtime::midi_assignment_id const&);
+        runtime::state_access const&,
+        runtime::midi_assignment_id const&);
 
     Q_INVOKABLE void startLearn();
     Q_INVOKABLE void stopLearn();

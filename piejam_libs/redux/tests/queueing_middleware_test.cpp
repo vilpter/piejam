@@ -33,8 +33,8 @@ struct queaction
 struct single_dispatch_middleware
 {
     auto operator()(
-            middleware_functors<state_t, queaction> const& mw_fs,
-            queaction const& a)
+        middleware_functors<state_t, queaction> const& mw_fs,
+        queaction const& a)
     {
         if (dispatch)
         {
@@ -59,7 +59,7 @@ TEST(queueing_middleware, if_currently_not_dispatching_proceed_to_next)
     store_t store{[](state_t& st, queaction const& a) { st.push_back(a.x); }};
 
     store.apply_middleware(
-            make_mw_factory::make<queueing_middleware<queaction>>());
+        make_mw_factory::make<queueing_middleware<queaction>>());
 
     store.dispatch(queaction{23});
 
@@ -67,8 +67,9 @@ TEST(queueing_middleware, if_currently_not_dispatching_proceed_to_next)
     EXPECT_EQ(23, store.state()[0]);
 }
 
-TEST(queueing_middleware,
-     if_currently_dispatching_then_new_dispatched_action_is_queued)
+TEST(
+    queueing_middleware,
+    if_currently_dispatching_then_new_dispatched_action_is_queued)
 {
     using make_mw_factory = middleware_factory<state_t, queaction>;
 
@@ -77,7 +78,7 @@ TEST(queueing_middleware,
     store.apply_middleware(make_mw_factory::make<single_dispatch_middleware>());
 
     store.apply_middleware(
-            make_mw_factory::make<queueing_middleware<queaction>>());
+        make_mw_factory::make<queueing_middleware<queaction>>());
 
     store.dispatch(queaction{23});
 

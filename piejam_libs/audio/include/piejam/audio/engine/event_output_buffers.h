@@ -61,11 +61,11 @@ public:
     {
         BOOST_ASSERT(buffer_index < m_event_buffers.size());
         return *boost::polymorphic_downcast<event_buffer<T>*>(
-                m_event_buffers[buffer_index].get());
+            m_event_buffers[buffer_index].get());
     }
 
     auto get(std::size_t const buffer_index) const noexcept
-            -> abstract_event_buffer const&
+        -> abstract_event_buffer const&
     {
         BOOST_ASSERT(buffer_index < m_event_buffers.size());
         return *m_event_buffers[buffer_index];

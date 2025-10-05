@@ -17,15 +17,14 @@ namespace piejam::fx_modules::tuner
 
 auto
 make_component(runtime::internal_fx_component_factory_args const& args)
-        -> std::unique_ptr<audio::engine::component>
+    -> std::unique_ptr<audio::engine::component>
 {
     return runtime::components::make_stream(
-            args.fx_mod.streams->at(std::to_underlying(stream_key::input)),
-            args.stream_procs,
-            num_channels(args.fx_mod.bus_type),
-            args.sample_rate.samples_for_duration(
-                    std::chrono::milliseconds(120)),
-            "tuner");
+        args.fx_mod.streams->at(std::to_underlying(stream_key::input)),
+        args.stream_procs,
+        num_channels(args.fx_mod.bus_type),
+        args.sample_rate.samples_for_duration(std::chrono::milliseconds(120)),
+        "tuner");
 }
 
 } // namespace piejam::fx_modules::tuner

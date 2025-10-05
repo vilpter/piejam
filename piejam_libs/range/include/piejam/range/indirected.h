@@ -9,9 +9,7 @@
 namespace piejam::range
 {
 
-inline constexpr auto indirected =
-        std::views::transform([](auto&& x) -> decltype(auto) {
-            return *std::forward<decltype(x)>(x);
-        });
+inline constexpr auto indirected = std::views::transform(
+    [](auto&& x) -> decltype(auto) { return *std::forward<decltype(x)>(x); });
 
 } // namespace piejam::range

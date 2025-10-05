@@ -38,8 +38,8 @@ struct remove_external_audio_device final
 
 struct set_external_audio_device_bus_channel final
     : ui::cloneable_action<
-              set_external_audio_device_bus_channel,
-              reducible_action>
+          set_external_audio_device_bus_channel,
+          reducible_action>
     , visitable_audio_engine_action<set_external_audio_device_bus_channel>
 {
     external_audio::device_id device_id{};

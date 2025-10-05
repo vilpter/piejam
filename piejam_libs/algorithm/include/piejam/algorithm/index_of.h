@@ -20,13 +20,14 @@ namespace detail
 struct index_of_if_fn
 {
     template <
-            std::input_iterator I,
-            std::sentinel_for<I> S,
-            class Proj = std::identity,
-            std::indirect_unary_predicate<std::projected<I, Proj>> Predicate>
+        std::input_iterator I,
+        std::sentinel_for<I> S,
+        class Proj = std::identity,
+        std::indirect_unary_predicate<std::projected<I, Proj>> Predicate>
     [[nodiscard]]
-    constexpr auto operator()(I first, S last, Predicate pred, Proj proj = {})
-            const -> std::size_t
+    constexpr auto
+    operator()(I first, S last, Predicate pred, Proj proj = {}) const
+        -> std::size_t
     {
         for (std::size_t pos = 0; first != last; ++pos, ++first)
         {
@@ -40,19 +41,19 @@ struct index_of_if_fn
     }
 
     template <
-            std::ranges::input_range R,
-            class Proj = std::identity,
-            std::indirect_unary_predicate<
-                    std::projected<std::ranges::iterator_t<R>, Proj>> Predicate>
+        std::ranges::input_range R,
+        class Proj = std::identity,
+        std::indirect_unary_predicate<
+            std::projected<std::ranges::iterator_t<R>, Proj>> Predicate>
     [[nodiscard]]
-    constexpr auto
-    operator()(R const& r, Predicate pred, Proj proj = {}) const -> std::size_t
+    constexpr auto operator()(R const& r, Predicate pred, Proj proj = {}) const
+        -> std::size_t
     {
         return (*this)(
-                std::ranges::begin(r),
-                std::ranges::end(r),
-                std::move(pred),
-                std::move(proj));
+            std::ranges::begin(r),
+            std::ranges::end(r),
+            std::move(pred),
+            std::move(proj));
     }
 };
 
@@ -66,17 +67,17 @@ namespace detail
 struct index_of_fn
 {
     template <
-            std::input_iterator I,
-            std::sentinel_for<I> S,
-            class T,
-            class Proj = std::identity>
+        std::input_iterator I,
+        std::sentinel_for<I> S,
+        class T,
+        class Proj = std::identity>
         requires std::indirect_binary_predicate<
-                         std::ranges::equal_to,
-                         std::projected<I, Proj>,
-                         T const*>
+            std::ranges::equal_to,
+            std::projected<I, Proj>,
+            T const*>
     [[nodiscard]]
-    constexpr auto
-    operator()(I first, S last, T value, Proj proj = {}) const -> std::size_t
+    constexpr auto operator()(I first, S last, T value, Proj proj = {}) const
+        -> std::size_t
     {
         for (std::size_t pos = 0; first != last; ++pos, ++first)
         {
@@ -91,18 +92,18 @@ struct index_of_fn
 
     template <std::ranges::input_range R, class T, class Proj = std::identity>
         requires std::indirect_binary_predicate<
-                         std::ranges::equal_to,
-                         std::projected<std::ranges::iterator_t<R>, Proj>,
-                         T const*>
+            std::ranges::equal_to,
+            std::projected<std::ranges::iterator_t<R>, Proj>,
+            T const*>
     [[nodiscard]]
-    constexpr auto
-    operator()(R const& r, T value, Proj proj = {}) const -> std::size_t
+    constexpr auto operator()(R const& r, T value, Proj proj = {}) const
+        -> std::size_t
     {
         return (*this)(
-                std::ranges::begin(r),
-                std::ranges::end(r),
-                std::move(value),
-                std::move(proj));
+            std::ranges::begin(r),
+            std::ranges::end(r),
+            std::move(value),
+            std::move(proj));
     }
 };
 

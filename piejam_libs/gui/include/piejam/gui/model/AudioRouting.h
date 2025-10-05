@@ -24,16 +24,16 @@ class AudioRouting final : public SubscribableModel
     M_PIEJAM_GUI_CONSTANT_PROPERTY(bool, mixIsAvailable)
     M_PIEJAM_GUI_PROPERTY(bool, mixIsValid, setMixIsValid)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::AudioRoutingSelection*,
-            selected)
+        piejam::gui::model::AudioRoutingSelection*,
+        selected)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, devices)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, channels)
 
 public:
     AudioRouting(
-            runtime::state_access const&,
-            runtime::mixer::channel_id,
-            io_direction);
+        runtime::state_access const&,
+        runtime::mixer::channel_id,
+        io_direction);
 
     Q_INVOKABLE void changeToNone();
     Q_INVOKABLE void changeToMix();

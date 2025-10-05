@@ -19,9 +19,9 @@ class pointer_stride_iterator
 {
 public:
     using iterator_concept = std::conditional_t<
-            Stride == 1,
-            std::contiguous_iterator_tag,
-            std::random_access_iterator_tag>;
+        Stride == 1,
+        std::contiguous_iterator_tag,
+        std::random_access_iterator_tag>;
     using value_type = T;
     using pointer = T*;
     using reference = T&;
@@ -36,8 +36,8 @@ public:
     }
 
     constexpr pointer_stride_iterator(
-            pointer ptr,
-            difference_type stride) noexcept
+        pointer ptr,
+        difference_type stride) noexcept
         requires(Stride == dynamic_stride)
         : m_p(ptr)
         , m_stride(stride)
@@ -97,16 +97,16 @@ public:
         return temp;
     }
 
-    constexpr auto
-    operator+=(difference_type n) noexcept -> pointer_stride_iterator&
+    constexpr auto operator+=(difference_type n) noexcept
+        -> pointer_stride_iterator&
     {
         m_p += n * stride();
         return *this;
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator+(difference_type n) const noexcept -> pointer_stride_iterator
+    constexpr auto operator+(difference_type n) const noexcept
+        -> pointer_stride_iterator
     {
         pointer_stride_iterator temp(*this);
         return temp += n;
@@ -115,20 +115,20 @@ public:
     [[nodiscard]]
     friend constexpr auto
     operator+(difference_type n, pointer_stride_iterator const& it) noexcept
-            -> pointer_stride_iterator
+        -> pointer_stride_iterator
     {
         return it + n;
     }
 
-    constexpr auto
-    operator-=(difference_type n) noexcept -> pointer_stride_iterator&
+    constexpr auto operator-=(difference_type n) noexcept
+        -> pointer_stride_iterator&
     {
         return *this += -n;
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator-(difference_type n) const noexcept -> pointer_stride_iterator
+    constexpr auto operator-(difference_type n) const noexcept
+        -> pointer_stride_iterator
     {
         pointer_stride_iterator temp(*this);
         return temp -= n;
@@ -136,59 +136,59 @@ public:
 
     [[nodiscard]]
     constexpr auto operator-(pointer_stride_iterator const& rhs) const noexcept
-            -> difference_type
+        -> difference_type
     {
         verify_precondition(rhs);
         return (m_p - rhs.m_p) / stride();
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator==(pointer_stride_iterator const& rhs) const noexcept -> bool
+    constexpr auto operator==(pointer_stride_iterator const& rhs) const noexcept
+        -> bool
     {
         verify_precondition(rhs);
         return m_p == rhs.m_p;
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator!=(pointer_stride_iterator const& rhs) const noexcept -> bool
+    constexpr auto operator!=(pointer_stride_iterator const& rhs) const noexcept
+        -> bool
     {
         return !(*this == rhs);
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator<(pointer_stride_iterator const& rhs) const noexcept -> bool
+    constexpr auto operator<(pointer_stride_iterator const& rhs) const noexcept
+        -> bool
     {
         verify_precondition(rhs);
         return m_p < rhs.m_p;
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator>(pointer_stride_iterator const& rhs) const noexcept -> bool
+    constexpr auto operator>(pointer_stride_iterator const& rhs) const noexcept
+        -> bool
     {
         return rhs < *this;
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator<=(pointer_stride_iterator const& rhs) const noexcept -> bool
+    constexpr auto operator<=(pointer_stride_iterator const& rhs) const noexcept
+        -> bool
     {
         return !(rhs < *this);
     }
 
     [[nodiscard]]
-    constexpr auto
-    operator>=(pointer_stride_iterator const& rhs) const noexcept -> bool
+    constexpr auto operator>=(pointer_stride_iterator const& rhs) const noexcept
+        -> bool
     {
         return !(*this < rhs);
     }
 
 private:
     void verify_precondition(
-            [[maybe_unused]] pointer_stride_iterator const& rhs) const
+        [[maybe_unused]] pointer_stride_iterator const& rhs) const
     {
         BOOST_ASSERT(stride() == rhs.stride());
         BOOST_ASSERT((m_p - rhs.m_p) % stride() == 0);

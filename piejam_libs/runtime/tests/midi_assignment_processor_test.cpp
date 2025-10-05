@@ -47,9 +47,9 @@ struct midi_assignment_processor_test : testing::Test
     audio::engine::event_input_buffers ev_in_bufs;
     audio::engine::event_output_buffers ev_out_bufs;
     audio::engine::process_context ctx{
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = 16};
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = 16};
 
     std::unique_ptr<audio::engine::processor> proc;
 };
@@ -64,17 +64,18 @@ TEST_F(midi_assignment_processor_test, with_empty_input)
 
 TEST_F(midi_assignment_processor_test, with_mapped_event)
 {
-    setup({{midi_assignment_id{float_parameter_id::generate()},
-            midi_assignment{
-                    .channel = 1,
-                    .control_type = midi_assignment::type::cc,
-                    .control_id = 5}}});
+    setup(
+        {{midi_assignment_id{float_parameter_id::generate()},
+          midi_assignment{
+              .channel = 1,
+              .control_type = midi_assignment::type::cc,
+              .control_id = 5}}});
 
     midi::external_event ev{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     ev_in_buf.insert(1u, ev);
     proc->process(ctx);
@@ -89,17 +90,18 @@ TEST_F(midi_assignment_processor_test, with_mapped_event)
 
 TEST_F(midi_assignment_processor_test, with_event_not_matching_cc)
 {
-    setup({{midi_assignment_id{float_parameter_id::generate()},
-            midi_assignment{
-                    .channel = 1,
-                    .control_type = midi_assignment::type::cc,
-                    .control_id = 5}}});
+    setup(
+        {{midi_assignment_id{float_parameter_id::generate()},
+          midi_assignment{
+              .channel = 1,
+              .control_type = midi_assignment::type::cc,
+              .control_id = 5}}});
 
     midi::external_event ev{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 3, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 3, .value = 23}}};
 
     ev_in_buf.insert(1u, ev);
     proc->process(ctx);
@@ -111,17 +113,18 @@ TEST_F(midi_assignment_processor_test, with_event_not_matching_cc)
 
 TEST_F(midi_assignment_processor_test, with_event_not_matching_channel)
 {
-    setup({{midi_assignment_id{float_parameter_id::generate()},
-            midi_assignment{
-                    .channel = 1,
-                    .control_type = midi_assignment::type::cc,
-                    .control_id = 5}}});
+    setup(
+        {{midi_assignment_id{float_parameter_id::generate()},
+          midi_assignment{
+              .channel = 1,
+              .control_type = midi_assignment::type::cc,
+              .control_id = 5}}});
 
     midi::external_event ev{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 2,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 2,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     ev_in_buf.insert(1u, ev);
     proc->process(ctx);
@@ -133,28 +136,29 @@ TEST_F(midi_assignment_processor_test, with_event_not_matching_channel)
 
 TEST_F(midi_assignment_processor_test, with_multiple_assignments)
 {
-    setup({{midi_assignment_id{float_parameter_id::generate()},
-            midi_assignment{
-                    .channel = 1,
-                    .control_type = midi_assignment::type::cc,
-                    .control_id = 5}},
-           {midi_assignment_id{float_parameter_id::generate()},
-            midi_assignment{
-                    .channel = 2,
-                    .control_type = midi_assignment::type::cc,
-                    .control_id = 7}}});
+    setup(
+        {{midi_assignment_id{float_parameter_id::generate()},
+          midi_assignment{
+              .channel = 1,
+              .control_type = midi_assignment::type::cc,
+              .control_id = 5}},
+         {midi_assignment_id{float_parameter_id::generate()},
+          midi_assignment{
+              .channel = 2,
+              .control_type = midi_assignment::type::cc,
+              .control_id = 7}}});
 
     midi::external_event ev1{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     midi::external_event ev2{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 2,
-                    .data = midi::cc_event{.cc = 7, .value = 58}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 2,
+            .data = midi::cc_event{.cc = 7, .value = 58}}};
 
     ev_in_buf.insert(1u, ev1);
     ev_in_buf.insert(3u, ev2);
@@ -167,8 +171,8 @@ TEST_F(midi_assignment_processor_test, with_multiple_assignments)
         auto const& evr = *ev_out_bufs.get<midi::cc_event>(0).begin();
         EXPECT_EQ(1u, evr.offset());
         EXPECT_EQ(
-                std::get<midi::channel_cc_event>(ev1.event).data,
-                evr.value());
+            std::get<midi::channel_cc_event>(ev1.event).data,
+            evr.value());
     }
 
     {
@@ -176,8 +180,8 @@ TEST_F(midi_assignment_processor_test, with_multiple_assignments)
         auto const& evr = *ev_out_bufs.get<midi::cc_event>(1).begin();
         EXPECT_EQ(3u, evr.offset());
         EXPECT_EQ(
-                std::get<midi::channel_cc_event>(ev2.event).data,
-                evr.value());
+            std::get<midi::channel_cc_event>(ev2.event).data,
+            evr.value());
     }
 }
 

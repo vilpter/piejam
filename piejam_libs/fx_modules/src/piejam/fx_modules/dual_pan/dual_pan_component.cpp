@@ -31,34 +31,33 @@ class component final : public audio::engine::component
 {
 public:
     component(
-            runtime::fx::module const& fx_mod,
-            runtime::parameter_processor_factory& proc_factory,
-            std::string_view const name)
+        runtime::fx::module const& fx_mod,
+        runtime::parameter_processor_factory& proc_factory,
+        std::string_view const name)
         : m_mute_left_param_proc(
-                  runtime::processors::find_or_make_parameter_processor(
-                          proc_factory,
-                          fx_mod.parameters->at(
-                                  std::to_underlying(parameter_key::mute_left)),
-                          std::format("mute_left {}", name)))
+              runtime::processors::find_or_make_parameter_processor(
+                  proc_factory,
+                  fx_mod.parameters->at(
+                      std::to_underlying(parameter_key::mute_left)),
+                  std::format("mute_left {}", name)))
         , m_mute_right_param_proc(
-                  runtime::processors::find_or_make_parameter_processor(
-                          proc_factory,
-                          fx_mod.parameters->at(
-                                  std::to_underlying(
-                                          parameter_key::mute_right)),
-                          std::format("mute_right {}", name)))
+              runtime::processors::find_or_make_parameter_processor(
+                  proc_factory,
+                  fx_mod.parameters->at(
+                      std::to_underlying(parameter_key::mute_right)),
+                  std::format("mute_right {}", name)))
         , m_pan_left_param_proc(
-                  runtime::processors::find_or_make_parameter_processor(
-                          proc_factory,
-                          fx_mod.parameters->at(
-                                  std::to_underlying(parameter_key::pan_left)),
-                          std::format("pan_left {}", name)))
+              runtime::processors::find_or_make_parameter_processor(
+                  proc_factory,
+                  fx_mod.parameters->at(
+                      std::to_underlying(parameter_key::pan_left)),
+                  std::format("pan_left {}", name)))
         , m_pan_right_param_proc(
-                  runtime::processors::find_or_make_parameter_processor(
-                          proc_factory,
-                          fx_mod.parameters->at(
-                                  std::to_underlying(parameter_key::pan_right)),
-                          std::format("pan_right {}", name)))
+              runtime::processors::find_or_make_parameter_processor(
+                  proc_factory,
+                  fx_mod.parameters->at(
+                      std::to_underlying(parameter_key::pan_right)),
+                  std::format("pan_right {}", name)))
 
     {
     }
@@ -91,30 +90,30 @@ public:
         using namespace audio;
         using namespace audio::engine::endpoint_ports;
         engine::connect_event(
-                g,
-                *m_mute_left_param_proc,
-                from<0>,
-                *m_left_pan,
-                to<0>);
+            g,
+            *m_mute_left_param_proc,
+            from<0>,
+            *m_left_pan,
+            to<0>);
         engine::connect_event(
-                g,
-                *m_pan_left_param_proc,
-                from<0>,
-                *m_left_pan,
-                to<1>);
+            g,
+            *m_pan_left_param_proc,
+            from<0>,
+            *m_left_pan,
+            to<1>);
 
         engine::connect_event(
-                g,
-                *m_mute_right_param_proc,
-                from<0>,
-                *m_right_pan,
-                to<0>);
+            g,
+            *m_mute_right_param_proc,
+            from<0>,
+            *m_right_pan,
+            to<0>);
         engine::connect_event(
-                g,
-                *m_pan_right_param_proc,
-                from<0>,
-                *m_right_pan,
-                to<1>);
+            g,
+            *m_pan_right_param_proc,
+            from<0>,
+            *m_right_pan,
+            to<1>);
 
         engine::connect(g, *m_left_pan, from<0>, *m_left_mix_proc, to<0>);
         engine::connect(g, *m_right_pan, from<0>, *m_left_mix_proc, to<1>);
@@ -129,23 +128,23 @@ private:
     std::shared_ptr<audio::engine::processor> m_pan_left_param_proc;
     std::shared_ptr<audio::engine::processor> m_pan_right_param_proc;
     std::unique_ptr<audio::engine::component> m_left_pan{
-            audio::components::make_pan(
-                    audio::engine::make_mute_pan_processor("left_pan"),
-                    "left_pan")};
+        audio::components::make_pan(
+            audio::engine::make_mute_pan_processor("left_pan"),
+            "left_pan")};
     std::unique_ptr<audio::engine::component> m_right_pan{
-            audio::components::make_pan(
-                    audio::engine::make_mute_pan_processor("right_pan"),
-                    "right_pan")};
+        audio::components::make_pan(
+            audio::engine::make_mute_pan_processor("right_pan"),
+            "right_pan")};
     std::array<audio::engine::graph_endpoint, 2> const m_inputs{
-            audio::engine::in_endpoint(*m_left_pan, 0),
-            audio::engine::in_endpoint(*m_right_pan, 0)};
+        audio::engine::in_endpoint(*m_left_pan, 0),
+        audio::engine::in_endpoint(*m_right_pan, 0)};
     std::unique_ptr<audio::engine::processor> m_left_mix_proc{
-            audio::engine::make_mix_processor(2, "left_pan")};
+        audio::engine::make_mix_processor(2, "left_pan")};
     std::unique_ptr<audio::engine::processor> m_right_mix_proc{
-            audio::engine::make_mix_processor(2, "right_pan")};
+        audio::engine::make_mix_processor(2, "right_pan")};
     std::array<audio::engine::graph_endpoint, 2> const m_outputs{
-            audio::engine::graph_endpoint{.proc = *m_left_mix_proc, .port = 0},
-            audio::engine::graph_endpoint{.proc = *m_right_mix_proc, .port = 0},
+        audio::engine::graph_endpoint{.proc = *m_left_mix_proc, .port = 0},
+        audio::engine::graph_endpoint{.proc = *m_right_mix_proc, .port = 0},
     };
 };
 
@@ -153,12 +152,12 @@ private:
 
 auto
 make_component(runtime::internal_fx_component_factory_args const& args)
-        -> std::unique_ptr<audio::engine::component>
+    -> std::unique_ptr<audio::engine::component>
 {
     return std::make_unique<component>(
-            args.fx_mod,
-            args.param_procs,
-            args.name);
+        args.fx_mod,
+        args.param_procs,
+        args.name);
 }
 
 } // namespace piejam::fx_modules::dual_pan

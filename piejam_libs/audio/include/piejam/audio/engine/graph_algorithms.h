@@ -14,19 +14,19 @@ namespace piejam::audio::engine
 {
 
 auto connected_source(graph const&, graph_endpoint const& dst)
-        -> std::optional<graph_endpoint>;
+    -> std::optional<graph_endpoint>;
 auto connected_event_source(graph const&, graph_endpoint const& dst)
-        -> std::optional<graph_endpoint>;
+    -> std::optional<graph_endpoint>;
 
 auto has_audio_wire(
-        graph const&,
-        graph_endpoint const& src,
-        graph_endpoint const& dst) -> bool;
+    graph const&,
+    graph_endpoint const& src,
+    graph_endpoint const& dst) -> bool;
 
 auto has_event_wire(
-        graph const&,
-        graph_endpoint const& src,
-        graph_endpoint const& dst) -> bool;
+    graph const&,
+    graph_endpoint const& src,
+    graph_endpoint const& dst) -> bool;
 
 void remove_event_identity_processors(graph&);
 void remove_identity_processors(graph&);

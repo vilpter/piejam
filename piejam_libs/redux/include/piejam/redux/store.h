@@ -51,10 +51,10 @@ public:
     void apply_middleware(MiddlewareFactory&& mf)
     {
         m_dispatch = std::invoke(
-                std::forward<MiddlewareFactory>(mf),
-                [this]() -> State const& { return m_state; }, // get_state
-                [this](Action const& a) { dispatch(a); },     // dispatch
-                std::move(m_dispatch));                       // next
+            std::forward<MiddlewareFactory>(mf),
+            [this]() -> State const& { return m_state; }, // get_state
+            [this](Action const& a) { dispatch(a); },     // dispatch
+            std::move(m_dispatch));                       // next
     }
 
     template <concepts::subscriber<State> Subscriber>

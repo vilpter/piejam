@@ -24,11 +24,11 @@ struct thunk_action : tst_action
     }
 
     std::function<void(get_state_f<int> const&, dispatch_f<tst_action> const&)>
-            payload;
+        payload;
 
     void operator()(
-            get_state_f<int> const& get_state,
-            dispatch_f<tst_action> const& dispatch) const
+        get_state_f<int> const& get_state,
+        dispatch_f<tst_action> const& dispatch) const
     {
         payload(get_state, dispatch);
     }
@@ -54,9 +54,10 @@ TEST_F(thunk_middleware_test, invoke_thunk)
     ta.payload = [&from_thunk](auto&&, auto&&) { from_thunk = 5; };
 
     ASSERT_EQ(0, from_thunk);
-    sut(mw_fs_t{[this]() -> int const& { return state; },
-                [](auto const&) {},
-                [](auto const&) {}},
+    sut(mw_fs_t{
+            [this]() -> int const& { return state; },
+            [](auto const&) {},
+            [](auto const&) {}},
         static_cast<tst_action const&>(ta));
     EXPECT_EQ(5, from_thunk);
 }

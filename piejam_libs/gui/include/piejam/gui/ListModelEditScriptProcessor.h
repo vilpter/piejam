@@ -30,6 +30,6 @@ struct ListModelEditScriptProcessor
 
 template <class ListModel, class ListItemFactory>
 ListModelEditScriptProcessor(ListModel&, ListItemFactory&&)
-        -> ListModelEditScriptProcessor<ListModel, ListItemFactory>;
+    -> ListModelEditScriptProcessor<ListModel, ListItemFactory>;
 
 } // namespace piejam::gui

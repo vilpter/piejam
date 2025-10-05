@@ -32,9 +32,9 @@ public:
 private:
     std::vector<std::byte> m_memory;
     std::unique_ptr<std::pmr::monotonic_buffer_resource> m_memory_resource{
-            std::make_unique<std::pmr::monotonic_buffer_resource>(
-                    m_memory.data(),
-                    m_memory.size())};
+        std::make_unique<std::pmr::monotonic_buffer_resource>(
+            m_memory.data(),
+            m_memory.size())};
 };
 
 } // namespace piejam::audio::engine

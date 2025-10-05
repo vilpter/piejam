@@ -21,8 +21,9 @@ TEST(rt_task_executor, executes_after_wakeup)
     EXPECT_TRUE(worked);
 }
 
-TEST(rt_task_executor,
-     on_multiple_wakeups_block_until_previous_task_is_finished)
+TEST(
+    rt_task_executor,
+    on_multiple_wakeups_block_until_previous_task_is_finished)
 {
     std::size_t counter1{};
     std::size_t counter2{};

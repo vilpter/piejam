@@ -56,11 +56,11 @@ TEST(entity_map, add_add_add)
     auto id2 = sut.emplace(3);
     auto id3 = sut.emplace(5);
     EXPECT_THAT(
-            sut,
-            testing::ElementsAre(
-                    std::make_pair(id1, 2),
-                    std::make_pair(id2, 3),
-                    std::make_pair(id3, 5)));
+        sut,
+        testing::ElementsAre(
+            std::make_pair(id1, 2),
+            std::make_pair(id2, 3),
+            std::make_pair(id3, 5)));
 }
 
 } // namespace piejam::test

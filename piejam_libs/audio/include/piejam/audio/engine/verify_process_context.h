@@ -22,8 +22,8 @@ namespace piejam::audio::engine
 
 inline void
 verify_process_context(
-        [[maybe_unused]] processor const& proc,
-        [[maybe_unused]] process_context const& ctx)
+    [[maybe_unused]] processor const& proc,
+    [[maybe_unused]] process_context const& ctx)
 {
     BOOST_ASSERT(proc.num_inputs() == ctx.inputs.size());
     BOOST_ASSERT(proc.num_outputs() == ctx.outputs.size());
@@ -35,17 +35,19 @@ verify_process_context(
                                    mipp::isAligned(b.span().data()));
     }));
     BOOST_ASSERT(
-            std::ranges::all_of(ctx.outputs, [&](std::span<float> const b) {
-                return b.data() && (b.size() == ctx.buffer_size &&
-                                    mipp::isAligned(b.data()));
-            }));
-    BOOST_ASSERT(std::ranges::equal(
+        std::ranges::all_of(ctx.outputs, [&](std::span<float> const b) {
+            return b.data() &&
+                   (b.size() == ctx.buffer_size && mipp::isAligned(b.data()));
+        }));
+    BOOST_ASSERT(
+        std::ranges::equal(
             proc.event_inputs(),
             ctx.event_inputs,
             [](event_port const& p, abstract_event_buffer const* b) {
                 return !b || p.type() == b->type();
             }));
-    BOOST_ASSERT(std::ranges::equal(
+    BOOST_ASSERT(
+        std::ranges::equal(
             proc.event_outputs(),
             ctx.event_outputs,
             [](event_port const& p, auto const& b) {

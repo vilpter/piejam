@@ -13,8 +13,8 @@ namespace piejam::gui::model
 {
 
 FxBrowserEntryInternal::FxBrowserEntryInternal(
-        runtime::state_access const& state_access,
-        runtime::fx::internal_id const fx_type)
+    runtime::state_access const& state_access,
+    runtime::fx::internal_id const fx_type)
     : FxBrowserEntry(state_access)
     , m_fx_type(fx_type)
 {
@@ -36,7 +36,7 @@ FxBrowserEntryInternal::appendModule()
 {
     runtime::actions::insert_internal_fx_module action;
     action.fx_chain_id =
-            observe_once(runtime::selectors::select_fx_browser_fx_chain);
+        observe_once(runtime::selectors::select_fx_browser_fx_chain);
     action.position = npos;
     action.type = m_fx_type;
     action.show_fx_module = true;

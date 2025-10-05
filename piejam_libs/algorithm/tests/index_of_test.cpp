@@ -37,9 +37,9 @@ TEST(index_of, constexpr_not_found_item)
 TEST(index_of_if, returns_index_of_found_item)
 {
     std::array arr{
-            std::pair('x', 3.f),
-            std::pair('y', 5.f),
-            std::pair('z', 7.f)};
+        std::pair('x', 3.f),
+        std::pair('y', 5.f),
+        std::pair('z', 7.f)};
     EXPECT_EQ(1u, index_of_if(arr, [](auto const& p) {
                   return p.first == 'y';
               }));
@@ -51,9 +51,9 @@ TEST(index_of_if, returns_index_of_found_item)
 TEST(index_of_if, returns_npos_if_item_not_found)
 {
     std::array arr{
-            std::pair('x', 3.f),
-            std::pair('y', 5.f),
-            std::pair('z', 7.f)};
+        std::pair('x', 3.f),
+        std::pair('y', 5.f),
+        std::pair('z', 7.f)};
     EXPECT_EQ(npos, index_of_if(arr, [](auto const& p) {
                   return p.first == 'a';
               }));
@@ -61,9 +61,8 @@ TEST(index_of_if, returns_npos_if_item_not_found)
 
 TEST(index_of_if, constexpr_found_item)
 {
-    static_assert(2u == index_of_if(std::array{5, 23, 0}, [](auto x) {
-                      return x == 0;
-                  }));
+    static_assert(
+        2u == index_of_if(std::array{5, 23, 0}, [](auto x) { return x == 0; }));
 }
 
 TEST(index_of_if, constexpr_not_found_item)

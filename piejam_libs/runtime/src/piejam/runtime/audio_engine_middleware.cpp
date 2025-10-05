@@ -91,12 +91,12 @@ struct update_devices final
         };
 
         update_channels(
-                selected_sc.num_channels.in(),
-                st.external_audio_state.io_ids.in().get());
+            selected_sc.num_channels.in(),
+            st.external_audio_state.io_ids.in().get());
 
         update_channels(
-                selected_sc.num_channels.out(),
-                st.external_audio_state.io_ids.out().get());
+            selected_sc.num_channels.out(),
+            st.external_audio_state.io_ids.out().get());
     }
 };
 
@@ -115,18 +115,18 @@ struct update_info final : ui::cloneable_action<update_info, reducible_action>
 } // namespace
 
 audio_engine_middleware::audio_engine_middleware(
-        thread::configuration const& audio_thread_config,
-        std::span<thread::configuration const> const wt_configs,
-        audio::sound_card_manager& sound_card_manager,
-        ladspa::processor_factory& ladspa_processor_factory,
-        std::unique_ptr<midi_input_controller> midi_controller)
+    thread::configuration const& audio_thread_config,
+    std::span<thread::configuration const> const wt_configs,
+    audio::sound_card_manager& sound_card_manager,
+    ladspa::processor_factory& ladspa_processor_factory,
+    std::unique_ptr<midi_input_controller> midi_controller)
     : m_audio_thread_config(audio_thread_config)
     , m_workers(wt_configs.begin(), wt_configs.end())
     , m_sound_card_manager(sound_card_manager)
     , m_ladspa_processor_factory(ladspa_processor_factory)
     , m_midi_controller(
-              midi_controller ? std::move(midi_controller)
-                              : make_dummy_midi_input_controller())
+          midi_controller ? std::move(midi_controller)
+                          : make_dummy_midi_input_controller())
     , m_io_process(audio::make_dummy_io_process())
 {
 }
@@ -136,30 +136,29 @@ audio_engine_middleware::~audio_engine_middleware() = default;
 template <class Action>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        Action const& a)
+    middleware_functors const& mw_fs,
+    Action const& a)
 {
     mw_fs.next(a);
 }
 
 static auto
 make_update_devices_action(
-        audio::sound_card_manager& device_manager,
-        box<audio::sound_cards> const& new_devices,
-        box<audio::sound_cards> const& current_devices,
-        std::size_t const current_index,
-        audio::sample_rate const sample_rate,
-        audio::period_size const period_size) -> update_devices
+    audio::sound_card_manager& device_manager,
+    box<audio::sound_cards> const& new_devices,
+    box<audio::sound_cards> const& current_devices,
+    std::size_t const current_index,
+    audio::sample_rate const sample_rate,
+    audio::period_size const period_size) -> update_devices
 {
     update_devices next_action;
     next_action.sound_cards = new_devices;
 
     next_action.selected_sc.index =
-            current_index != npos
-                    ? algorithm::index_of(
-                              *new_devices,
-                              current_devices.get()[current_index])
-                    : npos;
+        current_index != npos ? algorithm::index_of(
+                                    *new_devices,
+                                    current_devices.get()[current_index])
+                              : npos;
 
     if (next_action.selected_sc.index == npos)
     {
@@ -170,7 +169,7 @@ make_update_devices_action(
 
     next_action.selected_sc.num_channels = selected_sc.num_channels;
     next_action.selected_sc.hw_params =
-            box(device_manager.get_hw_params(selected_sc, {}, {}));
+        box(device_manager.get_hw_params(selected_sc, {}, {}));
 
     auto next_value = [](auto const& values, auto current) {
         auto const it = algorithm::find_or_get_first(values, current);
@@ -178,27 +177,27 @@ make_update_devices_action(
     };
 
     next_action.sample_rate = next_value(
-            next_action.selected_sc.hw_params->sample_rates,
-            sample_rate.invalid() ? audio::sample_rate{48000} : sample_rate);
+        next_action.selected_sc.hw_params->sample_rates,
+        sample_rate.invalid() ? audio::sample_rate{48000} : sample_rate);
 
     if (next_action.sample_rate.valid())
     {
         next_action.selected_sc.hw_params = device_manager.get_hw_params(
-                selected_sc,
-                next_action.sample_rate,
-                {});
+            selected_sc,
+            next_action.sample_rate,
+            {});
     }
 
     next_action.period_size = next_value(
-            next_action.selected_sc.hw_params->period_sizes,
-            period_size.invalid() ? audio::period_size{192} : period_size);
+        next_action.selected_sc.hw_params->period_sizes,
+        period_size.invalid() ? audio::period_size{192} : period_size);
 
     if (next_action.period_size.valid())
     {
         next_action.selected_sc.hw_params = device_manager.get_hw_params(
-                selected_sc,
-                next_action.sample_rate,
-                next_action.period_size);
+            selected_sc,
+            next_action.sample_rate,
+            next_action.period_size);
     }
 
     return next_action;
@@ -207,21 +206,21 @@ make_update_devices_action(
 template <>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        actions::apply_app_config const& a)
+    middleware_functors const& mw_fs,
+    actions::apply_app_config const& a)
 {
     state const& current_state = mw_fs.get_state();
 
     mw_fs.next(make_update_devices_action(
-            m_sound_card_manager,
-            current_state.sound_cards,
-            current_state.sound_cards,
-            algorithm::index_of(
-                    current_state.sound_cards.get(),
-                    a.conf.sound_card,
-                    &audio::sound_card_descriptor::name),
-            a.conf.sample_rate,
-            a.conf.period_size));
+        m_sound_card_manager,
+        current_state.sound_cards,
+        current_state.sound_cards,
+        algorithm::index_of(
+            current_state.sound_cards.get(),
+            a.conf.sound_card,
+            &audio::sound_card_descriptor::name),
+        a.conf.sample_rate,
+        a.conf.period_size));
 
     mw_fs.next(a);
 }
@@ -229,42 +228,42 @@ audio_engine_middleware::process_device_action(
 template <>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        actions::refresh_sound_cards const&)
+    middleware_functors const& mw_fs,
+    actions::refresh_sound_cards const&)
 {
     state const& current_state = mw_fs.get_state();
 
     mw_fs.next(make_update_devices_action(
-            m_sound_card_manager,
-            box(m_sound_card_manager.get_sound_cards()),
-            current_state.sound_cards,
-            current_state.selected_sound_card.index,
-            current_state.sample_rate,
-            current_state.period_size));
+        m_sound_card_manager,
+        box(m_sound_card_manager.get_sound_cards()),
+        current_state.sound_cards,
+        current_state.selected_sound_card.index,
+        current_state.sample_rate,
+        current_state.period_size));
 }
 
 template <>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        actions::initiate_sound_card_selection const& action)
+    middleware_functors const& mw_fs,
+    actions::initiate_sound_card_selection const& action)
 {
     state const& current_state = mw_fs.get_state();
 
     mw_fs.next(make_update_devices_action(
-            m_sound_card_manager,
-            current_state.sound_cards,
-            current_state.sound_cards,
-            action.index,
-            current_state.sample_rate,
-            current_state.period_size));
+        m_sound_card_manager,
+        current_state.sound_cards,
+        current_state.sound_cards,
+        action.index,
+        current_state.sample_rate,
+        current_state.period_size));
 }
 
 template <>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        actions::select_sample_rate const& action)
+    middleware_functors const& mw_fs,
+    actions::select_sample_rate const& action)
 {
     state const& current_state = mw_fs.get_state();
 
@@ -272,20 +271,20 @@ audio_engine_middleware::process_device_action(
     if (action.index < srs.size())
     {
         mw_fs.next(make_update_devices_action(
-                m_sound_card_manager,
-                current_state.sound_cards,
-                current_state.sound_cards,
-                current_state.selected_sound_card.index,
-                srs[action.index],
-                current_state.period_size));
+            m_sound_card_manager,
+            current_state.sound_cards,
+            current_state.sound_cards,
+            current_state.selected_sound_card.index,
+            srs[action.index],
+            current_state.period_size));
     }
 }
 
 template <>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        actions::select_period_size const& action)
+    middleware_functors const& mw_fs,
+    actions::select_period_size const& action)
 {
     state const& current_state = mw_fs.get_state();
 
@@ -293,20 +292,20 @@ audio_engine_middleware::process_device_action(
     if (action.index < pss.size())
     {
         mw_fs.next(make_update_devices_action(
-                m_sound_card_manager,
-                current_state.sound_cards,
-                current_state.sound_cards,
-                current_state.selected_sound_card.index,
-                current_state.sample_rate,
-                pss[action.index]));
+            m_sound_card_manager,
+            current_state.sound_cards,
+            current_state.sound_cards,
+            current_state.selected_sound_card.index,
+            current_state.sample_rate,
+            pss[action.index]));
     }
 }
 
 template <>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        actions::activate_midi_device const& action)
+    middleware_functors const& mw_fs,
+    actions::activate_midi_device const& action)
 {
     if (m_midi_controller->activate_input_device(action.device_id))
     {
@@ -317,8 +316,8 @@ audio_engine_middleware::process_device_action(
 template <>
 void
 audio_engine_middleware::process_device_action(
-        middleware_functors const& mw_fs,
-        actions::deactivate_midi_device const& action)
+    middleware_functors const& mw_fs,
+    actions::deactivate_midi_device const& action)
 {
     m_midi_controller->deactivate_input_device(action.device_id);
     mw_fs.next(action);
@@ -327,8 +326,8 @@ audio_engine_middleware::process_device_action(
 template <class Action>
 void
 audio_engine_middleware::process_engine_action(
-        middleware_functors const& mw_fs,
-        Action const& a)
+    middleware_functors const& mw_fs,
+    Action const& a)
 {
     mw_fs.next(a);
     rebuild(mw_fs.get_state());
@@ -337,8 +336,8 @@ audio_engine_middleware::process_engine_action(
 template <class Parameter>
 void
 audio_engine_middleware::process_engine_action(
-        middleware_functors const& mw_fs,
-        actions::set_parameter_value<Parameter> const& a)
+    middleware_functors const& mw_fs,
+    actions::set_parameter_value<Parameter> const& a)
 {
     if (m_engine)
     {
@@ -359,9 +358,9 @@ audio_engine_middleware::process_engine_action(
 template <std::ranges::range Parameters>
 static void
 collect_parameter_updates(
-        Parameters&& params,
-        audio_engine const& engine,
-        actions::audio_engine_sync_update& action)
+    Parameters&& params,
+    audio_engine const& engine,
+    actions::audio_engine_sync_update& action)
 {
     algorithm::for_each_visit(std::forward<Parameters>(params), [&](auto id) {
         if (auto value = engine.get_parameter_update(id); value)
@@ -374,9 +373,9 @@ collect_parameter_updates(
 template <std::ranges::range Streams>
 static void
 collect_stream_updates(
-        Streams const& streams,
-        audio_engine const& engine,
-        actions::audio_engine_sync_update& action)
+    Streams const& streams,
+    audio_engine const& engine,
+    actions::audio_engine_sync_update& action)
 {
     for (auto id : streams)
     {
@@ -390,8 +389,8 @@ collect_stream_updates(
 template <>
 void
 audio_engine_middleware::process_engine_action(
-        middleware_functors const& mw_fs,
-        actions::request_audio_engine_sync const&)
+    middleware_functors const& mw_fs,
+    actions::request_audio_engine_sync const&)
 {
     if (m_engine)
     {
@@ -400,14 +399,14 @@ audio_engine_middleware::process_engine_action(
         actions::audio_engine_sync_update next_action;
 
         collect_parameter_updates(
-                st.midi_assignments.get() | std::views::keys,
-                *m_engine,
-                next_action);
+            st.midi_assignments.get() | std::views::keys,
+            *m_engine,
+            next_action);
 
         collect_stream_updates(
-                st.streams | std::views::keys,
-                *m_engine,
-                next_action);
+            st.streams | std::views::keys,
+            *m_engine,
+            next_action);
 
         if (!next_action.empty())
         {
@@ -419,8 +418,8 @@ audio_engine_middleware::process_engine_action(
 template <>
 void
 audio_engine_middleware::process_engine_action(
-        middleware_functors const& mw_fs,
-        actions::stop_recording const& a)
+    middleware_functors const& mw_fs,
+    actions::stop_recording const& a)
 {
     mw_fs.next(a);
     rebuild(mw_fs.get_state());
@@ -429,8 +428,8 @@ audio_engine_middleware::process_engine_action(
 template <>
 void
 audio_engine_middleware::process_engine_action(
-        middleware_functors const& mw_fs,
-        actions::request_info_update const&)
+    middleware_functors const& mw_fs,
+    actions::request_info_update const&)
 {
     {
         update_info next_action;
@@ -445,16 +444,15 @@ audio_engine_middleware::process_engine_action(
         if (auto learned_midi = m_engine->get_learned_midi())
         {
             if (auto const* const cc_event =
-                        std::get_if<midi::channel_cc_event>(
-                                &learned_midi->event))
+                    std::get_if<midi::channel_cc_event>(&learned_midi->event))
             {
                 actions::update_midi_assignments next_action;
                 next_action.assignments.emplace(
-                        *mw_fs.get_state().midi_learning,
-                        midi_assignment{
-                                .channel = cc_event->channel,
-                                .control_type = midi_assignment::type::cc,
-                                .control_id = cc_event->data.cc});
+                    *mw_fs.get_state().midi_learning,
+                    midi_assignment{
+                        .channel = cc_event->channel,
+                        .control_type = midi_assignment::type::cc,
+                        .control_id = cc_event->data.cc});
 
                 mw_fs.next(next_action);
             }
@@ -488,8 +486,8 @@ audio_engine_middleware::open_sound_card(state const& st)
     try
     {
         auto io_process = m_sound_card_manager.make_io_process(
-                st.sound_cards.get()[st.selected_sound_card.index],
-                audio::sound_card_config{st.sample_rate, st.period_size});
+            st.sound_cards.get()[st.selected_sound_card.index],
+            audio::sound_card_config{st.sample_rate, st.period_size});
         m_io_process.swap(io_process);
     }
     catch (std::exception const& err)
@@ -506,19 +504,19 @@ audio_engine_middleware::start_engine(state const& st)
     if (m_io_process->is_open())
     {
         m_engine = std::make_unique<audio_engine>(
-                m_workers,
-                st.sample_rate,
-                st.selected_sound_card.num_channels.in(),
-                st.selected_sound_card.num_channels.out());
+            m_workers,
+            st.sample_rate,
+            st.selected_sound_card.num_channels.in(),
+            st.selected_sound_card.num_channels.out());
 
         m_io_process->start(
-                m_audio_thread_config,
-                [engine = m_engine.get()](auto const& in, auto const& out) {
-                    engine->init_process(in, out);
-                },
-                [engine = m_engine.get()](auto const buffer_size) {
-                    return engine->process(buffer_size);
-                });
+            m_audio_thread_config,
+            [engine = m_engine.get()](auto const& in, auto const& out) {
+                engine->init_process(in, out);
+            },
+            [engine = m_engine.get()](auto const buffer_size) {
+                return engine->process(buffer_size);
+            });
 
         while (!m_io_process->is_running())
         {
@@ -538,11 +536,11 @@ audio_engine_middleware::rebuild(state const& st)
     }
 
     if (!m_engine->rebuild(
-                st,
-                [this, sr = st.sample_rate](ladspa::instance_id id) {
-                    return m_ladspa_processor_factory.make_processor(id, sr);
-                },
-                m_midi_controller->make_input_event_handler()))
+            st,
+            [this, sr = st.sample_rate](ladspa::instance_id id) {
+                return m_ladspa_processor_factory.make_processor(id, sr);
+            },
+            m_midi_controller->make_input_event_handler()))
     {
         spdlog::error("Rebuilding audio engine graph failed.");
     }
@@ -550,8 +548,8 @@ audio_engine_middleware::rebuild(state const& st)
 
 void
 audio_engine_middleware::operator()(
-        middleware_functors const& mw_fs,
-        action const& action)
+    middleware_functors const& mw_fs,
+    action const& action)
 {
     if (auto a = dynamic_cast<actions::audio_io_process_action const*>(&action))
     {
@@ -564,8 +562,8 @@ audio_engine_middleware::operator()(
 
         close_sound_card();
 
-        auto v = ui::make_action_visitor<
-                actions::audio_io_process_action_visitor>(
+        auto v =
+            ui::make_action_visitor<actions::audio_io_process_action_visitor>(
                 [&](auto&& a) { process_device_action(mw_fs, a); });
 
         a->visit(v);
@@ -574,10 +572,10 @@ audio_engine_middleware::operator()(
         start_engine(st);
     }
     else if (
-            auto a = dynamic_cast<actions::audio_engine_action const*>(&action))
+        auto a = dynamic_cast<actions::audio_engine_action const*>(&action))
     {
         auto v = ui::make_action_visitor<actions::audio_engine_action_visitor>(
-                [&](auto&& a) { process_engine_action(mw_fs, a); });
+            [&](auto&& a) { process_engine_action(mw_fs, a); });
 
         a->visit(v);
     }

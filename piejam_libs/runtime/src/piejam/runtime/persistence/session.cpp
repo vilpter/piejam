@@ -18,8 +18,8 @@ namespace piejam::audio
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-        bus_type,
-        {{bus_type::mono, "mono"}, {bus_type::stereo, "stereo"}})
+    bus_type,
+    {{bus_type::mono, "mono"}, {bus_type::stereo, "stereo"}})
 
 template <class T>
 void
@@ -42,48 +42,48 @@ namespace piejam::runtime
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-        midi_assignment::type,
-        {{midi_assignment::type::cc, "cc"}})
+    midi_assignment::type,
+    {{midi_assignment::type::cc, "cc"}})
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        midi_assignment,
-        channel,
-        control_type,
-        control_id);
+    midi_assignment,
+    channel,
+    control_type,
+    control_id);
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-        material_color,
-        {
-                {material_color::amber, "amber"},
-                {material_color::blue, "blue"},
-                {material_color::blue_grey, "blue_grey"},
-                {material_color::brown, "brown"},
-                {material_color::cyan, "cyan"},
-                {material_color::deep_orange, "deep_orange"},
-                {material_color::deep_purple, "deep_purple"},
-                {material_color::green, "green"},
-                {material_color::grey, "grey"},
-                {material_color::indigo, "indigo"},
-                {material_color::light_blue, "light_blue"},
-                {material_color::light_green, "light_green"},
-                {material_color::lime, "lime"},
-                {material_color::orange, "orange"},
-                {material_color::pink, "pink"},
-                {material_color::red, "red"},
-                {material_color::teal, "teal"},
-                {material_color::yellow, "yellow"},
-        });
+    material_color,
+    {
+        {material_color::amber, "amber"},
+        {material_color::blue, "blue"},
+        {material_color::blue_grey, "blue_grey"},
+        {material_color::brown, "brown"},
+        {material_color::cyan, "cyan"},
+        {material_color::deep_orange, "deep_orange"},
+        {material_color::deep_purple, "deep_purple"},
+        {material_color::green, "green"},
+        {material_color::grey, "grey"},
+        {material_color::indigo, "indigo"},
+        {material_color::light_blue, "light_blue"},
+        {material_color::light_green, "light_green"},
+        {material_color::lime, "lime"},
+        {material_color::orange, "orange"},
+        {material_color::pink, "pink"},
+        {material_color::red, "red"},
+        {material_color::teal, "teal"},
+        {material_color::yellow, "yellow"},
+    });
 
 namespace mixer
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-        channel_type,
-        {
-                {channel_type::mono, "mono"},
-                {channel_type::stereo, "stereo"},
-                {channel_type::aux, "aux"},
-        })
+    channel_type,
+    {
+        {channel_type::mono, "mono"},
+        {channel_type::stereo, "stereo"},
+        {channel_type::aux, "aux"},
+    })
 
 } // namespace mixer
 
@@ -120,21 +120,19 @@ from_json(nlohmann::json const& j, tagged_value<Parameter>& v)
 }
 
 static auto const parameter_value_assignment_serializer =
-        persistence::variant_serializer{
-                persistence::variant_option<tagged_value<float_parameter>>{
-                        "float"},
-                persistence::variant_option<tagged_value<int_parameter>>{"int"},
-                persistence::variant_option<tagged_value<bool_parameter>>{
-                        "bool"},
-                persistence::variant_option<tagged_value<enum_parameter>>{
-                        "enum"},
-        };
+    persistence::variant_serializer{
+        persistence::variant_option<tagged_value<float_parameter>>{"float"},
+        persistence::variant_option<tagged_value<int_parameter>>{"int"},
+        persistence::variant_option<tagged_value<bool_parameter>>{"bool"},
+        persistence::variant_option<tagged_value<enum_parameter>>{"enum"},
+    };
 
 void
 to_json(nlohmann::json& j, parameter_value_assignment const& p)
 {
-    j = {{"key", p.key},
-         {"value", parameter_value_assignment_serializer.to_json(p.value)}};
+    j = {
+        {"key", p.key},
+        {"value", parameter_value_assignment_serializer.to_json(p.value)}};
 }
 
 void
@@ -161,10 +159,10 @@ get_version(nlohmann::json const& json_ses) -> unsigned
 }
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        session::external_audio_device_config,
-        name,
-        bus_type,
-        channels);
+    session::external_audio_device_config,
+    name,
+    bus_type,
+    channels);
 
 static auto const s_key_internal = "internal";
 static auto const s_key_ladspa = "ladspa";
@@ -172,25 +170,25 @@ static auto const s_key_ladspa = "ladspa";
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(session::internal_fx, type, preset, midi);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        session::ladspa_plugin,
-        id,
-        name,
-        preset,
-        midi);
+    session::ladspa_plugin,
+    id,
+    name,
+    preset,
+    midi);
 
 void
 to_json(nlohmann::json& j, session::fx_plugin const& fx_plug)
 {
     std::visit(
-            boost::hof::match(
-                    [&j](session::internal_fx const& fx) {
-                        j = {{s_key_internal, fx}};
-                    },
-                    [&j](session::ladspa_plugin const& ladspa_plug) {
-                        j = {{s_key_ladspa, ladspa_plug}};
-                    },
-                    [](std::monostate) { BOOST_ASSERT(false); }),
-            fx_plug.as_variant());
+        boost::hof::match(
+            [&j](session::internal_fx const& fx) {
+                j = {{s_key_internal, fx}};
+            },
+            [&j](session::ladspa_plugin const& ladspa_plug) {
+                j = {{s_key_ladspa, ladspa_plug}};
+            },
+            [](std::monostate) { BOOST_ASSERT(false); }),
+        fx_plug.as_variant());
 }
 
 void
@@ -215,47 +213,47 @@ from_json(nlohmann::json const& j, session::fx_plugin& fx_plug)
 }
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-        session::mixer_io_type,
-        {{session::mixer_io_type::none, "none"},
-         {session::mixer_io_type::mix, "mix"},
-         {session::mixer_io_type::device, "device"},
-         {session::mixer_io_type::channel, "channel"}})
+    session::mixer_io_type,
+    {{session::mixer_io_type::none, "none"},
+     {session::mixer_io_type::mix, "mix"},
+     {session::mixer_io_type::device, "device"},
+     {session::mixer_io_type::channel, "channel"}})
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(session::mixer_io, type, index);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        session::mixer_aux_send,
-        channel_index,
-        parameters);
+    session::mixer_aux_send,
+    channel_index,
+    parameters);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        session::mixer_channel,
-        name,
-        color,
-        channel_type,
-        parameter,
-        midi,
-        fx_chain,
-        in,
-        out,
-        aux_sends);
+    session::mixer_channel,
+    name,
+    color,
+    channel_type,
+    parameter,
+    midi,
+    fx_chain,
+    in,
+    out,
+    aux_sends);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        session::aux_channel,
-        channel_index,
-        parameters);
+    session::aux_channel,
+    channel_index,
+    parameters);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-        session,
-        external_audio_input_devices,
-        external_audio_output_devices,
-        main_mixer_channel,
-        mixer_channels,
-        aux_channels);
+    session,
+    external_audio_input_devices,
+    external_audio_output_devices,
+    main_mixer_channel,
+    mixer_channels,
+    aux_channels);
 
 using upgrade_function = void (*)(nlohmann::json&);
 using upgrade_functions_array =
-        std::array<upgrade_function, current_session_version>;
+    std::array<upgrade_function, current_session_version>;
 
 template <size_t Version>
 static void upgrade(nlohmann::json&);
@@ -263,7 +261,7 @@ static void upgrade(nlohmann::json&);
 template <size_t... I>
 static auto
 make_upgrade_functions_array(std::index_sequence<I...>)
-        -> upgrade_functions_array
+    -> upgrade_functions_array
 {
     return upgrade_functions_array{{upgrade<I>...}};
 }
@@ -272,7 +270,7 @@ static auto
 make_upgrade_functions_array() -> upgrade_functions_array
 {
     return make_upgrade_functions_array(
-            std::make_index_sequence<current_session_version>());
+        std::make_index_sequence<current_session_version>());
 }
 
 static void
@@ -324,8 +322,8 @@ void
 save_session(std::ostream& out, session const& ses)
 {
     nlohmann::json json_ses = {
-            {s_key_version, current_session_version},
-            {s_key_session, ses}};
+        {s_key_version, current_session_version},
+        {s_key_session, ses}};
     out << json_ses.dump(4) << std::endl;
 }
 

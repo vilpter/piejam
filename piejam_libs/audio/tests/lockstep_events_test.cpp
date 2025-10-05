@@ -31,7 +31,7 @@ TEST_F(lockstep_events_test, single_buffer_with_one_event)
     buf.insert(3, 1.f);
     float value{};
     std::tie(value) =
-            lockstep_events([](std::size_t, float) {}, std::tuple(value), buf);
+        lockstep_events([](std::size_t, float) {}, std::tuple(value), buf);
     EXPECT_FLOAT_EQ(1.f, value);
 }
 
@@ -42,7 +42,7 @@ TEST_F(lockstep_events_test, single_buffer_with_two_consecutive_events)
     buf.insert(5, 3.f);
     float value{};
     std::tie(value) =
-            lockstep_events([](std::size_t, float) {}, std::tuple(value), buf);
+        lockstep_events([](std::size_t, float) {}, std::tuple(value), buf);
     EXPECT_FLOAT_EQ(3.f, value);
 }
 
@@ -62,15 +62,15 @@ TEST_F(lockstep_events_test, two_buffer_with_multiple_events)
     int value1{};
     int value2{};
     std::tie(value1, value2) = lockstep_events(
-            [&result](std::size_t offset, int v1, int v2) {
-                result.emplace_back(offset, v1 * v2);
-            },
-            std::tuple(value1, value2),
-            buf1,
-            buf2);
+        [&result](std::size_t offset, int v1, int v2) {
+            result.emplace_back(offset, v1 * v2);
+        },
+        std::tuple(value1, value2),
+        buf1,
+        buf2);
 
     std::vector<std::pair<std::size_t, int>>
-            expected{{2, 0}, {3, 1}, {4, 2}, {5, 4}, {6, 6}, {7, 12}, {7, 16}};
+        expected{{2, 0}, {3, 1}, {4, 2}, {5, 4}, {6, 6}, {7, 12}, {7, 16}};
     EXPECT_EQ(4, value1);
     EXPECT_EQ(4, value2);
     EXPECT_TRUE(std::ranges::equal(expected, result));

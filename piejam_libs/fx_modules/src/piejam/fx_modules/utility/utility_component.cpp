@@ -33,7 +33,7 @@ mono_gain_converter(float gain, bool invert) -> float
 
 auto
 stereo_gain_converter(float gain, bool invert_left, bool invert_right)
-        -> std::tuple<float, float>
+    -> std::tuple<float, float>
 {
     return std::tuple{invert_left ? -gain : gain, invert_right ? -gain : gain};
 }
@@ -43,19 +43,16 @@ make_gain_converter_processor(audio::bus_type bus_type, std::string_view name)
 {
     using namespace std::string_view_literals;
     return bus_type == audio::bus_type::mono
-                   ? audio::engine::make_event_converter_processor(
-                             &mono_gain_converter,
-                             std::array{"gain"sv, "invert"sv},
-                             std::array{"gain"sv},
-                             name)
-                   : audio::engine::make_event_converter_processor(
-                             &stereo_gain_converter,
-                             std::array{
-                                     "gain"sv,
-                                     "invert_left"sv,
-                                     "invert_right"sv},
-                             std::array{"gain_left"sv, "gain_right"sv},
-                             name);
+               ? audio::engine::make_event_converter_processor(
+                     &mono_gain_converter,
+                     std::array{"gain"sv, "invert"sv},
+                     std::array{"gain"sv},
+                     name)
+               : audio::engine::make_event_converter_processor(
+                     &stereo_gain_converter,
+                     std::array{"gain"sv, "invert_left"sv, "invert_right"sv},
+                     std::array{"gain_left"sv, "gain_right"sv},
+                     name);
 }
 
 class component final : public audio::engine::component
@@ -134,27 +131,27 @@ public:
         m_amplifier->connect(g);
 
         audio::engine::connect_event(
-                g,
-                *m_gain_param_proc,
-                from<0>,
-                *m_gain_converter_proc,
-                to<0>);
+            g,
+            *m_gain_param_proc,
+            from<0>,
+            *m_gain_converter_proc,
+            to<0>);
 
         if (m_invert_param_proc)
         {
             audio::engine::connect_event(
-                    g,
-                    *m_invert_param_proc,
-                    from<0>,
-                    *m_gain_converter_proc,
-                    to<1>);
+                g,
+                *m_invert_param_proc,
+                from<0>,
+                *m_gain_converter_proc,
+                to<1>);
 
             audio::engine::connect_event(
-                    g,
-                    *m_gain_converter_proc,
-                    from<0>,
-                    *m_amplifier,
-                    to<0>);
+                g,
+                *m_gain_converter_proc,
+                from<0>,
+                *m_amplifier,
+                to<0>);
         }
         else
         {
@@ -162,25 +159,25 @@ public:
             BOOST_ASSERT(m_invert_right_param_proc);
 
             audio::engine::connect_event(
-                    g,
-                    *m_invert_left_param_proc,
-                    from<0>,
-                    *m_gain_converter_proc,
-                    to<1>);
+                g,
+                *m_invert_left_param_proc,
+                from<0>,
+                *m_gain_converter_proc,
+                to<1>);
 
             audio::engine::connect_event(
-                    g,
-                    *m_invert_right_param_proc,
-                    from<0>,
-                    *m_gain_converter_proc,
-                    to<2>);
+                g,
+                *m_invert_right_param_proc,
+                from<0>,
+                *m_gain_converter_proc,
+                to<2>);
 
             audio::engine::connect_event(
-                    g,
-                    *m_gain_converter_proc,
-                    from<0, 1>,
-                    *m_amplifier,
-                    to<0, 1>);
+                g,
+                *m_gain_converter_proc,
+                from<0, 1>,
+                *m_amplifier,
+                to<0, 1>);
         }
     }
 
@@ -197,12 +194,12 @@ private:
 
 auto
 make_component(runtime::internal_fx_component_factory_args const& args)
-        -> std::unique_ptr<audio::engine::component>
+    -> std::unique_ptr<audio::engine::component>
 {
     return std::make_unique<component>(
-            args.fx_mod,
-            args.param_procs,
-            args.name);
+        args.fx_mod,
+        args.param_procs,
+        args.name);
 }
 
 } // namespace piejam::fx_modules::utility

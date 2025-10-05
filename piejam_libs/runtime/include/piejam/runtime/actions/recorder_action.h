@@ -12,9 +12,9 @@ namespace piejam::runtime::actions
 
 struct recorder_action_visitor
     : ui::action_visitor_interface<
-              start_recording,
-              stop_recording,
-              audio_engine_sync_update>
+          start_recording,
+          stop_recording,
+          audio_engine_sync_update>
 {
 };
 

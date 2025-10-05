@@ -13,9 +13,9 @@ namespace piejam::runtime::test
 struct ladspa_processor_factory_mock : public ladspa::processor_factory
 {
     MOCK_METHOD(
-            std::unique_ptr<audio::engine::processor>,
-            make_processor,
-            (ladspa::instance_id const&, audio::sample_rate));
+        std::unique_ptr<audio::engine::processor>,
+        make_processor,
+        (ladspa::instance_id const&, audio::sample_rate));
 };
 
 } // namespace piejam::runtime::test

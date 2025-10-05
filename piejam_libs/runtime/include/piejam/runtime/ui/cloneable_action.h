@@ -18,7 +18,7 @@ struct cloneable_action : public ActionInterface
     auto clone() const -> std::unique_ptr<action> override
     {
         return std::make_unique<DerivedAction>(
-                static_cast<DerivedAction const&>(*this));
+            static_cast<DerivedAction const&>(*this));
     }
 };
 

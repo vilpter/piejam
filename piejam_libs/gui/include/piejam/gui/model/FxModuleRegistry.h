@@ -27,8 +27,9 @@ class FxModuleRegistry : public QObject
 {
 
     Q_OBJECT
-    Q_PROPERTY(QVector<piejam::gui::model::FxModuleRegistryItem> items READ
-                       items CONSTANT FINAL)
+    Q_PROPERTY(
+        QVector<piejam::gui::model::FxModuleRegistryItem> items READ items
+            CONSTANT FINAL)
 
 public:
     auto items() const -> QVector<FxModuleRegistryItem> const&

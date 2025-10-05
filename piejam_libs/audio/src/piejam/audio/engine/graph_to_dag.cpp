@@ -32,10 +32,10 @@ graph_to_dag(graph const& g) -> dag
     dag result;
 
     std::map<
-            std::reference_wrapper<processor>,
-            std::pair<dag::task_id_t, processor_job*>,
-            decltype(address_less<processor>)>
-            processor_job_mapping;
+        std::reference_wrapper<processor>,
+        std::pair<dag::task_id_t, processor_job*>,
+        decltype(address_less<processor>)>
+        processor_job_mapping;
 
     std::vector<processor_job*> clear_event_buffer_jobs;
 
@@ -43,7 +43,7 @@ graph_to_dag(graph const& g) -> dag
         auto job = std::make_shared<processor_job>(e.proc);
         auto job_ptr = job.get();
         auto id = result.add_task(
-                [j = std::move(job)](thread_context const& ctx) { (*j)(ctx); });
+            [j = std::move(job)](thread_context const& ctx) { (*j)(ctx); });
         processor_job_mapping.emplace(e.proc, std::pair(id, job_ptr));
         if (!e.proc.get().event_outputs().empty())
         {
@@ -107,8 +107,8 @@ graph_to_dag(graph const& g) -> dag
         }
 
         dst_job->connect_event_result(
-                dst.port,
-                src_job->event_result_ref(src.port));
+            dst.port,
+            src_job->event_result_ref(src.port));
     }
 
     // if we have processors with event outputs, we need to clear their
@@ -128,14 +128,13 @@ graph_to_dag(graph const& g) -> dag
             return jobs_without_children;
         }();
 
-        auto clear_job_id =
-                result.add_task([jobs = std::move(clear_event_buffer_jobs)](
-                                        thread_context const&) {
-                    for (auto job : jobs)
-                    {
-                        job->clear_event_output_buffers();
-                    }
-                });
+        auto clear_job_id = result.add_task(
+            [jobs = std::move(clear_event_buffer_jobs)](thread_context const&) {
+                for (auto job : jobs)
+                {
+                    job->clear_event_output_buffers();
+                }
+            });
 
         for (dag::task_id_t const final_job_id : final_jobs)
         {

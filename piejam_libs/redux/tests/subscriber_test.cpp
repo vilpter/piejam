@@ -32,8 +32,9 @@ TEST(subscriber, observe_will_also_notify)
     EXPECT_EQ(5, x);
 }
 
-TEST(subscriber,
-     second_notify_wont_trigger_the_handler_if_selected_value_stays_same)
+TEST(
+    subscriber,
+    second_notify_wont_trigger_the_handler_if_selected_value_stays_same)
 {
     auto sel = selector<int, state>(&state::x);
 
@@ -42,7 +43,7 @@ TEST(subscriber,
 
     int handler_called{};
     auto sub =
-            sut.observe<int>(sel, [&handler_called](int) { ++handler_called; });
+        sut.observe<int>(sel, [&handler_called](int) { ++handler_called; });
 
     sut.notify(st);
     sut.notify(st);
@@ -50,8 +51,9 @@ TEST(subscriber,
     EXPECT_EQ(1, handler_called);
 }
 
-TEST(subscriber,
-     handler_is_triggered_again_if_selected_value_changed_since_last_notify)
+TEST(
+    subscriber,
+    handler_is_triggered_again_if_selected_value_changed_since_last_notify)
 {
     auto sel = selector<int, state>(&state::x);
 
@@ -60,7 +62,7 @@ TEST(subscriber,
 
     int handler_called{};
     auto sub =
-            sut.observe<int>(sel, [&handler_called](int) { ++handler_called; });
+        sut.observe<int>(sel, [&handler_called](int) { ++handler_called; });
 
     st.x = 5;
     sut.notify(st);
@@ -78,9 +80,8 @@ TEST(subscriber, handler_not_called_when_unsubscribed)
     int handler_called{};
 
     {
-        auto sub = sut.observe<int>(sel, [&handler_called](int) {
-            ++handler_called;
-        });
+        auto sub =
+            sut.observe<int>(sel, [&handler_called](int) { ++handler_called; });
 
         EXPECT_EQ(1, handler_called);
     }
@@ -102,9 +103,9 @@ TEST(subscriber, renotify_when_a_new_observer_connected_while_notifying)
     std::unique_ptr<subscription> inner_sub;
     auto sub = sut.observe<int>(sel, [&](int) {
         inner_sub = std::make_unique<subscription>(
-                sut.observe<int>(sel, [&handler2_called](int) {
-                    ++handler2_called;
-                }));
+            sut.observe<int>(sel, [&handler2_called](int) {
+                ++handler2_called;
+            }));
         ++handler1_called;
     });
 

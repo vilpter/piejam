@@ -19,9 +19,9 @@ template <class T, class Layout = multichannel_layout_runtime_defined>
 class multichannel_buffer
 {
     static constexpr auto default_layout = std::conditional_t<
-            std::is_same_v<Layout, multichannel_layout_runtime_defined>,
-            multichannel_layout_non_interleaved,
-            Layout>::value;
+        std::is_same_v<Layout, multichannel_layout_runtime_defined>,
+        multichannel_layout_non_interleaved,
+        Layout>::value;
 
 public:
     using vector = mipp::vector<T>;
@@ -42,9 +42,9 @@ public:
     }
 
     multichannel_buffer(
-            multichannel_layout layout,
-            std::size_t num_channels,
-            std::size_t num_frames)
+        multichannel_layout layout,
+        std::size_t num_channels,
+        std::size_t num_frames)
         requires(std::is_same_v<Layout, multichannel_layout_runtime_defined>)
         : m_layout{layout}
         , m_num_channels{num_channels}
@@ -54,9 +54,9 @@ public:
     }
 
     multichannel_buffer(
-            multichannel_layout l,
-            std::size_t num_channels,
-            vector data)
+        multichannel_layout l,
+        std::size_t num_channels,
+        vector data)
         requires(std::is_same_v<Layout, multichannel_layout_runtime_defined>)
         : m_layout{l}
         , m_num_channels{num_channels}
@@ -79,19 +79,19 @@ public:
     auto view() noexcept
     {
         if constexpr (std::is_same_v<
-                              Layout,
-                              multichannel_layout_runtime_defined>)
+                          Layout,
+                          multichannel_layout_runtime_defined>)
         {
             return multichannel_view<T, Layout>{
-                    std::span{m_data},
-                    m_layout,
-                    m_num_channels};
+                std::span{m_data},
+                m_layout,
+                m_num_channels};
         }
         else
         {
             return multichannel_view<T, Layout>{
-                    std::span{m_data},
-                    m_num_channels};
+                std::span{m_data},
+                m_num_channels};
         }
     }
 
@@ -99,19 +99,19 @@ public:
     auto view() const noexcept
     {
         if constexpr (std::is_same_v<
-                              Layout,
-                              multichannel_layout_runtime_defined>)
+                          Layout,
+                          multichannel_layout_runtime_defined>)
         {
             return multichannel_view<std::add_const_t<T>, Layout>{
-                    std::span{m_data},
-                    m_layout,
-                    m_num_channels};
+                std::span{m_data},
+                m_layout,
+                m_num_channels};
         }
         else
         {
             return multichannel_view<std::add_const_t<T>, Layout>{
-                    std::span{m_data},
-                    m_num_channels};
+                std::span{m_data},
+                m_num_channels};
         }
     }
 
@@ -119,8 +119,8 @@ public:
     constexpr auto layout() const noexcept -> multichannel_layout
     {
         if constexpr (std::is_same_v<
-                              Layout,
-                              multichannel_layout_runtime_defined>)
+                          Layout,
+                          multichannel_layout_runtime_defined>)
         {
             return m_layout;
         }
@@ -193,12 +193,11 @@ private:
 template <class T, std::size_t NumChannels>
 auto
 duplicate_channels(
-        multichannel_view<T, multichannel_layout_non_interleaved, NumChannels>
-                src)
+    multichannel_view<T, multichannel_layout_non_interleaved, NumChannels> src)
 {
     using buffer_t = multichannel_buffer<
-            std::remove_const_t<T>,
-            audio::multichannel_layout_non_interleaved>;
+        std::remove_const_t<T>,
+        audio::multichannel_layout_non_interleaved>;
     typename buffer_t::vector samples;
     samples.reserve(src.samples().size() * 2);
     samples.insert(samples.end(), src.samples().begin(), src.samples().end());

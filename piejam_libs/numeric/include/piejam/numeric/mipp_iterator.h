@@ -43,8 +43,8 @@ struct mipp_iterator_output_proxy
         return *this;
     }
 
-    auto operator=(mipp::Reg<value_type> const& r)
-            const&& -> mipp_iterator_output_proxy
+    auto operator=(
+        mipp::Reg<value_type> const& r) const&& -> mipp_iterator_output_proxy
         requires(!std::is_const_v<T>)
     {
         r.store(m_p);
@@ -60,8 +60,8 @@ struct mipp_iterator_output_proxy
         return *this;
     }
 
-    auto operator=(mipp::Regx2<value_type> const& r)
-            const&& -> mipp_iterator_output_proxy
+    auto operator=(
+        mipp::Regx2<value_type> const& r) const&& -> mipp_iterator_output_proxy
         requires(!std::is_const_v<T>)
     {
         r[0].store(m_p);
@@ -96,16 +96,16 @@ constexpr std::size_t num_regs_v = num_regs<Reg>::value;
 template <mipp_number T, template <class> class Reg = mipp::Reg>
 struct mipp_iterator
     : boost::stl_interfaces::iterator_interface<
-              std::contiguous_iterator_tag,
+          std::contiguous_iterator_tag,
+          Reg<std::remove_cv_t<T>>,
+          std::conditional_t<
+              std::is_const_v<T>,
               Reg<std::remove_cv_t<T>>,
-              std::conditional_t<
-                      std::is_const_v<T>,
-                      Reg<std::remove_cv_t<T>>,
-                      detail::mipp_iterator_output_proxy<T>>,
-              T*>
+              detail::mipp_iterator_output_proxy<T>>,
+          T*>
 {
     static constexpr auto N =
-            mipp::N<std::remove_cv_t<T>>() * detail::num_regs_v<Reg>;
+        mipp::N<std::remove_cv_t<T>>() * detail::num_regs_v<Reg>;
 
     constexpr mipp_iterator() noexcept = default;
     constexpr mipp_iterator(T* p) noexcept
@@ -135,7 +135,7 @@ struct mipp_iterator
 
     [[nodiscard]]
     constexpr auto operator-(mipp_iterator const& rhs) const noexcept
-            -> std::ptrdiff_t
+        -> std::ptrdiff_t
     {
         BOOST_ASSERT((m_p - rhs.m_p) % N == 0);
         return (m_p - rhs.m_p) / N;
@@ -206,8 +206,8 @@ mipp_range(R&& in)
     auto const data = std::ranges::data(in);
 
     return std::ranges::subrange{
-            mipp_iterator{data},
-            mipp_iterator{data + std::ranges::size(in)}};
+        mipp_iterator{data},
+        mipp_iterator{data + std::ranges::size(in)}};
 }
 
 template <std::ranges::contiguous_range R>
@@ -236,9 +236,9 @@ mipp_range_split(R&& in)
     auto const post_data = main_data + main_size;
 
     return std::tuple{
-            std::span{pre_data, pre_size},
-            std::span{main_data, main_size},
-            std::span{post_data, post_size},
+        std::span{pre_data, pre_size},
+        std::span{main_data, main_size},
+        std::span{post_data, post_size},
     };
 }
 

@@ -76,16 +76,14 @@ public:
     private:
         Parameter m_param;
         std::shared_ptr<value_type> m_value{
-                std::make_shared<value_type>(m_param.default_value)};
+            std::make_shared<value_type>(m_param.default_value)};
     };
 
     template <class P>
     auto emplace(id_t<P> const id, P&& param)
     {
         return BOOST_VERIFY(
-                get_map<P>()
-                        .emplace(id, slot<P>{std::forward<P>(param)})
-                        .second);
+            get_map<P>().emplace(id, slot<P>{std::forward<P>(param)}).second);
     }
 
     template <class P>
@@ -143,10 +141,11 @@ private:
 
         if (it == m_maps.end()) [[unlikely]]
         {
-            it = m_maps.emplace(
-                               std::type_index{typeid(P)},
-                               std::make_shared<map_t<P>>())
-                         .first;
+            it = m_maps
+                     .emplace(
+                         std::type_index{typeid(P)},
+                         std::make_shared<map_t<P>>())
+                     .first;
         }
 
         return *static_cast<map_t<P>*>(it->second.get());

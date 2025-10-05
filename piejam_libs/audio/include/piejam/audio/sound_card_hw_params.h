@@ -17,7 +17,7 @@ struct sound_card_hw_params
 
     [[nodiscard]]
     constexpr auto operator==(sound_card_hw_params const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 };
 
 } // namespace piejam::audio

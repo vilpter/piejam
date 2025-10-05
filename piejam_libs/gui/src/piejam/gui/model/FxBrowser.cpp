@@ -25,8 +25,8 @@ namespace
 [[nodiscard]]
 auto
 makeBrowserEntry(
-        runtime::state_access const& state_access,
-        runtime::fx::internal_id fx_type) -> std::unique_ptr<FxBrowserEntry>
+    runtime::state_access const& state_access,
+    runtime::fx::internal_id fx_type) -> std::unique_ptr<FxBrowserEntry>
 {
     return std::make_unique<FxBrowserEntryInternal>(state_access, fx_type);
 }
@@ -34,8 +34,8 @@ makeBrowserEntry(
 [[nodiscard]]
 auto
 makeBrowserEntry(
-        runtime::state_access const& state_access,
-        ladspa::plugin_descriptor const& pd) -> std::unique_ptr<FxBrowserEntry>
+    runtime::state_access const& state_access,
+    ladspa::plugin_descriptor const& pd) -> std::unique_ptr<FxBrowserEntry>
 {
     return std::make_unique<FxBrowserEntryLADSPA>(state_access, pd);
 }
@@ -48,25 +48,22 @@ struct FxBrowser::Impl
     {
         std::vector<runtime::fx::registry::item> new_entries;
         std::ranges::copy(
-                fx_registry.entries.get() |
-                        std::views::filter(
-                                runtime::fx::is_available_for_bus_type{
-                                        bus_type_filter}),
-                std::back_inserter(new_entries));
+            fx_registry.entries.get() |
+                std::views::filter(
+                    runtime::fx::is_available_for_bus_type{bus_type_filter}),
+            std::back_inserter(new_entries));
 
         algorithm::apply_edit_script(
-                algorithm::edit_script(filtered_fx_registry, new_entries),
-                ListModelEditScriptProcessor{
-                        entries,
-                        [&](auto const& item) {
-                            return std::visit(
-                                    [&](auto&& x) {
-                                        return makeBrowserEntry(
-                                                state_access,
-                                                x);
-                                    },
-                                    item);
-                        }});
+            algorithm::edit_script(filtered_fx_registry, new_entries),
+            ListModelEditScriptProcessor{entries, [&](auto const& item) {
+                                             return std::visit(
+                                                 [&](auto&& x) {
+                                                     return makeBrowserEntry(
+                                                         state_access,
+                                                         x);
+                                                 },
+                                                 item);
+                                         }});
         filtered_fx_registry = std::move(new_entries);
     }
 
@@ -101,8 +98,8 @@ void
 FxBrowser::onSubscribe()
 {
     m_impl->bus_type_filter = to_bus_type(observe_once(
-            runtime::selectors::make_mixer_channel_type_selector(observe_once(
-                    runtime::selectors::select_fx_browser_fx_chain))));
+        runtime::selectors::make_mixer_channel_type_selector(
+            observe_once(runtime::selectors::select_fx_browser_fx_chain))));
     m_impl->fx_registry = observe_once(runtime::selectors::select_fx_registry);
     m_impl->updateEntries(state_access());
 }

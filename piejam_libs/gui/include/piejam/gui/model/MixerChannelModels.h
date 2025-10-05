@@ -19,18 +19,18 @@ class MixerChannelModels final : public SubscribableModel
     Q_OBJECT
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::MixerChannelPerform*,
-            perform)
+        piejam::gui::model::MixerChannelPerform*,
+        perform)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::MixerChannelEdit*, edit)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::MixerChannelFx*, fx)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::MixerChannelAuxSend*,
-            auxSend)
+        piejam::gui::model::MixerChannelAuxSend*,
+        auxSend)
 
 public:
     MixerChannelModels(
-            runtime::state_access const&,
-            runtime::mixer::channel_id);
+        runtime::state_access const&,
+        runtime::mixer::channel_id);
 
 private:
     void onSubscribe() override;

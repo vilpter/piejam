@@ -27,17 +27,17 @@ public:
         }
 
         template <
-                concepts::get_state<State> GetState,
-                concepts::dispatch<Action> Dispatch,
-                concepts::next<Action> Next>
+            concepts::get_state<State> GetState,
+            concepts::dispatch<Action> Dispatch,
+            concepts::next<Action> Next>
         auto
         operator()(GetState&& get_state, Dispatch&& dispatch, Next&& next) const
         {
             return [mw_fs =
-                            middleware_functors<State, Action>{
-                                    std::forward<GetState>(get_state),
-                                    std::forward<Dispatch>(dispatch),
-                                    std::forward<Next>(next)},
+                        middleware_functors<State, Action>{
+                            std::forward<GetState>(get_state),
+                            std::forward<Dispatch>(dispatch),
+                            std::forward<Next>(next)},
                     mw = m_middleware](Action const& a) { (*mw)(mw_fs, a); };
         }
 

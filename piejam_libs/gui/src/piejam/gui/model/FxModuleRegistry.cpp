@@ -15,14 +15,14 @@ void
 FxModuleRegistry::addItem(FxModuleType fxType, QString viewSource)
 {
     m_items.push_back(
-            {.fxType = std::move(fxType), .viewSource = std::move(viewSource)});
+        {.fxType = std::move(fxType), .viewSource = std::move(viewSource)});
 }
 
 int
 FxModuleRegistry::indexOf(FxModuleType fxType)
 {
     auto index =
-            algorithm::index_of(m_items, fxType, &FxModuleRegistryItem::fxType);
+        algorithm::index_of(m_items, fxType, &FxModuleRegistryItem::fxType);
     return static_cast<int>(index);
 }
 
@@ -32,8 +32,8 @@ fxModuleRegistrySingleton() -> FxModuleRegistry&
     static std::unique_ptr<FxModuleRegistry> s_registry{[]() {
         auto r = std::make_unique<FxModuleRegistry>();
         r->addItem(
-                FxModuleType{},
-                "/PieJam/FxChainControls/ParametersListView.qml");
+            FxModuleType{},
+            "/PieJam/FxChainControls/ParametersListView.qml");
         return r;
     }()};
     return *s_registry;

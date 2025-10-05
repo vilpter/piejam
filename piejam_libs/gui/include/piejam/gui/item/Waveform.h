@@ -17,8 +17,9 @@ class Waveform : public QQuickItem
 {
     Q_OBJECT
 
-    Q_PROPERTY(piejam::gui::model::WaveformSlot* waveform READ waveform WRITE
-                       setWaveform NOTIFY waveformChanged FINAL)
+    Q_PROPERTY(
+        piejam::gui::model::WaveformSlot* waveform READ waveform WRITE
+            setWaveform NOTIFY waveformChanged FINAL)
 
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 

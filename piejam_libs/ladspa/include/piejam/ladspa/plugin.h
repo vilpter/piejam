@@ -29,7 +29,7 @@ public:
 
     [[nodiscard]]
     virtual auto make_processor(audio::sample_rate) const
-            -> std::unique_ptr<audio::engine::processor> = 0;
+        -> std::unique_ptr<audio::engine::processor> = 0;
 };
 
 auto load(plugin_descriptor const&) -> std::unique_ptr<plugin>;

@@ -35,18 +35,18 @@ make_int_parameter(int_parameter_args args)
     BOOST_ASSERT(args.min <= args.default_value);
     BOOST_ASSERT(args.default_value <= args.max);
     return int_parameter{
-            .type = typeid(int),
-            .name = box{std::string{args.name}},
-            .default_value = args.default_value,
-            .min = args.min,
-            .max = args.max,
-            .value_to_string = [](int x) { return std::to_string(x); },
-            .to_normalized = [](auto const& d, int x) noexcept -> float {
-                return numeric::to_normalized<float>(x, d.min, d.max);
-            },
-            .from_normalized = [](auto const& d, float n) noexcept -> int {
-                return numeric::from_normalized(n, d.min, d.max);
-            },
+        .type = typeid(int),
+        .name = box{std::string{args.name}},
+        .default_value = args.default_value,
+        .min = args.min,
+        .max = args.max,
+        .value_to_string = [](int x) { return std::to_string(x); },
+        .to_normalized = [](auto const& d, int x) noexcept -> float {
+            return numeric::to_normalized<float>(x, d.min, d.max);
+        },
+        .from_normalized = [](auto const& d, float n) noexcept -> int {
+            return numeric::from_normalized(n, d.min, d.max);
+        },
     };
 }
 

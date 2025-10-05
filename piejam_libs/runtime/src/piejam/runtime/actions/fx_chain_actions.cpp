@@ -14,7 +14,7 @@ void
 toggle_focused_fx_module_bypass::reduce(state& st) const
 {
     toggle_bool_in_place(
-            st.fx_modules.lock().at(st.focused_fx_mod_id).bypassed);
+        st.fx_modules.lock().at(st.focused_fx_mod_id).bypassed);
 }
 
 void

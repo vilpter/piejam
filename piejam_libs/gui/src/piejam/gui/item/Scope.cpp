@@ -53,10 +53,10 @@ struct Scope::Impl
         if (oldNode)
         {
             geometryNode =
-                    boost::polymorphic_downcast<QSGGeometryNode*>(oldNode);
+                boost::polymorphic_downcast<QSGGeometryNode*>(oldNode);
             geometry = geometryNode->geometry();
-            material = static_cast<QSGFlatColorMaterial*>(
-                    geometryNode->material());
+            material =
+                static_cast<QSGFlatColorMaterial*>(geometryNode->material());
 
             if (dataSize != geometry->vertexCount())
             {
@@ -67,8 +67,8 @@ struct Scope::Impl
         {
             geometryNode = new QSGGeometryNode();
             geometry = new QSGGeometry(
-                    QSGGeometry::defaultAttributes_Point2D(),
-                    dataSize);
+                QSGGeometry::defaultAttributes_Point2D(),
+                dataSize);
 
             geometry->setDrawingMode(QSGGeometry::DrawLineStrip);
             geometry->setLineWidth(2);
@@ -86,7 +86,7 @@ struct Scope::Impl
             if (scope)
             {
                 QSGGeometry::Point2D* vertices =
-                        geometry->vertexDataAsPoint2D();
+                    geometry->vertexDataAsPoint2D();
                 for (std::size_t n = 0; n < scope->get().size(); ++n)
                 {
                     vertices->set(static_cast<float>(n), scope->get()[n]);
@@ -169,34 +169,34 @@ Scope::setScope(model::ScopeSlot* const x)
         if (m_impl->scope)
         {
             m_impl->scopeChangedConnection = QObject::connect(
-                    m_impl->scope,
-                    &piejam::gui::model::ScopeSlot::changed,
-                    this,
-                    [this]() {
-                        m_impl->scopeDirty = true;
+                m_impl->scope,
+                &piejam::gui::model::ScopeSlot::changed,
+                this,
+                [this]() {
+                    m_impl->scopeDirty = true;
 
-                        float newPeakLevel = numeric::flush_to_zero_if(
-                                std::transform_reduce(
-                                        m_impl->scope->get().begin(),
-                                        m_impl->scope->get().end(),
-                                        0.f,
-                                        std::ranges::max,
-                                        numeric::abs),
-                                less(0.001f)); // -60 dB
+                    float newPeakLevel = numeric::flush_to_zero_if(
+                        std::transform_reduce(
+                            m_impl->scope->get().begin(),
+                            m_impl->scope->get().end(),
+                            0.f,
+                            std::ranges::max,
+                            numeric::abs),
+                        less(0.001f)); // -60 dB
 
-                        if (m_impl->peakLevel != newPeakLevel)
+                    if (m_impl->peakLevel != newPeakLevel)
+                    {
+                        m_impl->peakLevel = newPeakLevel;
+                        emit peakLevelChanged();
+
+                        if (!m_impl->syncedPeakLevel)
                         {
-                            m_impl->peakLevel = newPeakLevel;
-                            emit peakLevelChanged();
-
-                            if (!m_impl->syncedPeakLevel)
-                            {
-                                m_impl->transformMatrixDirty = true;
-                            }
+                            m_impl->transformMatrixDirty = true;
                         }
+                    }
 
-                        update();
-                    });
+                    update();
+                });
         }
         else
         {
@@ -239,10 +239,9 @@ Scope::updatePaintNode(QSGNode* const oldNode, UpdatePaintNodeData*) -> QSGNode*
         auto* geometryNode = node->firstChild();
         BOOST_ASSERT(geometryNode);
         BOOST_VERIFY(
-                geometryNode ==
-                m_impl->updateGeometry(
-                        boost::polymorphic_downcast<QSGGeometryNode*>(
-                                geometryNode)));
+            geometryNode ==
+            m_impl->updateGeometry(
+                boost::polymorphic_downcast<QSGGeometryNode*>(geometryNode)));
     }
     else
     {

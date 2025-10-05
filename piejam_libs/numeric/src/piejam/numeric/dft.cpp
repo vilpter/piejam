@@ -51,8 +51,8 @@ struct dft::impl
     using fftwf_vector = std::vector<T, fftwf_allocator<T>>;
     using fftwf_real_vector = fftwf_vector<float>;
     using fftwf_complex_vector = fftwf_vector<std::complex<float>>;
-    using fftwf_plan_unique_ptr = std::
-            unique_ptr<std::remove_pointer_t<fftwf_plan>, fftwf_plan_deleter>;
+    using fftwf_plan_unique_ptr =
+        std::unique_ptr<std::remove_pointer_t<fftwf_plan>, fftwf_plan_deleter>;
 
     std::size_t input_size{};
     std::size_t output_size{input_size / 2 + 1};
@@ -60,10 +60,10 @@ struct dft::impl
     fftwf_real_vector in_buffer{fftwf_real_vector(input_size)};
     fftwf_complex_vector out_buffer{fftwf_complex_vector(output_size)};
     fftwf_plan_unique_ptr plan{fftwf_plan_dft_r2c_1d(
-            input_size,
-            in_buffer.data(),
-            reinterpret_cast<fftwf_complex*>(out_buffer.data()),
-            FFTW_MEASURE)};
+        input_size,
+        in_buffer.data(),
+        reinterpret_cast<fftwf_complex*>(out_buffer.data()),
+        FFTW_MEASURE)};
 };
 
 dft::dft(std::size_t const size)

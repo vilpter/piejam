@@ -25,13 +25,13 @@ class process_step
 {
 public:
     process_step(
-            system::device& input_fd,
-            system::device& output_fd,
-            io_process_config const&,
-            std::atomic<float>& cpu_load,
-            std::atomic_size_t& xruns,
-            init_process_function const&,
-            process_function);
+        system::device& input_fd,
+        system::device& output_fd,
+        io_process_config const&,
+        std::atomic<float>& cpu_load,
+        std::atomic_size_t& xruns,
+        init_process_function const&,
+        process_function);
     process_step(process_step&&);
     ~process_step();
 

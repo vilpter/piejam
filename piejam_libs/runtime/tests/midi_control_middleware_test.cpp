@@ -44,8 +44,9 @@ TEST_F(midi_control_middleware_test, unknown_action_is_passed_to_next)
     sut(make_middleware_functors(mf_mock), action);
 }
 
-TEST_F(midi_control_middleware_test,
-       for_refresh_midi_devices_action_and_no_updates_no_action_is_propagated)
+TEST_F(
+    midi_control_middleware_test,
+    for_refresh_midi_devices_action_and_no_updates_no_action_is_propagated)
 {
     midi_control_middleware sut({});
 
@@ -60,11 +61,9 @@ TEST_F(midi_control_middleware_test, refresh_midi_devices_and_add_update)
     auto dev_id = midi::device_id_t::generate();
     midi_control_middleware sut(
 
-            [dev_id]() -> std::vector<midi::device_update> {
-                return {midi::device_added{
-                        .device_id = dev_id,
-                        .name = "test"}};
-            });
+        [dev_id]() -> std::vector<midi::device_update> {
+            return {midi::device_added{.device_id = dev_id, .name = "test"}};
+        });
 
     state st;
 
@@ -82,8 +81,9 @@ TEST_F(midi_control_middleware_test, refresh_midi_devices_and_add_update)
     EXPECT_EQ(false, st.midi_devices->at(dev_id).enabled);
 }
 
-TEST_F(midi_control_middleware_test,
-       refresh_midi_devices_and_add_and_remove_update)
+TEST_F(
+    midi_control_middleware_test,
+    refresh_midi_devices_and_add_and_remove_update)
 {
     using testing::_;
     using testing::ReturnRef;
@@ -91,10 +91,11 @@ TEST_F(midi_control_middleware_test,
     auto dev_id = midi::device_id_t::generate();
     midi_control_middleware sut(
 
-            [dev_id]() -> std::vector<midi::device_update> {
-                return {midi::device_added{.device_id = dev_id, .name = "test"},
-                        midi::device_removed{.device_id = dev_id}};
-            });
+        [dev_id]() -> std::vector<midi::device_update> {
+            return {
+                midi::device_added{.device_id = dev_id, .name = "test"},
+                midi::device_removed{.device_id = dev_id}};
+        });
 
     state st;
 
@@ -109,8 +110,9 @@ TEST_F(midi_control_middleware_test,
     EXPECT_TRUE(st.midi_devices->empty());
 }
 
-TEST_F(midi_control_middleware_test,
-       refresh_midi_devices_and_add_and_remove_nonexistent_update)
+TEST_F(
+    midi_control_middleware_test,
+    refresh_midi_devices_and_add_and_remove_nonexistent_update)
 {
     using testing::_;
     using testing::ReturnRef;
@@ -118,11 +120,12 @@ TEST_F(midi_control_middleware_test,
     auto dev_id = midi::device_id_t::generate();
     midi_control_middleware sut(
 
-            [dev_id]() -> std::vector<midi::device_update> {
-                return {midi::device_added{.device_id = dev_id, .name = "test"},
-                        midi::device_removed{
-                                .device_id = midi::device_id_t::generate()}};
-            });
+        [dev_id]() -> std::vector<midi::device_update> {
+            return {
+                midi::device_added{.device_id = dev_id, .name = "test"},
+                midi::device_removed{
+                    .device_id = midi::device_id_t::generate()}};
+        });
 
     state st;
 
@@ -154,23 +157,25 @@ TEST_F(midi_control_middleware_test, remove_and_readd_enabled_device)
     auto next_dev_id = midi::device_id_t::generate();
 
     midi_control_middleware sut([=]() -> std::vector<midi::device_update> {
-        return {midi::device_removed{.device_id = prev_dev_id},
-                midi::device_added{.device_id = next_dev_id, .name = "test"}};
+        return {
+            midi::device_removed{.device_id = prev_dev_id},
+            midi::device_added{.device_id = next_dev_id, .name = "test"}};
     });
 
     state st;
 
     st.midi_inputs = std::vector<midi::device_id_t>({prev_dev_id});
     st.midi_devices = midi_devices_t{
-            {prev_dev_id,
-             midi_device_config{.name = box("test"s), .enabled = true}}};
+        {prev_dev_id,
+         midi_device_config{.name = box("test"s), .enabled = true}}};
 
     EXPECT_CALL(mf_mock, get_state()).WillRepeatedly(ReturnRef(st));
     EXPECT_CALL(
-            mf_mock,
-            dispatch(WhenDynamicCastTo<actions::activate_midi_device const&>(
-                    Field(&actions::activate_midi_device::device_id,
-                          next_dev_id))));
+        mf_mock,
+        dispatch(
+            WhenDynamicCastTo<actions::activate_midi_device const&>(Field(
+                &actions::activate_midi_device::device_id,
+                next_dev_id))));
     EXPECT_CALL(mf_mock, next(_)).WillOnce([&st](auto const& a) {
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
@@ -197,16 +202,17 @@ TEST_F(midi_control_middleware_test, remove_eanabled_and_add_new_device)
     auto next_dev_id = midi::device_id_t::generate();
 
     midi_control_middleware sut([=]() -> std::vector<midi::device_update> {
-        return {midi::device_removed{.device_id = prev_dev_id},
-                midi::device_added{.device_id = next_dev_id, .name = "test2"}};
+        return {
+            midi::device_removed{.device_id = prev_dev_id},
+            midi::device_added{.device_id = next_dev_id, .name = "test2"}};
     });
 
     state st;
 
     st.midi_inputs = std::vector<midi::device_id_t>({prev_dev_id});
     st.midi_devices = midi_devices_t{
-            {prev_dev_id,
-             midi_device_config{.name = box("test"s), .enabled = true}}};
+        {prev_dev_id,
+         midi_device_config{.name = box("test"s), .enabled = true}}};
 
     EXPECT_CALL(mf_mock, get_state()).WillRepeatedly(ReturnRef(st));
     EXPECT_CALL(mf_mock, next(_)).WillOnce([&st](auto const& a) {
@@ -224,8 +230,9 @@ TEST_F(midi_control_middleware_test, remove_eanabled_and_add_new_device)
     EXPECT_FALSE(midi_device->second.enabled);
 }
 
-TEST_F(midi_control_middleware_test,
-       save_app_config_is_populated_with_currently_enabled_devices)
+TEST_F(
+    midi_control_middleware_test,
+    save_app_config_is_populated_with_currently_enabled_devices)
 {
     using testing::_;
     using testing::ElementsAre;
@@ -236,29 +243,31 @@ TEST_F(midi_control_middleware_test,
     using namespace std::string_literals;
 
     midi_control_middleware sut(
-            [=]() -> std::vector<midi::device_update> { return {}; });
+        [=]() -> std::vector<midi::device_update> { return {}; });
 
     state st;
 
     st.midi_devices = midi_devices_t{
-            {midi::device_id_t::generate(),
-             midi_device_config{.name = box("test"s), .enabled = true}}};
+        {midi::device_id_t::generate(),
+         midi_device_config{.name = box("test"s), .enabled = true}}};
 
     actions::save_app_config action("save_file");
     ASSERT_TRUE(action.enabled_midi_devices.empty());
 
     EXPECT_CALL(mf_mock, get_state()).WillRepeatedly(ReturnRef(st));
     EXPECT_CALL(
-            mf_mock,
-            next(WhenDynamicCastTo<actions::save_app_config const&>(
-                    Field(&actions::save_app_config::enabled_midi_devices,
-                          ElementsAre(std::string("test"))))));
+        mf_mock,
+        next(
+            WhenDynamicCastTo<actions::save_app_config const&>(Field(
+                &actions::save_app_config::enabled_midi_devices,
+                ElementsAre(std::string("test"))))));
 
     sut(make_middleware_functors(mf_mock), action);
 }
 
-TEST_F(midi_control_middleware_test,
-       save_app_config_is_populated_with_previously_enabled_devices)
+TEST_F(
+    midi_control_middleware_test,
+    save_app_config_is_populated_with_previously_enabled_devices)
 {
     using testing::_;
     using testing::ElementsAre;
@@ -277,10 +286,8 @@ TEST_F(midi_control_middleware_test,
 
     st.midi_inputs = std::vector<midi::device_id_t>({dev_id});
     st.midi_devices = midi_devices_t{
-            {dev_id,
-             midi_device_config{
-                     .name = {std::in_place, "test"},
-                     .enabled = true}}};
+        {dev_id,
+         midi_device_config{.name = {std::in_place, "test"}, .enabled = true}}};
 
     // setup, we need to remove the enabled device first
     {
@@ -300,10 +307,11 @@ TEST_F(midi_control_middleware_test,
         ASSERT_TRUE(action.enabled_midi_devices.empty());
 
         EXPECT_CALL(
-                mf_mock,
-                next(WhenDynamicCastTo<actions::save_app_config const&>(
-                        Field(&actions::save_app_config::enabled_midi_devices,
-                              ElementsAre(std::string("test"))))));
+            mf_mock,
+            next(
+                WhenDynamicCastTo<actions::save_app_config const&>(Field(
+                    &actions::save_app_config::enabled_midi_devices,
+                    ElementsAre(std::string("test"))))));
 
         sut(make_middleware_functors(mf_mock), action);
     }

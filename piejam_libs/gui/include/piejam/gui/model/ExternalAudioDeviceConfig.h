@@ -26,8 +26,8 @@ class ExternalAudioDeviceConfig final : public SubscribableModel
 
 public:
     ExternalAudioDeviceConfig(
-            runtime::state_access const&,
-            runtime::external_audio::device_id);
+        runtime::state_access const&,
+        runtime::external_audio::device_id);
 
     Q_INVOKABLE void changeMonoChannel(unsigned);
     Q_INVOKABLE void changeStereoLeftChannel(unsigned);

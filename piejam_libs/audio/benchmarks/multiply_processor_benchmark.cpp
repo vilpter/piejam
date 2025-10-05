@@ -31,15 +31,15 @@ BM_multiply_processor_2_inputs(benchmark::State& state)
     std::size_t const buffer_size = state.range(0);
 
     mipp::vector<float> in_buf1(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf2(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     std::vector<slice<float>> in_slices{in_buf1, in_buf2};
     std::vector<std::reference_wrapper<slice<float> const>> in(
-            in_slices.begin(),
-            in_slices.end());
+        in_slices.begin(),
+        in_slices.end());
 
     mipp::vector<float> out_buf(buffer_size);
     std::vector<std::span<float>> out{out_buf};
@@ -64,18 +64,18 @@ BM_multiply_processor_3_inputs(benchmark::State& state)
     std::size_t const buffer_size = state.range(0);
 
     mipp::vector<float> in_buf1(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf2(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf3(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     std::vector<slice<float>> in_slices{in_buf1, in_buf2, in_buf3};
     std::vector<std::reference_wrapper<slice<float> const>> in(
-            in_slices.begin(),
-            in_slices.end());
+        in_slices.begin(),
+        in_slices.end());
 
     mipp::vector<float> out_buf(buffer_size);
     std::vector<std::span<float>> out{out_buf};
@@ -100,21 +100,21 @@ BM_multiply_processor_4_inputs(benchmark::State& state)
     std::size_t const buffer_size = state.range(0);
 
     mipp::vector<float> in_buf1(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf2(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf3(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf4(
-            buffer_size,
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        buffer_size,
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     std::vector<slice<float>> in_slices{in_buf1, in_buf2, in_buf3, in_buf4};
     std::vector<std::reference_wrapper<slice<float> const>> in(
-            in_slices.begin(),
-            in_slices.end());
+        in_slices.begin(),
+        in_slices.end());
 
     mipp::vector<float> out_buf(buffer_size);
     std::vector<std::span<float>> out{out_buf};
@@ -130,13 +130,13 @@ BM_multiply_processor_4_inputs(benchmark::State& state)
 }
 
 BENCHMARK(BM_multiply_processor_2_inputs)
-        ->RangeMultiplier(2)
-        ->Range(mipp::N<float>(), 1024);
+    ->RangeMultiplier(2)
+    ->Range(mipp::N<float>(), 1024);
 BENCHMARK(BM_multiply_processor_3_inputs)
-        ->RangeMultiplier(2)
-        ->Range(mipp::N<float>(), 1024);
+    ->RangeMultiplier(2)
+    ->Range(mipp::N<float>(), 1024);
 BENCHMARK(BM_multiply_processor_4_inputs)
-        ->RangeMultiplier(2)
-        ->Range(mipp::N<float>(), 1024);
+    ->RangeMultiplier(2)
+    ->Range(mipp::N<float>(), 1024);
 
 } // namespace piejam::audio::engine

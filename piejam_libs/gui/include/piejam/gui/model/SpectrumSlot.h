@@ -25,8 +25,8 @@ public:
     void update(SpectrumDataPoints const& dataPoints)
     {
         m_dataPoints = std::vector<SpectrumDataPoint>(
-                dataPoints.begin(),
-                dataPoints.end());
+            dataPoints.begin(),
+            dataPoints.end());
         emit changed();
     }
 

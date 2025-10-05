@@ -17,9 +17,9 @@ struct midi_input_controller_mock : public midi_input_controller
     MOCK_METHOD(bool, activate_input_device, (midi::device_id_t));
     MOCK_METHOD(void, deactivate_input_device, (midi::device_id_t));
     MOCK_METHOD(
-            std::unique_ptr<midi::input_event_handler>,
-            make_input_event_handler,
-            ());
+        std::unique_ptr<midi::input_event_handler>,
+        make_input_event_handler,
+        ());
 };
 
 } // namespace piejam::runtime::test

@@ -21,8 +21,8 @@ class process_thread
 
 public:
     process_thread() noexcept(
-            is_nothrow_default_constructible_v<std::atomic_bool, std::thread>) =
-            default;
+        is_nothrow_default_constructible_v<std::atomic_bool, std::thread>) =
+        default;
 
     [[nodiscard]]
     auto is_running() const noexcept -> bool
@@ -44,25 +44,25 @@ public:
 
         m_error = {};
         m_thread = std::jthread(
-                [this, conf, fprocess = std::forward<Process>(process)](
-                        std::stop_token stop_token) mutable {
-                    m_running.store(true, std::memory_order_release);
+            [this, conf, fprocess = std::forward<Process>(process)](
+                std::stop_token stop_token) mutable {
+                m_running.store(true, std::memory_order_release);
 
-                    conf.apply();
+                conf.apply();
 
-                    static_assert(!std::is_reference_v<decltype(fprocess)>);
+                static_assert(!std::is_reference_v<decltype(fprocess)>);
 
-                    while (!stop_token.stop_requested())
+                while (!stop_token.stop_requested())
+                {
+                    if (std::error_condition err = fprocess())
                     {
-                        if (std::error_condition err = fprocess())
-                        {
-                            m_error = err;
-                            break;
-                        }
+                        m_error = err;
+                        break;
                     }
+                }
 
-                    m_running.store(false, std::memory_order_release);
-                });
+                m_running.store(false, std::memory_order_release);
+            });
     }
 
     void stop()

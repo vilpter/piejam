@@ -36,8 +36,7 @@ public:
 
     template <class E>
         requires(
-                std::is_enum_v<E> &&
-                std::is_same_v<std::underlying_type_t<E>, int>)
+            std::is_enum_v<E> && std::is_same_v<std::underlying_type_t<E>, int>)
     auto as() const noexcept -> E
     {
         return static_cast<E>(value());

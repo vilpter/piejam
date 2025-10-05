@@ -139,11 +139,11 @@ struct aux_channel
     auto default_fader_tap() const -> enum_parameter_id
     {
         return parameters->get<enum_parameter_id>(
-                parameter_key::default_fader_tap);
+            parameter_key::default_fader_tap);
     }
 
     constexpr auto operator==(aux_channel const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 };
 
 struct state
@@ -164,24 +164,24 @@ struct state
 };
 
 auto is_mix_input_valid(
-        channel_id,
-        io_map_t const&,
-        aux_sends_t const&,
-        parameter::store const&) -> bool;
+    channel_id,
+    io_map_t const&,
+    aux_sends_t const&,
+    parameter::store const&) -> bool;
 
 auto can_toggle_aux(
-        channel_id,
-        channel_id aux_id,
-        io_map_t const&,
-        aux_sends_t const&,
-        parameter::store const&) -> bool;
+    channel_id,
+    channel_id aux_id,
+    io_map_t const&,
+    aux_sends_t const&,
+    parameter::store const&) -> bool;
 
 auto valid_channels(
-        channel_id,
-        io_direction,
-        channels_t const&,
-        io_map_t const&,
-        aux_sends_t const&,
-        parameter::store const&) -> std::vector<channel_id>;
+    channel_id,
+    io_direction,
+    channels_t const&,
+    io_map_t const&,
+    aux_sends_t const&,
+    parameter::store const&) -> std::vector<channel_id>;
 
 } // namespace piejam::runtime::mixer

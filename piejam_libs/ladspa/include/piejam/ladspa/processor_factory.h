@@ -20,7 +20,7 @@ public:
     virtual ~processor_factory() = default;
 
     virtual auto make_processor(instance_id const&, audio::sample_rate)
-            -> std::unique_ptr<audio::engine::processor> = 0;
+        -> std::unique_ptr<audio::engine::processor> = 0;
 };
 
 } // namespace piejam::ladspa

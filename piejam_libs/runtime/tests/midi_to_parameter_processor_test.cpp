@@ -45,14 +45,14 @@ struct midi_to_bool_parameter_processor_test : testing::Test
     audio::engine::event_input_buffers ev_in_bufs;
     audio::engine::event_output_buffers ev_out_bufs;
     audio::engine::process_context ctx{
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = 16};
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = 16};
 
     bool_parameter param{make_bool_parameter({"foo"})};
 
     std::unique_ptr<audio::engine::processor> proc{
-            make_midi_cc_to_parameter_processor(param)};
+        make_midi_cc_to_parameter_processor(param)};
 };
 
 TEST_F(midi_to_bool_parameter_processor_test, with_empty_input)
@@ -113,16 +113,16 @@ struct midi_to_float_parameter_processor_test
     audio::engine::event_input_buffers ev_in_bufs;
     audio::engine::event_output_buffers ev_out_bufs;
     audio::engine::process_context ctx{
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = 16};
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = 16};
 
     float_parameter param{make_float_parameter(
-            {.name = "foo", .default_value = 7.f},
-            {.min = 5.f, .max = 10.f})};
+        {.name = "foo", .default_value = 7.f},
+        {.min = 5.f, .max = 10.f})};
 
     std::unique_ptr<audio::engine::processor> proc{
-            make_midi_cc_to_parameter_processor(param)};
+        make_midi_cc_to_parameter_processor(param)};
 };
 
 TEST_F(midi_to_float_parameter_processor_test, with_empty_input)
@@ -146,12 +146,12 @@ TEST_P(midi_to_float_parameter_processor_test, with_event_cc_value)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        values,
-        midi_to_float_parameter_processor_test,
-        testing::Values(
-                std::make_pair(0u, 5.f),
-                std::make_pair(64u, 5.f * (64.f / 127.f) + 5.f),
-                std::make_pair(127u, 10.f)));
+    values,
+    midi_to_float_parameter_processor_test,
+    testing::Values(
+        std::make_pair(0u, 5.f),
+        std::make_pair(64u, 5.f * (64.f / 127.f) + 5.f),
+        std::make_pair(127u, 10.f)));
 
 struct midi_to_int_parameter_processor_test
     : testing::TestWithParam<std::pair<std::size_t, int>>
@@ -178,19 +178,19 @@ struct midi_to_int_parameter_processor_test
     audio::engine::event_input_buffers ev_in_bufs;
     audio::engine::event_output_buffers ev_out_bufs;
     audio::engine::process_context ctx{
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = 16};
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = 16};
 
     int_parameter param{make_int_parameter({
-            .name = "foo",
-            .default_value = 10,
-            .min = 10,
-            .max = 19,
+        .name = "foo",
+        .default_value = 10,
+        .min = 10,
+        .max = 19,
     })};
 
     std::unique_ptr<audio::engine::processor> proc{
-            make_midi_cc_to_parameter_processor(param)};
+        make_midi_cc_to_parameter_processor(param)};
 };
 
 TEST_F(midi_to_int_parameter_processor_test, with_empty_input)
@@ -214,14 +214,14 @@ TEST_P(midi_to_int_parameter_processor_test, with_event_cc_value)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        values,
-        midi_to_int_parameter_processor_test,
-        testing::Values(
-                std::make_pair(0u, 10),
-                std::make_pair(5u, 15),
-                std::make_pair(9u, 19),
-                std::make_pair(10u, 19),
-                std::make_pair(20u, 19),
-                std::make_pair(127u, 19)));
+    values,
+    midi_to_int_parameter_processor_test,
+    testing::Values(
+        std::make_pair(0u, 10),
+        std::make_pair(5u, 15),
+        std::make_pair(9u, 19),
+        std::make_pair(10u, 19),
+        std::make_pair(20u, 19),
+        std::make_pair(127u, 19)));
 
 } // namespace piejam::runtime::processors::test

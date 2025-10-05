@@ -24,11 +24,11 @@ public:
 
 private:
     void process_device_update(
-            middleware_functors const&,
-            midi::device_added const&);
+        middleware_functors const&,
+        midi::device_added const&);
     void process_device_update(
-            middleware_functors const&,
-            midi::device_removed const&);
+        middleware_functors const&,
+        midi::device_removed const&);
 
     template <class Action>
     void process_midi_control_action(middleware_functors const&, Action const&);

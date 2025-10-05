@@ -29,10 +29,10 @@ public:
         return false;
     }
 
-    void
-    start(thread::configuration const&,
-          init_process_function const&,
-          process_function) override
+    void start(
+        thread::configuration const&,
+        init_process_function const&,
+        process_function) override
     {
     }
 

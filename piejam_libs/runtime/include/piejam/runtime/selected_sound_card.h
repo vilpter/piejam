@@ -20,7 +20,7 @@ struct selected_sound_card
 
     [[nodiscard]]
     auto operator==(selected_sound_card const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 };
 
 } // namespace piejam::runtime

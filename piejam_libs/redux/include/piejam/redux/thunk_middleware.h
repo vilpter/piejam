@@ -15,8 +15,8 @@ class thunk_middleware
 public:
     template <class State, class Action>
     void operator()(
-            middleware_functors<State, Action> const& mw_fs,
-            Action const& a) const
+        middleware_functors<State, Action> const& mw_fs,
+        Action const& a) const
     {
         if (auto* const ta = as_thunk_action(a))
         {

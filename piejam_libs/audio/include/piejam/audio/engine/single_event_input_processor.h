@@ -20,7 +20,7 @@ public:
 template <class Processor, class T>
 void
 single_event_input_processor<Processor, T>::process_sliced(
-        process_context const& ctx)
+    process_context const& ctx)
 {
     event_buffer<T> const& ev_in_buf = ctx.event_inputs.get<T>(0);
 

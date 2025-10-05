@@ -12,8 +12,8 @@ namespace piejam::system
 
 [[nodiscard]]
 auto make_unique_filename(
-        std::filesystem::path const& base_dir,
-        std::string_view base_filename,
-        std::string_view extension) -> std::filesystem::path;
+    std::filesystem::path const& base_dir,
+    std::string_view base_filename,
+    std::string_view extension) -> std::filesystem::path;
 
 } // namespace piejam::system

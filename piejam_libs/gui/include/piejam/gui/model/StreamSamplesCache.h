@@ -34,18 +34,18 @@ public:
     void process(Samples samples)
     {
         auto const streamFramesSubRange = boost::make_iterator_range(
-                std::next(
-                        std::begin(samples),
-                        m_restFrames == 0 ? 0 : m_stride - m_restFrames),
-                std::end(samples));
+            std::next(
+                std::begin(samples),
+                m_restFrames == 0 ? 0 : m_stride - m_restFrames),
+            std::end(samples));
 
         algorithm::shift_push_back(
-                m_cached,
-                streamFramesSubRange | std::views::stride(m_stride));
+            m_cached,
+            streamFramesSubRange | std::views::stride(m_stride));
 
         m_restFrames =
-                static_cast<int>(std::ranges::size(streamFramesSubRange)) %
-                m_stride;
+            static_cast<int>(std::ranges::size(streamFramesSubRange)) %
+            m_stride;
     }
 
 private:

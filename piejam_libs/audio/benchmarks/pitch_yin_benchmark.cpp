@@ -22,16 +22,16 @@ BM_pitch_yin(benchmark::State& state)
 
     mipp::vector<float> in_buf(8192);
     std::ranges::generate(
-            in_buf,
-            piejam::numeric::generators::sine<float>(
-                    sr.as<float>(),
-                    freqs[state.range(0)]));
+        in_buf,
+        piejam::numeric::generators::sine<float>(
+            sr.as<float>(),
+            freqs[state.range(0)]));
     benchmark::ClobberMemory();
 
     for (auto _ : state)
     {
         benchmark::DoNotOptimize(
-                piejam::audio::dsp::pitch_yin<float>(in_buf, sr));
+            piejam::audio::dsp::pitch_yin<float>(in_buf, sr));
     }
 }
 

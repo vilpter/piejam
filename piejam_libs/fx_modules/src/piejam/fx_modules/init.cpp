@@ -33,11 +33,11 @@ initResources()
     qRegisterMetaType<piejam::fx_modules::utility::gui::FxUtility*>();
 
     qmlRegisterUncreatableType<piejam::fx_modules::scope::gui::FxScope>(
-            "PieJam.FxModules.Models",
-            1,
-            0,
-            "FxScope",
-            "Not createable");
+        "PieJam.FxModules.Models",
+        1,
+        0,
+        "FxScope",
+        "Not createable");
 }
 
 namespace piejam::fx_modules

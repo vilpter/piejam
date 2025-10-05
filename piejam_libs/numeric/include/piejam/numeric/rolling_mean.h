@@ -18,8 +18,9 @@ class rolling_mean
 {
 public:
     constexpr rolling_mean(std::size_t window_size)
-        : m_acc(boost::accumulators::tag::rolling_window::window_size =
-                        window_size)
+        : m_acc(
+              boost::accumulators::tag::rolling_window::window_size =
+                  window_size)
     {
     }
 
@@ -32,9 +33,9 @@ public:
 
 private:
     boost::accumulators::accumulator_set<
-            T,
-            boost::accumulators::stats<boost::accumulators::tag::rolling_mean>>
-            m_acc;
+        T,
+        boost::accumulators::stats<boost::accumulators::tag::rolling_mean>>
+        m_acc;
 };
 
 } // namespace piejam::numeric

@@ -24,8 +24,8 @@ class MixerChannelPerform final : public MixerChannel
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StereoLevel*, peakLevel)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StereoLevel*, rmsLevel)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::FloatParameter*,
-            panBalance)
+        piejam::gui::model::FloatParameter*,
+        panBalance)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, record)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, solo)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, mute)
@@ -33,8 +33,8 @@ class MixerChannelPerform final : public MixerChannel
 
 public:
     MixerChannelPerform(
-            runtime::state_access const&,
-            runtime::mixer::channel_id);
+        runtime::state_access const&,
+        runtime::mixer::channel_id);
 
 private:
     void onSubscribe() override;

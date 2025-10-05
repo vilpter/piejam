@@ -24,11 +24,11 @@ public:
     virtual ~event_handler() = default;
 
     virtual void process_cc_event(
-            midi_client_id_t,
-            midi_port_t,
-            std::size_t channel,
-            std::size_t cc_id,
-            std::size_t value) = 0;
+        midi_client_id_t,
+        midi_port_t,
+        std::size_t channel,
+        std::size_t cc_id,
+        std::size_t value) = 0;
 };
 
 class midi_io

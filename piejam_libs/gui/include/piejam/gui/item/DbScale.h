@@ -17,13 +17,15 @@ class DbScale : public QQuickItem
 {
     Q_OBJECT
 
-    Q_PROPERTY(piejam::gui::model::DbScaleData* scaleData READ scaleData WRITE
-                       setScaleData NOTIFY scaleDataChanged FINAL)
+    Q_PROPERTY(
+        piejam::gui::model::DbScaleData* scaleData READ scaleData WRITE
+            setScaleData NOTIFY scaleDataChanged FINAL)
 
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 
-    Q_PROPERTY(int tickOffset READ tickOffset WRITE setTickOffset NOTIFY
-                       tickOffsetChanged FINAL)
+    Q_PROPERTY(
+        int tickOffset READ tickOffset WRITE setTickOffset NOTIFY
+            tickOffsetChanged FINAL)
 
     QML_ELEMENT
 

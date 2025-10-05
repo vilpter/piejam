@@ -17,14 +17,14 @@ class ScopeGenerator
 public:
     using Streams = boost::container::static_vector<std::span<float const>, 2>;
 
-    auto
-    process(std::size_t triggerStream,
-            Streams,
-            std::size_t windowSize,
-            TriggerSlope,
-            float triggerLevel,
-            std::size_t capturedFrames,
-            std::size_t holdTimeInFrames) -> Streams;
+    auto process(
+        std::size_t triggerStream,
+        Streams,
+        std::size_t windowSize,
+        TriggerSlope,
+        float triggerLevel,
+        std::size_t capturedFrames,
+        std::size_t holdTimeInFrames) -> Streams;
 
     void clear()
     {

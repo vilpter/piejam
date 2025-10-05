@@ -35,11 +35,11 @@ struct set_parameter_value final
 
 template <class Parameter, class V>
 set_parameter_value(parameter::id_t<Parameter>, V&&)
-        -> set_parameter_value<Parameter>;
+    -> set_parameter_value<Parameter>;
 
 auto reset_parameter_to_default_value(parameter_id) -> thunk_action;
 
 auto set_float_parameter_normalized(float_parameter_id, float norm_value)
-        -> thunk_action;
+    -> thunk_action;
 
 } // namespace piejam::runtime::actions

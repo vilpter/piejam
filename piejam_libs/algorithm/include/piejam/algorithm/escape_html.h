@@ -17,8 +17,8 @@ escape_html(std::string_view const src) -> std::string
     constexpr auto grow_factor{1.05f};
 
     std::string dst;
-    dst.reserve(static_cast<std::size_t>(
-            grow_factor * static_cast<float>(src.size())));
+    dst.reserve(
+        static_cast<std::size_t>(grow_factor * static_cast<float>(src.size())));
 
     for (char const ch : src)
     {

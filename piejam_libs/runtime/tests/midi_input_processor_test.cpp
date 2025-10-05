@@ -30,7 +30,7 @@ struct midi_input_processor_test : testing::Test
     midi_input_processor_test()
     {
         auto mock = std::make_unique<
-                testing::StrictMock<midi_input_event_handler_mock>>();
+            testing::StrictMock<midi_input_event_handler_mock>>();
         in_ev_handler = mock.get();
         proc = make_midi_input_processor(std::move(mock));
 
@@ -46,9 +46,9 @@ struct midi_input_processor_test : testing::Test
     audio::engine::event_input_buffers ev_in_bufs;
     audio::engine::event_output_buffers ev_out_bufs;
     audio::engine::process_context ctx{
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = 16};
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = 16};
 
     midi_input_event_handler_mock* in_ev_handler{};
     std::unique_ptr<audio::engine::processor> proc;
@@ -66,10 +66,10 @@ TEST_F(midi_input_processor_test, with_empty_input)
 TEST_F(midi_input_processor_test, with_event)
 {
     midi::external_event ev{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     using testing::_;
     EXPECT_CALL(*in_ev_handler, process(_)).WillOnce([&ev](auto& handler) {
@@ -86,16 +86,16 @@ TEST_F(midi_input_processor_test, with_event)
 TEST_F(midi_input_processor_test, with_multiple_event)
 {
     midi::external_event ev1{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     midi::external_event ev2{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 2,
-                    .data = midi::cc_event{.cc = 7, .value = 58}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 2,
+            .data = midi::cc_event{.cc = 7, .value = 58}}};
 
     using testing::_;
     EXPECT_CALL(*in_ev_handler, process(_)).WillOnce([&](auto& handler) {
@@ -110,7 +110,7 @@ TEST_F(midi_input_processor_test, with_multiple_event)
     EXPECT_EQ(ev1, evr1.value());
 
     auto const& evr2 =
-            *std::next(ev_out_bufs.get<midi::external_event>(0).begin());
+        *std::next(ev_out_bufs.get<midi::external_event>(0).begin());
     EXPECT_EQ(0u, evr2.offset());
     EXPECT_EQ(ev2, evr2.value());
 }

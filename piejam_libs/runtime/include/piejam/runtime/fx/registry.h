@@ -43,13 +43,13 @@ private:
 [[nodiscard]]
 inline auto
 find_ladspa_plugin_descriptor(
-        fx::registry const& registry,
-        ladspa::plugin_id_t id) -> ladspa::plugin_descriptor const*
+    fx::registry const& registry,
+    ladspa::plugin_id_t id) -> ladspa::plugin_descriptor const*
 {
     for (auto const& item : *registry.entries)
     {
         if (auto const* const pd =
-                    std::get_if<ladspa::plugin_descriptor>(&item);
+                std::get_if<ladspa::plugin_descriptor>(&item);
             pd != nullptr && pd->id == id)
         {
             return pd;
@@ -99,8 +99,8 @@ struct is_available_for_bus_type
         return std::visit(*this, item);
     }
 
-    static auto
-    internal_fx_mono_availability() -> registry_map<internal_id, bool>&
+    static auto internal_fx_mono_availability()
+        -> registry_map<internal_id, bool>&
     {
         static registry_map<internal_id, bool> s_mapping;
         return s_mapping;

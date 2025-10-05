@@ -50,10 +50,10 @@ DbScaleData::dBToPosition(float const dB) const
     }
 
     auto const lower = std::ranges::adjacent_find(
-            m_ticks,
-            [dB](DbScaleTick const& l, DbScaleTick const& r) {
-                return in_right_open(dB, l.dB, r.dB);
-            });
+        m_ticks,
+        [dB](DbScaleTick const& l, DbScaleTick const& r) {
+            return in_right_open(dB, l.dB, r.dB);
+        });
 
     BOOST_ASSERT(lower != m_ticks.end());
 
@@ -62,11 +62,11 @@ DbScaleData::dBToPosition(float const dB) const
     if (lower->dB == -s_inf)
     {
         return numeric::linear_map(
-                dB,
-                s_min_dB,
-                upper->dB,
-                lower->normalized,
-                upper->normalized);
+            dB,
+            s_min_dB,
+            upper->dB,
+            lower->normalized,
+            upper->normalized);
     }
 
     if (upper->dB == s_inf)
@@ -75,11 +75,11 @@ DbScaleData::dBToPosition(float const dB) const
     }
 
     return numeric::linear_map(
-            dB,
-            lower->dB,
-            upper->dB,
-            lower->normalized,
-            upper->normalized);
+        dB,
+        lower->dB,
+        upper->dB,
+        lower->normalized,
+        upper->normalized);
 }
 
 float
@@ -103,21 +103,21 @@ DbScaleData::dBAt(float const position) const
     }
 
     auto const lower = std::ranges::adjacent_find(
-            m_ticks,
-            [position](DbScaleTick const& l, DbScaleTick const& r) {
-                return in_right_open(position, l.normalized, r.normalized);
-            });
+        m_ticks,
+        [position](DbScaleTick const& l, DbScaleTick const& r) {
+            return in_right_open(position, l.normalized, r.normalized);
+        });
 
     BOOST_ASSERT(lower != m_ticks.end());
     auto const upper = std::next(lower);
     if (lower->dB == -s_inf)
     {
         return numeric::linear_map(
-                position,
-                lower->normalized,
-                upper->normalized,
-                s_min_dB,
-                upper->dB);
+            position,
+            lower->normalized,
+            upper->normalized,
+            s_min_dB,
+            upper->dB);
     }
 
     if (upper->dB == s_inf)
@@ -126,11 +126,11 @@ DbScaleData::dBAt(float const position) const
     }
 
     return numeric::linear_map(
-            position,
-            lower->normalized,
-            upper->normalized,
-            lower->dB,
-            upper->dB);
+        position,
+        lower->normalized,
+        upper->normalized,
+        lower->dB,
+        upper->dB);
 }
 
 } // namespace piejam::gui::model

@@ -34,9 +34,9 @@ public:
     constexpr strided_span() noexcept = default;
 
     constexpr strided_span(
-            pointer ptr,
-            size_type size,
-            difference_type stride) noexcept
+        pointer ptr,
+        size_type size,
+        difference_type stride) noexcept
         requires(Stride == dynamic_stride)
         : m_data(ptr)
         , m_size(size)
@@ -74,8 +74,8 @@ public:
     constexpr auto cend() const noexcept -> const_iterator
     {
         return make_iterator<const_iterator>(
-                m_data + m_size * stride(),
-                stride());
+            m_data + m_size * stride(),
+            stride());
     }
 
     [[nodiscard]]
@@ -158,8 +158,8 @@ public:
 
 private:
     template <class Iterator, class Data>
-    static constexpr auto
-    make_iterator(Data&& d, difference_type stride) -> Iterator
+    static constexpr auto make_iterator(Data&& d, difference_type stride)
+        -> Iterator
     {
         if constexpr (Stride == dynamic_stride)
         {

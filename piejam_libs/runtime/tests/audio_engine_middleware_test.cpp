@@ -31,11 +31,12 @@ struct audio_engine_middleware_test : ::testing::Test
     testing::StrictMock<ladspa_processor_factory_mock> ladspa_processor_factory;
 
     audio_engine_middleware
-            sut{{}, {}, sound_card_manager, ladspa_processor_factory, nullptr};
+        sut{{}, {}, sound_card_manager, ladspa_processor_factory, nullptr};
 };
 
-TEST_F(audio_engine_middleware_test,
-       non_device_actions_are_passed_directly_to_next)
+TEST_F(
+    audio_engine_middleware_test,
+    non_device_actions_are_passed_directly_to_next)
 {
     struct non_device_action : reducible_action
     {
@@ -53,8 +54,9 @@ TEST_F(audio_engine_middleware_test,
     sut(make_middleware_functors(mf_mock), action);
 }
 
-TEST_F(audio_engine_middleware_test,
-       select_sample_rate_is_ignored_if_index_is_not_in_current_sample_rates)
+TEST_F(
+    audio_engine_middleware_test,
+    select_sample_rate_is_ignored_if_index_is_not_in_current_sample_rates)
 {
     using namespace testing;
 
@@ -70,16 +72,16 @@ TEST_F(audio_engine_middleware_test, select_sample_rate)
     using namespace testing;
 
     audio::sound_card_hw_params const default_hw_params{
-            .sample_rates =
-                    {audio::sample_rate(44100u), audio::sample_rate(48000u)},
-            .period_sizes = {audio::period_size(64u), audio::period_size(128u)},
+        .sample_rates =
+            {audio::sample_rate(44100u), audio::sample_rate(48000u)},
+        .period_sizes = {audio::period_size(64u), audio::period_size(128u)},
     };
 
     state st;
     st.sound_cards = audio::sound_cards{{
-            .name = "foo",
-            .num_channels = {},
-            .impl_data = 0,
+        .name = "foo",
+        .num_channels = {},
+        .impl_data = 0,
     }};
     st.selected_sound_card.index = 0;
     st.selected_sound_card.hw_params = default_hw_params;
@@ -88,9 +90,9 @@ TEST_F(audio_engine_middleware_test, select_sample_rate)
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
     EXPECT_CALL(sound_card_manager, get_hw_params(_, _, _))
-            .WillRepeatedly(Return(default_hw_params));
+        .WillRepeatedly(Return(default_hw_params));
     EXPECT_CALL(sound_card_manager, make_io_process(_, _))
-            .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
+        .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
 
     actions::select_sample_rate action;
     action.index = 1;
@@ -106,16 +108,16 @@ TEST_F(audio_engine_middleware_test, select_period_size)
     using namespace testing;
 
     audio::sound_card_hw_params const default_hw_params{
-            .sample_rates =
-                    {audio::sample_rate(44100u), audio::sample_rate(48000u)},
-            .period_sizes = {audio::period_size(64u), audio::period_size(128u)},
+        .sample_rates =
+            {audio::sample_rate(44100u), audio::sample_rate(48000u)},
+        .period_sizes = {audio::period_size(64u), audio::period_size(128u)},
     };
 
     state st;
     st.sound_cards = audio::sound_cards{{
-            .name = "foo",
-            .num_channels = {},
-            .impl_data = 0,
+        .name = "foo",
+        .num_channels = {},
+        .impl_data = 0,
     }};
     st.selected_sound_card.index = 0;
     st.selected_sound_card.hw_params = default_hw_params;
@@ -124,9 +126,9 @@ TEST_F(audio_engine_middleware_test, select_period_size)
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
     EXPECT_CALL(sound_card_manager, get_hw_params(_, _, _))
-            .WillRepeatedly(Return(default_hw_params));
+        .WillRepeatedly(Return(default_hw_params));
     EXPECT_CALL(sound_card_manager, make_io_process(_, _))
-            .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
+        .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
 
     actions::select_period_size action;
     action.index = 1;
@@ -142,20 +144,20 @@ TEST_F(audio_engine_middleware_test, initiate_device_selection)
     using namespace testing;
 
     piejam::audio::sound_card_hw_params hw_params{
-            .sample_rates =
-                    {audio::sample_rate(44100u),
-                     audio::sample_rate(48000u),
-                     audio::sample_rate(96000u)},
-            .period_sizes =
-                    {audio::period_size(128u),
-                     audio::period_size(192u),
-                     audio::period_size(256u)},
+        .sample_rates =
+            {audio::sample_rate(44100u),
+             audio::sample_rate(48000u),
+             audio::sample_rate(96000u)},
+        .period_sizes =
+            {audio::period_size(128u),
+             audio::period_size(192u),
+             audio::period_size(256u)},
     };
 
     state st;
     st.sound_cards = audio::sound_cards{
-            {.name = "foo", .num_channels = {1u, 1u}, .impl_data = 0},
-            {.name = "bar", .num_channels = {2u, 2u}, .impl_data = 0},
+        {.name = "foo", .num_channels = {1u, 1u}, .impl_data = 0},
+        {.name = "bar", .num_channels = {2u, 2u}, .impl_data = 0},
     };
 
     EXPECT_CALL(mf_mock, get_state()).WillRepeatedly(ReturnRef(st));
@@ -163,9 +165,9 @@ TEST_F(audio_engine_middleware_test, initiate_device_selection)
         dynamic_cast<reducible_action const&>(a).reduce(st);
     });
     EXPECT_CALL(sound_card_manager, get_hw_params(_, _, _))
-            .WillRepeatedly(Return(hw_params));
+        .WillRepeatedly(Return(hw_params));
     EXPECT_CALL(sound_card_manager, make_io_process(_, _))
-            .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
+        .WillOnce(Return(ByMove(audio::make_dummy_io_process())));
 
     actions::initiate_sound_card_selection in_action;
     in_action.index = 1; // select another sound card

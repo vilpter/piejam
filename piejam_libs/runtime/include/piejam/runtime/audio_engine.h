@@ -28,19 +28,19 @@ class audio_engine
 {
 public:
     audio_engine(
-            std::span<audio::engine::rt_task_executor> workers,
-            audio::sample_rate,
-            unsigned num_device_input_channels,
-            unsigned num_device_output_channels);
+        std::span<audio::engine::rt_task_executor> workers,
+        audio::sample_rate,
+        unsigned num_device_input_channels,
+        unsigned num_device_output_channels);
 
     template <class P>
     void set_parameter_value(parameter::id_t<P>, parameter::value_type_t<P>)
-            const;
+        const;
 
     template <class P>
     [[nodiscard]]
     auto get_parameter_update(parameter::id_t<P>) const
-            -> std::optional<parameter::value_type_t<P>>;
+        -> std::optional<parameter::value_type_t<P>>;
 
     [[nodiscard]]
     auto get_learned_midi() const -> std::optional<midi::external_event>;
@@ -49,14 +49,14 @@ public:
     auto get_stream(audio_stream_id) const -> audio_stream_buffer;
 
     [[nodiscard]]
-    auto
-    rebuild(state const&,
-            fx::simple_ladspa_processor_factory const&,
-            std::unique_ptr<midi::input_event_handler>) -> bool;
+    auto rebuild(
+        state const&,
+        fx::simple_ladspa_processor_factory const&,
+        std::unique_ptr<midi::input_event_handler>) -> bool;
 
     void init_process(
-            std::span<audio::pcm_input_buffer_converter const>,
-            std::span<audio::pcm_output_buffer_converter const>);
+        std::span<audio::pcm_input_buffer_converter const>,
+        std::span<audio::pcm_output_buffer_converter const>);
 
     auto process(std::size_t buffer_size) noexcept -> std::chrono::nanoseconds;
 

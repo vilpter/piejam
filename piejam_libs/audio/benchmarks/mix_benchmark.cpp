@@ -22,11 +22,11 @@ mix(std::span<float const> const in1,
     std::span<float> const dst)
 {
     std::transform(
-            in1.begin(),
-            in1.end(),
-            in2.begin(),
-            dst.begin(),
-            std::plus<float>{});
+        in1.begin(),
+        in1.end(),
+        in2.begin(),
+        dst.begin(),
+        std::plus<float>{});
 }
 
 static void
@@ -52,8 +52,8 @@ BM_mix_audio_slice_std(benchmark::State& state)
 }
 
 BENCHMARK(BM_mix_audio_slice_std)
-        ->RangeMultiplier(2)
-        ->Range(min_period_size, max_period_size);
+    ->RangeMultiplier(2)
+    ->Range(min_period_size, max_period_size);
 
 static void
 BM_mix_audio_slice(benchmark::State& state)
@@ -61,11 +61,11 @@ BM_mix_audio_slice(benchmark::State& state)
     std::srand(std::time(nullptr));
 
     mipp::vector<float> in_buf1(
-            state.range(0),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        state.range(0),
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf2(
-            state.range(0),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        state.range(0),
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> out_buf(state.range(0));
     std::span<float> out{out_buf};
 
@@ -80,21 +80,21 @@ BM_mix_audio_slice(benchmark::State& state)
 }
 
 BENCHMARK(BM_mix_audio_slice)
-        ->RangeMultiplier(2)
-        ->Range(min_period_size, max_period_size);
+    ->RangeMultiplier(2)
+    ->Range(min_period_size, max_period_size);
 
 static auto
 multiply_audio_slice_std(
-        std::span<float const> const in1,
-        std::span<float const> const in2,
-        std::span<float> const dst)
+    std::span<float const> const in1,
+    std::span<float const> const in2,
+    std::span<float> const dst)
 {
     std::transform(
-            in1.begin(),
-            in1.end(),
-            in2.begin(),
-            dst.begin(),
-            std::multiplies<>{});
+        in1.begin(),
+        in1.end(),
+        in2.begin(),
+        dst.begin(),
+        std::multiplies<>{});
 }
 
 static void
@@ -117,8 +117,8 @@ BM_multiply_audio_slice_std(benchmark::State& state)
 }
 
 BENCHMARK(BM_multiply_audio_slice_std)
-        ->RangeMultiplier(2)
-        ->Range(min_period_size, max_period_size);
+    ->RangeMultiplier(2)
+    ->Range(min_period_size, max_period_size);
 
 static void
 BM_multiply_audio_slice(benchmark::State& state)
@@ -126,11 +126,11 @@ BM_multiply_audio_slice(benchmark::State& state)
     std::srand(std::time(nullptr));
 
     mipp::vector<float> in_buf1(
-            state.range(0),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        state.range(0),
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> in_buf2(
-            state.range(0),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        state.range(0),
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     mipp::vector<float> out_buf(state.range(0));
     std::span<float> out{out_buf};
 
@@ -145,8 +145,8 @@ BM_multiply_audio_slice(benchmark::State& state)
 }
 
 BENCHMARK(BM_multiply_audio_slice)
-        ->RangeMultiplier(2)
-        ->Range(min_period_size, max_period_size);
+    ->RangeMultiplier(2)
+    ->Range(min_period_size, max_period_size);
 
 static void
 BM_multiply_audio_slice_by_constant(benchmark::State& state)
@@ -154,8 +154,8 @@ BM_multiply_audio_slice_by_constant(benchmark::State& state)
     std::srand(std::time(nullptr));
 
     mipp::vector<float> in_bufs1(
-            state.range(0),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        state.range(0),
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
 
     mipp::vector<float> out_buf(state.range(0));
     std::span<float> out{out_buf};
@@ -171,5 +171,5 @@ BM_multiply_audio_slice_by_constant(benchmark::State& state)
 }
 
 BENCHMARK(BM_multiply_audio_slice_by_constant)
-        ->RangeMultiplier(2)
-        ->Range(min_period_size, max_period_size);
+    ->RangeMultiplier(2)
+    ->Range(min_period_size, max_period_size);

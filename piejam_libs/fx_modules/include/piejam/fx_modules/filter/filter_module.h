@@ -43,6 +43,6 @@ enum class stream_key : runtime::fx::stream_key
 };
 
 auto make_module(runtime::internal_fx_module_factory_args const&)
-        -> runtime::fx::module;
+    -> runtime::fx::module;
 
 } // namespace piejam::fx_modules::filter

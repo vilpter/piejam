@@ -11,6 +11,6 @@ namespace piejam
 
 template <class... Types>
 constexpr bool is_nothrow_default_constructible_v =
-        (std::is_nothrow_default_constructible_v<Types> && ...);
+    (std::is_nothrow_default_constructible_v<Types> && ...);
 
 } // namespace piejam

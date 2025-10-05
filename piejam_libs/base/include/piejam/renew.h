@@ -12,8 +12,8 @@ namespace piejam
 
 template <class T, class... Args>
 void
-renew(T& t,
-      Args&&... args) noexcept(std::is_nothrow_constructible_v<T, Args...>)
+renew(T& t, Args&&... args) noexcept(
+    std::is_nothrow_constructible_v<T, Args...>)
 {
     if constexpr (std::is_nothrow_constructible_v<T, Args...>)
     {

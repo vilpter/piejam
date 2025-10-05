@@ -14,6 +14,6 @@ namespace piejam::runtime
 {
 
 using midi_devices_t =
-        std::unordered_map<midi::device_id_t, midi_device_config>;
+    std::unordered_map<midi::device_id_t, midi_device_config>;
 
 } // namespace piejam::runtime

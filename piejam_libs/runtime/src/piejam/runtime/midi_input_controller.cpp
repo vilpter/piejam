@@ -31,7 +31,7 @@ struct default_midi_input_controller final : public midi_input_controller
     }
 
     auto make_input_event_handler()
-            -> std::unique_ptr<midi::input_event_handler> override
+        -> std::unique_ptr<midi::input_event_handler> override
     {
         return m_midi_device_manager.make_input_event_handler();
     }
@@ -52,7 +52,7 @@ struct dummy_midi_input_controller final : public midi_input_controller
     }
 
     auto make_input_event_handler()
-            -> std::unique_ptr<midi::input_event_handler> override
+        -> std::unique_ptr<midi::input_event_handler> override
     {
         return nullptr;
     }
@@ -62,7 +62,7 @@ struct dummy_midi_input_controller final : public midi_input_controller
 
 auto
 make_midi_input_controller(midi::device_manager& midi_device_manager)
-        -> std::unique_ptr<midi_input_controller>
+    -> std::unique_ptr<midi_input_controller>
 {
     return std::make_unique<default_midi_input_controller>(midi_device_manager);
 }

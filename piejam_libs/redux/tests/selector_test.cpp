@@ -37,7 +37,7 @@ TEST(selector, combine)
 {
     auto sub_sel = selector<int, state>(&state::x);
     auto combined =
-            combine([](int a, int b) { return a + b; }, sub_sel, sub_sel);
+        combine([](int a, int b) { return a + b; }, sub_sel, sub_sel);
     state st{5};
     EXPECT_EQ(combined(st), 10);
 }

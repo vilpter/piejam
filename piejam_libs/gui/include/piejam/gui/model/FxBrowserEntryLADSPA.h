@@ -17,8 +17,8 @@ class FxBrowserEntryLADSPA final : public FxBrowserEntry
 {
 public:
     FxBrowserEntryLADSPA(
-            runtime::state_access const&,
-            ladspa::plugin_descriptor const&);
+        runtime::state_access const&,
+        ladspa::plugin_descriptor const&);
 
     void appendModule() override;
 

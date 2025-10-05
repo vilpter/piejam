@@ -30,9 +30,9 @@ shift_push_back(Target& target, Source&& source)
     auto source_end = std::ranges::end(source);
 
     copy_or_move(
-            std::ranges::next(source_begin, source_size - count),
-            source_end,
-            std::ranges::next(target_begin, target_size - count));
+        std::ranges::next(source_begin, source_size - count),
+        source_end,
+        std::ranges::next(target_begin, target_size - count));
 }
 
 } // namespace piejam::algorithm

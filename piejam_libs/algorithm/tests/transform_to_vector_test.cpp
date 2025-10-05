@@ -82,7 +82,7 @@ TEST(transform_to_vector, works_with_move_only_type)
 
     std::vector<int> input{1, 2, 3};
     auto result =
-            transform_to_vector(input, [](int x) { return move_only{x}; });
+        transform_to_vector(input, [](int x) { return move_only{x}; });
 
     ASSERT_EQ(result.size(), 3u);
     EXPECT_EQ(result[0].value, 1);

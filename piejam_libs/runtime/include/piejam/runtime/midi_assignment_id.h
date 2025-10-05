@@ -13,11 +13,9 @@ using midi_assignment_id = parameter_id;
 
 template <class ParamId>
 using is_midi_assignable = boost::mp11::mp_contains<
-        boost::mp11::mp_list<
-                bool_parameter_id,
-                float_parameter_id,
-                int_parameter_id>,
-        ParamId>;
+    boost::mp11::
+        mp_list<bool_parameter_id, float_parameter_id, int_parameter_id>,
+    ParamId>;
 
 template <class ParamId>
 constexpr bool is_midi_assignable_v = is_midi_assignable<ParamId>::value;

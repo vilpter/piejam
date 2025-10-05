@@ -11,8 +11,8 @@ namespace piejam::gui::model
 {
 
 AudioStreamProvider::AudioStreamProvider(
-        runtime::state_access const& state_access,
-        runtime::audio_stream_id stream_id)
+    runtime::state_access const& state_access,
+    runtime::audio_stream_id stream_id)
     : SubscribableModel(state_access)
     , m_stream_id{stream_id}
 {
@@ -21,13 +21,14 @@ AudioStreamProvider::AudioStreamProvider(
 void
 AudioStreamProvider::onSubscribe()
 {
-    observe(runtime::selectors::make_audio_stream_selector(m_stream_id),
-            [this](runtime::audio_stream_buffer const& buf) {
-                if (!buf->empty())
-                {
-                    emit captured(buf->view());
-                }
-            });
+    observe(
+        runtime::selectors::make_audio_stream_selector(m_stream_id),
+        [this](runtime::audio_stream_buffer const& buf) {
+            if (!buf->empty())
+            {
+                emit captured(buf->view());
+            }
+        });
 }
 
 } // namespace piejam::gui::model

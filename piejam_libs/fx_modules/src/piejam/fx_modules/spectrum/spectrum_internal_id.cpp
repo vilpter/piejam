@@ -17,16 +17,17 @@ internal_id() -> runtime::fx::internal_id
 {
     using namespace std::string_literals;
 
-    static auto const id = register_module(module_registration{
+    static auto const id = register_module(
+        module_registration{
             .available_for_mono = true,
             .persistence_name = "spectrum"s,
             .fx_module_factory = &make_module,
             .fx_component_factory = &make_component,
             .fx_browser_entry_name = "Spectrum",
             .fx_browser_entry_description =
-                    "Analyze frequency content of an audio signal.",
+                "Analyze frequency content of an audio signal.",
             .fx_module_content_factory =
-                    &piejam::gui::model::makeFxModule<gui::FxSpectrum>,
+                &piejam::gui::model::makeFxModule<gui::FxSpectrum>,
             .viewSource = "/PieJam.FxModules/SpectrumView.qml"});
     return id;
 }

@@ -26,19 +26,19 @@ namespace piejam::audio::alsa
 
 static auto
 open_pcm(
-        std::filesystem::path const& path,
-        sound_card_config const& process_config)
-        -> std::pair<system::device, sound_card_stream_config>
+    std::filesystem::path const& path,
+    sound_card_config const& process_config)
+    -> std::pair<system::device, sound_card_stream_config>
 {
     if (!path.empty())
     {
         system::device fd(path);
 
         auto [num_channels, format, period_count] =
-                set_hw_params(fd, process_config);
+            set_hw_params(fd, process_config);
 
         unsigned const buffer_size =
-                process_config.period_size.value() * period_count;
+            process_config.period_size.value() * period_count;
         snd_pcm_sw_params sw_params{};
         sw_params.proto = SNDRV_PCM_VERSION;
         sw_params.tstamp_mode = SNDRV_PCM_TSTAMP_ENABLE;
@@ -53,7 +53,7 @@ open_pcm(
         sw_params.boundary = buffer_size;
         while (sw_params.boundary * 2 <=
                static_cast<long unsigned>(
-                       std::numeric_limits<long>::max() - buffer_size))
+                   std::numeric_limits<long>::max() - buffer_size))
         {
             sw_params.boundary *= 2;
         }
@@ -64,11 +64,12 @@ open_pcm(
             throw std::system_error(err);
         }
 
-        return {std::move(fd),
-                sound_card_stream_config{
-                        .format = format,
-                        .num_channels = num_channels,
-                }};
+        return {
+            std::move(fd),
+            sound_card_stream_config{
+                .format = format,
+                .num_channels = num_channels,
+            }};
     }
 
     return {};
@@ -77,9 +78,9 @@ open_pcm(
 pcm_io::pcm_io() noexcept = default;
 
 pcm_io::pcm_io(
-        std::filesystem::path const& in,
-        std::filesystem::path const& out,
-        sound_card_config const& sc_config)
+    std::filesystem::path const& in,
+    std::filesystem::path const& out,
+    sound_card_config const& sc_config)
 {
     std::tie(m_input_fd, m_io_config.in_config) = open_pcm(in, sc_config);
     std::tie(m_output_fd, m_io_config.out_config) = open_pcm(out, sc_config);
@@ -88,8 +89,8 @@ pcm_io::pcm_io(
     if (m_input_fd && m_output_fd)
     {
         if (auto err = m_input_fd.ioctl(
-                    SNDRV_PCM_IOCTL_LINK,
-                    std::as_const(m_output_fd)))
+                SNDRV_PCM_IOCTL_LINK,
+                std::as_const(m_output_fd)))
         {
             throw std::system_error(err);
         }
@@ -141,9 +142,9 @@ pcm_io::is_running() const noexcept -> bool
 
 void
 pcm_io::start(
-        thread::configuration const& thread_config,
-        init_process_function const& init_process_function,
-        process_function process_function)
+    thread::configuration const& thread_config,
+    init_process_function const& init_process_function,
+    process_function process_function)
 {
     BOOST_ASSERT(is_open());
     BOOST_ASSERT(!m_process_thread);
@@ -152,15 +153,15 @@ pcm_io::start(
 
     m_process_thread = std::make_unique<process_thread>();
     m_process_thread->start(
-            thread_config,
-            process_step(
-                    m_input_fd,
-                    m_output_fd,
-                    m_io_config,
-                    m_cpu_load,
-                    m_xruns,
-                    init_process_function,
-                    std::move(process_function)));
+        thread_config,
+        process_step(
+            m_input_fd,
+            m_output_fd,
+            m_io_config,
+            m_cpu_load,
+            m_xruns,
+            init_process_function,
+            std::move(process_function)));
 }
 
 void

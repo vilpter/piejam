@@ -22,13 +22,13 @@ namespace
 class event_to_audio_smoother_processor final
     : public named_processor
     , public single_event_input_processor<
-              event_to_audio_smoother_processor,
-              float>
+          event_to_audio_smoother_processor,
+          float>
 {
 public:
     event_to_audio_smoother_processor(
-            std::size_t const smooth_length,
-            std::string_view const name)
+        std::size_t const smooth_length,
+        std::string_view const name)
         : named_processor{name}
         , m_smooth_length{smooth_length}
     {
@@ -74,9 +74,9 @@ public:
         if (m_smoother.is_running())
         {
             std::copy_n(
-                    m_smoother.generator(),
-                    ctx.buffer_size,
-                    ctx.outputs[0].begin());
+                m_smoother.generator(),
+                ctx.buffer_size,
+                ctx.outputs[0].begin());
         }
         else
         {
@@ -85,9 +85,9 @@ public:
     }
 
     void process_slice(
-            process_context const& ctx,
-            std::size_t const offset,
-            std::size_t const count)
+        process_context const& ctx,
+        std::size_t const offset,
+        std::size_t const count)
     {
         auto it_out = std::next(ctx.outputs[0].begin(), offset);
 
@@ -117,16 +117,16 @@ class event_smoother_processor final
 {
 public:
     event_smoother_processor(
-            std::size_t const smooth_length,
-            std::size_t const smooth_steps,
-            std::string_view const name)
+        std::size_t const smooth_length,
+        std::size_t const smooth_steps,
+        std::string_view const name)
         : named_processor{name}
         , m_smooth_steps{smooth_steps}
         , m_step_length{smooth_length / smooth_steps}
     {
         BOOST_ASSERT_MSG(
-                smooth_length % smooth_steps == 0,
-                "smooth_length should be dividable by smooth_steps");
+            smooth_length % smooth_steps == 0,
+            "smooth_length should be dividable by smooth_steps");
     }
 
     auto type_name() const noexcept -> std::string_view override
@@ -153,7 +153,7 @@ public:
     auto event_outputs() const noexcept -> event_ports override
     {
         static std::array s_ports{
-                event_port(std::in_place_type<float>, "sm_ev")};
+            event_port(std::in_place_type<float>, "sm_ev")};
         return s_ports;
     }
 
@@ -170,9 +170,9 @@ public:
     }
 
     void process_slice(
-            process_context const& ctx,
-            std::size_t const offset,
-            std::size_t const count)
+        process_context const& ctx,
+        std::size_t const offset,
+        std::size_t const count)
     {
         std::size_t samples_left = count;
         while (samples_left && m_smoother.is_running())
@@ -180,8 +180,8 @@ public:
             if (m_counter == 0u)
             {
                 ctx.event_outputs.get<float>(0).insert(
-                        offset + count - samples_left,
-                        *(m_smoother.generator())++);
+                    offset + count - samples_left,
+                    *(m_smoother.generator())++);
 
                 if (m_smoother.is_running())
                 {
@@ -215,24 +215,24 @@ private:
 
 auto
 make_event_to_audio_smoother_processor(
-        std::size_t const smooth_length,
-        std::string_view const name) -> std::unique_ptr<processor>
+    std::size_t const smooth_length,
+    std::string_view const name) -> std::unique_ptr<processor>
 {
     return std::make_unique<event_to_audio_smoother_processor>(
-            smooth_length,
-            name);
+        smooth_length,
+        name);
 }
 
 auto
 make_event_smoother_processor(
-        std::size_t const smooth_length,
-        std::size_t const smooth_steps,
-        std::string_view const name) -> std::unique_ptr<processor>
+    std::size_t const smooth_length,
+    std::size_t const smooth_steps,
+    std::string_view const name) -> std::unique_ptr<processor>
 {
     return std::make_unique<event_smoother_processor>(
-            smooth_length,
-            smooth_steps,
-            name);
+        smooth_length,
+        smooth_steps,
+        name);
 }
 
 } // namespace piejam::audio::engine

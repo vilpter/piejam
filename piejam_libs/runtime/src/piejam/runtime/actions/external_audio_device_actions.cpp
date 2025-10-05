@@ -22,7 +22,7 @@ namespace
 
 auto
 default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
-        -> std::string
+    -> std::string
 {
     using namespace std::string_literals;
 
@@ -30,9 +30,9 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
     {
         case io_direction::input:
             return std::format(
-                    "In {} {}",
-                    st.external_audio_state.io_ids.in()->size() + 1,
-                    bus_type == audio::bus_type::mono ? "M" : "S");
+                "In {} {}",
+                st.external_audio_state.io_ids.in()->size() + 1,
+                bus_type == audio::bus_type::mono ? "M" : "S");
 
         case io_direction::output:
             switch (st.external_audio_state.io_ids.out()->size())
@@ -45,8 +45,8 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
 
                 default:
                     return std::format(
-                            "Aux {}",
-                            st.external_audio_state.io_ids.out()->size() - 1);
+                        "Aux {}",
+                        st.external_audio_state.io_ids.out()->size() - 1);
             }
     }
 }
@@ -62,7 +62,7 @@ default_channels(state const& st, io_direction io_dir, audio::bus_type bus_type)
     for (external_audio::device_id const device_id : device_ids)
     {
         external_audio::device const* const device =
-                st.external_audio_state.devices.find(device_id);
+            st.external_audio_state.devices.find(device_id);
         BOOST_ASSERT(device);
         if (auto ch = device->channels.left; ch != npos)
         {
@@ -77,8 +77,8 @@ default_channels(state const& st, io_direction io_dir, audio::bus_type bus_type)
 
     auto it = std::ranges::find(assigned_channels, false);
     std::size_t ch = it != assigned_channels.end()
-                             ? std::distance(assigned_channels.begin(), it)
-                             : npos;
+                         ? std::distance(assigned_channels.begin(), it)
+                         : npos;
 
     channel_index_pair channels{ch};
 
@@ -90,8 +90,8 @@ default_channels(state const& st, io_direction io_dir, audio::bus_type bus_type)
         }
 
         channels.right = it != assigned_channels.end()
-                                 ? std::distance(assigned_channels.begin(), it)
-                                 : npos;
+                             ? std::distance(assigned_channels.begin(), it)
+                             : npos;
     }
 
     return channels;
@@ -103,23 +103,22 @@ void
 add_external_audio_device::reduce(state& st) const
 {
     BOOST_ASSERT(
-            direction != io_direction::output ||
-            type == audio::bus_type::stereo);
+        direction != io_direction::output || type == audio::bus_type::stereo);
 
     auto added_device_id = runtime::add_external_audio_device(
-            st,
-            default_bus_name(st, direction, type),
-            direction,
-            type,
-            default_channels(st, direction, type));
+        st,
+        default_bus_name(st, direction, type),
+        direction,
+        type,
+        default_channels(st, direction, type));
 
     if (direction == io_direction::output)
     {
         if (std::holds_alternative<default_t>(
-                    st.mixer_state.io_map.at(st.mixer_state.main).out()))
+                st.mixer_state.io_map.at(st.mixer_state.main).out()))
         {
             st.mixer_state.io_map.lock().at(st.mixer_state.main).out() =
-                    added_device_id;
+                added_device_id;
         }
     }
 }

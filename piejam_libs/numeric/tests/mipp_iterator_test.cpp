@@ -21,16 +21,8 @@ TEST(mipp_iterator, write)
     *it = reg * 2;
 
     EXPECT_THAT(
-            buffer,
-            testing::ElementsAre(
-                    2.0f,
-                    4.0f,
-                    6.0f,
-                    8.0f,
-                    5.0f,
-                    6.0f,
-                    7.0f,
-                    8.0f));
+        buffer,
+        testing::ElementsAre(2.0f, 4.0f, 6.0f, 8.0f, 5.0f, 6.0f, 7.0f, 8.0f));
 }
 
 TEST(mipp_iterator, concepts)
@@ -53,8 +45,8 @@ TEST(mipp_range_split, unaligned_pre)
 {
     mipp::vector<float> samples(8);
 
-    auto [pre, main, post] = mipp_range_split(
-            std::span(std::next(samples.begin()), samples.end()));
+    auto [pre, main, post] =
+        mipp_range_split(std::span(std::next(samples.begin()), samples.end()));
 
     EXPECT_EQ(pre.size(), 3u);
     EXPECT_EQ(main.size(), 4u);
@@ -79,8 +71,8 @@ TEST(mipp_range_split, unaligned_pre_with_post)
 {
     mipp::vector<float> samples(7);
 
-    auto [pre, main, post] = mipp_range_split(
-            std::span(std::next(samples.begin()), samples.end()));
+    auto [pre, main, post] =
+        mipp_range_split(std::span(std::next(samples.begin()), samples.end()));
 
     EXPECT_EQ(pre.size(), 3u);
     EXPECT_EQ(main.size(), 0u);

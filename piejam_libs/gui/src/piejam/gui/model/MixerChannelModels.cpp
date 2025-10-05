@@ -14,8 +14,9 @@ namespace piejam::gui::model
 
 struct MixerChannelModels::Impl
 {
-    Impl(runtime::state_access const& state_access,
-         runtime::mixer::channel_id const id)
+    Impl(
+        runtime::state_access const& state_access,
+        runtime::mixer::channel_id const id)
         : m_perform{state_access, id}
         , m_edit{state_access, id}
         , m_fx{state_access, id}
@@ -30,8 +31,8 @@ struct MixerChannelModels::Impl
 };
 
 MixerChannelModels::MixerChannelModels(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const id)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id const id)
     : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(state_access, id)}
 {

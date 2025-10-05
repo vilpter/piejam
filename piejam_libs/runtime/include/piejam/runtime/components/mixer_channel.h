@@ -17,19 +17,18 @@ namespace piejam::runtime::components
 {
 
 auto make_mixer_channel_input(mixer::channel const&)
-        -> std::unique_ptr<audio::engine::component>;
+    -> std::unique_ptr<audio::engine::component>;
 
 auto make_mixer_channel_output(
-        mixer::channel const&,
-        std::string_view channel_name,
-        parameter_processor_factory&,
-        processors::stream_processor_factory&,
-        audio::sample_rate) -> std::unique_ptr<audio::engine::component>;
+    mixer::channel const&,
+    std::string_view channel_name,
+    parameter_processor_factory&,
+    processors::stream_processor_factory&,
+    audio::sample_rate) -> std::unique_ptr<audio::engine::component>;
 
 auto make_mixer_channel_aux_send(
-        std::string_view channel_name,
-        float_parameter_id aux_volume,
-        parameter_processor_factory&)
-        -> std::unique_ptr<audio::engine::component>;
+    std::string_view channel_name,
+    float_parameter_id aux_volume,
+    parameter_processor_factory&) -> std::unique_ptr<audio::engine::component>;
 
 } // namespace piejam::runtime::components

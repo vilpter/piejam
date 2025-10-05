@@ -41,7 +41,7 @@ class event_buffer final : public abstract_event_buffer
     };
 
     using event_container_t = boost::intrusive::
-            multiset<event<T>, boost::intrusive::key_of_value<event_offset>>;
+        multiset<event<T>, boost::intrusive::key_of_value<event_offset>>;
 
 public:
     using const_iterator = typename event_container_t::const_iterator;
@@ -88,8 +88,8 @@ public:
         BOOST_ASSERT(m_event_memory);
         std::pmr::polymorphic_allocator<event<T>> allocator(m_event_memory);
         m_event_container.insert(*allocator.template new_object<event<T>>(
-                offset,
-                std::forward<V>(value)));
+            offset,
+            std::forward<V>(value)));
     }
 
     auto operator=(event_buffer const&) = delete;

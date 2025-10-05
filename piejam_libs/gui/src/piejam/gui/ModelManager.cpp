@@ -105,88 +105,88 @@ runRegistration()
     qRegisterMetaType<piejam::gui::model::WaveformSlot*>();
 
     qmlRegisterUncreatableType<piejam::gui::model::AudioRoutingSelection>(
-            "PieJam.Models",
-            1,
-            0,
-            "AudioRoutingSelection",
-            "Not creatable");
+        "PieJam.Models",
+        1,
+        0,
+        "AudioRoutingSelection",
+        "Not creatable");
 
     qmlRegisterUncreatableType<piejam::gui::model::FxModule>(
-            "PieJam.Models",
-            1,
-            0,
-            "FxModule",
-            "Not createable");
+        "PieJam.Models",
+        1,
+        0,
+        "FxModule",
+        "Not createable");
 
     qmlRegisterUncreatableType<piejam::gui::model::AuxSend>(
-            "PieJam.Models",
-            1,
-            0,
-            "AuxSend",
-            "Not creatable");
+        "PieJam.Models",
+        1,
+        0,
+        "AuxSend",
+        "Not creatable");
 
     qmlRegisterUncreatableType<piejam::gui::model::Parameter>(
-            "PieJam.Models",
-            1,
-            0,
-            "Parameter",
-            "Not createable");
+        "PieJam.Models",
+        1,
+        0,
+        "Parameter",
+        "Not createable");
 
     qmlRegisterUncreatableType<piejam::gui::model::RootView>(
-            "PieJam.Models",
-            1,
-            0,
-            "RootView",
-            "Not createable");
+        "PieJam.Models",
+        1,
+        0,
+        "RootView",
+        "Not createable");
 
     qmlRegisterType<piejam::gui::item::Waveform>(
-            "PieJam.Items",
-            1,
-            0,
-            "Waveform");
+        "PieJam.Items",
+        1,
+        0,
+        "Waveform");
     qmlRegisterType<piejam::gui::item::Spectrum>(
-            "PieJam.Items",
-            1,
-            0,
-            "Spectrum");
+        "PieJam.Items",
+        1,
+        0,
+        "Spectrum");
     qmlRegisterType<piejam::gui::item::Scope>("PieJam.Items", 1, 0, "Scope");
     qmlRegisterType<piejam::gui::item::DbScale>(
-            "PieJam.Items",
-            1,
-            0,
-            "DbScale");
+        "PieJam.Items",
+        1,
+        0,
+        "DbScale");
     qmlRegisterType<piejam::gui::item::FixedLinearScaleGrid>(
-            "PieJam.Items",
-            1,
-            0,
-            "FixedLinearScaleGrid");
+        "PieJam.Items",
+        1,
+        0,
+        "FixedLinearScaleGrid");
     qmlRegisterType<piejam::gui::item::FixedLogScaleGrid>(
-            "PieJam.Items",
-            1,
-            0,
-            "FixedLogScaleGrid");
+        "PieJam.Items",
+        1,
+        0,
+        "FixedLogScaleGrid");
 
     qmlRegisterUncreatableMetaObject(
-            piejam::gui::model::staticMetaObject,
-            "PieJam.Models",
-            1,
-            0,
-            "Types",
-            "Not creatable as it is an enum type");
+        piejam::gui::model::staticMetaObject,
+        "PieJam.Models",
+        1,
+        0,
+        "Types",
+        "Not creatable as it is an enum type");
 
     qmlRegisterSingletonInstance<piejam::gui::model::MixerDbScales>(
-            "PieJam.Models",
-            1,
-            0,
-            "MixerDbScales",
-            &model::g_mixerDbScales);
+        "PieJam.Models",
+        1,
+        0,
+        "MixerDbScales",
+        &model::g_mixerDbScales);
 
     qmlRegisterSingletonInstance<piejam::gui::model::FxModuleRegistry>(
-            "PieJam.Models",
-            1,
-            0,
-            "FxModuleRegistry",
-            &model::fxModuleRegistrySingleton());
+        "PieJam.Models",
+        1,
+        0,
+        "FxModuleRegistry",
+        &model::fxModuleRegistrySingleton());
 }
 
 struct ModelManager::Impl
@@ -226,21 +226,21 @@ ModelManager::ModelManager(runtime::state_access const& state_access)
 
 auto
 ModelManager::audioDeviceSettings() const noexcept
-        -> model::AudioDeviceSettings*
+    -> model::AudioDeviceSettings*
 {
     return &m_impl->audioDeviceSettings;
 }
 
 auto
 ModelManager::audioInputSettings() const noexcept
-        -> model::AudioInputOutputSettings*
+    -> model::AudioInputOutputSettings*
 {
     return &m_impl->audioInputSettings;
 }
 
 auto
 ModelManager::audioOutputSettings() const noexcept
-        -> model::AudioInputOutputSettings*
+    -> model::AudioInputOutputSettings*
 {
     return &m_impl->audioOutputSettings;
 }

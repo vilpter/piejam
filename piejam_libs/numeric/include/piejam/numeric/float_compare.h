@@ -17,8 +17,8 @@ constexpr auto
 almost_equal(T a, T b) noexcept -> bool
 {
     constexpr T abs_eps =
-            std::numeric_limits<T>::epsilon() * 100; // near-zero tolerance
-    constexpr T rel_eps = static_cast<T>(1e-5);      // relative tolerance
+        std::numeric_limits<T>::epsilon() * 100; // near-zero tolerance
+    constexpr T rel_eps = static_cast<T>(1e-5);  // relative tolerance
 
     T const diff = std::fabs(a - b);
     if (diff <= abs_eps)

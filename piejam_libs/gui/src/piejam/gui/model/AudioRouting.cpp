@@ -33,19 +33,16 @@ struct AudioRouting::Impl
 };
 
 AudioRouting::AudioRouting(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const id,
-        io_direction const io_socket)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id const id,
+    io_direction const io_socket)
     : SubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>(
-              id,
-              io_socket,
-              observe_once(
-                      runtime::selectors::make_mixer_channel_type_selector(id)),
-              std::make_unique<AudioRoutingSelection>(
-                      state_access,
-                      id,
-                      io_socket))}
+          id,
+          io_socket,
+          observe_once(
+              runtime::selectors::make_mixer_channel_type_selector(id)),
+          std::make_unique<AudioRoutingSelection>(state_access, id, io_socket))}
 {
     attachChildModel(*m_impl->selected);
 }
@@ -80,55 +77,59 @@ AudioRouting::onSubscribe()
 {
     if (mixIsAvailable())
     {
-        observe(runtime::selectors::
-                        make_mixer_channel_mix_input_is_valid_selector(
-                                m_impl->mixer_channel_id),
-                [this](bool const x) { setMixIsValid(x); });
+        observe(
+            runtime::selectors::make_mixer_channel_mix_input_is_valid_selector(
+                m_impl->mixer_channel_id),
+            [this](bool const x) { setMixIsValid(x); });
     }
 
-    observe(runtime::selectors::make_mixer_device_routes_selector(
-                    m_impl->channel_type,
-                    m_impl->port),
-            [this](boxed_vector<runtime::selectors::mixer_device_route> const&
-                           devices) {
-                algorithm::apply_edit_script(
-                        algorithm::edit_script(*m_impl->devices, *devices),
-                        ListModelEditScriptProcessor{
-                                m_impl->devicesList,
-                                [this](auto const& route) {
-                                    return std::make_unique<String>(
-                                            state_access(),
-                                            route.name);
-                                }});
+    observe(
+        runtime::selectors::make_mixer_device_routes_selector(
+            m_impl->channel_type,
+            m_impl->port),
+        [this](
+            boxed_vector<runtime::selectors::mixer_device_route> const&
+                devices) {
+            algorithm::apply_edit_script(
+                algorithm::edit_script(*m_impl->devices, *devices),
+                ListModelEditScriptProcessor{
+                    m_impl->devicesList,
+                    [this](auto const& route) {
+                        return std::make_unique<String>(
+                            state_access(),
+                            route.name);
+                    }});
 
-                m_impl->devices = devices;
-            });
+            m_impl->devices = devices;
+        });
 
-    observe(runtime::selectors::make_mixer_channel_routes_selector(
-                    m_impl->mixer_channel_id,
-                    m_impl->port),
-            [this](boxed_vector<runtime::selectors::mixer_channel_route> const&
-                           channels) {
-                algorithm::apply_edit_script(
-                        algorithm::edit_script(*m_impl->channels, *channels),
-                        ListModelEditScriptProcessor{
-                                m_impl->channelsList,
-                                [this](auto const& route) {
-                                    return std::make_unique<String>(
-                                            state_access(),
-                                            route.name);
-                                }});
+    observe(
+        runtime::selectors::make_mixer_channel_routes_selector(
+            m_impl->mixer_channel_id,
+            m_impl->port),
+        [this](
+            boxed_vector<runtime::selectors::mixer_channel_route> const&
+                channels) {
+            algorithm::apply_edit_script(
+                algorithm::edit_script(*m_impl->channels, *channels),
+                ListModelEditScriptProcessor{
+                    m_impl->channelsList,
+                    [this](auto const& route) {
+                        return std::make_unique<String>(
+                            state_access(),
+                            route.name);
+                    }});
 
-                m_impl->channels = channels;
-            });
+            m_impl->channels = channels;
+        });
 }
 
 static void
 dispatch_set_mixer_channel_route_action(
-        runtime::state_access state_access,
-        runtime::mixer::channel_id channel_id,
-        io_direction port,
-        runtime::mixer::io_address_t addr)
+    runtime::state_access state_access,
+    runtime::mixer::channel_id channel_id,
+    io_direction port,
+    runtime::mixer::io_address_t addr)
 {
     runtime::actions::set_mixer_channel_route action;
     action.channel_id = channel_id;
@@ -141,10 +142,10 @@ void
 AudioRouting::changeToNone()
 {
     dispatch_set_mixer_channel_route_action(
-            state_access(),
-            m_impl->mixer_channel_id,
-            m_impl->port,
-            {});
+        state_access(),
+        m_impl->mixer_channel_id,
+        m_impl->port,
+        {});
 }
 
 void
@@ -152,10 +153,10 @@ AudioRouting::changeToMix()
 {
     BOOST_ASSERT(mixIsAvailable() && mixIsValid());
     dispatch_set_mixer_channel_route_action(
-            state_access(),
-            m_impl->mixer_channel_id,
-            m_impl->port,
-            runtime::mixer::mix_input{});
+        state_access(),
+        m_impl->mixer_channel_id,
+        m_impl->port,
+        runtime::mixer::mix_input{});
 }
 
 void
@@ -164,10 +165,10 @@ AudioRouting::changeToDevice(unsigned index)
     BOOST_ASSERT(index < m_impl->devices->size());
 
     dispatch_set_mixer_channel_route_action(
-            state_access(),
-            m_impl->mixer_channel_id,
-            m_impl->port,
-            (*m_impl->devices)[index].device_id);
+        state_access(),
+        m_impl->mixer_channel_id,
+        m_impl->port,
+        (*m_impl->devices)[index].device_id);
 }
 
 void
@@ -176,10 +177,10 @@ AudioRouting::changeToChannel(unsigned index)
     BOOST_ASSERT(index < m_impl->channels->size());
 
     dispatch_set_mixer_channel_route_action(
-            state_access(),
-            m_impl->mixer_channel_id,
-            m_impl->port,
-            (*m_impl->channels)[index].channel_id);
+        state_access(),
+        m_impl->mixer_channel_id,
+        m_impl->port,
+        (*m_impl->channels)[index].channel_id);
 }
 
 } // namespace piejam::gui::model

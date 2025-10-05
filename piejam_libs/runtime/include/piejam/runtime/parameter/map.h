@@ -26,7 +26,7 @@ class map<std::variant<ParameterId...>>
 {
     using parameter_id_t = std::variant<ParameterId...>;
     using map_t =
-            lean_map_facade<boost::container::flat_map<key, parameter_id_t>>;
+        lean_map_facade<boost::container::flat_map<key, parameter_id_t>>;
 
 public:
     map() noexcept = default;

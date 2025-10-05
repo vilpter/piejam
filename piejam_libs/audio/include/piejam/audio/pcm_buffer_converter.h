@@ -30,7 +30,7 @@ public:
 
 private:
     using converter_fn =
-            std::function<void(std::span<float> /* target_buffer */)>;
+        std::function<void(std::span<float> /* target_buffer */)>;
 
     converter_fn m_converter{[](auto...) {}};
 };
@@ -42,8 +42,8 @@ public:
     pcm_output_buffer_converter() noexcept = default;
 
     template <
-            std::invocable<float, std::size_t> CF,
-            std::invocable<std::span<float const>> SF>
+        std::invocable<float, std::size_t> CF,
+        std::invocable<std::span<float const>> SF>
     explicit pcm_output_buffer_converter(CF&& cf, SF&& sf)
         : m_constant_converter{std::forward<CF>(cf)}
         , m_span_converter{std::forward<SF>(sf)}
@@ -62,9 +62,9 @@ public:
 
 private:
     using constant_converter_fn =
-            std::function<void(float /* constant */, std::size_t /* size */)>;
+        std::function<void(float /* constant */, std::size_t /* size */)>;
     using span_converter_fn =
-            std::function<void(std::span<float const> /* source_buffer */)>;
+        std::function<void(std::span<float const> /* source_buffer */)>;
 
     constant_converter_fn m_constant_converter{[](auto...) {}};
     span_converter_fn m_span_converter{[](auto...) {}};

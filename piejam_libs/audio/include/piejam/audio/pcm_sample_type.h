@@ -24,7 +24,7 @@ struct pcm_sample_descriptor
 
     using signed_value_type = numeric::make_signed_t<value_type>;
     static constexpr value_type middle{
-            numeric::intops::sign_map<value_type>(signed_value_type{})};
+        numeric::intops::sign_map<value_type>(signed_value_type{})};
     static constexpr value_type min{std::numeric_limits<value_type>::min()};
     static constexpr value_type max{std::numeric_limits<value_type>::max()};
     static constexpr auto bitdepth{sizeof(value_type) * 8u};
@@ -34,7 +34,7 @@ struct pcm_sample_descriptor
     static constexpr float_t fmiddle{};
     static constexpr float_t fmin{-1};
     static constexpr float_t fmax{
-            numeric::intops::sign_map<signed_value_type>(max) / fscale};
+        numeric::intops::sign_map<signed_value_type>(max) / fscale};
 };
 
 template <pcm_format>
@@ -74,7 +74,7 @@ template <>
 struct pcm_sample_type_map<pcm_format::u16_be>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::u16_be, std::uint16_t, false>;
+        pcm_sample_descriptor<pcm_format::u16_be, std::uint16_t, false>;
 };
 
 template <>
@@ -99,37 +99,35 @@ template <>
 struct pcm_sample_type_map<pcm_format::u32_be>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::u32_be, std::uint32_t, false>;
+        pcm_sample_descriptor<pcm_format::u32_be, std::uint32_t, false>;
 };
 
 template <>
 struct pcm_sample_type_map<pcm_format::s24_3le>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::s24_3le, numeric::int24_io_t, true>;
+        pcm_sample_descriptor<pcm_format::s24_3le, numeric::int24_io_t, true>;
 };
 
 template <>
 struct pcm_sample_type_map<pcm_format::s24_3be>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::s24_3be, numeric::int24_io_t, false>;
+        pcm_sample_descriptor<pcm_format::s24_3be, numeric::int24_io_t, false>;
 };
 
 template <>
 struct pcm_sample_type_map<pcm_format::u24_3le>
 {
     using type =
-            pcm_sample_descriptor<pcm_format::u24_3le, numeric::uint24_io_t, true>;
+        pcm_sample_descriptor<pcm_format::u24_3le, numeric::uint24_io_t, true>;
 };
 
 template <>
 struct pcm_sample_type_map<pcm_format::u24_3be>
 {
-    using type = pcm_sample_descriptor<
-            pcm_format::u24_3be,
-            numeric::uint24_io_t,
-            false>;
+    using type =
+        pcm_sample_descriptor<pcm_format::u24_3be, numeric::uint24_io_t, false>;
 };
 
 template <pcm_format F>

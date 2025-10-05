@@ -16,13 +16,12 @@ namespace piejam::runtime::ladspa_fx
 {
 
 using processor_factory =
-        std::function<std::unique_ptr<audio::engine::processor>()>;
+    std::function<std::unique_ptr<audio::engine::processor>()>;
 
 auto make_component(
-        fx::module const&,
-        fx::get_parameter_name const&,
-        processor_factory const&,
-        parameter_processor_factory&)
-        -> std::unique_ptr<audio::engine::component>;
+    fx::module const&,
+    fx::get_parameter_name const&,
+    processor_factory const&,
+    parameter_processor_factory&) -> std::unique_ptr<audio::engine::component>;
 
 } // namespace piejam::runtime::ladspa_fx

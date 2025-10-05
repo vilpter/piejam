@@ -22,7 +22,7 @@ struct edit_script_deletion
 
     [[nodiscard]]
     constexpr auto operator==(edit_script_deletion const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 };
 
 template <class T>
@@ -33,7 +33,7 @@ struct edit_script_insertion
 
     [[nodiscard]]
     constexpr auto operator==(edit_script_insertion const&) const noexcept
-            -> bool = default;
+        -> bool = default;
 };
 
 template <class T>
@@ -41,20 +41,20 @@ edit_script_insertion(std::size_t, T const&) -> edit_script_insertion<T>;
 
 template <class T>
 using edit_script_op =
-        std::variant<edit_script_deletion, edit_script_insertion<T>>;
+    std::variant<edit_script_deletion, edit_script_insertion<T>>;
 
 template <class T>
 using edit_script_ops = std::vector<edit_script_op<T>>;
 
 template <class... Range>
 using common_range_value_type_t =
-        std::common_type_t<std::ranges::range_value_t<Range>...>;
+    std::common_type_t<std::ranges::range_value_t<Range>...>;
 
 template <class Src, class Dst>
 [[nodiscard]]
 auto
 edit_script(Src const& src, Dst const& dst)
-        -> edit_script_ops<common_range_value_type_t<Src, Dst>>
+    -> edit_script_ops<common_range_value_type_t<Src, Dst>>
 {
     using value_type = common_range_value_type_t<Src, Dst>;
 
@@ -64,20 +64,20 @@ edit_script(Src const& src, Dst const& dst)
     if (src.size() == 0 && dst.size() > 0)
     {
         std::ranges::transform(
-                dst,
-                std::back_inserter(result),
-                [i = std::size_t{}](auto const& v) mutable {
-                    return edit_script_insertion{i++, v};
-                });
+            dst,
+            std::back_inserter(result),
+            [i = std::size_t{}](auto const& v) mutable {
+                return edit_script_insertion{i++, v};
+            });
     }
     else if (src.size() > 0 && dst.size() == 0)
     {
         std::generate_n(
-                std::back_inserter(result),
-                src.size(),
-                [i = std::size_t{}]() mutable {
-                    return edit_script_deletion{i++};
-                });
+            std::back_inserter(result),
+            src.size(),
+            [i = std::size_t{}]() mutable {
+                return edit_script_deletion{i++};
+            });
     }
     else if (src.size() > 0 && dst.size() > 0)
     {
@@ -137,7 +137,7 @@ edit_script(Src const& src, Dst const& dst)
                     if (*up(g) <= *left(g))
                     {
                         result.emplace_back(
-                                edit_script_insertion{y - 1, dst[y - 1]});
+                            edit_script_insertion{y - 1, dst[y - 1]});
                         std::tie(g, y) = move_up(g, y);
                     }
                     else

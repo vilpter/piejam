@@ -25,9 +25,9 @@ TEST(input_processor, input_is_propagated_to_outputs)
     std::vector<std::span<float>> outputs{out_buf};
     std::vector<slice<float>> results(1);
     auto converter =
-            pcm_input_buffer_converter([&out_buf](std::span<float> const buf) {
-                std::ranges::copy(out_buf, buf.begin());
-            });
+        pcm_input_buffer_converter([&out_buf](std::span<float> const buf) {
+            std::ranges::copy(out_buf, buf.begin());
+        });
     sut.set_input(converter);
     sut.process({{}, outputs, results, {}, {}, 4});
 

@@ -15,9 +15,8 @@ namespace piejam::runtime::components
 {
 
 auto make_solo_switch(
-        solo_groups_t const&,
-        parameter_processor_factory&,
-        std::string_view name = {})
-        -> std::unique_ptr<audio::engine::component>;
+    solo_groups_t const&,
+    parameter_processor_factory&,
+    std::string_view name = {}) -> std::unique_ptr<audio::engine::component>;
 
 } // namespace piejam::runtime::components

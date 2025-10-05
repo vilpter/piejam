@@ -16,11 +16,11 @@ class fake_processor : public processor
 {
 public:
     fake_processor(
-            std::string_view name,
-            std::size_t num_inputs,
-            std::size_t num_outputs,
-            std::vector<event_port> event_inputs = {},
-            std::vector<event_port> event_outputs = {})
+        std::string_view name,
+        std::size_t num_inputs,
+        std::size_t num_outputs,
+        std::vector<event_port> event_inputs = {},
+        std::vector<event_port> event_outputs = {})
         : m_name{name}
         , m_num_inputs{num_inputs}
         , m_num_outputs{num_outputs}

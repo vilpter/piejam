@@ -41,9 +41,9 @@ struct midi_learn_processor_test : testing::Test
     audio::engine::event_input_buffers ev_in_bufs;
     audio::engine::event_output_buffers ev_out_bufs;
     audio::engine::process_context ctx{
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = 16};
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = 16};
 
     std::unique_ptr<audio::engine::processor> proc{make_midi_learn_processor()};
 };
@@ -59,10 +59,10 @@ TEST_F(midi_learn_processor_test, with_empty_input)
 TEST_F(midi_learn_processor_test, with_event)
 {
     midi::external_event ev{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     ev_in_buf.insert(1u, ev);
     proc->process(ctx);
@@ -85,16 +85,16 @@ TEST_F(midi_learn_processor_test, with_event)
 TEST_F(midi_learn_processor_test, with_multiple_event)
 {
     midi::external_event ev1{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     midi::external_event ev2{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 2,
-                    .data = midi::cc_event{.cc = 7, .value = 58}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 2,
+            .data = midi::cc_event{.cc = 7, .value = 58}}};
 
     ev_in_buf.insert(1u, ev1);
     ev_in_buf.insert(3u, ev2);
@@ -114,7 +114,7 @@ TEST_F(midi_learn_processor_test, with_multiple_event)
         EXPECT_EQ(ev1, evr1.value());
 
         auto const& evr2 =
-                *std::next(ev_out_bufs.get<midi::external_event>(1).begin());
+            *std::next(ev_out_bufs.get<midi::external_event>(1).begin());
         EXPECT_EQ(3u, evr2.offset());
         EXPECT_EQ(ev2, evr2.value());
     }
@@ -123,16 +123,16 @@ TEST_F(midi_learn_processor_test, with_multiple_event)
 TEST_F(midi_learn_processor_test, with_single_event_on_multiple_process)
 {
     midi::external_event ev1{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 1,
-                    .data = midi::cc_event{.cc = 5, .value = 23}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 1,
+            .data = midi::cc_event{.cc = 5, .value = 23}}};
 
     midi::external_event ev2{
-            .device_id = midi::device_id_t::generate(),
-            .event = midi::channel_cc_event{
-                    .channel = 2,
-                    .data = midi::cc_event{.cc = 7, .value = 58}}};
+        .device_id = midi::device_id_t::generate(),
+        .event = midi::channel_cc_event{
+            .channel = 2,
+            .data = midi::cc_event{.cc = 7, .value = 58}}};
 
     ev_in_buf.insert(1u, ev1);
     proc->process(ctx);
@@ -155,7 +155,7 @@ TEST_F(midi_learn_processor_test, with_single_event_on_multiple_process)
         EXPECT_EQ(ev1, evr1.value());
 
         auto const& evr2 =
-                *std::next(ev_out_bufs.get<midi::external_event>(1).begin());
+            *std::next(ev_out_bufs.get<midi::external_event>(1).begin());
         EXPECT_EQ(3u, evr2.offset());
         EXPECT_EQ(ev2, evr2.value());
     }

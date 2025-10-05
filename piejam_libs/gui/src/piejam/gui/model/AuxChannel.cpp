@@ -14,14 +14,15 @@ namespace piejam::gui::model
 
 struct AuxChannel::Impl
 {
-    Impl(runtime::state_access const& state_access,
-         runtime::mixer::channel_id aux_id)
+    Impl(
+        runtime::state_access const& state_access,
+        runtime::mixer::channel_id aux_id)
         : defaultFaderTap{
-                  state_access,
-                  state_access.observe_once(
-                          runtime::selectors::
-                                  make_aux_channel_default_fader_tap_parameter_selector(
-                                          aux_id))}
+              state_access,
+              state_access.observe_once(
+                  runtime::selectors::
+                      make_aux_channel_default_fader_tap_parameter_selector(
+                          aux_id))}
     {
     }
 
@@ -29,8 +30,8 @@ struct AuxChannel::Impl
 };
 
 AuxChannel::AuxChannel(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id aux_id)
+    runtime::state_access const& state_access,
+    runtime::mixer::channel_id aux_id)
     : SubscribableModel{state_access}
     , m_aux_id{aux_id}
     , m_impl{make_pimpl<Impl>(state_access, aux_id)}

@@ -65,8 +65,8 @@ TEST(normalize, to_normalized_float_ct_mid_value)
     constexpr float max = 20.0f;
     float mid = 5.0f;
     EXPECT_FLOAT_EQ(
-            (to_normalized<float, float, min, max>(mid)),
-            (mid - min) / (max - min));
+        (to_normalized<float, float, min, max>(mid)),
+        (mid - min) / (max - min));
 }
 
 TEST(normalize, to_normalized_float_ct_min_max)

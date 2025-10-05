@@ -20,19 +20,19 @@ class FxFilter final : public piejam::gui::model::FxModule
     Q_OBJECT
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::SpectrumSlot*,
-            spectrumIn)
+        piejam::gui::model::SpectrumSlot*,
+        spectrumIn)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::SpectrumSlot*,
-            spectrumOut)
+        piejam::gui::model::SpectrumSlot*,
+        spectrumOut)
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::EnumParameter*,
-            filterType)
+        piejam::gui::model::EnumParameter*,
+        filterType)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, cutoff)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::FloatParameter*,
-            resonance)
+        piejam::gui::model::FloatParameter*,
+        resonance)
 
 public:
     FxFilter(runtime::state_access const&, runtime::fx::module_id);

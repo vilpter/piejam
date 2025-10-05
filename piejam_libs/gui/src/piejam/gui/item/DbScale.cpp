@@ -108,10 +108,9 @@ DbScale::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) -> QSGNode*
     {
         node = new QSGGeometryNode();
         geometry = new QSGGeometry(
-                QSGGeometry::defaultAttributes_Point2D(),
-                (m_impl->scaleData ? m_impl->scaleData->ticks().size() : 0) *
-                                2 +
-                        2);
+            QSGGeometry::defaultAttributes_Point2D(),
+            (m_impl->scaleData ? m_impl->scaleData->ticks().size() : 0) * 2 +
+                2);
         geometry->setDrawingMode(QSGGeometry::DrawLines);
         geometry->setLineWidth(devicePixelRatio);
         node->setGeometry(geometry);
@@ -127,7 +126,7 @@ DbScale::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) -> QSGNode*
         node = boost::polymorphic_downcast<QSGGeometryNode*>(oldNode);
         geometry = node->geometry();
         material = boost::polymorphic_downcast<QSGFlatColorMaterial*>(
-                node->material());
+            node->material());
     }
 
     if (m_impl->scaleIsDirty)

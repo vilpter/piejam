@@ -29,18 +29,16 @@ struct make_module_parameters
     {
     }
 
-    auto operator()(std::span<piejam::ladspa::port_descriptor const>
-                            control_inputs) const
+    auto operator()(
+        std::span<piejam::ladspa::port_descriptor const> control_inputs) const
     {
         parameters_map module_params;
 
         for (auto const& port_desc : control_inputs)
         {
             std::visit(
-                    [&](auto const& p) {
-                        (*this)(module_params, port_desc, p);
-                    },
-                    port_desc.type_desc);
+                [&](auto const& p) { (*this)(module_params, port_desc, p); },
+                port_desc.type_desc);
         }
 
         return module_params;
@@ -48,63 +46,62 @@ struct make_module_parameters
 
 private:
     void operator()(
-            parameters_map& module_params,
-            ladspa::port_descriptor const& port_desc,
-            ladspa::float_port const p) const
+        parameters_map& module_params,
+        ladspa::port_descriptor const& port_desc,
+        ladspa::float_port const p) const
     {
         parameter_factory params_factory{m_params};
 
-        auto const range_kind =
-                p.logarithmic && p.min > 0.f && p.max > 0.f
-                        ? float_parameter_range_kind::logarithmic
-                        : float_parameter_range_kind::linear;
+        auto const range_kind = p.logarithmic && p.min > 0.f && p.max > 0.f
+                                    ? float_parameter_range_kind::logarithmic
+                                    : float_parameter_range_kind::linear;
 
         module_params.emplace(
-                port_desc.index,
-                params_factory.make_parameter(make_float_parameter(
-                        {
-                                .name = port_desc.name,
-                                .default_value = p.default_value,
-                        },
-                        {
-                                .min = p.min,
-                                .max = p.max,
-                                .kind = range_kind,
-                        })));
+            port_desc.index,
+            params_factory.make_parameter(make_float_parameter(
+                {
+                    .name = port_desc.name,
+                    .default_value = p.default_value,
+                },
+                {
+                    .min = p.min,
+                    .max = p.max,
+                    .kind = range_kind,
+                })));
     }
 
     void operator()(
-            parameters_map& module_params,
-            ladspa::port_descriptor const& port_desc,
-            ladspa::int_port const p) const
+        parameters_map& module_params,
+        ladspa::port_descriptor const& port_desc,
+        ladspa::int_port const p) const
     {
         parameter_factory params_factory{m_params};
 
         BOOST_ASSERT(!p.logarithmic);
 
         module_params.emplace(
-                port_desc.index,
-                params_factory.make_parameter(make_int_parameter({
-                        .name = port_desc.name,
-                        .default_value = p.default_value,
-                        .min = p.min,
-                        .max = p.max,
-                })));
+            port_desc.index,
+            params_factory.make_parameter(make_int_parameter({
+                .name = port_desc.name,
+                .default_value = p.default_value,
+                .min = p.min,
+                .max = p.max,
+            })));
     }
 
     void operator()(
-            parameters_map& module_params,
-            ladspa::port_descriptor const& port_desc,
-            ladspa::bool_port const p) const
+        parameters_map& module_params,
+        ladspa::port_descriptor const& port_desc,
+        ladspa::bool_port const p) const
     {
         parameter_factory params_factory{m_params};
 
         module_params.emplace(
-                port_desc.index,
-                params_factory.make_parameter(make_bool_parameter({
-                        .name = port_desc.name,
-                        .default_value = p.default_value,
-                })));
+            port_desc.index,
+            params_factory.make_parameter(make_bool_parameter({
+                .name = port_desc.name,
+                .default_value = p.default_value,
+            })));
     }
 
     parameter::store& m_params;
@@ -114,18 +111,18 @@ private:
 
 auto
 make_module(
-        ladspa::instance_id instance_id,
-        std::string const& name,
-        audio::bus_type const bus_type,
-        std::span<ladspa::port_descriptor const> const control_inputs,
-        parameter::store& params) -> fx::module
+    ladspa::instance_id instance_id,
+    std::string const& name,
+    audio::bus_type const bus_type,
+    std::span<ladspa::port_descriptor const> const control_inputs,
+    parameter::store& params) -> fx::module
 {
     return fx::module{
-            .fx_instance_id = instance_id,
-            .name = box(name),
-            .bus_type = bus_type,
-            .parameters = box(make_module_parameters{params}(control_inputs)),
-            .streams = {}};
+        .fx_instance_id = instance_id,
+        .name = box(name),
+        .bus_type = bus_type,
+        .parameters = box(make_module_parameters{params}(control_inputs)),
+        .streams = {}};
 }
 
 } // namespace piejam::runtime::ladspa_fx

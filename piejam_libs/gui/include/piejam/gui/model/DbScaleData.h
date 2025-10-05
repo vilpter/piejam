@@ -18,8 +18,8 @@ class DbScaleData : public QObject
     Q_OBJECT
 
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            QVector<piejam::gui::model::DbScaleTick>,
-            ticks)
+        QVector<piejam::gui::model::DbScaleTick>,
+        ticks)
 public:
     DbScaleData() noexcept = default;
     DbScaleData(QVector<DbScaleTick> ticks) noexcept

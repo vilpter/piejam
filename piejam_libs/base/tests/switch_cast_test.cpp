@@ -44,11 +44,11 @@ TEST(switch_cast, constexpr_usage)
 
     static_assert(switch_cast(i) == 123, "Integral constexpr failed");
     static_assert(
-            switch_cast(f) == std::bit_cast<std::int32_t>(f),
-            "Float constexpr failed");
+        switch_cast(f) == std::bit_cast<std::int32_t>(f),
+        "Float constexpr failed");
     static_assert(
-            switch_cast(d) == std::bit_cast<std::int64_t>(d),
-            "Double constexpr failed");
+        switch_cast(d) == std::bit_cast<std::int64_t>(d),
+        "Double constexpr failed");
 }
 
 } // namespace piejam::test

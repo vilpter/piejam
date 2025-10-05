@@ -23,7 +23,8 @@ namespace piejam::audio::engine
 struct processor_test_environment
 {
     processor_test_environment(processor& proc, std::size_t buffer_size)
-        : ctx({.event_inputs = event_inputs,
+        : ctx(
+              {.event_inputs = event_inputs,
                .event_outputs = event_outputs,
                .buffer_size = buffer_size})
     {
@@ -66,8 +67,8 @@ struct processor_test_environment
     {
         BOOST_ASSERT(buffer_index < ev_in_bufs.size());
         boost::polymorphic_downcast<event_buffer<T>*>(
-                ev_in_bufs[buffer_index].get())
-                ->insert(offset, std::forward<T>(value));
+            ev_in_bufs[buffer_index].get())
+            ->insert(offset, std::forward<T>(value));
     }
 
 private:

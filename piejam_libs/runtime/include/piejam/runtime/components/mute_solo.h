@@ -14,6 +14,6 @@ namespace piejam::runtime::components
 {
 
 auto make_mute_solo(std::string_view name = {})
-        -> std::unique_ptr<audio::engine::component>;
+    -> std::unique_ptr<audio::engine::component>;
 
 } // namespace piejam::runtime::components

@@ -45,7 +45,7 @@ public:
     auto type_name() const noexcept -> std::string_view override
     {
         static std::string s_type_name{
-                std::format("{}_io", boost::core::demangle(typeid(T).name()))};
+            std::format("{}_io", boost::core::demangle(typeid(T).name()))};
         return s_type_name;
     }
 
@@ -119,9 +119,8 @@ public:
         auto& out = ctx.event_outputs.get<E>(0);
 
         using T = std::underlying_type_t<E>;
-        this->m_in_value.consume([&out](T const& value) {
-            out.insert(0, static_cast<E>(value));
-        });
+        this->m_in_value.consume(
+            [&out](T const& value) { out.insert(0, static_cast<E>(value)); });
 
         for (event<T> const& ev : ctx.event_inputs.get<T>(0))
         {

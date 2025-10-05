@@ -16,7 +16,7 @@ namespace piejam::audio::engine
 struct process_context
 {
     using input_buffers_t =
-            std::span<std::reference_wrapper<slice<float> const> const>;
+        std::span<std::reference_wrapper<slice<float> const> const>;
     using output_buffers_t = std::span<std::span<float> const>;
     using result_buffers_t = std::span<slice<float>>;
 

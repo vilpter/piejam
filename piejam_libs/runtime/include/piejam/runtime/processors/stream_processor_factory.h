@@ -19,15 +19,15 @@ class stream_processor_factory
 public:
     using processor_t = audio::engine::stream_processor;
     using processor_map =
-            std::unordered_map<audio_stream_id, std::weak_ptr<processor_t>>;
+        std::unordered_map<audio_stream_id, std::weak_ptr<processor_t>>;
 
     ~stream_processor_factory();
 
     auto make_processor(
-            audio_stream_id,
-            std::size_t num_channels,
-            std::size_t capacity_per_channel,
-            std::string_view name = {}) -> std::shared_ptr<processor_t>;
+        audio_stream_id,
+        std::size_t num_channels,
+        std::size_t capacity_per_channel,
+        std::string_view name = {}) -> std::shared_ptr<processor_t>;
 
     auto find_processor(audio_stream_id) const -> std::shared_ptr<processor_t>;
 

@@ -16,8 +16,9 @@
 namespace piejam::audio::engine::test
 {
 
-TEST(value_io_processor_test,
-     initial_process_will_not_send_anything_if_nothing_is_set)
+TEST(
+    value_io_processor_test,
+    initial_process_will_not_send_anything_if_nothing_is_set)
 {
     value_io_processor<float> sut;
     processor_test_environment test_env(sut, 16);
@@ -58,8 +59,9 @@ TEST(value_io_processor_test, no_event_in_second_process_after_first_set)
     EXPECT_TRUE(ev_out_buf.empty());
 }
 
-TEST(value_io_processor_test,
-     for_multiple_set_value_generate_output_event_with_last_value)
+TEST(
+    value_io_processor_test,
+    for_multiple_set_value_generate_output_event_with_last_value)
 {
     value_io_processor<float> sut;
     processor_test_environment test_env(sut, 16);

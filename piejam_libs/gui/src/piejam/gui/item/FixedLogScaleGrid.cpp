@@ -56,7 +56,7 @@ FixedLogScaleGrid::FixedLogScaleGrid(QQuickItem* parent)
 
 auto
 FixedLogScaleGrid::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*)
-        -> QSGNode*
+    -> QSGNode*
 {
     QSGGeometryNode* node{};
     QSGGeometry* geometry{};
@@ -68,8 +68,8 @@ FixedLogScaleGrid::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*)
     {
         node = new QSGGeometryNode();
         geometry = new QSGGeometry(
-                QSGGeometry::defaultAttributes_Point2D(),
-                m_ticks.size() * 2); // x, y
+            QSGGeometry::defaultAttributes_Point2D(),
+            m_ticks.size() * 2); // x, y
         geometry->setDrawingMode(QSGGeometry::DrawLines);
         geometry->setLineWidth(devicePixelRatio);
         node->setGeometry(geometry);
@@ -85,7 +85,7 @@ FixedLogScaleGrid::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*)
         node = boost::polymorphic_downcast<QSGGeometryNode*>(oldNode);
         geometry = node->geometry();
         material = boost::polymorphic_downcast<QSGFlatColorMaterial*>(
-                node->material());
+            node->material());
     }
 
     if (m_impl->scaleIsDirty)

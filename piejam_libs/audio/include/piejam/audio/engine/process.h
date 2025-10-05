@@ -24,7 +24,7 @@ public:
     auto swap_executor(std::unique_ptr<dag_executor>) -> bool;
 
     auto operator()(std::size_t buffer_size) noexcept
-            -> std::chrono::nanoseconds;
+        -> std::chrono::nanoseconds;
 
 private:
     std::unique_ptr<dag_executor> m_executor;

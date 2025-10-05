@@ -11,6 +11,6 @@ namespace piejam::runtime
 {
 
 using parameter_processor_factory = boost::mp11::
-        mp_rename<parameters_fwd_t, processors::parameter_processor_factory>;
+    mp_rename<parameters_fwd_t, processors::parameter_processor_factory>;
 
 } // namespace piejam::runtime

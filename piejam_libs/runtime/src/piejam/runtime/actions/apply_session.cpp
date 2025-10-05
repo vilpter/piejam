@@ -23,14 +23,14 @@ namespace
 template <io_direction D>
 auto
 apply_external_audio_device_configs(
-        state& st,
-        std::vector<persistence::session::external_audio_device_config> const&
-                configs,
-        std::size_t const num_ch)
+    state& st,
+    std::vector<persistence::session::external_audio_device_config> const&
+        configs,
+    std::size_t const num_ch)
 {
     BOOST_ASSERT_MSG(
-            st.external_audio_state.io_ids[D]->empty(),
-            "configs should be cleared before applying");
+        st.external_audio_state.io_ids[D]->empty(),
+        "configs should be cleared before applying");
     auto const gte_num_ch = greater_equal(num_ch);
     for (auto const& config : configs)
     {
@@ -47,45 +47,42 @@ apply_external_audio_device_configs(
 
 void
 apply_mixer_fx_chain(
-        state& st,
-        mixer::channel_id const channel_id,
-        persistence::session::fx_chain_t const& fx_chain_data)
+    state& st,
+    mixer::channel_id const channel_id,
+    persistence::session::fx_chain_t const& fx_chain_data)
 {
     for (auto const& fx_plug : fx_chain_data)
     {
         std::visit(
-                boost::hof::match(
-                        [&](persistence::session::internal_fx const& fx) {
-                            runtime::insert_internal_fx_module(
-                                    st,
-                                    channel_id,
-                                    npos,
-                                    fx.type,
-                                    fx.preset,
-                                    fx.midi);
-                        },
-                        [&](persistence::session::ladspa_plugin const&
-                                    ladspa_plug) {
-                            runtime::insert_missing_ladspa_fx_module(
-                                    st,
-                                    channel_id,
-                                    npos,
-                                    fx::unavailable_ladspa{
-                                            .plugin_id = ladspa_plug.id,
-                                            .parameter_values =
-                                                    ladspa_plug.preset,
-                                            .midi_assignments =
-                                                    ladspa_plug.midi},
-                                    ladspa_plug.name);
-                        },
-                        [](auto const&) { BOOST_ASSERT(false); }),
-                fx_plug.as_variant());
+            boost::hof::match(
+                [&](persistence::session::internal_fx const& fx) {
+                    runtime::insert_internal_fx_module(
+                        st,
+                        channel_id,
+                        npos,
+                        fx.type,
+                        fx.preset,
+                        fx.midi);
+                },
+                [&](persistence::session::ladspa_plugin const& ladspa_plug) {
+                    runtime::insert_missing_ladspa_fx_module(
+                        st,
+                        channel_id,
+                        npos,
+                        fx::unavailable_ladspa{
+                            .plugin_id = ladspa_plug.id,
+                            .parameter_values = ladspa_plug.preset,
+                            .midi_assignments = ladspa_plug.midi},
+                        ladspa_plug.name);
+                },
+                [](auto const&) { BOOST_ASSERT(false); }),
+            fx_plug.as_variant());
     }
 }
 
 auto
 find_mixer_channel(mixer::state const& mixer_state, std::size_t const& index)
-        -> std::optional<mixer::channel_id>
+    -> std::optional<mixer::channel_id>
 {
     if (index == 0)
     {
@@ -103,8 +100,8 @@ find_mixer_channel(mixer::state const& mixer_state, std::size_t const& index)
 
 auto
 find_external_audio_device_route(
-        external_audio::device_ids_t const& devices,
-        std::size_t const index)
+    external_audio::device_ids_t const& devices,
+    std::size_t const index)
 {
     return index < devices.size() ? mixer::io_address_t{devices[index]}
                                   : mixer::io_address_t{};
@@ -112,25 +109,25 @@ find_external_audio_device_route(
 
 void
 apply_mixer_io(
-        parameter::store& params,
-        external_audio::state& external_audio_state,
-        mixer::state& mixer_state,
-        mixer::channel_id const& channel_id,
-        persistence::session::mixer_io const& in,
-        persistence::session::mixer_io const& out,
-        std::vector<persistence::session::mixer_aux_send> const& aux_sends_data)
+    parameter::store& params,
+    external_audio::state& external_audio_state,
+    mixer::state& mixer_state,
+    mixer::channel_id const& channel_id,
+    persistence::session::mixer_io const& in,
+    persistence::session::mixer_io const& out,
+    std::vector<persistence::session::mixer_aux_send> const& aux_sends_data)
 {
     auto find_route = [&](auto const& mixer_io, io_direction io_dir) {
         switch (mixer_io.type)
         {
             case persistence::session::mixer_io_type::device:
                 return find_external_audio_device_route(
-                        external_audio_state.io_ids[io_dir],
-                        mixer_io.index);
+                    external_audio_state.io_ids[io_dir],
+                    mixer_io.index);
 
             case persistence::session::mixer_io_type::channel:
                 if (auto found_channel_id =
-                            find_mixer_channel(mixer_state, mixer_io.index))
+                        find_mixer_channel(mixer_state, mixer_io.index))
                 {
                     return mixer::io_address_t{*found_channel_id};
                 }
@@ -146,23 +143,23 @@ apply_mixer_io(
     };
 
     mixer_state.io_map.lock().at(channel_id) = {
-            find_route(in, io_direction::input),
-            find_route(out, io_direction::output)};
+        find_route(in, io_direction::input),
+        find_route(out, io_direction::output)};
 
     if (auto channel_aux_sends = mixer_state.aux_sends.find(channel_id))
     {
         for (auto const& aux_send_data : aux_sends_data)
         {
             if (auto route = find_mixer_channel(
-                        mixer_state,
-                        aux_send_data.channel_index))
+                    mixer_state,
+                    aux_send_data.channel_index))
             {
                 if (auto aux_send = channel_aux_sends->find(*route))
                 {
                     apply_parameter_values(
-                            aux_send_data.parameters,
-                            aux_send->parameters,
-                            params);
+                        aux_send_data.parameters,
+                        aux_send->parameters,
+                        params);
                 }
             }
         }
@@ -171,24 +168,23 @@ apply_mixer_io(
 
 void
 apply_aux_channels(
-        parameter::store& params,
-        mixer::state& mixer_state,
-        std::vector<persistence::session::aux_channel> const& aux_channels_data)
+    parameter::store& params,
+    mixer::state& mixer_state,
+    std::vector<persistence::session::aux_channel> const& aux_channels_data)
 {
     for (auto const& aux_channel_data : aux_channels_data)
     {
-        if (auto aux_id = find_mixer_channel(
-                    mixer_state,
-                    aux_channel_data.channel_index);
+        if (auto aux_id =
+                find_mixer_channel(mixer_state, aux_channel_data.channel_index);
             aux_id)
         {
             if (auto aux_channel = mixer_state.aux_channels.find(*aux_id);
                 aux_channel)
             {
                 apply_parameter_values(
-                        aux_channel_data.parameters,
-                        aux_channel->parameters,
-                        params);
+                    aux_channel_data.parameters,
+                    aux_channel->parameters,
+                    params);
             }
         }
     }
@@ -200,14 +196,14 @@ void
 apply_session::reduce(state& st) const
 {
     apply_external_audio_device_configs<io_direction::input>(
-            st,
-            session->external_audio_input_devices,
-            st.selected_sound_card.num_channels.in());
+        st,
+        session->external_audio_input_devices,
+        st.selected_sound_card.num_channels.in());
 
     apply_external_audio_device_configs<io_direction::output>(
-            st,
-            session->external_audio_output_devices,
-            st.selected_sound_card.num_channels.out());
+        st,
+        session->external_audio_output_devices,
+        st.selected_sound_card.num_channels.out());
 
     BOOST_ASSERT(st.mixer_state.inputs->empty());
     BOOST_ASSERT(st.mixer_state.channels.size() == 1);
@@ -217,42 +213,42 @@ apply_session::reduce(state& st) const
     for (auto const& channel_data : session->mixer_channels)
     {
         auto added_channel_id = runtime::add_mixer_channel(
-                st,
-                channel_data.channel_type,
-                channel_data.name);
+            st,
+            channel_data.channel_type,
+            channel_data.name);
         auto& added_channel = st.mixer_state.channels.at(added_channel_id);
         st.material_colors.set(added_channel.color, channel_data.color);
         apply_midi_assignments(
-                channel_data.midi,
-                *added_channel.parameters,
-                mixer_midi_assignments);
+            channel_data.midi,
+            *added_channel.parameters,
+            mixer_midi_assignments);
         apply_parameter_values(
-                channel_data.parameter,
-                *added_channel.parameters,
-                st.params);
+            channel_data.parameter,
+            *added_channel.parameters,
+            st.params);
         apply_mixer_fx_chain(st, added_channel_id, channel_data.fx_chain);
     }
 
     [&](mixer::channel& main_mixer_channel) {
         st.strings.set(
-                main_mixer_channel.name,
-                box{session->main_mixer_channel.name});
+            main_mixer_channel.name,
+            box{session->main_mixer_channel.name});
         st.material_colors.set(
-                main_mixer_channel.color,
-                session->main_mixer_channel.color);
+            main_mixer_channel.color,
+            session->main_mixer_channel.color);
         apply_midi_assignments(
-                session->main_mixer_channel.midi,
-                *main_mixer_channel.parameters,
-                mixer_midi_assignments);
+            session->main_mixer_channel.midi,
+            *main_mixer_channel.parameters,
+            mixer_midi_assignments);
         apply_parameter_values(
-                session->main_mixer_channel.parameter,
-                *main_mixer_channel.parameters,
-                st.params);
+            session->main_mixer_channel.parameter,
+            *main_mixer_channel.parameters,
+            st.params);
     }(st.mixer_state.channels.lock().at(st.mixer_state.main));
     apply_mixer_fx_chain(
-            st,
-            st.mixer_state.main,
-            session->main_mixer_channel.fx_chain);
+        st,
+        st.mixer_state.main,
+        session->main_mixer_channel.fx_chain);
 
     apply_aux_channels(st.params, st.mixer_state, session->aux_channels);
 
@@ -265,23 +261,23 @@ apply_session::reduce(state& st) const
         auto const& channel_data = session->mixer_channels[channel_index];
 
         apply_mixer_io(
-                st.params,
-                st.external_audio_state,
-                st.mixer_state,
-                channel_id,
-                channel_data.in,
-                channel_data.out,
-                channel_data.aux_sends);
-    }
-
-    apply_mixer_io(
             st.params,
             st.external_audio_state,
             st.mixer_state,
-            st.mixer_state.main,
-            session->main_mixer_channel.in,
-            session->main_mixer_channel.out,
-            session->main_mixer_channel.aux_sends);
+            channel_id,
+            channel_data.in,
+            channel_data.out,
+            channel_data.aux_sends);
+    }
+
+    apply_mixer_io(
+        st.params,
+        st.external_audio_state,
+        st.mixer_state,
+        st.mixer_state.main,
+        session->main_mixer_channel.in,
+        session->main_mixer_channel.out,
+        session->main_mixer_channel.aux_sends);
 }
 
 } // namespace piejam::runtime::actions

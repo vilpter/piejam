@@ -107,8 +107,8 @@ TEST(copy_or_move, works_with_strings)
 
     EXPECT_EQ(dst, src);
     EXPECT_EQ(
-            src,
-            (std::vector<std::string>{"foo", "bar", "baz"})); // copy semantics
+        src,
+        (std::vector<std::string>{"foo", "bar", "baz"})); // copy semantics
 }
 
 } // namespace piejam::algorithm::test

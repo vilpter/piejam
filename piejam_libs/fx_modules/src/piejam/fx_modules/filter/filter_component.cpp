@@ -55,24 +55,24 @@ using br_tag = make_constant<type::br>;
 namespace biqflt = audio::dsp::biquad_filter;
 
 using tag_make_coefficients_map = boost::mp11::mp_list<
-        std::pair<lp2_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
-        std::pair<lp4_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
-        std::pair<bp2_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
-        std::pair<bp4_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
-        std::pair<hp2_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
-        std::pair<hp4_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
-        std::pair<br_tag, make_constant<&biqflt::make_br_coefficients<float>>>>;
+    std::pair<lp2_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
+    std::pair<lp4_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
+    std::pair<bp2_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
+    std::pair<bp4_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
+    std::pair<hp2_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
+    std::pair<hp4_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
+    std::pair<br_tag, make_constant<&biqflt::make_br_coefficients<float>>>>;
 
 template <class Tag>
 constexpr auto
 make_coefficients(
-        Tag tag,
-        float const cutoff,
-        float const res,
-        float const inv_sr) noexcept
+    Tag tag,
+    float const cutoff,
+    float const res,
+    float const inv_sr) noexcept
 {
     using make_t = typename boost::mp11::
-            mp_map_find<tag_make_coefficients_map, Tag>::second_type;
+        mp_map_find<tag_make_coefficients_map, Tag>::second_type;
     return event_value{.tp = tag, .coeffs = make_t::value(cutoff, res, inv_sr)};
 }
 
@@ -83,64 +83,40 @@ make_coefficent_converter_processor(audio::sample_rate const sample_rate)
     static constexpr std::array s_input_names{"type"sv, "cutoff"sv, "res"sv};
     static constexpr std::array s_output_names{"coeffs"sv};
     return audio::engine::make_event_converter_processor(
-            [inv_sr = 1.f / sample_rate.as<float>()](
-                    filter::type const type,
-                    float const cutoff,
-                    float const res) {
-                switch (type)
-                {
-                    case type::lp2:
-                        return make_coefficients(
-                                lp2_tag{},
-                                cutoff,
-                                res,
-                                inv_sr);
+        [inv_sr = 1.f / sample_rate.as<float>()](
+            filter::type const type,
+            float const cutoff,
+            float const res) {
+            switch (type)
+            {
+                case type::lp2:
+                    return make_coefficients(lp2_tag{}, cutoff, res, inv_sr);
 
-                    case type::lp4:
-                        return make_coefficients(
-                                lp4_tag{},
-                                cutoff,
-                                res,
-                                inv_sr);
+                case type::lp4:
+                    return make_coefficients(lp4_tag{}, cutoff, res, inv_sr);
 
-                    case type::bp2:
-                        return make_coefficients(
-                                bp2_tag{},
-                                cutoff,
-                                res,
-                                inv_sr);
+                case type::bp2:
+                    return make_coefficients(bp2_tag{}, cutoff, res, inv_sr);
 
-                    case type::bp4:
-                        return make_coefficients(
-                                bp4_tag{},
-                                cutoff,
-                                res,
-                                inv_sr);
+                case type::bp4:
+                    return make_coefficients(bp4_tag{}, cutoff, res, inv_sr);
 
-                    case type::hp2:
-                        return make_coefficients(
-                                hp2_tag{},
-                                cutoff,
-                                res,
-                                inv_sr);
+                case type::hp2:
+                    return make_coefficients(hp2_tag{}, cutoff, res, inv_sr);
 
-                    case type::hp4:
-                        return make_coefficients(
-                                hp4_tag{},
-                                cutoff,
-                                res,
-                                inv_sr);
+                case type::hp4:
+                    return make_coefficients(hp4_tag{}, cutoff, res, inv_sr);
 
-                    case type::br:
-                        return make_coefficients(br_tag{}, cutoff, res, inv_sr);
+                case type::br:
+                    return make_coefficients(br_tag{}, cutoff, res, inv_sr);
 
-                    default:
-                        return event_value{};
-                }
-            },
-            s_input_names,
-            s_output_names,
-            "make_coeff");
+                default:
+                    return event_value{};
+            }
+        },
+        s_input_names,
+        s_output_names,
+        "make_coeff");
 }
 
 class processor final
@@ -171,8 +147,8 @@ public:
     auto event_inputs() const noexcept -> event_ports override
     {
         static std::array s_ports{audio::engine::event_port{
-                std::in_place_type<event_value>,
-                "coeffs"}};
+            std::in_place_type<event_value>,
+            "coeffs"}};
         return s_ports;
     }
 
@@ -203,32 +179,32 @@ public:
     }
 
     void process_slice(
-            audio::engine::process_context const& ctx,
-            std::size_t const offset,
-            std::size_t const count)
+        audio::engine::process_context const& ctx,
+        std::size_t const offset,
+        std::size_t const count)
     {
         auto out_it = std::next(ctx.outputs[0].begin(), offset);
 
-        visit(boost::hof::match(
-                      [=, this, &out_it](float const c) {
-                          std::ranges::generate_n(
-                                  out_it,
-                                  count,
-                                  std::bind_front(m_process_sample, this, c));
-                      },
-                      [=, this, &out_it](
-                              audio::slice<float>::span_t const& buf) {
-                          std::ranges::transform(
-                                  buf,
-                                  out_it,
-                                  std::bind_front(m_process_sample, this));
-                      }),
-              subslice(ctx.inputs[0].get(), offset, count));
+        visit(
+            boost::hof::match(
+                [=, this, &out_it](float const c) {
+                    std::ranges::generate_n(
+                        out_it,
+                        count,
+                        std::bind_front(m_process_sample, this, c));
+                },
+                [=, this, &out_it](audio::slice<float>::span_t const& buf) {
+                    std::ranges::transform(
+                        buf,
+                        out_it,
+                        std::bind_front(m_process_sample, this));
+                }),
+            subslice(ctx.inputs[0].get(), offset, count));
     }
 
     void process_event(
-            audio::engine::process_context const& /*ctx*/,
-            audio::engine::event<event_value> const& ev)
+        audio::engine::process_context const& /*ctx*/,
+        audio::engine::event<event_value> const& ev)
     {
         m_type = ev.value().tp;
 
@@ -294,17 +270,17 @@ filter_channel_name(std::size_t ch)
 
 auto
 make_in_out_stream(
-        audio::bus_type bus_type,
-        runtime::audio_stream_id stream_id,
-        runtime::processors::stream_processor_factory& stream_proc_factory,
-        std::size_t const buffer_capacity_per_channel)
+    audio::bus_type bus_type,
+    runtime::audio_stream_id stream_id,
+    runtime::processors::stream_processor_factory& stream_proc_factory,
+    std::size_t const buffer_capacity_per_channel)
 {
     return runtime::components::make_stream(
-            stream_id,
-            stream_proc_factory,
-            num_channels(bus_type) * 2,
-            buffer_capacity_per_channel,
-            "filter_in_out");
+        stream_id,
+        stream_proc_factory,
+        num_channels(bus_type) * 2,
+        buffer_capacity_per_channel,
+        "filter_in_out");
 }
 
 template <std::size_t... Channel>
@@ -315,32 +291,30 @@ class component final : public audio::engine::component
 public:
     component(runtime::internal_fx_component_factory_args const& args)
         : m_type_input_proc(args.param_procs.find_or_make_processor(
-                  std::get<runtime::enum_parameter_id>(
-                          args.fx_mod.parameters->at(
-                                  std::to_underlying(parameter_key::type))),
-                  std::in_place_type<type>,
-                  "type"))
+              std::get<runtime::enum_parameter_id>(args.fx_mod.parameters->at(
+                  std::to_underlying(parameter_key::type))),
+              std::in_place_type<type>,
+              "type"))
         , m_cutoff_input_proc(
-                  runtime::processors::find_or_make_parameter_processor(
-                          args.param_procs,
-                          args.fx_mod.parameters->at(
-                                  std::to_underlying(parameter_key::cutoff)),
-                          "cutoff"))
+              runtime::processors::find_or_make_parameter_processor(
+                  args.param_procs,
+                  args.fx_mod.parameters->at(
+                      std::to_underlying(parameter_key::cutoff)),
+                  "cutoff"))
         , m_resonance_input_proc(
-                  runtime::processors::find_or_make_parameter_processor(
-                          args.param_procs,
-                          args.fx_mod.parameters->at(
-                                  std::to_underlying(parameter_key::resonance)),
-                          "res"))
+              runtime::processors::find_or_make_parameter_processor(
+                  args.param_procs,
+                  args.fx_mod.parameters->at(
+                      std::to_underlying(parameter_key::resonance)),
+                  "res"))
         , m_coeffs_proc(make_coefficent_converter_processor(args.sample_rate))
         , m_in_out_stream(make_in_out_stream(
-                  args.fx_mod.bus_type,
-                  args.fx_mod.streams->at(
-                          std::to_underlying(
-                                  fx_modules::filter::stream_key::in_out)),
-                  args.stream_procs,
-                  args.sample_rate.samples_for_duration(
-                          std::chrono::milliseconds(120))))
+              args.fx_mod.bus_type,
+              args.fx_mod.streams->at(
+                  std::to_underlying(fx_modules::filter::stream_key::in_out)),
+              args.stream_procs,
+              args.sample_rate.samples_for_duration(
+                  std::chrono::milliseconds(120))))
     {
     }
 
@@ -371,56 +345,56 @@ public:
         m_in_out_stream->connect(g);
 
         audio::engine::connect_event(
-                g,
-                *m_type_input_proc,
-                from<0>,
-                *m_coeffs_proc,
-                to<0>);
+            g,
+            *m_type_input_proc,
+            from<0>,
+            *m_coeffs_proc,
+            to<0>);
 
         audio::engine::connect_event(
-                g,
-                *m_cutoff_input_proc,
-                from<0>,
-                *m_coeffs_proc,
-                to<1>);
+            g,
+            *m_cutoff_input_proc,
+            from<0>,
+            *m_coeffs_proc,
+            to<1>);
 
         audio::engine::connect_event(
-                g,
-                *m_resonance_input_proc,
-                from<0>,
-                *m_coeffs_proc,
-                to<2>);
+            g,
+            *m_resonance_input_proc,
+            from<0>,
+            *m_coeffs_proc,
+            to<2>);
 
         (audio::engine::connect_event(
-                 g,
-                 *m_coeffs_proc,
-                 from<0>,
-                 *m_filter_procs[Channel],
-                 to<0>),
+             g,
+             *m_coeffs_proc,
+             from<0>,
+             *m_filter_procs[Channel],
+             to<0>),
          ...);
 
         (audio::engine::connect(
-                 g,
-                 *m_input_procs[Channel],
-                 from<0>,
-                 *m_filter_procs[Channel],
-                 to<0>),
+             g,
+             *m_input_procs[Channel],
+             from<0>,
+             *m_filter_procs[Channel],
+             to<0>),
          ...);
 
         (audio::engine::connect(
-                 g,
-                 *m_input_procs[Channel],
-                 from<0>,
-                 *m_in_out_stream,
-                 to<Channel>),
+             g,
+             *m_input_procs[Channel],
+             from<0>,
+             *m_in_out_stream,
+             to<Channel>),
          ...);
 
         (audio::engine::connect(
-                 g,
-                 *m_filter_procs[Channel],
-                 from<0>,
-                 *m_in_out_stream,
-                 to<Channel + num_channels>),
+             g,
+             *m_filter_procs[Channel],
+             from<0>,
+             *m_in_out_stream,
+             to<Channel + num_channels>),
          ...);
     }
 
@@ -430,41 +404,36 @@ private:
     std::shared_ptr<audio::engine::processor> m_resonance_input_proc;
     std::unique_ptr<audio::engine::processor> m_coeffs_proc;
     std::array<std::unique_ptr<audio::engine::processor>, num_channels>
-            m_input_procs{
-                    ((void)Channel,
-                     audio::engine::make_identity_processor())...};
+        m_input_procs{
+            ((void)Channel, audio::engine::make_identity_processor())...};
     std::array<std::unique_ptr<audio::engine::processor>, num_channels>
-            m_filter_procs{
-                    ((void)Channel,
-                     std::make_unique<processor>(
-                             filter_channel_name<num_channels>(Channel)))...};
+        m_filter_procs{
+            ((void)Channel,
+             std::make_unique<processor>(
+                 filter_channel_name<num_channels>(Channel)))...};
     std::shared_ptr<audio::engine::component> m_in_out_stream;
     std::array<audio::engine::graph_endpoint, num_channels> m_inputs{
-            audio::engine::graph_endpoint{
-                    .proc = *m_input_procs[Channel],
-                    .port = 0}...};
+        audio::engine::graph_endpoint{
+            .proc = *m_input_procs[Channel],
+            .port = 0}...};
     std::array<audio::engine::graph_endpoint, num_channels> m_outputs{
-            audio::engine::graph_endpoint{
-                    .proc = *m_filter_procs[Channel],
-                    .port = 0}...};
+        audio::engine::graph_endpoint{
+            .proc = *m_filter_procs[Channel],
+            .port = 0}...};
     std::array<audio::engine::graph_endpoint, 3> m_event_inputs{
-            audio::engine::graph_endpoint{
-                    .proc = *m_type_input_proc,
-                    .port = 0},
-            audio::engine::graph_endpoint{
-                    .proc = *m_cutoff_input_proc,
-                    .port = 0},
-            audio::engine::graph_endpoint{
-                    .proc = *m_resonance_input_proc,
-                    .port = 0}};
+        audio::engine::graph_endpoint{.proc = *m_type_input_proc, .port = 0},
+        audio::engine::graph_endpoint{.proc = *m_cutoff_input_proc, .port = 0},
+        audio::engine::graph_endpoint{
+            .proc = *m_resonance_input_proc,
+            .port = 0}};
 };
 
 template <std::size_t... Channel>
 auto
 make_component(
-        runtime::internal_fx_component_factory_args const& args,
-        std::index_sequence<Channel...>)
-        -> std::unique_ptr<audio::engine::component>
+    runtime::internal_fx_component_factory_args const& args,
+    std::index_sequence<Channel...>)
+    -> std::unique_ptr<audio::engine::component>
 {
     return std::make_unique<component<Channel...>>(args);
 }
@@ -473,7 +442,7 @@ make_component(
 
 auto
 make_component(runtime::internal_fx_component_factory_args const& args)
-        -> std::unique_ptr<audio::engine::component>
+    -> std::unique_ptr<audio::engine::component>
 {
     switch (args.fx_mod.bus_type)
     {

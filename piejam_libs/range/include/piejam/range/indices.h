@@ -15,8 +15,8 @@ constexpr auto
 indices(R&& rng) noexcept
 {
     return std::views::iota(
-            std::ranges::range_size_t<R>{},
-            std::ranges::size(std::forward<R>(rng)));
+        std::ranges::range_size_t<R>{},
+        std::ranges::size(std::forward<R>(rng)));
 }
 
 } // namespace piejam::range

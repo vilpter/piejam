@@ -20,8 +20,8 @@ class SpectrumGenerator
 {
 public:
     explicit SpectrumGenerator(
-            audio::sample_rate,
-            DFTResolution = DFTResolution::Low);
+        audio::sample_rate,
+        DFTResolution = DFTResolution::Low);
 
     template <class Samples>
     auto process(Samples const& samples) -> SpectrumDataPoints

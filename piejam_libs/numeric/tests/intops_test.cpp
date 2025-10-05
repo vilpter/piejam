@@ -21,7 +21,7 @@ struct sign_map_test : ::testing::Test
 };
 
 using signed_ints = ::testing::
-        Types<std::int8_t, std::int16_t, int24_io_t, std::int32_t, std::int64_t>;
+    Types<std::int8_t, std::int16_t, int24_io_t, std::int32_t, std::int64_t>;
 TYPED_TEST_SUITE(sign_map_test, signed_ints);
 
 TYPED_TEST(sign_map_test, signed_to_unsigned_min)
@@ -30,8 +30,8 @@ TYPED_TEST(sign_map_test, signed_to_unsigned_min)
     using unsigned_t = make_unsigned_t<signed_t>;
 
     EXPECT_EQ(
-            std::numeric_limits<unsigned_t>::min(),
-            sign_map<unsigned_t>(std::numeric_limits<signed_t>::min()));
+        std::numeric_limits<unsigned_t>::min(),
+        sign_map<unsigned_t>(std::numeric_limits<signed_t>::min()));
 }
 
 TYPED_TEST(sign_map_test, signed_to_unsigned_max)
@@ -40,8 +40,8 @@ TYPED_TEST(sign_map_test, signed_to_unsigned_max)
     using unsigned_t = make_unsigned_t<signed_t>;
 
     EXPECT_EQ(
-            std::numeric_limits<unsigned_t>::max(),
-            sign_map<unsigned_t>(std::numeric_limits<signed_t>::max()));
+        std::numeric_limits<unsigned_t>::max(),
+        sign_map<unsigned_t>(std::numeric_limits<signed_t>::max()));
 }
 
 TYPED_TEST(sign_map_test, signed_to_unsigned_zero)
@@ -50,8 +50,8 @@ TYPED_TEST(sign_map_test, signed_to_unsigned_zero)
     using unsigned_t = make_unsigned_t<signed_t>;
 
     EXPECT_EQ(
-            unsigned_t{1} << sign_bit<unsigned_t>,
-            sign_map<unsigned_t>(signed_t{}));
+        unsigned_t{1} << sign_bit<unsigned_t>,
+        sign_map<unsigned_t>(signed_t{}));
 }
 
 TYPED_TEST(sign_map_test, unsigned_to_signed_min)
@@ -60,8 +60,8 @@ TYPED_TEST(sign_map_test, unsigned_to_signed_min)
     using unsigned_t = make_unsigned_t<signed_t>;
 
     EXPECT_EQ(
-            std::numeric_limits<signed_t>::min(),
-            sign_map<signed_t>(std::numeric_limits<unsigned_t>::min()));
+        std::numeric_limits<signed_t>::min(),
+        sign_map<signed_t>(std::numeric_limits<unsigned_t>::min()));
 }
 
 TYPED_TEST(sign_map_test, unsigned_to_signed_max)
@@ -70,8 +70,8 @@ TYPED_TEST(sign_map_test, unsigned_to_signed_max)
     using unsigned_t = make_unsigned_t<signed_t>;
 
     EXPECT_EQ(
-            std::numeric_limits<signed_t>::max(),
-            sign_map<signed_t>(std::numeric_limits<unsigned_t>::max()));
+        std::numeric_limits<signed_t>::max(),
+        sign_map<signed_t>(std::numeric_limits<unsigned_t>::max()));
 }
 
 TYPED_TEST(sign_map_test, unsigned_to_signed_zero)
@@ -80,8 +80,8 @@ TYPED_TEST(sign_map_test, unsigned_to_signed_zero)
     using unsigned_t = make_unsigned_t<signed_t>;
 
     EXPECT_EQ(
-            signed_t{},
-            sign_map<signed_t>(unsigned_t{1ull << sign_bit<unsigned_t>}));
+        signed_t{},
+        sign_map<signed_t>(unsigned_t{1ull << sign_bit<unsigned_t>}));
 }
 
 } // namespace piejam::numeric::intops::test

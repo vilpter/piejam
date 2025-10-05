@@ -35,9 +35,9 @@ private:
 
 public:
     AudioRoutingSelection(
-            runtime::state_access const&,
-            runtime::mixer::channel_id,
-            io_direction);
+        runtime::state_access const&,
+        runtime::mixer::channel_id,
+        io_direction);
 
 private:
     void onSubscribe() override;

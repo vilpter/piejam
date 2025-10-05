@@ -15,7 +15,7 @@ static void
 BM_peak_level_meter(benchmark::State& state)
 {
     piejam::audio::dsp::peak_level_meter<float> lm{
-            piejam::audio::sample_rate{48000}};
+        piejam::audio::sample_rate{48000}};
 
     std::srand(std::time(nullptr));
 

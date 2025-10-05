@@ -17,12 +17,12 @@ void
 insert_internal_fx_module::reduce(state& st) const
 {
     auto fx_mod_id = runtime::insert_internal_fx_module(
-            st,
-            fx_chain_id,
-            position,
-            type,
-            initial_values,
-            midi_assignments);
+        st,
+        fx_chain_id,
+        position,
+        type,
+        initial_values,
+        midi_assignments);
 
     if (show_fx_module)
     {
@@ -36,14 +36,14 @@ void
 insert_ladspa_fx_module::reduce(state& st) const
 {
     auto fx_mod_id = runtime::insert_ladspa_fx_module(
-            st,
-            fx_chain_id,
-            position,
-            instance_id,
-            plugin_desc,
-            control_inputs,
-            initial_values,
-            midi_assignments);
+        st,
+        fx_chain_id,
+        position,
+        instance_id,
+        plugin_desc,
+        control_inputs,
+        initial_values,
+        midi_assignments);
 
     if (show_fx_module)
     {
@@ -57,11 +57,11 @@ void
 insert_missing_ladspa_fx_module::reduce(state& st) const
 {
     runtime::insert_missing_ladspa_fx_module(
-            st,
-            fx_chain_id,
-            position,
-            unavailable_ladspa,
-            name);
+        st,
+        fx_chain_id,
+        position,
+        unavailable_ladspa,
+        name);
 }
 
 void
@@ -82,7 +82,7 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
             auto const prev_fx_mod_id = fx_chain[pos];
 
             auto unavail_id = std::get<fx::unavailable_ladspa_id>(
-                    fx_modules.at(prev_fx_mod_id).fx_instance_id);
+                fx_modules.at(prev_fx_mod_id).fx_instance_id);
 
             fx_modules.erase(prev_fx_mod_id);
 
@@ -90,37 +90,37 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
 
             BOOST_ASSERT(unavail.plugin_id == ladspa_instance.plugin_desc.id);
             BOOST_ASSERT(
-                    num_channels(to_bus_type(mixer_channel.type)) ==
-                    ladspa_instance.plugin_desc.num_inputs);
+                num_channels(to_bus_type(mixer_channel.type)) ==
+                ladspa_instance.plugin_desc.num_inputs);
             BOOST_ASSERT(
-                    num_channels(to_bus_type(mixer_channel.type)) ==
-                    ladspa_instance.plugin_desc.num_outputs);
+                num_channels(to_bus_type(mixer_channel.type)) ==
+                ladspa_instance.plugin_desc.num_outputs);
 
             auto const fx_mod_id = fx_modules.emplace(
-                    ladspa_fx::make_module(
-                            ladspa_instance.instance_id,
-                            ladspa_instance.plugin_desc.name,
-                            to_bus_type(mixer_channel.type),
-                            ladspa_instance.control_inputs,
-                            st.params));
+                ladspa_fx::make_module(
+                    ladspa_instance.instance_id,
+                    ladspa_instance.plugin_desc.name,
+                    to_bus_type(mixer_channel.type),
+                    ladspa_instance.control_inputs,
+                    st.params));
 
             fx_chain[pos] = fx_mod_id;
 
             auto const& fx_mod = fx_modules.at(fx_mod_id);
             apply_parameter_values(
-                    unavail.parameter_values,
-                    fx_mod.parameters,
-                    st.params);
+                unavail.parameter_values,
+                fx_mod.parameters,
+                st.params);
             apply_midi_assignments(
-                    unavail.midi_assignments,
-                    fx_mod.parameters,
-                    *st.midi_assignments.lock());
+                unavail.midi_assignments,
+                fx_mod.parameters,
+                *st.midi_assignments.lock());
 
             unavail_ladspas.erase(unavail_id);
 
             st.fx_ladspa_instances.emplace(
-                    ladspa_instance.instance_id,
-                    ladspa_instance.plugin_desc);
+                ladspa_instance.instance_id,
+                ladspa_instance.plugin_desc);
         }
 
         st.mixer_state.fx_chains.set(fx_chain_id, box{std::move(fx_chain)});

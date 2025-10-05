@@ -45,9 +45,9 @@ private:
     static auto find_it(Map&& m, Id const& id)
     {
         return std::ranges::find_if(
-                std::forward<Map>(m),
-                boost::hof::capture_forward(id)(any_equal_to),
-                get_by_index<0>);
+            std::forward<Map>(m),
+            boost::hof::capture_forward(id)(any_equal_to),
+            get_by_index<0>);
     }
 
     map_t m_map;

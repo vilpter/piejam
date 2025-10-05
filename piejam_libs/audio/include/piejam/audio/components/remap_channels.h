@@ -78,10 +78,10 @@ private:
     std::unique_ptr<Node> m_node;
 
     constexpr static inline std::size_t const num_inputs{
-            sizeof...(ChannelMappings)};
+        sizeof...(ChannelMappings)};
 
     using input_procs_t =
-            std::array<std::unique_ptr<engine::processor>, num_inputs>;
+        std::array<std::unique_ptr<engine::processor>, num_inputs>;
 
     template <std::size_t... I>
     static auto make_input_procs(std::index_sequence<I...>) -> input_procs_t
@@ -90,32 +90,31 @@ private:
     }
 
     input_procs_t m_input_procs{
-            make_input_procs(std::make_index_sequence<num_inputs>{})};
+        make_input_procs(std::make_index_sequence<num_inputs>{})};
 
     using inputs_t = std::array<engine::graph_endpoint, num_inputs>;
 
     template <std::size_t... I>
     static auto make_inputs(
-            std::span<std::unique_ptr<engine::processor> const> const
-                    input_procs,
-            std::index_sequence<I...>) -> inputs_t
+        std::span<std::unique_ptr<engine::processor> const> const input_procs,
+        std::index_sequence<I...>) -> inputs_t
     {
         return inputs_t{engine::dst_endpoint(*input_procs[I], 0)...};
     }
 
     inputs_t m_inputs{
-            make_inputs(m_input_procs, std::make_index_sequence<num_inputs>{})};
+        make_inputs(m_input_procs, std::make_index_sequence<num_inputs>{})};
 };
 
 template <engine::graph_node Node, class... ChannelMappings>
 auto
 make_remap_input_channels(
-        std::unique_ptr<Node> node,
-        ChannelMappings... mappings) -> std::unique_ptr<engine::component>
+    std::unique_ptr<Node> node,
+    ChannelMappings... mappings) -> std::unique_ptr<engine::component>
 {
     return std::make_unique<remap_input_channels<Node, ChannelMappings...>>(
-            std::move(node),
-            std::move(mappings)...);
+        std::move(node),
+        std::move(mappings)...);
 }
 
 } // namespace piejam::audio::components

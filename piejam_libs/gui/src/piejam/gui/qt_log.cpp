@@ -16,9 +16,9 @@ namespace piejam::gui::qt_log
 
 void
 log_message_handler(
-        QtMsgType type,
-        QMessageLogContext const& context,
-        QString const& msg)
+    QtMsgType type,
+    QMessageLogContext const& context,
+    QString const& msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
     auto const msgData = localMsg.constData();

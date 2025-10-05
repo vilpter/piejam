@@ -32,8 +32,7 @@ struct graph_endpoint
 };
 
 template <std::size_t Port>
-constexpr auto make_graph_endpoint = [](processor& proc) {
-    return graph_endpoint{.proc = proc, .port = Port};
-};
+constexpr auto make_graph_endpoint =
+    [](processor& proc) { return graph_endpoint{.proc = proc, .port = Port}; };
 
 } // namespace piejam::audio::engine

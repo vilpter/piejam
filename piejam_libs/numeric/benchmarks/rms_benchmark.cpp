@@ -19,8 +19,8 @@ BM_rms(benchmark::State& state)
     std::srand(std::time(nullptr));
 
     mipp::vector<float> buf(
-            state.range(0),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        state.range(0),
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     benchmark::ClobberMemory();
 
     for (auto _ : state)
@@ -37,8 +37,8 @@ BM_simd_rms(benchmark::State& state)
     std::srand(std::time(nullptr));
 
     mipp::vector<float> buf(
-            state.range(0),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        state.range(0),
+        static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
     benchmark::ClobberMemory();
 
     for (auto _ : state)
@@ -48,5 +48,5 @@ BM_simd_rms(benchmark::State& state)
 }
 
 BENCHMARK(BM_simd_rms)
-        ->RangeMultiplier(2)
-        ->Range(min_period_size, max_period_size);
+    ->RangeMultiplier(2)
+    ->Range(min_period_size, max_period_size);

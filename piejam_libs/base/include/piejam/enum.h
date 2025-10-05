@@ -11,8 +11,8 @@ namespace piejam
 {
 
 template <class E, class UT>
-concept scoped_enum = std::is_scoped_enum_v<E> &&
-                      std::is_same_v<UT, std::underlying_type_t<E>>;
+concept scoped_enum =
+    std::is_scoped_enum_v<E> && std::is_same_v<UT, std::underlying_type_t<E>>;
 
 template <class E>
 concept bool_enum = scoped_enum<E, bool>;

@@ -95,11 +95,11 @@ TEST(align_up, with_different_unsigned_types)
 {
     EXPECT_EQ(align_up(std::uint8_t{7}, std::uint8_t{4}), std::uint8_t{8});
     EXPECT_EQ(
-            align_up(std::uint16_t{1025}, std::uint16_t{256}),
-            std::uint16_t{1280});
+        align_up(std::uint16_t{1025}, std::uint16_t{256}),
+        std::uint16_t{1280});
     EXPECT_EQ(
-            align_up(std::uint64_t{123456789}, std::uint64_t{1024}),
-            std::uint64_t{123457536});
+        align_up(std::uint64_t{123456789}, std::uint64_t{1024}),
+        std::uint64_t{123457536});
 }
 
 static_assert(align_nearest(3u, 4u) == 4u);

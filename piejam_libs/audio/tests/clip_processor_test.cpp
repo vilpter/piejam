@@ -28,11 +28,11 @@ struct clip_processor_test : testing::Test
     std::array<std::span<float>, 1> outputs{out0};
     std::array<slice<float>, 1> results;
     audio::engine::process_context ctx{
-            .outputs = outputs,
-            .results = results,
-            .event_inputs = ev_in_bufs,
-            .event_outputs = ev_out_bufs,
-            .buffer_size = buffer_size};
+        .outputs = outputs,
+        .results = results,
+        .event_inputs = ev_in_bufs,
+        .event_outputs = ev_out_bufs,
+        .buffer_size = buffer_size};
 };
 
 TEST_F(clip_processor_test, properties)

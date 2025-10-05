@@ -27,7 +27,8 @@ struct intx_io_t
     }
 
     template <std::integral OtherInteger>
-    constexpr explicit intx_io_t(intx_io_t<OtherInteger, Bits> const& other) noexcept
+    constexpr explicit intx_io_t(
+        intx_io_t<OtherInteger, Bits> const& other) noexcept
         : value{static_cast<Integer>(other.value)}
     {
     }
@@ -55,7 +56,8 @@ struct intx_io_t
     }
 
     [[nodiscard]]
-    constexpr auto operator==(intx_io_t const&) const noexcept -> bool = default;
+    constexpr auto operator==(intx_io_t const&) const noexcept
+        -> bool = default;
 
     [[nodiscard]]
     constexpr auto operator<=>(intx_io_t const&) const noexcept = default;
@@ -95,12 +97,12 @@ public:
     static constexpr std::float_denorm_style has_denorm = std::denorm_absent;
     static constexpr bool has_denorm_loss = false;
     static constexpr std::float_round_style round_style =
-            std::round_toward_zero;
+        std::round_toward_zero;
     static constexpr bool is_iec559 = false;
     static constexpr bool is_bounded = true;
     static constexpr bool is_modulo = std::numeric_limits<Integer>::is_modulo;
     static constexpr int digits =
-            static_cast<int>(Bits) - std::is_signed_v<Integer>;
+        static_cast<int>(Bits) - std::is_signed_v<Integer>;
     static constexpr int digits10 = digits * 301 / 1000;
     static constexpr int max_digits10 = 0;
     static constexpr int radix = 2;
@@ -112,12 +114,12 @@ public:
     static constexpr bool tinyness_before = false;
 
     static constexpr auto min() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         if constexpr (std::is_signed_v<Integer>)
         {
             return piejam::numeric::intx_io_t<Integer, Bits>{
-                    -(Integer{1} << (Bits - 1))};
+                -(Integer{1} << (Bits - 1))};
         }
         else
         {
@@ -126,58 +128,58 @@ public:
     }
 
     static constexpr auto lowest() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         return min();
     }
 
     static constexpr auto max() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         if constexpr (std::is_signed_v<Integer>)
         {
             return piejam::numeric::intx_io_t<Integer, Bits>{
-                    (Integer{1} << (Bits - 1)) - 1};
+                (Integer{1} << (Bits - 1)) - 1};
         }
         else
         {
             return piejam::numeric::intx_io_t<Integer, Bits>{
-                    (Integer{1} << Bits) - 1};
+                (Integer{1} << Bits) - 1};
         }
     }
 
     static constexpr auto epsilon() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         return {};
     }
 
     static constexpr auto round_error() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         return {};
     }
 
     static constexpr auto infinity() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         return {};
     }
 
     static constexpr auto quiet_NaN() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         return {};
     }
 
     static constexpr auto signaling_NaN() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         return {};
     }
 
     static constexpr auto denorm_min() noexcept
-            -> piejam::numeric::intx_io_t<Integer, Bits>
+        -> piejam::numeric::intx_io_t<Integer, Bits>
     {
         return {};
     }

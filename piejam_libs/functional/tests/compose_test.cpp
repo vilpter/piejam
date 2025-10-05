@@ -20,10 +20,9 @@ TEST(compose_test, single_value_argument)
 
     using h_t = decltype(h);
     static_assert(
-            std::is_same_v<int, boost::callable_traits::return_type_t<h_t>>);
-    static_assert(std::is_same_v<
-                  std::tuple<int>,
-                  boost::callable_traits::args_t<h_t>>);
+        std::is_same_v<int, boost::callable_traits::return_type_t<h_t>>);
+    static_assert(
+        std::is_same_v<std::tuple<int>, boost::callable_traits::args_t<h_t>>);
 
     EXPECT_EQ(h(10), 21); // (10*2)+1
 }
@@ -42,10 +41,9 @@ TEST(compose_test, lvalue_reference_argument)
 
     using h_t = decltype(h);
     static_assert(
-            std::is_same_v<int&, boost::callable_traits::return_type_t<h_t>>);
-    static_assert(std::is_same_v<
-                  std::tuple<int&>,
-                  boost::callable_traits::args_t<h_t>>);
+        std::is_same_v<int&, boost::callable_traits::return_type_t<h_t>>);
+    static_assert(
+        std::is_same_v<std::tuple<int&>, boost::callable_traits::args_t<h_t>>);
 
     EXPECT_EQ(result, 15);
     EXPECT_EQ(x, 15); // lvalue forwarded correctly
@@ -61,7 +59,7 @@ TEST(compose_test, const_lvalue_reference_argument)
 
     using h_t = decltype(h);
     static_assert(
-            std::is_same_v<int, boost::callable_traits::return_type_t<h_t>>);
+        std::is_same_v<int, boost::callable_traits::return_type_t<h_t>>);
     static_assert(std::is_same_v<
                   std::tuple<int const&>,
                   boost::callable_traits::args_t<h_t>>);
@@ -78,9 +76,9 @@ TEST(compose_test, rvalue_reference_argument)
     std::string str = "hello";
 
     using h_t = decltype(h);
-    static_assert(std::is_same_v<
-                  std::string,
-                  boost::callable_traits::return_type_t<h_t>>);
+    static_assert(
+        std::
+            is_same_v<std::string, boost::callable_traits::return_type_t<h_t>>);
     static_assert(std::is_same_v<
                   std::tuple<std::string&&>,
                   boost::callable_traits::args_t<h_t>>);
@@ -98,10 +96,9 @@ TEST(compose_test, variadic_composition_multiple_functions)
 
     using h_t = decltype(h);
     static_assert(
-            std::is_same_v<int, boost::callable_traits::return_type_t<h_t>>);
-    static_assert(std::is_same_v<
-                  std::tuple<int>,
-                  boost::callable_traits::args_t<h_t>>);
+        std::is_same_v<int, boost::callable_traits::return_type_t<h_t>>);
+    static_assert(
+        std::is_same_v<std::tuple<int>, boost::callable_traits::args_t<h_t>>);
 
     EXPECT_EQ(h(10), 15); // ((10-3)*2)+1
 }
@@ -121,10 +118,10 @@ TEST(compose_test, args_t_and_return_type)
 
     // The return type should be f1(f2(f3(args)))
     using expected_return = std::invoke_result_t<
-            decltype(f1),
-            std::invoke_result_t<
-                    decltype(f2),
-                    std::invoke_result_t<decltype(f3), double&&>>>;
+        decltype(f1),
+        std::invoke_result_t<
+            decltype(f2),
+            std::invoke_result_t<decltype(f3), double&&>>>;
     using composed_return = boost::callable_traits::return_type_t<decltype(h)>;
     EXPECT_TRUE((std::is_same_v<expected_return, composed_return>));
 }
