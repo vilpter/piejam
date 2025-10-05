@@ -12,7 +12,7 @@
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/functional/memo.h>
 #include <piejam/npos.h>
-#include <piejam/range/indices.h>
+#include <piejam/range/indirected.h>
 #include <piejam/redux/selector.h>
 
 #include <boost/hof/match.hpp>
@@ -658,24 +658,25 @@ struct muted_by_solo_state
         , solo_params{algorithm::transform_to_vector(
                   solo_groups | std::views::values,
                   [params](solo_group const& g) {
-                      return params.find(g.solo_param)->cached();
+                      return params.at(g.solo_param).cached();
                   })}
     {
     }
 
     auto operator()(
-            std::size_t const reduce_count,
+            std::size_t const update_count,
             mixer::channel_id const channel_id) const
     {
-        if (last_reduce_count != reduce_count)
+        if (last_update_count != update_count)
         {
-            for (std::size_t index : range::indices(solo_params))
+            for (auto [index, solo] :
+                 solo_params | range::indirected | std::views::enumerate)
             {
-                sg_state.set_solo(index, *solo_params[index]);
+                sg_state.set_solo(index, solo);
             }
 
             sg_state.calculate_mutes();
-            last_reduce_count = reduce_count;
+            last_update_count = update_count;
         }
 
         auto it = solo_groups.find(channel_id);
@@ -684,12 +685,12 @@ struct muted_by_solo_state
     }
 
     solo_groups_t solo_groups;
-    mutable solo_group_state sg_state{runtime::solo_group_state{solo_groups}};
+    mutable solo_group_state sg_state{solo_groups};
 
     using cached_solo_param_value = std::shared_ptr<bool const>;
     std::vector<cached_solo_param_value> solo_params;
 
-    mutable std::size_t last_reduce_count{piejam::npos};
+    mutable std::size_t last_update_count{piejam::npos};
 };
 
 auto
@@ -719,7 +720,9 @@ make_muted_by_solo_selector(mixer::channel_id const mixer_channel_id)
 {
     return [mixer_channel_id](state const& st) {
         auto muted_by_solo_state = select_muted_by_solo_state(st);
-        return muted_by_solo_state.get()(st.reduce_count, mixer_channel_id);
+        return muted_by_solo_state.get()(
+                st.solo_state_update_count,
+                mixer_channel_id);
     };
 }
 

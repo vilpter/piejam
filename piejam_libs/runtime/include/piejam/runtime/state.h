@@ -48,8 +48,6 @@ namespace piejam::runtime
 
 struct state
 {
-    std::size_t reduce_count{};
-
     strings_t strings;
     material_colors_t material_colors;
 
@@ -90,6 +88,8 @@ struct state
 
     mixer::channel_id focused_fx_chain_id;
     fx::module_id focused_fx_mod_id;
+
+    std::size_t solo_state_update_count{};
 };
 
 auto make_initial_state() -> state;

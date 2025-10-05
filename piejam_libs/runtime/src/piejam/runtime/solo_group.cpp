@@ -8,8 +8,6 @@
 #include <piejam/runtime/mixer.h>
 #include <piejam/runtime/parameter/store.h>
 
-#include <piejam/range/indices.h>
-
 namespace piejam::runtime
 {
 
@@ -167,11 +165,10 @@ solo_group_state::calculate_mutes() noexcept
     m_mutes.reset();
     m_unmutes.reset();
 
-    for (std::size_t const index : range::indices(m_solo_groups))
+    for (auto const& [index, group] : m_solo_groups | std::views::enumerate)
     {
         if (m_solo_state.test(index))
         {
-            auto const& group = m_solo_groups[index];
             m_mutes |= group.mutes;
             m_unmutes |= group.unmutes;
         }

@@ -159,7 +159,6 @@ main(int argc, char* argv[]) -> int
                             dynamic_cast<runtime::reducible_action const*>(&a);
                     ra)
                 {
-                    ++st.reduce_count;
                     ra->reduce(st);
                 }
                 else

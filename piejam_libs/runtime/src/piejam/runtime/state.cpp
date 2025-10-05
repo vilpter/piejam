@@ -469,9 +469,13 @@ make_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                              }))},
                                     {mixer::channel::parameter_key::solo,
                                      params_factory.make_parameter(
-                                             make_bool_parameter({
-                                                     .name = "Solo"sv,
-                                             }))},
+                                             make_bool_parameter(
+                                                     {
+                                                             .name = "Solo"sv,
+                                                     })
+                                                     .set_flags(
+                                                             {parameter_flags::
+                                                                      solo_state_affecting}))},
                             }}},
                     .out_stream = make_stream(st.streams, 2),
             });

@@ -58,6 +58,7 @@ enum class parameter_flags : std::size_t
 {
     bipolar,
     audio_graph_affecting,
+    solo_state_affecting,
 };
 
 } // namespace piejam::runtime

@@ -39,6 +39,11 @@ set_parameter_value<Parameter>::reduce(state& st) const
     auto& desc = st.params.at(id);
     BOOST_ASSERT(parameter_value_is_in_range(desc.param(), value));
     desc.set(value);
+
+    if (desc.param().flags.test(parameter_flags::solo_state_affecting))
+    {
+        ++st.solo_state_update_count;
+    }
 }
 
 template struct set_parameter_value<bool_parameter>;
