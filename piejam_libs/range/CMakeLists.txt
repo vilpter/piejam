@@ -5,6 +5,7 @@
 add_library(piejam_range INTERFACE
     include/piejam/range/dynamic_stride.h
     include/piejam/range/indices.h
+    include/piejam/range/indirected.h
     include/piejam/range/iota.h
     include/piejam/range/pointer_stride_iterator.h
     include/piejam/range/strided_span.h
