@@ -63,7 +63,7 @@ struct state
     box<midi_devices_t> midi_devices;
 
     parameter::store params;
-    audio_streams_t streams;
+    audio_streams_store_t streams;
 
     fx::registry fx_registry;
 
