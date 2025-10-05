@@ -8,6 +8,7 @@ add_library(piejam_algorithm INTERFACE
     include/piejam/algorithm/copy_or_move.h
     include/piejam/algorithm/edit_script.h
     include/piejam/algorithm/escape_html.h
+    include/piejam/algorithm/erase_if.h
     include/piejam/algorithm/find_or_get_first.h
     include/piejam/algorithm/for_each_adjacent.h
     include/piejam/algorithm/for_each_visit.h
