@@ -88,12 +88,6 @@ make_initial_state() -> state
     return st;
 }
 
-static auto
-make_internal_fx_module(fx::modules_t& fx_modules, fx::module&& fx_mod)
-{
-    return fx_modules.emplace(std::move(fx_mod));
-}
-
 void
 apply_parameter_values(
     std::span<parameter_value_assignment const> values,
@@ -155,31 +149,17 @@ apply_midi_assignments(
     update_midi_assignments(midi_assigns_store, new_assignments);
 }
 
-auto
-insert_internal_fx_module(
+static auto
+insert_fx_module(
     state& st,
     mixer::channel_id const mixer_channel_id,
     std::size_t const position,
-    fx::internal_id fx_internal_id,
-    std::vector<parameter_value_assignment> const& initial_values,
-    std::vector<parameter_midi_assignment> const& midi_assigns) -> fx::module_id
+    fx::module_id fx_mod_id,
+    std::span<parameter_value_assignment const> initial_values,
+    std::span<parameter_midi_assignment const> midi_assigns)
 {
-    BOOST_ASSERT(mixer_channel_id.valid());
-
-    mixer::channel const& mixer_channel =
-        st.mixer_state.channels.at(mixer_channel_id);
-    auto const bus_type = to_bus_type(mixer_channel.type);
     fx::chain_t fx_chain = st.mixer_state.fx_chains[mixer_channel_id];
     auto const insert_pos = std::min(position, fx_chain.size());
-
-    fx::module_id fx_mod_id = make_internal_fx_module(
-        st.fx_modules,
-        internal_fx_module_factories::lookup(fx_internal_id)({
-            .bus_type = bus_type,
-            .sample_rate = st.sample_rate,
-            .params = st.params,
-            .streams = st.streams,
-        }));
 
     fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
 
@@ -192,6 +172,33 @@ insert_internal_fx_module(
         *st.midi_assignments.lock());
 
     st.mixer_state.fx_chains.set(mixer_channel_id, box{std::move(fx_chain)});
+}
+
+auto
+insert_internal_fx_module(
+    state& st,
+    mixer::channel_id const channel_id,
+    std::size_t const position,
+    fx::internal_id fx_internal_id,
+    std::span<parameter_value_assignment const> initial_values,
+    std::span<parameter_midi_assignment const> midi_assigns) -> fx::module_id
+{
+    fx::module_id fx_mod_id = st.fx_modules.emplace(
+        internal_fx_module_factories::lookup(fx_internal_id)({
+            .bus_type =
+                to_bus_type(st.mixer_state.channels.at(channel_id).type),
+            .sample_rate = st.sample_rate,
+            .params = st.params,
+            .streams = st.streams,
+        }));
+
+    insert_fx_module(
+        st,
+        channel_id,
+        position,
+        fx_mod_id,
+        initial_values,
+        midi_assigns);
 
     return fx_mod_id;
 }
@@ -199,42 +206,30 @@ insert_internal_fx_module(
 auto
 insert_ladspa_fx_module(
     state& st,
-    mixer::channel_id const mixer_channel_id,
+    mixer::channel_id const channel_id,
     std::size_t const position,
     ladspa::instance_id const instance_id,
     ladspa::plugin_descriptor const& plugin_desc,
     std::span<ladspa::port_descriptor const> const control_inputs,
-    std::vector<parameter_value_assignment> const& initial_values,
-    std::vector<parameter_midi_assignment> const& midi_assigns) -> fx::module_id
+    std::span<parameter_value_assignment const> initial_values,
+    std::span<parameter_midi_assignment const> midi_assigns) -> fx::module_id
 {
-    BOOST_ASSERT(mixer_channel_id != mixer::channel_id{});
-
-    mixer::channel const& mixer_channel =
-        st.mixer_state.channels.at(mixer_channel_id);
-    auto const bus_type = to_bus_type(mixer_channel.type);
-    fx::chain_t fx_chain = st.mixer_state.fx_chains[mixer_channel_id];
-    auto const insert_pos = std::min(position, fx_chain.size());
-
     auto fx_mod_id = st.fx_modules.emplace(
         ladspa_fx::make_module(
             instance_id,
             plugin_desc.name,
-            bus_type,
+            to_bus_type(st.mixer_state.channels.at(channel_id).type),
             control_inputs,
             st.params));
-
-    fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
-
-    auto const& fx_mod = st.fx_modules.at(fx_chain[insert_pos]);
-    apply_parameter_values(initial_values, fx_mod.parameters, st.params);
-    apply_midi_assignments(
-        midi_assigns,
-        fx_mod.parameters,
-        *st.midi_assignments.lock());
-
-    st.mixer_state.fx_chains.set(mixer_channel_id, box{std::move(fx_chain)});
-
     st.fx_ladspa_instances.emplace(instance_id, plugin_desc);
+
+    insert_fx_module(
+        st,
+        channel_id,
+        position,
+        fx_mod_id,
+        initial_values,
+        midi_assigns);
 
     return fx_mod_id;
 }
@@ -247,24 +242,18 @@ insert_missing_ladspa_fx_module(
     fx::unavailable_ladspa const& unavail,
     std::string_view const name)
 {
-    auto const& mixer_channel = st.mixer_state.channels.at(channel_id);
-
-    fx::chain_t fx_chain = st.mixer_state.fx_chains[channel_id];
-
     auto id = st.fx_unavailable_ladspa_plugins.emplace(unavail);
-    auto const insert_pos = std::min(position, fx_chain.size());
-    fx_chain.emplace(
-        std::next(fx_chain.begin(), insert_pos),
-        st.fx_modules.emplace(
-            fx::module{
-                .fx_instance_id = id,
-                .name = box(std::string(name)),
-                .bus_type = to_bus_type(mixer_channel.type),
-                .parameters = {},
-                .streams = {},
-            }));
+    auto fx_mod_id = st.fx_modules.emplace(
+        fx::module{
+            .fx_instance_id = id,
+            .name = box(std::string(name)),
+            .bus_type =
+                to_bus_type(st.mixer_state.channels.at(channel_id).type),
+            .parameters = {},
+            .streams = {},
+        });
 
-    st.mixer_state.fx_chains.set(channel_id, box{std::move(fx_chain)});
+    insert_fx_module(st, channel_id, position, fx_mod_id, {}, {});
 }
 
 template <class P>
