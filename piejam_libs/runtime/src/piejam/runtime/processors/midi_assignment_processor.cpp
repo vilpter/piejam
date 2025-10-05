@@ -9,7 +9,8 @@
 #include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/midi/event.h>
 
-#include <format>
+#include <boost/container/flat_map.hpp>
+
 #include <ranges>
 #include <vector>
 

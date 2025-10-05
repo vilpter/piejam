@@ -23,16 +23,15 @@ toQString(runtime::midi_assignment const& ass) -> QString
                 .arg(ass.channel + 1);
     }
 
-    __builtin_unreachable();
+    [[assume(false)]];
 }
 
 MidiAssignable::MidiAssignable(
     runtime::state_access const& state_access,
-    runtime::midi_assignment_id const& assignment_id)
+    runtime::parameter_id const& assignment_id)
     : SubscribableModel(state_access)
     , m_assignment_id(assignment_id)
 {
-    BOOST_ASSERT(runtime::is_valid_midi_assignment_id(m_assignment_id));
 }
 
 void

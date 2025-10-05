@@ -5,8 +5,6 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
-#include <piejam/runtime/midi_assignment_id.h>
-
 namespace piejam::gui::model
 {
 
@@ -17,9 +15,7 @@ class MidiAssignable final : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(QString, assignment, setAssignment)
 
 public:
-    MidiAssignable(
-        runtime::state_access const&,
-        runtime::midi_assignment_id const&);
+    MidiAssignable(runtime::state_access const&, runtime::parameter_id const&);
 
     Q_INVOKABLE void startLearn();
     Q_INVOKABLE void stopLearn();
@@ -27,7 +23,7 @@ public:
 private:
     void onSubscribe() override;
 
-    runtime::midi_assignment_id m_assignment_id;
+    runtime::parameter_id m_assignment_id;
 };
 
 } // namespace piejam::gui::model

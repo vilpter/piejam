@@ -10,6 +10,7 @@
 #include <piejam/runtime/ladspa_fx/ladspa_fx_module.h>
 #include <piejam/runtime/parameter_factory.h>
 
+#include <piejam/algorithm/erase_if.h>
 #include <piejam/audio/types.h>
 #include <piejam/functional/operators.h>
 #include <piejam/indexed_access.h>
@@ -119,7 +120,9 @@ update_midi_assignments(
 {
     for (auto&& [id, ass] : new_assignments)
     {
-        std::erase_if(midi_assigns, tuple::element<1>.equal_to(std::cref(ass)));
+        algorithm::erase_if(
+            midi_assigns,
+            tuple::element<1>.equal_to(std::cref(ass)));
 
         midi_assigns.insert_or_assign(id, ass);
     }
@@ -136,12 +139,6 @@ apply_midi_assignments(
     {
         if (auto param_id = parameters.find(key); param_id)
         {
-            BOOST_ASSERT(
-                std::visit(
-                    []<class ParamId>(ParamId) {
-                        return is_midi_assignable_v<ParamId>;
-                    },
-                    *param_id));
             new_assignments.emplace(*param_id, value);
         }
     }
@@ -260,7 +257,7 @@ template <class P>
 static auto
 remove_midi_assignement_for_parameter(state& st, parameter::id_t<P> id)
 {
-    st.midi_assignments.lock()->erase(midi_assignment_id{id});
+    st.midi_assignments.lock()->erase(id);
 }
 
 template <class P>
@@ -269,12 +266,7 @@ remove_parameter(state& st, parameter::id_t<P> id)
 {
     st.params.remove(id);
 
-    if constexpr (boost::mp11::mp_contains<
-                      midi_assignment_id,
-                      parameter::id_t<P>>::value)
-    {
-        remove_midi_assignement_for_parameter(st, id);
-    }
+    remove_midi_assignement_for_parameter(st, id);
 }
 
 static auto

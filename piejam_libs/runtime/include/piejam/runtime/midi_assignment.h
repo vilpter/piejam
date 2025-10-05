@@ -4,11 +4,12 @@
 
 #pragma once
 
+#include <piejam/runtime/parameters.h>
+
 #include <piejam/entity_id.h>
 #include <piejam/midi/device_id.h>
-#include <piejam/runtime/midi_assignment_id.h>
 
-#include <map>
+#include <boost/container/container_fwd.hpp>
 
 namespace piejam::runtime
 {
@@ -28,6 +29,7 @@ struct midi_assignment
         -> bool = default;
 };
 
-using midi_assignments_map = std::map<midi_assignment_id, midi_assignment>;
+using midi_assignments_map =
+    boost::container::flat_map<parameter_id, midi_assignment>;
 
 } // namespace piejam::runtime

@@ -8,7 +8,6 @@
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/fx/fwd.h>
 #include <piejam/runtime/material_color.h>
-#include <piejam/runtime/midi_assignment_id.h>
 #include <piejam/runtime/mixer_fwd.h>
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/string_id.h>
@@ -222,7 +221,7 @@ auto make_parameter_normalized_value_selector(parameter::id_t<P>)
 
 auto make_parameter_is_midi_assignable_selector(parameter_id) -> selector<bool>;
 
-auto make_midi_assignment_selector(midi_assignment_id)
+auto make_midi_assignment_selector(parameter_id)
     -> selector<std::optional<midi_assignment>>;
 
 extern selector<bool> const select_midi_learning;

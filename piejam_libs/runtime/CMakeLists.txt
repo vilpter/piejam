@@ -75,7 +75,6 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/material_color.h
     include/piejam/runtime/middleware_functors.h
     include/piejam/runtime/midi_assignment.h
-    include/piejam/runtime/midi_assignment_id.h
     include/piejam/runtime/midi_control_middleware.h
     include/piejam/runtime/midi_device_config.h
     include/piejam/runtime/midi_devices.h
@@ -156,7 +155,6 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/ladspa_fx/ladspa_fx_component.cpp
     src/piejam/runtime/ladspa_fx/ladspa_fx_module.cpp
     src/piejam/runtime/ladspa_fx_middleware.cpp
-    src/piejam/runtime/midi_assignment_id.cpp
     src/piejam/runtime/midi_control_middleware.cpp
     src/piejam/runtime/midi_input_controller.cpp
     src/piejam/runtime/mixer.cpp

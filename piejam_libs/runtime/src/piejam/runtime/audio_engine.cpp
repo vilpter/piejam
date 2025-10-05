@@ -293,7 +293,7 @@ make_midi_assignment_processors(
                 {
                     procs.insert(proc_id, std::move(proc));
                 }
-                else if constexpr (is_midi_assignable_v<ParamId>)
+                else
                 {
                     procs.insert(
                         proc_id,

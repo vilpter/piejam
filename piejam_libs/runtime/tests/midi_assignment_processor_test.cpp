@@ -14,6 +14,8 @@
 
 #include <gtest/gtest.h>
 
+#include <boost/container/flat_map.hpp>
+
 namespace piejam::runtime::processors::test
 {
 
@@ -65,7 +67,7 @@ TEST_F(midi_assignment_processor_test, with_empty_input)
 TEST_F(midi_assignment_processor_test, with_mapped_event)
 {
     setup(
-        {{midi_assignment_id{float_parameter_id::generate()},
+        {{parameter_id{float_parameter_id::generate()},
           midi_assignment{
               .channel = 1,
               .control_type = midi_assignment::type::cc,
@@ -91,7 +93,7 @@ TEST_F(midi_assignment_processor_test, with_mapped_event)
 TEST_F(midi_assignment_processor_test, with_event_not_matching_cc)
 {
     setup(
-        {{midi_assignment_id{float_parameter_id::generate()},
+        {{parameter_id{float_parameter_id::generate()},
           midi_assignment{
               .channel = 1,
               .control_type = midi_assignment::type::cc,
@@ -114,7 +116,7 @@ TEST_F(midi_assignment_processor_test, with_event_not_matching_cc)
 TEST_F(midi_assignment_processor_test, with_event_not_matching_channel)
 {
     setup(
-        {{midi_assignment_id{float_parameter_id::generate()},
+        {{parameter_id{float_parameter_id::generate()},
           midi_assignment{
               .channel = 1,
               .control_type = midi_assignment::type::cc,
@@ -137,12 +139,12 @@ TEST_F(midi_assignment_processor_test, with_event_not_matching_channel)
 TEST_F(midi_assignment_processor_test, with_multiple_assignments)
 {
     setup(
-        {{midi_assignment_id{float_parameter_id::generate()},
+        {{parameter_id{float_parameter_id::generate()},
           midi_assignment{
               .channel = 1,
               .control_type = midi_assignment::type::cc,
               .control_id = 5}},
-         {midi_assignment_id{float_parameter_id::generate()},
+         {parameter_id{float_parameter_id::generate()},
           midi_assignment{
               .channel = 2,
               .control_type = midi_assignment::type::cc,

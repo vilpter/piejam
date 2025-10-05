@@ -1024,7 +1024,7 @@ make_parameter_is_midi_assignable_selector(parameter_id param_id)
 }
 
 auto
-make_midi_assignment_selector(midi_assignment_id const id)
+make_midi_assignment_selector(parameter_id const id)
     -> selector<std::optional<midi_assignment>>
 {
     auto get = shared_memo([id](midi_assignments_map const& midi_assigns) {

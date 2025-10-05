@@ -12,7 +12,6 @@ namespace piejam::runtime::actions
 void
 start_midi_learning::reduce(state& st) const
 {
-    BOOST_ASSERT(is_valid_midi_assignment_id(assignment_id));
     st.midi_learning = assignment_id;
 }
 

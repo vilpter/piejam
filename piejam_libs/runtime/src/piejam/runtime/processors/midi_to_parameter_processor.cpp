@@ -5,6 +5,7 @@
 #include <piejam/runtime/processors/midi_to_parameter_processor.h>
 
 #include <piejam/runtime/bool_parameter.h>
+#include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/int_parameter.h>
 
@@ -28,74 +29,45 @@ namespace piejam::runtime::processors
 
 static constexpr std::array s_input_names{std::string_view("cc in")};
 
+template <class Parameter>
 static auto
-make_cc_to_float_lut(float_parameter const& param) -> std::array<float, 128>
+make_cc_to_value_lut(Parameter const& param)
 {
-    std::array<float, 128> result;
+    using value_type = typename Parameter::value_type;
+    std::array<value_type, 128> result;
 
     std::ranges::transform(
         range::iota(std::size_t{128}),
         result.begin(),
-        [&param](std::size_t const cc_value) -> float {
+        [&param](std::size_t const cc_value) -> value_type {
             return param.from_normalized(param, cc_value / 127.f);
         });
 
     return result;
 }
 
+template <class Parameter>
 auto
-make_midi_cc_to_parameter_processor(float_parameter const& param)
+make_midi_cc_to_parameter_processor(Parameter const& param)
     -> std::unique_ptr<audio::engine::processor>
 {
-    static constexpr std::array s_output_names{std::string_view("float")};
+    using value_type = typename Parameter::value_type;
+    static constexpr std::array s_output_names{std::string_view("out")};
     return audio::engine::make_event_converter_processor(
-        [lut = make_cc_to_float_lut(param)](
-            midi::cc_event const& cc_ev) -> float { return lut[cc_ev.value]; },
+        [lut = make_cc_to_value_lut(param)](midi::cc_event const& cc_ev)
+            -> value_type { return lut[cc_ev.value]; },
         s_input_names,
         s_output_names,
         "cc_to_float");
 }
 
-static auto
-make_cc_to_int_lut(int_parameter const& param) -> std::array<int, 128>
-{
-    std::array<int, 128> result;
-
-    std::ranges::transform(
-        range::iota(std::size_t{128}),
-        result.begin(),
-        [min = param.min, max = param.max](std::size_t const cc_value) -> int {
-            return std::min(static_cast<int>(cc_value) + min, max);
-        });
-
-    return result;
-}
-
-auto
-make_midi_cc_to_parameter_processor(int_parameter const& param)
-    -> std::unique_ptr<audio::engine::processor>
-{
-    static constexpr std::array s_output_names{std::string_view("int")};
-    return audio::engine::make_event_converter_processor(
-        [lut = make_cc_to_int_lut(param)](midi::cc_event const& cc_ev) -> int {
-            BOOST_ASSERT(cc_ev.value < 128);
-            return lut[cc_ev.value];
-        },
-        s_input_names,
-        s_output_names,
-        "cc_to_int");
-}
-
-auto
-make_midi_cc_to_parameter_processor(bool_parameter const&)
-    -> std::unique_ptr<audio::engine::processor>
-{
-    static constexpr std::array s_output_names{std::string_view("bool")};
-    return audio::engine::make_event_converter_processor(
-        [](midi::cc_event const& cc_ev) -> bool { return cc_ev.value != 0; },
-        s_input_names,
-        s_output_names,
-        "cc_to_bool");
-}
+template auto make_midi_cc_to_parameter_processor(bool_parameter const&)
+    -> std::unique_ptr<audio::engine::processor>;
+template auto make_midi_cc_to_parameter_processor(enum_parameter const&)
+    -> std::unique_ptr<audio::engine::processor>;
+template auto make_midi_cc_to_parameter_processor(float_parameter const&)
+    -> std::unique_ptr<audio::engine::processor>;
+template auto make_midi_cc_to_parameter_processor(int_parameter const&)
+    -> std::unique_ptr<audio::engine::processor>;
 
 } // namespace piejam::runtime::processors

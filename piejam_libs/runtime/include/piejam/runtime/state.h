@@ -74,7 +74,7 @@ struct state
     mixer::state mixer_state{};
 
     box<midi_assignments_map> midi_assignments;
-    std::optional<midi_assignment_id> midi_learning{};
+    std::optional<parameter_id> midi_learning{};
 
     bool recording{};
     std::size_t rec_session{};
@@ -126,6 +126,7 @@ auto insert_internal_fx_module(
     fx::internal_id,
     std::span<parameter_value_assignment const> initial_values,
     std::span<parameter_midi_assignment const> midi_assigns) -> fx::module_id;
+
 auto insert_ladspa_fx_module(
     state&,
     mixer::channel_id channel_id,
@@ -135,12 +136,14 @@ auto insert_ladspa_fx_module(
     std::span<ladspa::port_descriptor const> control_inputs,
     std::span<parameter_value_assignment const> initial_values,
     std::span<parameter_midi_assignment const> midi_assigns) -> fx::module_id;
+
 void insert_missing_ladspa_fx_module(
     state&,
     mixer::channel_id,
     std::size_t position,
     fx::unavailable_ladspa const&,
     std::string_view name);
+
 void remove_fx_module(
     state&,
     mixer::channel_id fx_chain_id,

@@ -11,6 +11,8 @@
 #include <piejam/runtime/ui/action.h>
 #include <piejam/runtime/ui/cloneable_action.h>
 
+#include <boost/container/flat_map.hpp>
+
 namespace piejam::runtime::actions
 {
 
@@ -18,7 +20,7 @@ struct start_midi_learning final
     : ui::cloneable_action<start_midi_learning, reducible_action>
     , visitable_audio_engine_action<start_midi_learning>
 {
-    midi_assignment_id assignment_id;
+    parameter_id assignment_id;
 
     void reduce(state&) const override;
 };

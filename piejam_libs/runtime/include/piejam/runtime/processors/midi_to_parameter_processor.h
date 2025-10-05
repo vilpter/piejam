@@ -12,13 +12,8 @@
 namespace piejam::runtime::processors
 {
 
-auto make_midi_cc_to_parameter_processor(float_parameter const&)
-    -> std::unique_ptr<audio::engine::processor>;
-
-auto make_midi_cc_to_parameter_processor(int_parameter const&)
-    -> std::unique_ptr<audio::engine::processor>;
-
-auto make_midi_cc_to_parameter_processor(bool_parameter const&)
+template <class Parameter>
+auto make_midi_cc_to_parameter_processor(Parameter const&)
     -> std::unique_ptr<audio::engine::processor>;
 
 } // namespace piejam::runtime::processors
