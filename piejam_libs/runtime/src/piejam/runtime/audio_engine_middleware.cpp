@@ -345,11 +345,12 @@ audio_engine_middleware::process_engine_action(
         m_engine->set_parameter_value(a.id, a.value);
     }
 
+    state const& st = mw_fs.get_state();
+    auto const audio_graph_update_count = st.audio_graph_update_count;
+
     mw_fs.next(a);
 
-    state const& st = mw_fs.get_state();
-    if (st.params.at(a.id).param().flags.test(
-                parameter_flags::audio_graph_affecting))
+    if (audio_graph_update_count != st.audio_graph_update_count)
     {
         rebuild(st);
     }

@@ -89,6 +89,7 @@ struct state
     mixer::channel_id focused_fx_chain_id;
     fx::module_id focused_fx_mod_id;
 
+    std::size_t audio_graph_update_count{};
     std::size_t solo_state_update_count{};
 };
 
