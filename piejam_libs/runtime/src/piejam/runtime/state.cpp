@@ -373,43 +373,35 @@ make_aux_send(parameter_factory const& params_factory)
 }
 
 static auto
+make_aux_channel(parameter_factory& params)
+{
+    return mixer::aux_channel{
+            .parameters = box{parameters_map{
+                    std::in_place_type<mixer::aux_channel::parameter_key>,
+                    {
+                            {mixer::aux_channel::parameter_key::
+                                     default_fader_tap,
+                             params.make_parameter(
+                                     make_enum_parameter(
+                                             "Fader Tap",
+                                             mixer::aux_channel_fader_tap::post,
+                                             &mixer::aux_channel::
+                                                     to_fader_tap_string)
+                                             .set_flags(
+                                                     {parameter_flags::
+                                                              audio_graph_affecting}))},
+                    }}}};
+}
+
+static auto
 remove_aux_send(state& st, mixer::aux_send const& aux_send)
 {
     remove_parameters(st, aux_send.parameters);
 }
 
-auto
-add_external_audio_device(
-        state& st,
-        std::string const& name,
-        io_direction const io_dir,
-        audio::bus_type const bus_type,
-        channel_index_pair const& channels) -> external_audio::device_id
+static auto
+make_mixer_channel(state& st, mixer::channel_type type, std::string name)
 {
-    auto boxed_name = box(name);
-
-    auto name_id = string_id::generate();
-    st.strings.insert(name_id, boxed_name);
-
-    auto id = st.external_audio_state.devices.emplace(
-            external_audio::device{
-                    .name = name_id,
-                    .bus_type = io_dir == io_direction::input
-                                        ? bus_type
-                                        : audio::bus_type::stereo,
-                    .channels = channels,
-            });
-
-    emplace_back(st.external_audio_state.io_ids[io_dir], id);
-
-    return id;
-}
-
-auto
-add_mixer_channel(state& st, mixer::channel_type type, std::string name)
-        -> mixer::channel_id
-{
-    using namespace std::string_literals;
     using namespace std::string_view_literals;
 
     auto name_id = string_id::generate();
@@ -419,8 +411,8 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
     st.material_colors.insert(color_id, material_color::pink);
 
     parameter_factory params_factory{st.params};
-    auto mixer_channels = st.mixer_state.channels.lock();
-    auto channel_id = mixer_channels.emplace(
+
+    return st.mixer_state.channels.emplace(
             mixer::channel{
                     .type = type,
                     .name = name_id,
@@ -483,6 +475,40 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                             }}},
                     .out_stream = make_stream(st.streams, 2),
             });
+}
+
+auto
+add_external_audio_device(
+        state& st,
+        std::string const& name,
+        io_direction const io_dir,
+        audio::bus_type const bus_type,
+        channel_index_pair const& channels) -> external_audio::device_id
+{
+    auto boxed_name = box(name);
+
+    auto name_id = string_id::generate();
+    st.strings.insert(name_id, boxed_name);
+
+    auto id = st.external_audio_state.devices.emplace(
+            external_audio::device{
+                    .name = name_id,
+                    .bus_type = io_dir == io_direction::input
+                                        ? bus_type
+                                        : audio::bus_type::stereo,
+                    .channels = channels,
+            });
+
+    emplace_back(st.external_audio_state.io_ids[io_dir], id);
+
+    return id;
+}
+
+auto
+add_mixer_channel(state& st, mixer::channel_type type, std::string name)
+        -> mixer::channel_id
+{
+    auto channel_id = make_mixer_channel(st, type, std::move(name));
     emplace_back(st.mixer_state.inputs, channel_id);
 
     st.mixer_state.io_map.emplace(
@@ -494,28 +520,13 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                             : mixer::io_address_t{},
                     st.mixer_state.main));
 
+    parameter_factory params_factory{st.params};
+
     if (type == mixer::channel_type::aux)
     {
         st.mixer_state.aux_channels.emplace(
                 channel_id,
-                mixer::aux_channel{
-                        .parameters = box{parameters_map{
-                                std::in_place_type<
-                                        mixer::aux_channel::parameter_key>,
-                                {
-                                        {mixer::aux_channel::parameter_key::
-                                                 default_fader_tap,
-                                         params_factory.make_parameter(
-                                                 make_enum_parameter(
-                                                         "Fader Tap"sv,
-                                                         mixer::aux_channel_fader_tap::
-                                                                 post,
-                                                         &mixer::aux_channel::
-                                                                 to_fader_tap_string)
-                                                         .set_flags(
-                                                                 {parameter_flags::
-                                                                          audio_graph_affecting}))},
-                                }}}});
+                make_aux_channel(params_factory));
 
         // add as aux_send to each channel
         [&](auto&& aux_sends) {
@@ -566,8 +577,6 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
 
     remove_parameters(st, mixer_channel.parameters);
 
-    auto mixer_channels = st.mixer_state.channels.lock();
-
     // remove own aux_sends
     [&](auto&& aux_sends) {
         for (auto const& [aux_id, aux_send] : aux_sends.at(mixer_channel_id))
@@ -616,7 +625,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
 
     st.mixer_state.fx_chains.erase(mixer_channel_id);
 
-    mixer_channels.erase(mixer_channel_id);
+    st.mixer_state.channels.erase(mixer_channel_id);
 }
 
 void
@@ -631,8 +640,6 @@ remove_external_audio_device(
 
     reset_io_targets(st.mixer_state.io_map, device_id);
 
-    st.external_audio_state.devices.erase(device_id);
-
     if (std::ranges::contains(*st.external_audio_state.io_ids.in(), device_id))
     {
         remove_erase(st.external_audio_state.io_ids.in(), device_id);
@@ -645,6 +652,8 @@ remove_external_audio_device(
                         device_id));
         remove_erase(st.external_audio_state.io_ids.out(), device_id);
     }
+
+    st.external_audio_state.devices.erase(device_id);
 }
 
 void
