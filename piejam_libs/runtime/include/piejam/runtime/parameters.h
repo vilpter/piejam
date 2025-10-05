@@ -51,9 +51,6 @@ using parameter_value = boost::mp11::mp_rename<
 
 using parameters_map = parameter::map<parameter_id>;
 
-template <parameter::enum_key Key>
-using parameters_map_by = parameter::map_by<Key, parameter_id>;
-
 using parameter_value_assignment = parameter::assignment<parameter_value>;
 using parameter_midi_assignment = parameter::assignment<midi_assignment>;
 

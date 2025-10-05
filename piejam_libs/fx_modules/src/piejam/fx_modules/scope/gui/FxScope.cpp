@@ -72,8 +72,8 @@ struct FxScope::Impl
     std::unique_ptr<EnumParameter> triggerSlope;
     std::unique_ptr<FloatParameter> triggerLevel;
     std::unique_ptr<FloatParameter> holdTime;
-    std::unique_ptr<IntParameter> waveformResolution;
-    std::unique_ptr<IntParameter> scopeResolution;
+    std::unique_ptr<EnumParameter> waveformResolution;
+    std::unique_ptr<EnumParameter> scopeResolution;
     std::unique_ptr<BoolParameter> freeze;
     std::unique_ptr<AudioStreamProvider> stream;
 
@@ -140,7 +140,7 @@ FxScope::FxScope(
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
-    auto const parameters = this->parameters().view_by<parameter_key>();
+    auto const& parameters = this->parameters();
 
     makeParameter(
             m_impl->mode,
@@ -163,12 +163,12 @@ FxScope::FxScope(
 
     makeParameter(
             m_impl->waveformResolution,
-            parameters.get<runtime::int_parameter_id>(
+            parameters.get<runtime::enum_parameter_id>(
                     parameter_key::waveform_window_size));
 
     makeParameter(
             m_impl->scopeResolution,
-            parameters.get<runtime::int_parameter_id>(
+            parameters.get<runtime::enum_parameter_id>(
                     parameter_key::scope_window_size));
 
     makeParameter(
@@ -324,13 +324,13 @@ FxScope::FxScope(
 
     QObject::connect(
             m_impl->waveformResolution.get(),
-            &IntParameter::valueChanged,
+            &EnumParameter::valueChanged,
             this,
             [this]() { m_impl->updateWaveformGenerator(); });
 
     QObject::connect(
             m_impl->scopeResolution.get(),
-            &IntParameter::valueChanged,
+            &EnumParameter::valueChanged,
             this,
             [this]() {
                 m_impl->updateScopeSamplesCache(m_viewSize);
@@ -375,13 +375,13 @@ FxScope::holdTime() const noexcept -> FloatParameter*
 }
 
 auto
-FxScope::waveformWindowSize() const noexcept -> IntParameter*
+FxScope::waveformWindowSize() const noexcept -> EnumParameter*
 {
     return m_impl->waveformResolution.get();
 }
 
 auto
-FxScope::scopeWindowSize() const noexcept -> IntParameter*
+FxScope::scopeWindowSize() const noexcept -> EnumParameter*
 {
     return m_impl->scopeResolution.get();
 }

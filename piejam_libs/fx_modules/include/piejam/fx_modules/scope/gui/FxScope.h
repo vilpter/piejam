@@ -35,10 +35,10 @@ class FxScope final : public piejam::gui::model::FxModule
             piejam::gui::model::FloatParameter*,
             holdTime)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::IntParameter*,
+            piejam::gui::model::EnumParameter*,
             waveformWindowSize)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(
-            piejam::gui::model::IntParameter*,
+            piejam::gui::model::EnumParameter*,
             scopeWindowSize)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeA)
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeB)

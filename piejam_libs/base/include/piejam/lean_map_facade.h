@@ -6,6 +6,7 @@
 
 #include <boost/assert.hpp>
 
+#include <ranges>
 #include <utility>
 
 namespace piejam
@@ -26,6 +27,12 @@ public:
     constexpr lean_map_facade(
             std::initializer_list<std::pair<key_type, mapped_type>> init)
         : m_map{std::move(init)}
+    {
+    }
+
+    template <std::ranges::range R>
+    constexpr lean_map_facade(R&& r)
+        : m_map(std::ranges::begin(r), std::ranges::end(r))
     {
     }
 

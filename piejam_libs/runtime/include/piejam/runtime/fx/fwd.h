@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/runtime/audio_stream.h>
-#include <piejam/runtime/parameters.h>
 
 #include <piejam/fwd.h>
 #include <piejam/ladspa/fwd.h>

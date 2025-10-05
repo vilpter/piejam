@@ -6,10 +6,13 @@
 
 #include <piejam/runtime/parameter/fwd.h>
 
+#include <piejam/enum.h>
 #include <piejam/lean_map_facade.h>
 
 #include <boost/assert.hpp>
 #include <boost/container/flat_map.hpp>
+
+#include <typeindex>
 #include <variant>
 
 namespace piejam::runtime::parameter
@@ -30,6 +33,16 @@ public:
 
     map(std::initializer_list<std::pair<key, parameter_id_t>> params)
         : m_map{std::move(params)}
+    {
+    }
+
+    template <scoped_enum<key> E>
+    map(std::in_place_type_t<E>,
+        std::initializer_list<std::pair<E, parameter_id_t>> params)
+        : m_key_type{typeid(E)}
+        , m_map{params | std::views::transform([](auto const& p) {
+                    return std::pair{std::to_underlying(p.first), p.second};
+                })}
     {
     }
 
@@ -57,6 +70,13 @@ public:
         return *this;
     }
 
+    template <scoped_enum<key> E>
+    auto emplace(E key, parameter_id_t id) -> map&
+    {
+        BOOST_ASSERT(m_key_type == typeid(E));
+        return emplace(std::to_underlying(key), id);
+    }
+
     auto find(key key) const noexcept
     {
         return m_map.find(key);
@@ -76,70 +96,13 @@ public:
     template <class P, scoped_enum<key> E>
     auto get(E key) const -> P
     {
+        BOOST_ASSERT(m_key_type == typeid(E));
         return std::get<P>(m_map.at(std::to_underlying(key)));
     }
 
-    template <scoped_enum<key> E>
-    auto view_by() const noexcept -> map_view_by<E, parameter_id_t>;
-
 private:
+    std::type_index m_key_type{typeid(key)};
     map_t m_map;
 };
-
-template <scoped_enum<key> E, class ParameterId>
-class map_by : public map<ParameterId>
-{
-    using base_t = map<ParameterId>;
-
-public:
-    map_by() noexcept = default;
-
-    map_by(std::initializer_list<std::pair<E, ParameterId>> params)
-    {
-        for (auto [key, id] : params)
-        {
-            base_t::emplace(std::to_underlying(key), id);
-        }
-    }
-
-    auto emplace(E key, ParameterId id) -> map_by&
-    {
-        base_t::emplace(std::to_underlying(key), id);
-        return *this;
-    }
-
-    auto as_base() && -> map<ParameterId>&&
-    {
-        return std::forward<map<ParameterId>>(*this);
-    }
-};
-
-template <scoped_enum<key> E, class ParameterId>
-class map_view_by
-{
-public:
-    explicit map_view_by(map<ParameterId> const& m) noexcept
-        : m_map{m}
-    {
-    }
-
-    template <class P>
-    auto get(E key) const -> P
-    {
-        return m_map.template get<P>(std::to_underlying(key));
-    }
-
-private:
-    map<ParameterId> const& m_map;
-};
-
-template <class... ParameterId>
-template <scoped_enum<key> E>
-auto
-map<std::variant<ParameterId...>>::view_by() const noexcept
-        -> map_view_by<E, std::variant<ParameterId...>>
-{
-    return map_view_by<E, std::variant<ParameterId...>>{*this};
-}
 
 } // namespace piejam::runtime::parameter

@@ -63,7 +63,7 @@ FxFilter::FxFilter(
               runtime::selectors::make_fx_module_bus_type_selector(
                       fx_mod_id))))}
 {
-    auto const parameters = this->parameters().view_by<parameter_key>();
+    auto const& parameters = this->parameters();
 
     makeParameter(
             m_impl->filterTypeParam,

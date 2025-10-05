@@ -82,7 +82,7 @@ FxSpectrum::FxSpectrum(
     : FxModule{state_access, fx_mod_id}
     , m_impl{make_pimpl<Impl>(busType())}
 {
-    auto const parameters = this->parameters().view_by<parameter_key>();
+    auto const& parameters = this->parameters();
 
     makeParameter(
             m_impl->spectrumProcessor.first.active,

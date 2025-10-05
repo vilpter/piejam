@@ -29,16 +29,14 @@ FxChainModule::FxChainModule(
     : SubscribableModel(state_access)
     , m_impl(make_pimpl<Impl>(fx_chain_id, fx_mod_id))
 {
+    setName(QString::fromStdString(observe_once(
+            runtime::selectors::make_fx_module_name_selector(
+                    m_impl->fx_mod_id))));
 }
 
 void
 FxChainModule::onSubscribe()
 {
-    observe(runtime::selectors::make_fx_module_name_selector(m_impl->fx_mod_id),
-            [this](boxed_string const& name) {
-                setName(QString::fromStdString(*name));
-            });
-
     observe(runtime::selectors::select_focused_fx_module,
             [this](auto const focused_fx_mod_id) {
                 setFocused(focused_fx_mod_id == m_impl->fx_mod_id);

@@ -56,12 +56,6 @@ concept enum_key = scoped_enum<Key, key>;
 template <class ParameterId>
 class map;
 
-template <scoped_enum<key> E, class ParameterId>
-class map_by;
-
-template <scoped_enum<key> E, class ParameterId>
-class map_view_by;
-
 template <class Value>
 struct assignment;
 

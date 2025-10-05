@@ -28,46 +28,51 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .name = box("Dual Pan"s),
             .bus_type = args.bus_type,
             .parameters =
-                    box(runtime::parameters_map_by<parameter_key>{
-                            {parameter_key::mute_left,
-                             params_factory.make_parameter(
-                                     runtime::make_bool_parameter({
-                                             .name = "Mute Left",
-                                     }))},
-                            {parameter_key::pan_left,
-                             params_factory.make_parameter(
-                                     runtime::make_float_parameter(
-                                             {
-                                                     .name = "Pan Left",
-                                                     .default_value = -1.f,
-                                             },
-                                             runtime::
-                                                     linear_float_parameter_range<
-                                                             -1.f,
-                                                             1.f>{})
-                                             .set_flags(
-                                                     {runtime::parameter_flags::
-                                                              bipolar}))},
-                            {parameter_key::pan_right,
-                             params_factory.make_parameter(
-                                     runtime::make_float_parameter(
-                                             {
-                                                     .name = "Pan Right",
-                                                     .default_value = 1.f,
-                                             },
-                                             runtime::
-                                                     linear_float_parameter_range<
-                                                             -1.f,
-                                                             1.f>{})
-                                             .set_flags(
-                                                     {runtime::parameter_flags::
-                                                              bipolar}))},
-                            {parameter_key::mute_right,
-                             params_factory.make_parameter(
-                                     runtime::make_bool_parameter({
-                                             .name = "Mute Right",
-                                     }))}}
-                                .as_base()),
+                    box(runtime::parameters_map{
+                            std::in_place_type<parameter_key>,
+                            {
+                                    {parameter_key::mute_left,
+                                     params_factory.make_parameter(
+                                             runtime::make_bool_parameter({
+                                                     .name = "Mute Left",
+                                             }))},
+                                    {parameter_key::pan_left,
+                                     params_factory.make_parameter(
+                                             runtime::make_float_parameter(
+                                                     {
+                                                             .name = "Pan Left",
+                                                             .default_value =
+                                                                     -1.f,
+                                                     },
+                                                     runtime::
+                                                             linear_float_parameter_range<
+                                                                     -1.f,
+                                                                     1.f>{})
+                                                     .set_flags(
+                                                             {runtime::parameter_flags::
+                                                                      bipolar}))},
+                                    {parameter_key::pan_right,
+                                     params_factory.make_parameter(
+                                             runtime::make_float_parameter(
+                                                     {
+                                                             .name = "Pan "
+                                                                     "Right",
+                                                             .default_value =
+                                                                     1.f,
+                                                     },
+                                                     runtime::
+                                                             linear_float_parameter_range<
+                                                                     -1.f,
+                                                                     1.f>{})
+                                                     .set_flags(
+                                                             {runtime::parameter_flags::
+                                                                      bipolar}))},
+                                    {parameter_key::mute_right,
+                                     params_factory.make_parameter(
+                                             runtime::make_bool_parameter({
+                                                     .name = "Mute Right",
+                                             }))},
+                            }}),
             .streams = {}};
 }
 

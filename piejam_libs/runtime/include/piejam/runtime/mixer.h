@@ -10,6 +10,7 @@
 #include <piejam/runtime/material_color.h>
 #include <piejam/runtime/mixer_fwd.h>
 #include <piejam/runtime/parameter/map.h>
+#include <piejam/runtime/parameters.h>
 #include <piejam/runtime/string_id.h>
 
 #include <piejam/audio/types.h>

@@ -21,7 +21,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
 {
     runtime::parameter_factory params_factory{args.params};
 
-    runtime::parameters_map_by<parameter_key> parameters;
+    runtime::parameters_map parameters{std::in_place_type<parameter_key>, {}};
 
     parameters.emplace(
             parameter_key::gain,
@@ -67,7 +67,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
             .fx_instance_id = internal_id(),
             .name = box(std::string{"Utility"}),
             .bus_type = args.bus_type,
-            .parameters = box(std::move(parameters).as_base()),
+            .parameters = box(std::move(parameters)),
             .streams = {}};
 }
 

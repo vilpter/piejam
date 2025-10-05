@@ -328,27 +328,22 @@ remove_fx_module(
     st.fx_modules.erase(fx_mod_id);
 }
 
-template <class ParameterFactory>
 static auto
-make_aux_send(
-        mixer::channel_aux_sends_t& aux_sends,
-        mixer::channel_id const& aux_id,
-        ParameterFactory& ui_params_factory)
+make_aux_send(parameter_factory const& params_factory)
 {
     using namespace std::string_literals;
-    aux_sends.emplace(
-            aux_id,
-            mixer::aux_send{
-                    .parameters = box{parameters_map_by<
-                                              mixer::aux_send::parameter_key>{
+    return mixer::aux_send{
+            .parameters = box{parameters_map{
+                    std::in_place_type<mixer::aux_send::parameter_key>,
+                    {
                             {mixer::aux_send::parameter_key::active,
-                             ui_params_factory.make_parameter(
+                             params_factory.make_parameter(
                                      make_bool_parameter({.name = "Active"})
                                              .set_flags(
                                                      {parameter_flags::
                                                               audio_graph_affecting}))},
                             {mixer::aux_send::parameter_key::fader_tap,
-                             ui_params_factory.make_parameter(
+                             params_factory.make_parameter(
                                      make_enum_parameter(
                                              "Fader Tap",
                                              mixer::aux_send_fader_tap::auto_,
@@ -358,7 +353,7 @@ make_aux_send(
                                                      {parameter_flags::
                                                               audio_graph_affecting}))},
                             {mixer::aux_send::parameter_key::volume,
-                             ui_params_factory.make_parameter(
+                             params_factory.make_parameter(
                                      make_float_parameter(
                                              {
                                                      .name = "Send"s,
@@ -374,26 +369,7 @@ make_aux_send(
                                                      &to_normalized_send)
                                              .set_from_normalized(
                                                      &from_normalized_send))},
-                    }
-                                              .as_base()}});
-}
-
-template <class ParameterFactory>
-static auto
-make_aux_sends(
-        mixer::channels_t const& channels,
-        ParameterFactory& ui_params_factory)
-{
-    mixer::aux_sends_t result;
-    for (auto const& [channel_id, channel] : channels)
-    {
-        if (channel.type == mixer::channel_type::aux)
-        {
-            make_aux_send(result, channel_id, ui_params_factory);
-        }
-    }
-
-    return result;
+                    }}}};
 }
 
 static auto
@@ -449,55 +425,62 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
                     .type = type,
                     .name = name_id,
                     .color = color_id,
-                    .parameters = box{parameters_map_by<
-                                              mixer::channel::parameter_key>{
-                            {mixer::channel::parameter_key::volume,
-                             params_factory.make_parameter(
-                                     make_float_parameter(
-                                             {
-                                                     .name = "Volume"sv,
-                                                     .default_value = 1.f,
-                                             },
-                                             {
-                                                     .min = 0.f,
-                                                     .max = numeric::from_dB(
-                                                             6.f),
-                                             })
-                                             .set_value_to_string(
-                                                     &volume_to_string)
-                                             .set_to_normalized(
-                                                     &to_normalized_volume)
-                                             .set_from_normalized(
-                                                     &from_normalized_volume))},
-                            {mixer::channel::parameter_key::pan_balance,
-                             params_factory.make_parameter(
-                                     make_float_parameter(
-                                             {
-                                                     .name = bool_enum_to(
-                                                             to_bus_type(type),
-                                                             "Pan"sv,
-                                                             "Balance"sv),
-                                                     .default_value = 0.f,
-                                             },
-                                             linear_float_parameter_range<
-                                                     -1.f,
-                                                     1.f>{})
-                                             .set_flags({parameter_flags::
-                                                                 bipolar}))},
-                            {mixer::channel::parameter_key::record,
-                             params_factory.make_parameter(make_bool_parameter({
-                                     .name = "Record"sv,
-                             }))},
-                            {mixer::channel::parameter_key::mute,
-                             params_factory.make_parameter(make_bool_parameter({
-                                     .name = "Mute"sv,
-                             }))},
-                            {mixer::channel::parameter_key::solo,
-                             params_factory.make_parameter(make_bool_parameter({
-                                     .name = "Solo"sv,
-                             }))},
-                    }
-                                              .as_base()},
+                    .parameters = box{parameters_map{
+                            std::in_place_type<mixer::channel::parameter_key>,
+                            {
+                                    {mixer::channel::parameter_key::volume,
+                                     params_factory.make_parameter(
+                                             make_float_parameter(
+                                                     {
+                                                             .name = "Volume"sv,
+                                                             .default_value =
+                                                                     1.f,
+                                                     },
+                                                     {
+                                                             .min = 0.f,
+                                                             .max = numeric::
+                                                                     from_dB(6.f),
+                                                     })
+                                                     .set_value_to_string(
+                                                             &volume_to_string)
+                                                     .set_to_normalized(
+                                                             &to_normalized_volume)
+                                                     .set_from_normalized(
+                                                             &from_normalized_volume))},
+                                    {mixer::channel::parameter_key::pan_balance,
+                                     params_factory.make_parameter(
+                                             make_float_parameter(
+                                                     {
+                                                             .name = bool_enum_to(
+                                                                     to_bus_type(
+                                                                             type),
+                                                                     "Pan"sv,
+                                                                     "Balance"sv),
+                                                             .default_value =
+                                                                     0.f,
+                                                     },
+                                                     linear_float_parameter_range<
+                                                             -1.f,
+                                                             1.f>{})
+                                                     .set_flags(
+                                                             {parameter_flags::
+                                                                      bipolar}))},
+                                    {mixer::channel::parameter_key::record,
+                                     params_factory.make_parameter(
+                                             make_bool_parameter({
+                                                     .name = "Record"sv,
+                                             }))},
+                                    {mixer::channel::parameter_key::mute,
+                                     params_factory.make_parameter(
+                                             make_bool_parameter({
+                                                     .name = "Mute"sv,
+                                             }))},
+                                    {mixer::channel::parameter_key::solo,
+                                     params_factory.make_parameter(
+                                             make_bool_parameter({
+                                                     .name = "Solo"sv,
+                                             }))},
+                            }}},
                     .out_stream = make_stream(st.streams, 2),
             });
     emplace_back(st.mixer_state.inputs, channel_id);
@@ -516,29 +499,29 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
         st.mixer_state.aux_channels.emplace(
                 channel_id,
                 mixer::aux_channel{
-                        .parameters = box{parameters_map_by<
-                                                  mixer::aux_channel::
-                                                          parameter_key>{
-                                {mixer::aux_channel::parameter_key::
-                                         default_fader_tap,
-                                 params_factory.make_parameter(
-                                         make_enum_parameter(
-                                                 "Fader Tap"sv,
-                                                 mixer::aux_channel_fader_tap::
-                                                         post,
-                                                 &mixer::aux_channel::
-                                                         to_fader_tap_string)
-                                                 .set_flags(
-                                                         {parameter_flags::
-                                                                  audio_graph_affecting}))},
-                        }
-                                                  .as_base()}});
+                        .parameters = box{parameters_map{
+                                std::in_place_type<
+                                        mixer::aux_channel::parameter_key>,
+                                {
+                                        {mixer::aux_channel::parameter_key::
+                                                 default_fader_tap,
+                                         params_factory.make_parameter(
+                                                 make_enum_parameter(
+                                                         "Fader Tap"sv,
+                                                         mixer::aux_channel_fader_tap::
+                                                                 post,
+                                                         &mixer::aux_channel::
+                                                                 to_fader_tap_string)
+                                                         .set_flags(
+                                                                 {parameter_flags::
+                                                                          audio_graph_affecting}))},
+                                }}}});
 
         // add as aux_send to each channel
         [&](auto&& aux_sends) {
             for (auto&& [ch_id, ch_aux_sends] : aux_sends)
             {
-                make_aux_send(ch_aux_sends, channel_id, params_factory);
+                ch_aux_sends.emplace(channel_id, make_aux_send(params_factory));
             }
         }(st.mixer_state.aux_sends.lock());
     }
