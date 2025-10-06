@@ -739,8 +739,9 @@ make_fx_module_member_selector(fx::module_id const fx_mod_id)
         return fx_mod ? std::invoke(GetMember, fx_mod) : s_default;
     });
 
-    return
-        [get = std::move(get)](state const& st) { return get(st.fx_modules); };
+    return [get = std::move(get)](state const& st) {
+        return get(st.fx_state.modules);
+    };
 }
 
 auto
@@ -748,7 +749,7 @@ make_fx_module_instance_id_selector(fx::module_id const fx_mod_id)
     -> selector<fx::instance_id>
 {
     return [fx_mod_id](state const& st) {
-        return st.fx_modules.at(fx_mod_id).fx_instance_id;
+        return st.fx_state.modules.at(fx_mod_id).fx_instance_id;
     };
 }
 
@@ -757,7 +758,7 @@ make_fx_module_name_selector(fx::module_id const fx_mod_id)
     -> selector<boxed_string>
 {
     return [fx_mod_id](state const& st) {
-        return st.fx_modules.at(fx_mod_id).name;
+        return st.fx_state.modules.at(fx_mod_id).name;
     };
 }
 
@@ -766,7 +767,7 @@ make_fx_module_bus_type_selector(fx::module_id const fx_mod_id)
     -> selector<audio::bus_type>
 {
     return [fx_mod_id](state const& st) {
-        return st.fx_modules.at(fx_mod_id).bus_type;
+        return st.fx_state.modules.at(fx_mod_id).bus_type;
     };
 }
 
@@ -781,7 +782,7 @@ make_fx_module_parameters_selector(fx::module_id const fx_mod_id)
     -> selector<box<parameters_map>>
 {
     return [fx_mod_id](state const& st) {
-        return st.fx_modules.at(fx_mod_id).parameters;
+        return st.fx_state.modules.at(fx_mod_id).parameters;
     };
 }
 
@@ -790,7 +791,7 @@ make_fx_module_streams_selector(fx::module_id fx_mod_id)
     -> selector<box<fx::module_streams>>
 {
     return [fx_mod_id](state const& st) {
-        return st.fx_modules.at(fx_mod_id).streams;
+        return st.fx_state.modules.at(fx_mod_id).streams;
     };
 }
 
@@ -1086,7 +1087,7 @@ get_focused_fx_module_name(
 
 selector<boxed_string> const select_focused_fx_module_name(
     [get = shared_memo(&get_focused_fx_module_name)](state const& st) {
-        return get(st.fx_modules, st.focused_fx_mod_id);
+        return get(st.fx_state.modules, st.focused_fx_mod_id);
     });
 
 selector<material_color> const select_focused_fx_module_color(
@@ -1116,6 +1117,6 @@ get_focused_fx_module_bypassed(
 
 selector<bool> const select_focused_fx_module_bypassed(
     [get = shared_memo(&get_focused_fx_module_bypassed)](state const& st)
-        -> bool { return get(st.fx_modules, st.focused_fx_mod_id); });
+        -> bool { return get(st.fx_state.modules, st.focused_fx_mod_id); });
 
 } // namespace piejam::runtime::selectors

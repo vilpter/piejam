@@ -60,7 +60,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/fwd.h
     include/piejam/runtime/fx/fwd.h
     include/piejam/runtime/fx/get_parameter_name.h
-    include/piejam/runtime/fx/ladspa_instances.h
+
     include/piejam/runtime/fx/ladspa_processor_factory.h
     include/piejam/runtime/fx/module.h
     include/piejam/runtime/fx/registry.h
@@ -175,6 +175,7 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/state.cpp
     src/piejam/runtime/state_access.cpp
     src/piejam/runtime/thunk_action.cpp
+    include/piejam/runtime/fx/state.h
 )
 
 find_package(nlohmann_json REQUIRED)

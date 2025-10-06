@@ -94,7 +94,8 @@ ladspa_fx_middleware::process_ladspa_fx_action(
     middleware_functors const& mw_fs,
     actions::delete_fx_module const& a)
 {
-    fx::module const& fx_mod = mw_fs.get_state().fx_modules.at(a.fx_mod_id);
+    fx::module const& fx_mod =
+        mw_fs.get_state().fx_state.modules.at(a.fx_mod_id);
 
     auto const fx_instance_id = fx_mod.fx_instance_id;
 
@@ -119,7 +120,8 @@ ladspa_fx_middleware::process_ladspa_fx_action(
 
     for (auto fx_mod_id : *st.mixer_state.fx_chains[a.mixer_channel_id])
     {
-        fx::module const& fx_mod = mw_fs.get_state().fx_modules.at(fx_mod_id);
+        fx::module const& fx_mod =
+            mw_fs.get_state().fx_state.modules.at(fx_mod_id);
         fx_instance_ids.emplace_back(fx_mod.fx_instance_id);
     }
 
@@ -156,14 +158,14 @@ ladspa_fx_middleware::process_ladspa_fx_action(
         for (std::size_t fx_pos : range::indices(fx_chain))
         {
             auto&& fx_mod_id = fx_chain[fx_pos];
-            auto const& fx_mod = st.fx_modules.at(fx_mod_id);
+            auto const& fx_mod = st.fx_state.modules.at(fx_mod_id);
 
             if (auto unavail_id = std::get_if<fx::unavailable_ladspa_id>(
                     &fx_mod.fx_instance_id);
                 unavail_id)
             {
                 auto const& unavail =
-                    st.fx_unavailable_ladspa_plugins.at(*unavail_id);
+                    st.fx_state.unavailable_ladspa_plugins.at(*unavail_id);
 
                 if (auto plugin_desc = find_ladspa_plugin_descriptor(
                         st.fx_registry,

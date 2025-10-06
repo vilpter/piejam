@@ -21,7 +21,6 @@ using internal_id = entity_id<struct internal_id_tag>;
 
 struct unavailable_ladspa;
 using unavailable_ladspa_id = entity_id<unavailable_ladspa>;
-using unavailable_ladspa_plugins = boxed_map<entity_map<unavailable_ladspa>>;
 
 using instance_id =
     std::variant<internal_id, ladspa::instance_id, unavailable_ladspa_id>;
@@ -38,5 +37,7 @@ using module_id = entity_id<module>;
 using modules_t = boxed_map<entity_map<module>>;
 
 using chain_t = std::vector<module_id>;
+
+struct state;
 
 } // namespace piejam::runtime::fx

@@ -153,7 +153,7 @@ export_fx_plugin(
     BOOST_ASSERT(std::get<ladspa::instance_id>(fx_mod.fx_instance_id) == id);
 
     session::ladspa_plugin plug;
-    auto const& pd = st.fx_ladspa_instances.at(id);
+    auto const& pd = st.fx_state.ladspa_instances.at(id);
     plug.id = pd.id;
     plug.name = pd.name;
     plug.preset = export_parameter_values(fx_mod.parameters, st.params);
@@ -170,7 +170,7 @@ export_fx_plugin(
     BOOST_ASSERT(
         std::get<fx::unavailable_ladspa_id>(fx_mod.fx_instance_id) == id);
 
-    auto const& unavail = st.fx_unavailable_ladspa_plugins.at(id);
+    auto const& unavail = st.fx_state.unavailable_ladspa_plugins.at(id);
     session::ladspa_plugin plug;
     plug.id = unavail.plugin_id;
     plug.name = fx_mod.name;
@@ -187,7 +187,7 @@ export_fx_chain(state const& st, fx::chain_t const& fx_chain)
 
     for (auto const& fx_mod_id : fx_chain)
     {
-        fx::module const& fx_mod = st.fx_modules.at(fx_mod_id);
+        fx::module const& fx_mod = st.fx_state.modules.at(fx_mod_id);
         result.emplace_back(
             std::visit(
                 [&st, &fx_mod](auto const& id) {

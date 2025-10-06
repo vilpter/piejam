@@ -830,7 +830,7 @@ audio_engine::rebuild(
     make_fx_chain_components(
         comps,
         m_impl->comps,
-        st.fx_modules,
+        st.fx_state.modules,
         st.params,
         m_impl->param_procs,
         m_impl->stream_procs,

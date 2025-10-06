@@ -6,8 +6,6 @@
 
 #include <piejam/runtime/parameter/fwd.h>
 
-#include <piejam/enum.h>
-
 #include <boost/container/container_fwd.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>

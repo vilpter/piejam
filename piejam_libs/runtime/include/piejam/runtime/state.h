@@ -10,9 +10,9 @@
 #include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/external_audio.h>
 #include <piejam/runtime/float_parameter.h>
-#include <piejam/runtime/fx/ladspa_instances.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/fx/registry.h>
+#include <piejam/runtime/fx/state.h>
 #include <piejam/runtime/int_parameter.h>
 #include <piejam/runtime/material_color.h>
 #include <piejam/runtime/midi_assignment.h>
@@ -41,7 +41,6 @@
 
 #include <optional>
 #include <span>
-#include <vector>
 
 namespace piejam::runtime
 {
@@ -67,9 +66,9 @@ struct state
 
     fx::registry fx_registry;
 
-    fx::modules_t fx_modules;
-    fx::ladspa_instances fx_ladspa_instances;
-    fx::unavailable_ladspa_plugins fx_unavailable_ladspa_plugins;
+    boxed_map<boost::container::flat_map<fx::module_id, bool_parameter_id>>
+        active_modules;
+    fx::state fx_state;
 
     mixer::state mixer_state{};
 

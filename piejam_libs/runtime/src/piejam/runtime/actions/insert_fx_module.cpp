@@ -68,8 +68,8 @@ void
 replace_missing_ladspa_fx_module::reduce(state& st) const
 {
     auto mixer_channels = st.mixer_state.channels.lock();
-    auto fx_modules = st.fx_modules.lock();
-    auto unavail_ladspas = st.fx_unavailable_ladspa_plugins.lock();
+    auto fx_modules = st.fx_state.modules.lock();
+    auto unavail_ladspas = st.fx_state.unavailable_ladspa_plugins.lock();
 
     for (auto const& [fx_chain_id, replacements] : fx_chain_replacements)
     {
@@ -118,7 +118,7 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
 
             unavail_ladspas.erase(unavail_id);
 
-            st.fx_ladspa_instances.emplace(
+            st.fx_state.ladspa_instances.emplace(
                 ladspa_instance.instance_id,
                 ladspa_instance.plugin_desc);
         }

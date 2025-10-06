@@ -160,7 +160,7 @@ insert_fx_module(
 
     fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
 
-    auto const& fx_mod = st.fx_modules.at(fx_chain[insert_pos]);
+    auto const& fx_mod = st.fx_state.modules.at(fx_chain[insert_pos]);
 
     apply_parameter_values(initial_values, fx_mod.parameters, st.params);
     apply_midi_assignments(
@@ -180,7 +180,7 @@ insert_internal_fx_module(
     std::span<parameter_value_assignment const> initial_values,
     std::span<parameter_midi_assignment const> midi_assigns) -> fx::module_id
 {
-    fx::module_id fx_mod_id = st.fx_modules.emplace(
+    fx::module_id fx_mod_id = st.fx_state.modules.emplace(
         internal_fx_module_factories::lookup(fx_internal_id)({
             .bus_type =
                 to_bus_type(st.mixer_state.channels.at(channel_id).type),
@@ -211,14 +211,14 @@ insert_ladspa_fx_module(
     std::span<parameter_value_assignment const> initial_values,
     std::span<parameter_midi_assignment const> midi_assigns) -> fx::module_id
 {
-    auto fx_mod_id = st.fx_modules.emplace(
+    auto fx_mod_id = st.fx_state.modules.emplace(
         ladspa_fx::make_module(
             instance_id,
             plugin_desc.name,
             to_bus_type(st.mixer_state.channels.at(channel_id).type),
             control_inputs,
             st.params));
-    st.fx_ladspa_instances.emplace(instance_id, plugin_desc);
+    st.fx_state.ladspa_instances.emplace(instance_id, plugin_desc);
 
     insert_fx_module(
         st,
@@ -239,8 +239,8 @@ insert_missing_ladspa_fx_module(
     fx::unavailable_ladspa const& unavail,
     std::string_view const name)
 {
-    auto id = st.fx_unavailable_ladspa_plugins.emplace(unavail);
-    auto fx_mod_id = st.fx_modules.emplace(
+    auto id = st.fx_state.unavailable_ladspa_plugins.emplace(unavail);
+    auto fx_mod_id = st.fx_state.modules.emplace(
         fx::module{
             .fx_instance_id = id,
             .name = box(std::string(name)),
@@ -284,7 +284,7 @@ remove_fx_module(
     mixer::channel_id const fx_chain_id,
     fx::module_id const fx_mod_id)
 {
-    fx::module const& fx_mod = st.fx_modules.at(fx_mod_id);
+    fx::module const& fx_mod = st.fx_state.modules.at(fx_mod_id);
 
     fx::chain_t fx_chain = st.mixer_state.fx_chains[fx_chain_id];
     BOOST_ASSERT(std::ranges::contains(fx_chain, fx_mod_id));
@@ -295,16 +295,16 @@ remove_fx_module(
 
     if (auto id = std::get_if<ladspa::instance_id>(&fx_mod.fx_instance_id))
     {
-        st.fx_ladspa_instances.erase(*id);
+        st.fx_state.ladspa_instances.erase(*id);
     }
     else if (
         auto id =
             std::get_if<fx::unavailable_ladspa_id>(&fx_mod.fx_instance_id))
     {
-        st.fx_unavailable_ladspa_plugins.erase(*id);
+        st.fx_state.unavailable_ladspa_plugins.erase(*id);
     }
 
-    st.fx_modules.erase(fx_mod_id);
+    st.fx_state.modules.erase(fx_mod_id);
 }
 
 static auto
