@@ -33,7 +33,7 @@ fxModuleRegistrySingleton() -> FxModuleRegistry&
         auto r = std::make_unique<FxModuleRegistry>();
         r->addItem(
             FxModuleType{},
-            "/PieJam/FxChainControls/ParametersListView.qml");
+            "/PieJam/FxChainControls/GenericFxModuleView.qml");
         return r;
     }()};
     return *s_registry;

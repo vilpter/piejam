@@ -169,6 +169,16 @@ insert_fx_module(
         *st.midi_assignments.lock());
 
     st.mixer_state.fx_chains.set(mixer_channel_id, box{std::move(fx_chain)});
+
+    parameter_factory params{st.params};
+    st.fx_state.active_modules.emplace(
+        fx_mod_id,
+        params.make_parameter(
+            make_bool_parameter({
+                                    .name = "Active",
+                                    .default_value = true,
+                                })
+                .set_flags({parameter_flags::audio_graph_affecting})));
 }
 
 auto
@@ -231,13 +241,13 @@ insert_ladspa_fx_module(
     return fx_mod_id;
 }
 
-void
+auto
 insert_missing_ladspa_fx_module(
     state& st,
     mixer::channel_id const channel_id,
     std::size_t const position,
     fx::unavailable_ladspa const& unavail,
-    std::string_view const name)
+    std::string_view const name) -> fx::module_id
 {
     auto id = st.fx_state.unavailable_ladspa_plugins.emplace(unavail);
     auto fx_mod_id = st.fx_state.modules.emplace(
@@ -251,6 +261,8 @@ insert_missing_ladspa_fx_module(
         });
 
     insert_fx_module(st, channel_id, position, fx_mod_id, {}, {});
+
+    return fx_mod_id;
 }
 
 template <class P>
@@ -303,6 +315,9 @@ remove_fx_module(
     {
         st.fx_state.unavailable_ladspa_plugins.erase(*id);
     }
+
+    remove_parameter(st, st.fx_state.active_modules.at(fx_mod_id));
+    st.fx_state.active_modules.erase(fx_mod_id);
 
     st.fx_state.modules.erase(fx_mod_id);
 }
@@ -532,15 +547,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
 
     remove_parameters(st, mixer_channel.parameters);
 
-    // remove own aux_sends
     [&](auto&& aux_sends) {
-        for (auto const& [aux_id, aux_send] : aux_sends.at(mixer_channel_id))
-        {
-            remove_aux_send(st, aux_send);
-        }
-
-        aux_sends.erase(mixer_channel_id);
-
         if (mixer_channel.type == mixer::channel_type::aux)
         {
             // remove itself as aux_send from other channels
@@ -549,6 +556,17 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
                 remove_aux_send(st, ch_aux_sends.at(mixer_channel_id));
                 ch_aux_sends.erase(mixer_channel_id);
             }
+        }
+        else
+        {
+            // remove own aux_sends
+            for (auto const& [aux_id, aux_send] :
+                 aux_sends.at(mixer_channel_id))
+            {
+                remove_aux_send(st, aux_send);
+            }
+
+            aux_sends.erase(mixer_channel_id);
         }
     }(st.mixer_state.aux_sends.lock());
 

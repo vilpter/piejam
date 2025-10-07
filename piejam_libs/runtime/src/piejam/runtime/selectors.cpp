@@ -772,9 +772,12 @@ make_fx_module_bus_type_selector(fx::module_id const fx_mod_id)
 }
 
 auto
-make_fx_module_bypass_selector(fx::module_id const fx_mod_id) -> selector<bool>
+make_fx_module_active_selector(fx::module_id const fx_mod_id)
+    -> selector<bool_parameter_id>
 {
-    return make_fx_module_member_selector<&fx::module::bypassed>(fx_mod_id);
+    return [fx_mod_id](state const& st) {
+        return st.fx_state.active_modules.at(fx_mod_id);
+    };
 }
 
 auto
@@ -1105,18 +1108,5 @@ selector<material_color> const select_focused_fx_module_color(
             st.mixer_state.channels.at(st.focused_fx_chain_id).color);
         return color ? *color : material_color::pink;
     });
-
-static auto
-get_focused_fx_module_bypassed(
-    fx::modules_t const& fx_modules,
-    fx::module_id const focused_fx_mod_id)
-{
-    fx::module const* const fx_mod = fx_modules.find(focused_fx_mod_id);
-    return fx_mod && fx_mod->bypassed;
-}
-
-selector<bool> const select_focused_fx_module_bypassed(
-    [get = shared_memo(&get_focused_fx_module_bypassed)](state const& st)
-        -> bool { return get(st.fx_state.modules, st.focused_fx_mod_id); });
 
 } // namespace piejam::runtime::selectors

@@ -22,7 +22,6 @@ struct audio_engine_action_visitor
           insert_internal_fx_module,
           insert_ladspa_fx_module,
           replace_missing_ladspa_fx_module,
-          toggle_focused_fx_module_bypass,
           set_bool_parameter,
           set_float_parameter,
           set_int_parameter,

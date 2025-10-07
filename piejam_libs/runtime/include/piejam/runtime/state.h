@@ -65,9 +65,6 @@ struct state
     audio_streams_store_t streams;
 
     fx::registry fx_registry;
-
-    boxed_map<boost::container::flat_map<fx::module_id, bool_parameter_id>>
-        active_modules;
     fx::state fx_state;
 
     mixer::state mixer_state{};
@@ -136,12 +133,12 @@ auto insert_ladspa_fx_module(
     std::span<parameter_value_assignment const> initial_values,
     std::span<parameter_midi_assignment const> midi_assigns) -> fx::module_id;
 
-void insert_missing_ladspa_fx_module(
+auto insert_missing_ladspa_fx_module(
     state&,
     mixer::channel_id,
     std::size_t position,
     fx::unavailable_ladspa const&,
-    std::string_view name);
+    std::string_view name) -> fx::module_id;
 
 void remove_fx_module(
     state&,

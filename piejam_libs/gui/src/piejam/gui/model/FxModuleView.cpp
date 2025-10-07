@@ -4,6 +4,7 @@
 
 #include <piejam/gui/model/FxModuleView.h>
 
+#include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/FxGenericModule.h>
 #include <piejam/gui/model/FxModuleFactory.h>
 
@@ -20,7 +21,10 @@ namespace piejam::gui::model
 struct FxModuleView::Impl
 {
     runtime::fx::module_id fx_mod_id;
+    runtime::bool_parameter_id active_id;
+
     std::unique_ptr<FxModule> content;
+    std::unique_ptr<BoolParameter> active;
 };
 
 auto
@@ -74,10 +78,6 @@ FxModuleView::onSubscribe()
             *observe_once(runtime::selectors::select_focused_fx_module_name)));
 
     observe(
-        runtime::selectors::select_focused_fx_module_bypassed,
-        [this](bool x) { setBypassed(x); });
-
-    observe(
         runtime::selectors::select_focused_fx_module,
         [this](runtime::fx::module_id const fx_mod_id) {
             if (m_impl->fx_mod_id != fx_mod_id)
@@ -85,18 +85,18 @@ FxModuleView::onSubscribe()
                 m_impl->fx_mod_id = fx_mod_id;
 
                 auto content = makeModuleContent(state_access(), fx_mod_id);
-
                 std::swap(m_impl->content, content);
-
                 emit contentChanged();
+
+                auto active = std::make_unique<BoolParameter>(
+                    state_access(),
+                    observe_once(
+                        runtime::selectors::make_fx_module_active_selector(
+                            fx_mod_id)));
+                std::swap(m_impl->active, active);
+                setActive(m_impl->active.get());
             }
         });
-}
-
-void
-FxModuleView::toggleBypass()
-{
-    dispatch(runtime::actions::toggle_focused_fx_module_bypass{});
 }
 
 } // namespace piejam::gui::model

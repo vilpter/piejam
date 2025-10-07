@@ -15,7 +15,7 @@ import PieJam.Models 1.0 as PJModels
 SubscribableItem {
     id: root
 
-    property bool bypassed: false
+    property bool active: true
 
     implicitWidth: 636
 
@@ -54,6 +54,5 @@ SubscribableItem {
         }
     }
 
-    onBypassedChanged: if (root.bypassed && root.model)
-                           root.model.clear()
+    onActiveChanged: if (!root.active && root.model) root.model.clear()
 }

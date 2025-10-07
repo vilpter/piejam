@@ -22,7 +22,7 @@ class FxModuleView : public SubscribableModel
     M_PIEJAM_GUI_PROPERTY(MaterialColor, color, setColor)
     M_PIEJAM_GUI_PROPERTY(QString, chainName, setChainName)
     M_PIEJAM_GUI_PROPERTY(QString, name, setName)
-    M_PIEJAM_GUI_PROPERTY(bool, bypassed, setBypassed)
+    M_PIEJAM_GUI_PROPERTY(piejam::gui::model::BoolParameter*, active, setActive)
 
     Q_PROPERTY(
         piejam::gui::model::FxModule* content READ content NOTIFY contentChanged
@@ -32,8 +32,6 @@ public:
     FxModuleView(runtime::state_access const&);
 
     auto content() noexcept -> FxModule*;
-
-    Q_INVOKABLE void toggleBypass();
 
 signals:
     void contentChanged();

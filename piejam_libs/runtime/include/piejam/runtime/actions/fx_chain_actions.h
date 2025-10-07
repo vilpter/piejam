@@ -15,13 +15,6 @@
 namespace piejam::runtime::actions
 {
 
-struct toggle_focused_fx_module_bypass final
-    : ui::cloneable_action<toggle_focused_fx_module_bypass, reducible_action>
-    , visitable_audio_engine_action<toggle_focused_fx_module_bypass>
-{
-    void reduce(state&) const override;
-};
-
 struct focus_fx_module final
     : ui::cloneable_action<focus_fx_module, reducible_action>
 {

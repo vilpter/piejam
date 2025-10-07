@@ -189,6 +189,8 @@ to_json(nlohmann::json& j, session::fx_plugin const& fx_plug)
             },
             [](std::monostate) { BOOST_ASSERT(false); }),
         fx_plug.as_variant());
+
+    j["active"] = fx_plug.active;
 }
 
 void
@@ -210,6 +212,8 @@ from_json(nlohmann::json const& j, session::fx_plugin& fx_plug)
     {
         throw std::runtime_error("unknown fx_plugin_id");
     }
+
+    j["active"].get_to(fx_plug.active);
 }
 
 NLOHMANN_JSON_SERIALIZE_ENUM(

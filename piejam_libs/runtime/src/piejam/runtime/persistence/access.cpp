@@ -194,6 +194,8 @@ export_fx_chain(state const& st, fx::chain_t const& fx_chain)
                     return export_fx_plugin(st, fx_mod, id);
                 },
                 fx_mod.fx_instance_id));
+        result.back().active =
+            st.params.at(st.fx_state.active_modules.at(fx_mod_id)).get();
     }
 
     return result;

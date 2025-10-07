@@ -36,7 +36,7 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/FxChainControls/ParameterSwitch.qml</file>
         <file>PieJam/FxChainControls/ParameterTouchstrip.qml</file>
         <file>PieJam/FxChainControls/ParameterXYPad.qml</file>
-        <file>PieJam/FxChainControls/ParametersListView.qml</file>
+        <file>PieJam/FxChainControls/GenericFxModuleView.qml</file>
         <file>PieJam/FxChainControls/SpectrumGrid.qml</file>
         <file>PieJam/FxChainControls/StereoChannelSelector.qml</file>
         <file>PieJam/FxChainControls/StreamSourceSettings.qml</file>
@@ -104,5 +104,6 @@ SPDX-License-Identifier: CC0-1.0
         <file>images/icons/tune-vertical.svg</file>
         <file>qtquickcontrols2.conf</file>
         <file>PieJam/ParameterControls/EnumComboBox.qml</file>
+        <file>PieJam/Views/ViewToolBarParameterButton.qml</file>
     </qresource>
 </RCC>

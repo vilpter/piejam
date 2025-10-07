@@ -20,15 +20,9 @@ import PieJam.Util 1.0
 SubscribableItem {
     id: root
 
-    property bool bypassed: false
+    property bool active: true
 
     implicitWidth: 636
-
-    onVisibleChanged: if (root.model)
-                          root.model.clear()
-
-    onBypassedChanged: if (root.bypassed && root.model)
-                           root.model.clear()
 
     QtObject {
         id: private_
@@ -292,7 +286,7 @@ SubscribableItem {
             Layout.fillWidth: true
             Layout.preferredHeight: 48
         }
-   }
+    }
 
     Binding {
         when: root.model
@@ -301,4 +295,8 @@ SubscribableItem {
         value: private_.freeMode ? waveformView.availableWidth : scopeView.availableWidth
         restoreMode: Binding.RestoreBinding
     }
+
+    onVisibleChanged: if (root.model) root.model.clear()
+
+    onActiveChanged: if (!root.active && root.model) root.model.clear()
 }

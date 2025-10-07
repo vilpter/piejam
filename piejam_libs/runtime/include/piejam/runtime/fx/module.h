@@ -19,7 +19,6 @@ struct module
     instance_id fx_instance_id;
     boxed_string name;
     audio::bus_type bus_type{};
-    bool bypassed{};
     box<parameters_map> parameters;
     box<module_streams> streams;
 

@@ -17,7 +17,7 @@ ViewPane {
     QtObject {
         id: private_
 
-        readonly property bool bypassed: root.model && root.model.bypassed
+        readonly property bool active: root.model && root.model.active ? root.model.active.value : false
         readonly property var content: root.model ? root.model.content : null
         readonly property var contentType: private_.content ? private_.content.type : null
     }
@@ -67,8 +67,8 @@ ViewPane {
 
                         Binding {
                             target: fxModuleViewLoader.item
-                            property: "bypassed"
-                            value: private_.bypassed
+                            property: "active"
+                            value: private_.active
                         }
                     }
                 }
@@ -78,11 +78,9 @@ ViewPane {
         ViewToolBar {
             Layout.fillHeight: true
 
-            ViewToolBarButton {
+            ViewToolBarParameterButton {
                 iconSource: "qrc:///images/icons/power.svg"
-                checked: !private_.bypassed
-
-                onClicked: if (root.model) root.model.toggleBypass()
+                model: root.model ? root.model.active : null
             }
 
             Item {

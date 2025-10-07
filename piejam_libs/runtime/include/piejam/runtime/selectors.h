@@ -185,7 +185,8 @@ auto make_fx_module_instance_id_selector(fx::module_id)
 auto make_fx_module_name_selector(fx::module_id) -> selector<boxed_string>;
 auto make_fx_module_bus_type_selector(fx::module_id)
     -> selector<audio::bus_type>;
-auto make_fx_module_bypass_selector(fx::module_id) -> selector<bool>;
+auto make_fx_module_active_selector(fx::module_id)
+    -> selector<bool_parameter_id>;
 auto make_fx_module_parameters_selector(fx::module_id)
     -> selector<box<parameters_map>>;
 auto make_fx_module_can_move_up_selector(mixer::channel_id) -> selector<bool>;
@@ -240,6 +241,5 @@ extern selector<mixer::channel_id> const select_focused_fx_chain;
 extern selector<fx::module_id> const select_focused_fx_module;
 extern selector<boxed_string> const select_focused_fx_module_name;
 extern selector<material_color> const select_focused_fx_module_color;
-extern selector<bool> const select_focused_fx_module_bypassed;
 
 } // namespace piejam::runtime::selectors

@@ -63,6 +63,8 @@ struct session
         {
             return *this;
         }
+
+        bool active;
     };
 
     using fx_chain_t = std::vector<fx_plugin>;

@@ -11,13 +11,6 @@ namespace piejam::runtime::actions
 {
 
 void
-toggle_focused_fx_module_bypass::reduce(state& st) const
-{
-    toggle_bool_in_place(
-        st.fx_state.modules.lock().at(st.focused_fx_mod_id).bypassed);
-}
-
-void
 focus_fx_module::reduce(state& st) const
 {
     st.focused_fx_chain_id = fx_chain_id;

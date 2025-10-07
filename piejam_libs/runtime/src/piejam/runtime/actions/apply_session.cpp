@@ -53,10 +53,10 @@ apply_mixer_fx_chain(
 {
     for (auto const& fx_plug : fx_chain_data)
     {
-        std::visit(
+        auto fx_mod_id = std::visit(
             boost::hof::match(
                 [&](persistence::session::internal_fx const& fx) {
-                    runtime::insert_internal_fx_module(
+                    return runtime::insert_internal_fx_module(
                         st,
                         channel_id,
                         npos,
@@ -65,7 +65,7 @@ apply_mixer_fx_chain(
                         fx.midi);
                 },
                 [&](persistence::session::ladspa_plugin const& ladspa_plug) {
-                    runtime::insert_missing_ladspa_fx_module(
+                    return runtime::insert_missing_ladspa_fx_module(
                         st,
                         channel_id,
                         npos,
@@ -75,8 +75,14 @@ apply_mixer_fx_chain(
                             .midi_assignments = ladspa_plug.midi},
                         ladspa_plug.name);
                 },
-                [](auto const&) { BOOST_ASSERT(false); }),
+                [](auto const&) -> fx::module_id {
+                    BOOST_ASSERT(false);
+                    return fx::module_id{};
+                }),
             fx_plug.as_variant());
+
+        st.params.at(st.fx_state.active_modules.at(fx_mod_id))
+            .set(fx_plug.active);
     }
 }
 

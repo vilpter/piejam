@@ -9,7 +9,7 @@ import PieJam.Controls 1.0
 SubscribableItem {
     id: root
 
-    property bool bypassed: false
+    property bool active: true
 
     implicitWidth: 400
 

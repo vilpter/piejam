@@ -27,7 +27,9 @@ class midi_assignment_processor final : public audio::engine::named_processor
 {
 public:
     midi_assignment_processor(midi_assignments_map const& midi_assigns)
-        : m_midi_assignments(make_midi_assignments_vector(midi_assigns))
+        : m_midi_assignments{
+              midi_assigns | std::views::values |
+              std::ranges::to<std::vector>()}
     {
         for (auto const& [id, ass] : midi_assigns)
         {
@@ -105,20 +107,6 @@ public:
     }
 
 private:
-    static auto
-    make_midi_assignments_vector(midi_assignments_map const& assignments)
-        -> std::vector<midi_assignment>
-    {
-        std::vector<midi_assignment> result;
-        result.reserve(assignments.size());
-
-        std::ranges::copy(
-            std::views::values(assignments),
-            std::back_inserter(result));
-
-        return result;
-    }
-
     std::vector<midi_assignment> m_midi_assignments;
     std::vector<audio::engine::event_port> m_output_ports;
 };
