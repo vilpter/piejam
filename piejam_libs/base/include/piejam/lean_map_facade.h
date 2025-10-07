@@ -114,15 +114,18 @@ public:
     }
 
     template <class... Args>
-    constexpr auto emplace(Args&&... args)
+    constexpr auto emplace(Args&&... args) noexcept(
+        noexcept(m_map.emplace(std::forward<Args>(args)...))) -> decltype(auto)
     {
         return m_map.emplace(std::forward<Args>(args)...);
     }
 
     template <class Key>
-    constexpr void erase(Key&& key)
+    constexpr auto
+    erase(Key&& key) noexcept(noexcept(m_map.erase(std::forward<Key>(key))))
+        -> decltype(auto)
     {
-        m_map.erase(std::forward<Key>(key));
+        return m_map.erase(std::forward<Key>(key));
     }
 
     constexpr auto operator==(lean_map_facade const&) const noexcept
