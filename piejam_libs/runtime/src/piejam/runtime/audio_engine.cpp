@@ -41,6 +41,7 @@
 #include <piejam/audio/engine/value_io_processor.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/enum.h>
+#include <piejam/lean_map_facade.h>
 #include <piejam/midi/event.h>
 #include <piejam/midi/input_event_handler.h>
 #include <piejam/range/indices.h>
@@ -64,6 +65,7 @@ using processor_ptr = std::unique_ptr<audio::engine::processor>;
 using shared_processor_ptr = std::shared_ptr<audio::engine::processor>;
 
 using component_ptr = std::unique_ptr<audio::engine::component>;
+using shared_component_ptr = std::shared_ptr<audio::engine::component>;
 
 struct processor_map
 {
@@ -90,35 +92,30 @@ struct processor_map
         midi_assignments;
 };
 
-struct mixer_input_key
+struct component_map
 {
-    mixer::channel_id channel_id;
+    template <class Key>
+    using components_t =
+        lean_map_facade<boost::container::flat_map<Key, shared_component_ptr>>;
 
-    constexpr bool operator==(mixer_input_key const&) const noexcept = default;
+    components_t<mixer::channel_id> mixer_inputs;
+    components_t<mixer::channel_id> mixer_outputs;
+
+    struct mixer_aux_send_key
+    {
+        mixer::channel_id channel_id;
+        mixer::channel_id route;
+
+        constexpr auto
+        operator<=>(mixer_aux_send_key const&) const noexcept = default;
+    };
+
+    components_t<mixer_aux_send_key> mixer_aux_sends;
+
+    component_ptr solo_switch;
+
+    components_t<fx::module_id> fx_modules;
 };
-
-struct mixer_output_key
-{
-    mixer::channel_id channel_id;
-
-    constexpr bool operator==(mixer_output_key const&) const noexcept = default;
-};
-
-struct mixer_aux_send_key
-{
-    mixer::channel_id channel_id;
-    mixer::channel_id route;
-
-    constexpr bool
-    operator==(mixer_aux_send_key const&) const noexcept = default;
-};
-
-struct solo_group_key
-{
-    constexpr bool operator==(solo_group_key const&) const noexcept = default;
-};
-
-using component_map = dynamic_key_shared_object_map<audio::engine::component>;
 
 template <class T>
 using value_io_processor_ptr =
@@ -137,27 +134,27 @@ make_mixer_components(
 {
     for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
-        mixer_input_key const in_key{.channel_id = mixer_channel_id};
-        if (auto comp = prev_comps.find(in_key))
+        if (auto comp = prev_comps.mixer_inputs.find(mixer_channel_id))
         {
-            comps.insert(in_key, std::move(comp));
+            BOOST_ASSERT(*comp);
+            comps.mixer_inputs.emplace(mixer_channel_id, *comp);
         }
         else
         {
-            comps.insert(
-                in_key,
+            comps.mixer_inputs.emplace(
+                mixer_channel_id,
                 components::make_mixer_channel_input(mixer_channel));
         }
 
-        mixer_output_key const out_key{.channel_id = mixer_channel_id};
-        if (auto comp = prev_comps.find(out_key))
+        if (auto comp = prev_comps.mixer_outputs.find(mixer_channel_id))
         {
-            comps.insert(out_key, std::move(comp));
+            BOOST_ASSERT(*comp);
+            comps.mixer_outputs.emplace(mixer_channel_id, *comp);
         }
         else
         {
-            comps.insert(
-                out_key,
+            comps.mixer_outputs.emplace(
+                mixer_channel_id,
                 components::make_mixer_channel_output(
                     mixer_channel,
                     *strings[mixer_channel.name],
@@ -176,17 +173,18 @@ make_mixer_components(
                     continue;
                 }
 
-                mixer_aux_send_key const aux_send_key{
+                component_map::mixer_aux_send_key const aux_send_key{
                     .channel_id = mixer_channel_id,
                     .route = aux};
 
-                if (auto comp = prev_comps.find(aux_send_key))
+                if (auto comp = prev_comps.mixer_aux_sends.find(aux_send_key))
                 {
-                    comps.insert(aux_send_key, std::move(comp));
+                    BOOST_ASSERT(*comp);
+                    comps.mixer_aux_sends.emplace(aux_send_key, *comp);
                 }
                 else
                 {
-                    comps.insert(
+                    comps.mixer_aux_sends.emplace(
                         aux_send_key,
                         components::make_mixer_channel_aux_send(
                             *strings[mixer_channel.name],
@@ -204,9 +202,7 @@ make_solo_group_components(
     solo_groups_t const& solo_groups,
     parameter_processor_factory& param_procs)
 {
-    comps.insert(
-        solo_group_key{},
-        components::make_solo_switch(solo_groups, param_procs));
+    comps.solo_switch = components::make_solo_switch(solo_groups, param_procs);
 }
 
 auto
@@ -236,9 +232,10 @@ make_fx_chain_components(
             continue;
         }
 
-        if (auto fx_comp = prev_comps.find(fx_mod_id))
+        if (auto fx_comp = prev_comps.fx_modules.find(fx_mod_id))
         {
-            comps.insert(fx_mod_id, std::move(fx_comp));
+            BOOST_ASSERT(*fx_comp);
+            comps.fx_modules.emplace(fx_mod_id, *fx_comp);
         }
         else
         {
@@ -251,7 +248,7 @@ make_fx_chain_components(
                 sample_rate);
             if (comp)
             {
-                comps.insert(fx_mod_id, std::move(comp));
+                comps.fx_modules.emplace(fx_mod_id, std::move(comp));
             }
         }
     }
@@ -349,7 +346,8 @@ connect_mixer_channel_with_fx_chain(
     auto fx_chain_comps = algorithm::transform_to_vector(
         fx_chain,
         [&comps](fx::module_id fx_mod_id) {
-            return comps.find(fx_mod_id).get();
+            auto comp = comps.fx_modules.find(fx_mod_id);
+            return comp ? comp->get() : nullptr;
         });
     boost::remove_erase(fx_chain_comps, nullptr);
 
@@ -401,13 +399,14 @@ connect_mixer_input(
             [&](mixer::channel_id const src_channel_id) {
                 BOOST_ASSERT(mixer_state.channels.contains(src_channel_id));
 
-                audio::engine::component* const source_mixer_channel_out =
-                    comps.find(mixer_output_key{src_channel_id}).get();
-                BOOST_ASSERT(source_mixer_channel_out);
+                auto* const source_mixer_channel_out =
+                    comps.mixer_outputs.find(src_channel_id);
+                BOOST_ASSERT(
+                    source_mixer_channel_out && *source_mixer_channel_out);
 
                 audio::engine::connect(
                     g,
-                    *source_mixer_channel_out,
+                    *source_mixer_channel_out->get(),
                     mixer_channel_in);
             },
             [](auto const&) {}),
@@ -451,13 +450,15 @@ connect_mixer_output(
                 if (std::holds_alternative<mixer::mix_input>(dst_channel_in))
                 {
                     auto* const dst_mixer_channel_in_comp =
-                        comps.find(mixer_input_key{dst_channel_id}).get();
-                    BOOST_ASSERT(dst_mixer_channel_in_comp);
+                        comps.mixer_inputs.find(dst_channel_id);
+                    BOOST_ASSERT(
+                        dst_mixer_channel_in_comp &&
+                        *dst_mixer_channel_in_comp);
 
                     audio::engine::connect(
                         g,
                         mixer_channel_out_comp,
-                        *dst_mixer_channel_in_comp);
+                        *dst_mixer_channel_in_comp->get());
                 }
             },
             [](auto const&) {}),
@@ -480,9 +481,9 @@ make_graph(
     for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
         audio::engine::component* const mixer_channel_in =
-            comps.find(mixer_input_key{mixer_channel_id}).get();
+            comps.mixer_inputs.find(mixer_channel_id)->get();
         audio::engine::component* const mixer_channel_out =
-            comps.find(mixer_output_key{mixer_channel_id}).get();
+            comps.mixer_outputs.find(mixer_channel_id)->get();
 
         BOOST_ASSERT(mixer_channel_in);
         BOOST_ASSERT(mixer_channel_out);
@@ -520,12 +521,14 @@ make_graph(
         {
             for (auto const& [aux, aux_send] : *channel_aux_sends)
             {
-                audio::engine::component* mixer_channel_aux_send =
-                    comps.find(mixer_aux_send_key{mixer_channel_id, aux}).get();
+                auto mixer_channel_aux_send = comps.mixer_aux_sends.find(
+                    component_map::mixer_aux_send_key{mixer_channel_id, aux});
 
                 if (mixer_channel_aux_send)
                 {
-                    mixer_channel_aux_send->connect(g);
+                    BOOST_ASSERT(*mixer_channel_aux_send);
+
+                    mixer_channel_aux_send->get()->connect(g);
 
                     auto aux_send_fader_tap =
                         params.at(aux_send.fader_tap())
@@ -562,10 +565,10 @@ make_graph(
 
                     g.audio.insert(
                         mixer_channel_out->outputs()[out_L],
-                        mixer_channel_aux_send->inputs()[0]);
+                        mixer_channel_aux_send->get()->inputs()[0]);
                     g.audio.insert(
                         mixer_channel_out->outputs()[out_R],
-                        mixer_channel_aux_send->inputs()[1]);
+                        mixer_channel_aux_send->get()->inputs()[1]);
 
                     connect_mixer_output(
                         g,
@@ -574,7 +577,7 @@ make_graph(
                         comps,
                         output_procs,
                         aux,
-                        *mixer_channel_aux_send);
+                        *mixer_channel_aux_send->get());
                 }
             }
         }
@@ -650,21 +653,21 @@ connect_solo_groups(
     component_map const& comps,
     solo_groups_t const& solo_groups)
 {
-    auto solo_switch = comps.find(solo_group_key{});
-    BOOST_ASSERT(solo_switch);
+    BOOST_ASSERT(comps.solo_switch);
 
-    solo_switch->connect(g);
+    comps.solo_switch->connect(g);
 
-    BOOST_ASSERT(solo_groups.size() == solo_switch->event_outputs().size());
+    BOOST_ASSERT(
+        solo_groups.size() == comps.solo_switch->event_outputs().size());
     std::size_t index{};
     for (auto const& id : solo_groups | std::views::keys)
     {
-        auto mix_out = comps.find(mixer_output_key{.channel_id = id});
+        auto mix_out = comps.mixer_outputs.find(id);
         BOOST_ASSERT(mix_out);
 
         g.event.insert(
-            solo_switch->event_outputs()[index],
-            mix_out->event_inputs()[0]);
+            comps.solo_switch->event_outputs()[index],
+            mix_out->get()->event_inputs()[0]);
 
         ++index;
     }
