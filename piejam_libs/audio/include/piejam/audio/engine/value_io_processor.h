@@ -90,44 +90,4 @@ protected:
     thread::spsc_slot<T> m_out_value;
 };
 
-template <class E>
-    requires std::is_scoped_enum_v<E>
-class enum_io_processor final
-    : public value_io_processor<std::underlying_type_t<E>>
-{
-    using base_t = value_io_processor<std::underlying_type_t<E>>;
-
-public:
-    using base_t::base_t;
-
-    auto type_name() const noexcept -> std::string_view override
-    {
-        using namespace std::string_view_literals;
-        return "enum_io";
-    }
-
-    auto event_outputs() const noexcept -> processor::event_ports override
-    {
-        static std::array s_ports{event_port(std::in_place_type<E>, "out")};
-        return s_ports;
-    }
-
-    void process(engine::process_context const& ctx) override
-    {
-        verify_process_context(*this, ctx);
-
-        auto& out = ctx.event_outputs.get<E>(0);
-
-        using T = std::underlying_type_t<E>;
-        this->m_in_value.consume(
-            [&out](T const& value) { out.insert(0, static_cast<E>(value)); });
-
-        for (event<T> const& ev : ctx.event_inputs.get<T>(0))
-        {
-            this->m_out_value.push(ev.value());
-            out.insert(ev.offset(), static_cast<E>(ev.value()));
-        }
-    }
-};
-
 } // namespace piejam::audio::engine

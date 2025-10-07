@@ -59,48 +59,39 @@ class component final : public audio::engine::component
 {
 public:
     component(
-            runtime::fx::module const& fx_mod,
-            runtime::parameter_processor_factory& proc_factory,
-            std::string_view const name)
-        : m_gain_param_proc{runtime::processors::
-                                    find_or_make_parameter_processor(
-                                            proc_factory,
-                                            fx_mod.parameters->at(std::to_underlying(
-                                                    parameter_key::gain)),
-                                            std::format(
-                                                    "utility_gain {}",
-                                                    name))}
-        , m_invert_param_proc{fx_mod.bus_type == audio::bus_type::mono ? runtime::processors::
-                                   find_or_make_parameter_processor(
-                                           proc_factory,
-                                           fx_mod.parameters->at(std::to_underlying(
-                                                   parameter_key::invert)),
-                                           std::format(
-                                                   "utility_invert {}",
-                                                   name)) : nullptr}
-        , m_invert_left_param_proc{fx_mod.bus_type == audio::bus_type::stereo ? runtime::processors::
-                                      find_or_make_parameter_processor(
-                                              proc_factory,
-                                              fx_mod.parameters->at(std::to_underlying(
-                                                      parameter_key::invert_left)),
-                                              std::format(
-                                                      "utility_invert {}",
-                                                      name)) : nullptr}
-        , m_invert_right_param_proc{fx_mod.bus_type == audio::bus_type::stereo ? runtime::processors::
-                                      find_or_make_parameter_processor(
-                                              proc_factory,
-                                              fx_mod.parameters->at(std::to_underlying(
-                                                      parameter_key::invert_right)),
-                                              std::format(
-                                                      "utility_invert {}",
-                                                      name)) : nullptr}
-        , m_gain_converter_proc{make_gain_converter_processor(fx_mod.bus_type, name)}
+        runtime::fx::module const& fx_mod,
+        runtime::parameter_processor_factory& proc_factory,
+        std::string_view const name)
+        : m_gain_param_proc{proc_factory.find_or_make_processor(
+              fx_mod.parameters->at(parameter_key::gain),
+              std::format("utility_gain {}", name))}
+        , m_invert_param_proc{
+              fx_mod.bus_type == audio::bus_type::mono
+                  ? proc_factory.find_or_make_processor(
+                        fx_mod.parameters->at(parameter_key::invert),
+                        std::format("utility_invert {}", name))
+                  : nullptr}
+        , m_invert_left_param_proc{
+              fx_mod.bus_type == audio::bus_type::stereo
+                  ? proc_factory.find_or_make_processor(
+                        fx_mod.parameters->at(parameter_key::invert_left),
+                        std::format("utility_invert {}", name))
+                  : nullptr}
+        , m_invert_right_param_proc{
+              fx_mod.bus_type == audio::bus_type::stereo
+                  ? proc_factory.find_or_make_processor(
+                        fx_mod.parameters->at(parameter_key::invert_right),
+                        std::format("utility_invert {}", name))
+                  : nullptr}
+        , m_gain_converter_proc{make_gain_converter_processor(
+              fx_mod.bus_type,
+              name)}
         , m_amplifier{
-                  fx_mod.bus_type == audio::bus_type::mono
-                          ? audio::components::make_mono_amplifier(
-                                    std::format("utility {}", name))
-                          : audio::components::make_stereo_split_amplifier(
-                                    std::format("utility {}", name))}
+              fx_mod.bus_type == audio::bus_type::mono
+                  ? audio::components::make_mono_amplifier(
+                        std::format("utility {}", name))
+                  : audio::components::make_stereo_split_amplifier(
+                        std::format("utility {}", name))}
     {
     }
 

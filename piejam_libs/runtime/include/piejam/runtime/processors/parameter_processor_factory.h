@@ -8,7 +8,6 @@
 
 #include <piejam/audio/engine/value_io_processor.h>
 #include <piejam/entity_id_hash.h>
-#include <piejam/enum.h>
 
 #include <boost/assert.hpp>
 #include <boost/mp11/list.hpp>
@@ -50,18 +49,18 @@ public:
         return make_processor(id, name);
     }
 
-    template <class P, scoped_enum<parameter::value_type_t<P>> E>
+    template <class... P>
     auto find_or_make_processor(
-        parameter::id_t<P> id,
-        std::in_place_type_t<E>,
-        std::string_view name = {}) -> std::shared_ptr<parameter_processor<P>>
+        std::variant<parameter::id_t<P>...> const& param_id,
+        std::string_view const name = {})
+        -> std::shared_ptr<audio::engine::processor>
     {
-        if (auto proc = find_processor(id); proc)
-        {
-            return proc;
-        }
-
-        return make_processor(id, std::in_place_type<E>, name);
+        return std::visit(
+            [this, name]<class Param>(parameter::id_t<Param> param_id)
+                -> std::shared_ptr<audio::engine::processor> {
+                return find_or_make_processor<Param>(std::move(param_id), name);
+            },
+            param_id);
     }
 
     template <class FindValue>
@@ -115,18 +114,6 @@ private:
         return proc;
     }
 
-    template <class P, scoped_enum<parameter::value_type_t<P>> E>
-    auto make_processor(
-        parameter::id_t<P> id,
-        std::in_place_type_t<E>,
-        std::string_view name = {}) -> std::shared_ptr<parameter_processor<P>>
-    {
-        BOOST_ASSERT(id.valid());
-        auto proc = std::make_shared<audio::engine::enum_io_processor<E>>(name);
-        std::get<processor_map<P>>(m_procs).insert_or_assign(id, proc);
-        return proc;
-    }
-
     template <class P>
     auto find_processor(parameter::id_t<P> id) const
         -> std::shared_ptr<parameter_processor<P>>
@@ -150,23 +137,5 @@ private:
 
     std::tuple<processor_map<Parameter>...> m_procs;
 };
-
-template <class ProcessorFactory, class... P>
-auto
-find_or_make_parameter_processor(
-    ProcessorFactory& proc_factory,
-    std::variant<parameter::id_t<P>...> const& param_id,
-    std::string_view const name = {})
-    -> std::shared_ptr<audio::engine::processor>
-{
-    return std::visit(
-        [&proc_factory, name]<class Param>(parameter::id_t<Param> param_id)
-            -> std::shared_ptr<audio::engine::processor> {
-            return proc_factory.find_or_make_processor(
-                std::move(param_id),
-                name);
-        },
-        param_id);
-}
 
 } // namespace piejam::runtime::processors

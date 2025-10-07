@@ -57,10 +57,10 @@ public:
 
         for (auto&& [key, id] : fx_mod.parameters.get())
         {
-            m_param_input_procs.emplace_back(find_or_make_parameter_processor(
-                param_proc_factory,
-                id,
-                get_fx_param_name(id)));
+            m_param_input_procs.emplace_back(
+                param_proc_factory.find_or_make_processor(
+                    id,
+                    get_fx_param_name(id)));
         }
 
         std::ranges::transform(
@@ -131,10 +131,10 @@ public:
 
         for (auto&& [key, id] : fx_mod.parameters.get())
         {
-            m_param_input_procs.emplace_back(find_or_make_parameter_processor(
-                param_proc_factory,
-                id,
-                get_fx_param_name(id)));
+            m_param_input_procs.emplace_back(
+                param_proc_factory.find_or_make_processor(
+                    id,
+                    get_fx_param_name(id)));
         }
 
         BOOST_ASSERT(

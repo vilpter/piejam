@@ -84,10 +84,10 @@ make_coefficent_converter_processor(audio::sample_rate const sample_rate)
     static constexpr std::array s_output_names{"coeffs"sv};
     return audio::engine::make_event_converter_processor(
         [inv_sr = 1.f / sample_rate.as<float>()](
-            filter::type const type,
+            int const type,
             float const cutoff,
             float const res) {
-            switch (type)
+            switch (static_cast<filter::type>(type))
             {
                 case type::lp2:
                     return make_coefficients(lp2_tag{}, cutoff, res, inv_sr);
@@ -291,22 +291,14 @@ class component final : public audio::engine::component
 public:
     component(runtime::internal_fx_component_factory_args const& args)
         : m_type_input_proc(args.param_procs.find_or_make_processor(
-              std::get<runtime::enum_parameter_id>(args.fx_mod.parameters->at(
-                  std::to_underlying(parameter_key::type))),
-              std::in_place_type<type>,
+              args.fx_mod.parameters->at(parameter_key::type),
               "type"))
-        , m_cutoff_input_proc(
-              runtime::processors::find_or_make_parameter_processor(
-                  args.param_procs,
-                  args.fx_mod.parameters->at(
-                      std::to_underlying(parameter_key::cutoff)),
-                  "cutoff"))
-        , m_resonance_input_proc(
-              runtime::processors::find_or_make_parameter_processor(
-                  args.param_procs,
-                  args.fx_mod.parameters->at(
-                      std::to_underlying(parameter_key::resonance)),
-                  "res"))
+        , m_cutoff_input_proc(args.param_procs.find_or_make_processor(
+              args.fx_mod.parameters->at(parameter_key::cutoff),
+              "cutoff"))
+        , m_resonance_input_proc(args.param_procs.find_or_make_processor(
+              args.fx_mod.parameters->at(parameter_key::resonance),
+              "res"))
         , m_coeffs_proc(make_coefficent_converter_processor(args.sample_rate))
         , m_in_out_stream(make_in_out_stream(
               args.fx_mod.bus_type,

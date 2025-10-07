@@ -87,6 +87,13 @@ public:
         return m_map.at(key);
     }
 
+    template <scoped_enum<key> E>
+    auto at(E key) const -> parameter_id_t
+    {
+        BOOST_ASSERT(m_key_type == typeid(E));
+        return m_map.at(std::to_underlying(key));
+    }
+
     template <class P>
     auto get(key key) const -> P
     {

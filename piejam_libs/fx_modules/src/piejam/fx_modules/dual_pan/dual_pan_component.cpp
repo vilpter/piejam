@@ -34,30 +34,18 @@ public:
         runtime::fx::module const& fx_mod,
         runtime::parameter_processor_factory& proc_factory,
         std::string_view const name)
-        : m_mute_left_param_proc(
-              runtime::processors::find_or_make_parameter_processor(
-                  proc_factory,
-                  fx_mod.parameters->at(
-                      std::to_underlying(parameter_key::mute_left)),
-                  std::format("mute_left {}", name)))
-        , m_mute_right_param_proc(
-              runtime::processors::find_or_make_parameter_processor(
-                  proc_factory,
-                  fx_mod.parameters->at(
-                      std::to_underlying(parameter_key::mute_right)),
-                  std::format("mute_right {}", name)))
-        , m_pan_left_param_proc(
-              runtime::processors::find_or_make_parameter_processor(
-                  proc_factory,
-                  fx_mod.parameters->at(
-                      std::to_underlying(parameter_key::pan_left)),
-                  std::format("pan_left {}", name)))
-        , m_pan_right_param_proc(
-              runtime::processors::find_or_make_parameter_processor(
-                  proc_factory,
-                  fx_mod.parameters->at(
-                      std::to_underlying(parameter_key::pan_right)),
-                  std::format("pan_right {}", name)))
+        : m_mute_left_param_proc(proc_factory.find_or_make_processor(
+              fx_mod.parameters->at(parameter_key::mute_left),
+              std::format("mute_left {}", name)))
+        , m_mute_right_param_proc(proc_factory.find_or_make_processor(
+              fx_mod.parameters->at(parameter_key::mute_right),
+              std::format("mute_right {}", name)))
+        , m_pan_left_param_proc(proc_factory.find_or_make_processor(
+              fx_mod.parameters->at(parameter_key::pan_left),
+              std::format("pan_left {}", name)))
+        , m_pan_right_param_proc(proc_factory.find_or_make_processor(
+              fx_mod.parameters->at(parameter_key::pan_right),
+              std::format("pan_right {}", name)))
 
     {
     }
