@@ -93,7 +93,6 @@ struct processor_map
 struct mixer_input_key
 {
     mixer::channel_id channel_id;
-    mixer::io_address_t route;
 
     constexpr bool operator==(mixer_input_key const&) const noexcept = default;
 };
@@ -138,9 +137,7 @@ make_mixer_components(
 {
     for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
-        mixer_input_key const in_key{
-            .channel_id = mixer_channel_id,
-            .route = mixer_state.io_map.at(mixer_channel_id).in()};
+        mixer_input_key const in_key{.channel_id = mixer_channel_id};
         if (auto comp = prev_comps.find(in_key))
         {
             comps.insert(in_key, std::move(comp));
@@ -454,10 +451,7 @@ connect_mixer_output(
                 if (std::holds_alternative<mixer::mix_input>(dst_channel_in))
                 {
                     auto* const dst_mixer_channel_in_comp =
-                        comps
-                            .find(
-                                mixer_input_key{dst_channel_id, dst_channel_in})
-                            .get();
+                        comps.find(mixer_input_key{dst_channel_id}).get();
                     BOOST_ASSERT(dst_mixer_channel_in_comp);
 
                     audio::engine::connect(
@@ -486,12 +480,7 @@ make_graph(
     for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
         audio::engine::component* const mixer_channel_in =
-            comps
-                .find(
-                    mixer_input_key{
-                        mixer_channel_id,
-                        mixer_state.io_map.at(mixer_channel_id).in()})
-                .get();
+            comps.find(mixer_input_key{mixer_channel_id}).get();
         audio::engine::component* const mixer_channel_out =
             comps.find(mixer_output_key{mixer_channel_id}).get();
 
