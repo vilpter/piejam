@@ -25,8 +25,8 @@ struct midi_assignment
 
     std::size_t control_id{};
 
-    constexpr auto operator==(midi_assignment const& other) const noexcept
-        -> bool = default;
+    constexpr auto
+    operator<=>(midi_assignment const& other) const noexcept = default;
 };
 
 using midi_assignments_map =

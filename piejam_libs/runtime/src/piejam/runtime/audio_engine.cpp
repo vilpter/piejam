@@ -50,7 +50,6 @@
 #include <boost/hof/match.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 
-#include <algorithm>
 #include <fstream>
 #include <optional>
 #include <ranges>
@@ -61,11 +60,34 @@ namespace piejam::runtime
 namespace
 {
 
-enum class engine_processors
+using processor_ptr = std::unique_ptr<audio::engine::processor>;
+using shared_processor_ptr = std::shared_ptr<audio::engine::processor>;
+
+using component_ptr = std::unique_ptr<audio::engine::component>;
+
+struct processor_map
 {
-    midi_input,
-    midi_learn,
-    midi_assign
+    processor_ptr midi_input;
+    processor_ptr midi_learn;
+    processor_ptr midi_assign;
+
+    struct midi_assignment_key
+    {
+        parameter_id param_id;
+        midi_assignment assignment;
+
+        constexpr auto
+        operator<=>(midi_assignment_key const&) const noexcept = default;
+    };
+
+    struct midi_assignment_processors
+    {
+        shared_processor_ptr cc_to_param;
+        shared_processor_ptr param;
+    };
+
+    boost::container::flat_map<midi_assignment_key, midi_assignment_processors>
+        midi_assignments;
 };
 
 struct mixer_input_key
@@ -97,37 +119,11 @@ struct solo_group_key
     constexpr bool operator==(solo_group_key const&) const noexcept = default;
 };
 
-template <class ParameterId>
-struct midi_assignment_key
-{
-    ParameterId param_id;
-    midi_assignment assignment;
-
-    constexpr bool
-    operator==(midi_assignment_key const&) const noexcept = default;
-};
-
-template <class ParameterId>
-struct midi_assigned_param_key
-{
-    ParameterId param_id;
-
-    constexpr bool
-    operator==(midi_assigned_param_key const&) const noexcept = default;
-};
-
-using processor_map = dynamic_key_shared_object_map<audio::engine::processor>;
 using component_map = dynamic_key_shared_object_map<audio::engine::component>;
-
-using processor_ptr = std::unique_ptr<audio::engine::processor>;
-using component_ptr = std::unique_ptr<audio::engine::component>;
 
 template <class T>
 using value_io_processor_ptr =
     std::unique_ptr<audio::engine::value_io_processor<T>>;
-
-using get_device_processor_f =
-    std::function<audio::engine::processor&(std::size_t)>;
 
 void
 make_mixer_components(
@@ -272,15 +268,12 @@ make_midi_processors(
 {
     if (midi_in)
     {
-        procs.insert(
-            engine_processors::midi_input,
-            processors::make_midi_input_processor(std::move(midi_in)));
+        procs.midi_input =
+            processors::make_midi_input_processor(std::move(midi_in));
 
         if (midi_learning)
         {
-            procs.insert(
-                engine_processors::midi_learn,
-                processors::make_midi_learn_processor());
+            procs.midi_learn = processors::make_midi_learn_processor();
         }
     }
 }
@@ -298,35 +291,34 @@ make_midi_assignment_processors(
         return;
     }
 
-    procs.insert(
-        engine_processors::midi_assign,
-        processors::make_midi_assignment_processor(assignments));
+    procs.midi_assign = processors::make_midi_assignment_processor(assignments);
 
     for (auto const& [param_id, assignment] : assignments)
     {
         std::visit(
             [&]<class ParamId>(ParamId const typed_param_id) {
-                auto const& param = params.at(typed_param_id).param();
+                auto it_prev = prev_procs.midi_assignments.find(
+                    {.param_id = typed_param_id, .assignment = assignment});
 
-                auto const proc_id =
-                    midi_assignment_key{typed_param_id, assignment};
-                if (auto proc = prev_procs.find(proc_id))
+                if (it_prev != prev_procs.midi_assignments.end())
                 {
-                    procs.insert(proc_id, std::move(proc));
+                    procs.midi_assignments.insert(*it_prev);
                 }
                 else
                 {
-                    procs.insert(
-                        proc_id,
-                        processors::make_midi_cc_to_parameter_processor(param));
+                    auto const& param = params.at(typed_param_id).param();
+
+                    procs.midi_assignments.emplace(
+                        processor_map::midi_assignment_key{
+                            .param_id = typed_param_id,
+                            .assignment = assignment},
+                        processor_map::midi_assignment_processors{
+                            .cc_to_param =
+                                processors::make_midi_cc_to_parameter_processor(
+                                    param),
+                            .param = param_procs.find_or_make_processor(
+                                typed_param_id)});
                 }
-
-                auto const param_proc_id =
-                    midi_assigned_param_key{typed_param_id};
-                auto param_proc =
-                    param_procs.find_or_make_processor(typed_param_id);
-
-                procs.insert(param_proc_id, param_proc);
             },
             param_id);
     }
@@ -627,59 +619,58 @@ make_graph(
 void
 connect_midi(
     audio::engine::graph& g,
-    processor_map& procs,
+    processor_map const& procs,
     audio::engine::processor* midi_learn_output_proc,
     midi_assignments_map const& assignments)
 {
-    auto* const midi_in_proc = procs.find(engine_processors::midi_input).get();
+    auto* const midi_in_proc = procs.midi_input.get();
     if (!midi_in_proc)
     {
         return;
     }
 
-    if (auto* const midi_learn_proc =
-            procs.find(engine_processors::midi_learn).get())
+    if (auto* const midi_learn_proc = procs.midi_learn.get())
     {
         BOOST_ASSERT(midi_learn_output_proc);
 
         g.event.insert({*midi_in_proc, 0}, {*midi_learn_proc, 0});
         g.event.insert({*midi_learn_proc, 0}, {*midi_learn_output_proc, 0});
 
-        if (auto* const midi_assign_proc =
-                procs.find(engine_processors::midi_assign).get())
+        if (auto* const midi_assign_proc = procs.midi_assign.get())
         {
             g.event.insert({*midi_learn_proc, 1}, {*midi_assign_proc, 0});
         }
     }
-    else if (
-        auto* const midi_assign_proc =
-            procs.find(engine_processors::midi_assign).get())
+    else if (auto* const midi_assign_proc = procs.midi_assign.get())
     {
         g.event.insert({*midi_in_proc, 0}, {*midi_assign_proc, 0});
     }
 
-    if (auto* const midi_assign_proc =
-            procs.find(engine_processors::midi_assign).get())
+    if (auto* const midi_assign_proc = procs.midi_assign.get())
     {
         std::size_t out_index{};
         for (auto const& [id, assignment] : assignments)
         {
             std::visit(
                 [&](auto const& param_id) {
-                    auto const proc_id =
-                        midi_assignment_key{param_id, assignment};
-                    auto midi_conv_proc = procs.find(proc_id);
-                    BOOST_ASSERT(midi_conv_proc);
+                    auto it_midi_conv_procs = procs.midi_assignments.find(
+                        {.param_id = param_id, .assignment = assignment});
+
+                    BOOST_ASSERT(
+                        it_midi_conv_procs != procs.midi_assignments.end());
+
+                    processor_map::midi_assignment_processors const&
+                        midi_conv_procs = it_midi_conv_procs->second;
+                    BOOST_ASSERT(midi_conv_procs.cc_to_param);
+                    BOOST_ASSERT(midi_conv_procs.param);
 
                     g.event.insert(
-                        {*midi_assign_proc, out_index++},
-                        {*midi_conv_proc, 0});
+                        {.proc = *midi_assign_proc, .port = out_index++},
+                        {.proc = *midi_conv_procs.cc_to_param, .port = 0});
 
-                    auto param_proc =
-                        procs.find(midi_assigned_param_key{param_id});
-                    BOOST_ASSERT(param_proc);
-
-                    g.event.insert({*midi_conv_proc, 0}, {*param_proc, 0});
+                    g.event.insert(
+                        {.proc = *midi_conv_procs.cc_to_param, .port = 0},
+                        {.proc = *midi_conv_procs.param, .port = 0});
                 },
                 id);
         }
