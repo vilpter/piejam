@@ -425,7 +425,6 @@ connect_mixer_output(
     component_map const& comps,
     std::span<std::unique_ptr<audio::engine::output_processor> const> const
         output_procs,
-    std::span<processor_ptr> const output_clip_procs,
     mixer::io_address_t const& mixer_channel_out_route,
     audio::engine::component& mixer_channel_out_comp)
 {
@@ -434,36 +433,18 @@ connect_mixer_output(
             [&](external_audio::device_id const device_id) {
                 external_audio::device const& device = devices.at(device_id);
 
-                auto get_clip_proc =
-                    [&](std::size_t const ch) -> audio::engine::processor& {
-                    auto& clip_proc = output_clip_procs[ch];
-                    if (!clip_proc)
-                    {
-                        clip_proc = audio::engine::make_clip_processor(
-                            -1.f,
-                            1.f,
-                            std::to_string(ch));
-
-                        g.audio.insert(
-                            {.proc = *clip_proc, .port = 0},
-                            {.proc = *output_procs[ch], .port = 0});
-                    }
-
-                    return *clip_proc;
-                };
-
                 if (auto const ch = device.channels.left; ch != npos)
                 {
                     g.audio.insert(
                         mixer_channel_out_comp.outputs()[0],
-                        {.proc = get_clip_proc(ch), .port = 0});
+                        {.proc = *output_procs[ch], .port = 0});
                 }
 
                 if (auto const ch = device.channels.right; ch != npos)
                 {
                     g.audio.insert(
                         mixer_channel_out_comp.outputs()[1],
-                        {.proc = get_clip_proc(ch), .port = 0});
+                        {.proc = *output_procs[ch], .port = 0});
                 }
             },
             [&](mixer::channel_id const dst_channel_id) {
@@ -498,8 +479,7 @@ make_graph(
     std::span<std::unique_ptr<audio::engine::input_processor> const> const
         input_procs,
     std::span<std::unique_ptr<audio::engine::output_processor> const> const
-        output_procs,
-    std::span<processor_ptr> const output_clip_procs)
+        output_procs)
 {
     audio::engine::graph g;
 
@@ -543,7 +523,6 @@ make_graph(
             device_buses,
             comps,
             output_procs,
-            output_clip_procs,
             mixer_state.io_map.at(mixer_channel_id).out(),
             *mixer_channel_out);
 
@@ -605,7 +584,6 @@ make_graph(
                         device_buses,
                         comps,
                         output_procs,
-                        output_clip_procs,
                         aux,
                         *mixer_channel_aux_send);
                 }
@@ -731,8 +709,6 @@ struct audio_engine::impl
         , output_procs(
               make_io_processors<audio::engine::output_processor>(
                   num_device_output_channels))
-        , output_clip_procs(
-              std::vector<processor_ptr>(num_device_output_channels))
     {
     }
 
@@ -744,7 +720,6 @@ struct audio_engine::impl
     std::vector<std::unique_ptr<audio::engine::input_processor>> input_procs;
     std::vector<std::unique_ptr<audio::engine::output_processor>> output_procs;
 
-    std::vector<processor_ptr> output_clip_procs;
     std::vector<processor_ptr> mixer_procs;
     value_io_processor_ptr<midi::external_event> midi_learn_output_proc;
 
@@ -885,17 +860,13 @@ audio_engine::rebuild(
                   "midi_learned")
             : nullptr;
 
-    std::vector<processor_ptr> output_clip_procs(
-        m_impl->output_clip_procs.size());
-
     auto new_graph = make_graph(
         comps,
         st.mixer_state,
         st.external_audio_state.devices,
         st.params,
         m_impl->input_procs,
-        m_impl->output_procs,
-        output_clip_procs);
+        m_impl->output_procs);
 
     connect_midi(
         new_graph,
@@ -920,7 +891,6 @@ audio_engine::rebuild(
     }
 
     m_impl->graph = std::move(final_graph);
-    m_impl->output_clip_procs = std::move(output_clip_procs);
     m_impl->mixer_procs = std::move(mixers);
     m_impl->midi_learn_output_proc = std::move(midi_learn_output_proc);
     m_impl->procs = std::move(procs);
