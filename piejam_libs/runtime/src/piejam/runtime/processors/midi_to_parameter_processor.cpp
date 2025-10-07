@@ -27,10 +27,11 @@
 namespace piejam::runtime::processors
 {
 
-static constexpr std::array s_input_names{std::string_view("cc in")};
+namespace
+{
 
 template <class Parameter>
-static auto
+auto
 make_cc_to_value_lut(Parameter const& param)
 {
     using value_type = typename Parameter::value_type;
@@ -47,18 +48,49 @@ make_cc_to_value_lut(Parameter const& param)
 }
 
 template <class Parameter>
+constexpr auto
+processor_name() noexcept -> std::string_view
+{
+    if constexpr (std::is_same_v<Parameter, bool_parameter>)
+    {
+        return "cc_to_bool";
+    }
+    else if constexpr (std::is_same_v<Parameter, enum_parameter>)
+    {
+        return "cc_to_enum";
+    }
+    else if constexpr (std::is_same_v<Parameter, float_parameter>)
+    {
+        return "cc_to_float";
+    }
+    else if constexpr (std::is_same_v<Parameter, int_parameter>)
+    {
+        return "cc_to_int";
+    }
+    else
+    {
+        static_assert(
+            std::is_same_v<Parameter, struct unsupported_parameter_tag>,
+            "Unsupported parameter type");
+    }
+}
+
+} // namespace
+
+template <class Parameter>
 auto
 make_midi_cc_to_parameter_processor(Parameter const& param)
     -> std::unique_ptr<audio::engine::processor>
 {
     using value_type = typename Parameter::value_type;
-    static constexpr std::array s_output_names{std::string_view("out")};
+    constexpr std::array s_input_names{std::string_view("cc in")};
+    constexpr std::array s_output_names{std::string_view("out")};
     return audio::engine::make_event_converter_processor(
         [lut = make_cc_to_value_lut(param)](midi::cc_event const& cc_ev)
             -> value_type { return lut[cc_ev.value]; },
         s_input_names,
         s_output_names,
-        "cc_to_float");
+        processor_name<Parameter>());
 }
 
 template auto make_midi_cc_to_parameter_processor(bool_parameter const&)
