@@ -77,7 +77,7 @@ TEST_F(midi_to_bool_parameter_processor_test, with_event_to_false)
 
 TEST_F(midi_to_bool_parameter_processor_test, with_event_to_true)
 {
-    midi::cc_event ev{.cc = 5, .value = 23}; // some value not != 0
+    midi::cc_event ev{.cc = 5, .value = 73}; // some value > 63
 
     ev_in_buf.insert(1u, ev);
     proc->process(ctx);
@@ -218,10 +218,20 @@ INSTANTIATE_TEST_SUITE_P(
     midi_to_int_parameter_processor_test,
     testing::Values(
         std::make_pair(0u, 10),
-        std::make_pair(5u, 15),
-        std::make_pair(9u, 19),
-        std::make_pair(10u, 19),
-        std::make_pair(20u, 19),
+        std::make_pair(5u, 10),
+        std::make_pair(9u, 11),
+        std::make_pair(10u, 11),
+        std::make_pair(20u, 11),
+        std::make_pair(30u, 12),
+        std::make_pair(40u, 13),
+        std::make_pair(50u, 14),
+        std::make_pair(60u, 14),
+        std::make_pair(70u, 15),
+        std::make_pair(80u, 16),
+        std::make_pair(90u, 16),
+        std::make_pair(100u, 17),
+        std::make_pair(110u, 18),
+        std::make_pair(120u, 19),
         std::make_pair(127u, 19)));
 
 } // namespace piejam::runtime::processors::test
