@@ -118,7 +118,7 @@ ladspa_fx_middleware::process_ladspa_fx_action(
 
     std::vector<fx::instance_id> fx_instance_ids;
 
-    for (auto fx_mod_id : *st.mixer_state.fx_chains[a.mixer_channel_id])
+    for (auto fx_mod_id : *st.mixer_state.fx_chains.at(a.mixer_channel_id))
     {
         fx::module const& fx_mod =
             mw_fs.get_state().fx_state.modules.at(fx_mod_id);
@@ -153,7 +153,7 @@ ladspa_fx_middleware::process_ladspa_fx_action(
         auto& [_, fx_mod_replacements] =
             action.fx_chain_replacements.emplace_back(mixer_channel_id);
 
-        auto const& fx_chain = *st.mixer_state.fx_chains[mixer_channel_id];
+        auto const& fx_chain = *st.mixer_state.fx_chains.at(mixer_channel_id);
 
         for (std::size_t fx_pos : range::indices(fx_chain))
         {

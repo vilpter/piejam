@@ -156,7 +156,7 @@ make_mixer_components(
                 mixer_channel_id,
                 components::make_mixer_channel_output(
                     mixer_channel,
-                    *strings[mixer_channel.name],
+                    *strings.at(mixer_channel.name),
                     param_procs,
                     stream_procs,
                     sample_rate));
@@ -186,7 +186,7 @@ make_mixer_components(
                     comps.mixer_aux_sends.emplace(
                         aux_send_key,
                         components::make_mixer_channel_aux_send(
-                            *strings[mixer_channel.name],
+                            *strings.at(mixer_channel.name),
                             aux_send.volume(),
                             param_procs));
                 }
@@ -503,7 +503,7 @@ make_graph(
             g,
             comps,
             *mixer_channel_in,
-            mixer_state.fx_chains[mixer_channel_id],
+            mixer_state.fx_chains.at(mixer_channel_id),
             *mixer_channel_out);
 
         connect_mixer_output(

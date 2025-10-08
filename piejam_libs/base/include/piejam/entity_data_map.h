@@ -115,7 +115,7 @@ public:
     }
 
     [[nodiscard]]
-    auto operator[](id_type id) const noexcept -> data_type const&
+    auto at(id_type id) const noexcept -> data_type const&
     {
         auto it = m_map.find(id);
         BOOST_ASSERT(it != m_map.end());

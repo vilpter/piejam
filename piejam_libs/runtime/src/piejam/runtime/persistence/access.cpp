@@ -75,7 +75,7 @@ export_external_audio_device_configs(
             -> persistence::session::external_audio_device_config {
             external_audio::device const& device = devices.at(device_id);
             return {
-                .name = strings[device.name],
+                .name = strings.at(device.name),
                 .bus_type = device.bus_type,
                 .channels = device.channels};
         });
@@ -280,11 +280,11 @@ export_mixer_channel(
     mixer::channel const& channel)
 {
     session::mixer_channel result;
-    result.name = st.strings[channel.name];
-    result.color = st.material_colors[channel.color];
+    result.name = st.strings.at(channel.name);
+    result.color = st.material_colors.at(channel.color);
     result.channel_type = channel.type;
     result.fx_chain =
-        export_fx_chain(st, *st.mixer_state.fx_chains[channel_id]);
+        export_fx_chain(st, *st.mixer_state.fx_chains.at(channel_id));
     result.midi =
         export_midi_assignments(channel.parameters, st.midi_assignments);
     result.parameter = export_parameter_values(channel.parameters, st.params);

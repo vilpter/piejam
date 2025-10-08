@@ -155,7 +155,7 @@ insert_fx_module(
     std::span<parameter_value_assignment const> initial_values,
     std::span<parameter_midi_assignment const> midi_assigns)
 {
-    fx::chain_t fx_chain = st.mixer_state.fx_chains[mixer_channel_id];
+    fx::chain_t fx_chain = st.mixer_state.fx_chains.at(mixer_channel_id);
     auto const insert_pos = std::min(position, fx_chain.size());
 
     fx_chain.emplace(std::next(fx_chain.begin(), insert_pos), fx_mod_id);
@@ -298,7 +298,7 @@ remove_fx_module(
 {
     fx::module const& fx_mod = st.fx_state.modules.at(fx_mod_id);
 
-    fx::chain_t fx_chain = st.mixer_state.fx_chains[fx_chain_id];
+    fx::chain_t fx_chain = st.mixer_state.fx_chains.at(fx_chain_id);
     BOOST_ASSERT(std::ranges::contains(fx_chain, fx_mod_id));
     boost::remove_erase(fx_chain, fx_mod_id);
     st.mixer_state.fx_chains.set(fx_chain_id, box{std::move(fx_chain)});
@@ -571,7 +571,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     }(st.mixer_state.aux_sends.lock());
 
     for (auto fx_mod_id :
-         std::views::reverse(*st.mixer_state.fx_chains[mixer_channel_id]))
+         std::views::reverse(*st.mixer_state.fx_chains.at(mixer_channel_id)))
     {
         remove_fx_module(st, mixer_channel_id, fx_mod_id);
     }
@@ -607,7 +607,7 @@ remove_external_audio_device(
     external_audio::device_id const device_id)
 {
     auto const name_id = st.external_audio_state.devices.at(device_id).name;
-    auto const name = st.strings[name_id];
+    auto const name = st.strings.at(name_id);
 
     st.strings.erase(name_id);
 

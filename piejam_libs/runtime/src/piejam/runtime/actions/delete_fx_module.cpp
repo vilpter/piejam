@@ -16,7 +16,7 @@ delete_fx_module::reduce(state& st) const
 {
     if (st.focused_fx_mod_id == fx_mod_id)
     {
-        auto const& fx_chain = st.mixer_state.fx_chains[fx_chain_id];
+        auto const& fx_chain = st.mixer_state.fx_chains.at(fx_chain_id);
 
         auto next_focused_fx_mod_id = [&]() -> fx::module_id {
             BOOST_ASSERT(!fx_chain->empty());
