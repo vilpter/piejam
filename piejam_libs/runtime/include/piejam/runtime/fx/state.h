@@ -14,14 +14,6 @@
 namespace piejam::runtime::fx
 {
 
-using active_modules_t =
-    boxed_map<boost::container::flat_map<fx::module_id, bool_parameter_id>>;
-
-using ladspa_instances_t =
-    std::unordered_map<ladspa::instance_id, ladspa::plugin_descriptor>;
-
-using unavailable_ladspa_plugins_t = boxed_map<entity_map<unavailable_ladspa>>;
-
 struct state
 {
     modules_t modules;
