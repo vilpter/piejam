@@ -16,8 +16,9 @@ Item {
 
     signal clicked()
 
-    Layout.preferredWidth: 32
-    Layout.preferredHeight: 40
+    implicitWidth: 32
+    implicitHeight: 40
+
     Layout.alignment: Qt.AlignHCenter
 
     Button {
