@@ -9,7 +9,6 @@
 #include <piejam/runtime/components/mixer_channel.h>
 #include <piejam/runtime/components/mute_solo.h>
 #include <piejam/runtime/components/solo_switch.h>
-#include <piejam/runtime/dynamic_key_shared_object_map.h>
 #include <piejam/runtime/external_audio.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/mixer.h>

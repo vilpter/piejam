@@ -8,7 +8,6 @@ endif()
 
 add_executable(piejam_runtime_test
     audio_engine_middleware_test.cpp
-    dynamic_key_shared_object_map_test.cpp
     fader_mappiing_test.cpp
     ladspa_fx_middleware_test.cpp
     ladspa_instance_manager_mock.h

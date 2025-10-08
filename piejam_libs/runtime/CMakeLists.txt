@@ -51,7 +51,6 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/components/mute_solo.h
     include/piejam/runtime/components/solo_switch.h
     include/piejam/runtime/components/stream.h
-    include/piejam/runtime/dynamic_key_shared_object_map.h
     include/piejam/runtime/enum_parameter.h
     include/piejam/runtime/external_audio.h
     include/piejam/runtime/external_audio_fwd.h
@@ -60,10 +59,10 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/fwd.h
     include/piejam/runtime/fx/fwd.h
     include/piejam/runtime/fx/get_parameter_name.h
-
     include/piejam/runtime/fx/ladspa_processor_factory.h
     include/piejam/runtime/fx/module.h
     include/piejam/runtime/fx/registry.h
+    include/piejam/runtime/fx/state.h
     include/piejam/runtime/fx/unavailable_ladspa.h
     include/piejam/runtime/int_parameter.h
     include/piejam/runtime/internal_fx_component_factory.h
@@ -175,7 +174,6 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/state.cpp
     src/piejam/runtime/state_access.cpp
     src/piejam/runtime/thunk_action.cpp
-    include/piejam/runtime/fx/state.h
 )
 
 find_package(nlohmann_json REQUIRED)
