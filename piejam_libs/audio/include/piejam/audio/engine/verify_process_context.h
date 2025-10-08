@@ -43,8 +43,8 @@ verify_process_context(
         std::ranges::equal(
             proc.event_inputs(),
             ctx.event_inputs,
-            [](event_port const& p, abstract_event_buffer const* b) {
-                return !b || p.type() == b->type();
+            [](event_port const& p, abstract_event_buffer const& b) {
+                return p.type() == b.type();
             }));
     BOOST_ASSERT(
         std::ranges::equal(

@@ -41,10 +41,10 @@ public:
 
     void add(event_port const& port)
     {
-        m_event_buffers.push_back(std::addressof(port.empty_event_buffer()));
+        m_event_buffers.emplace_back(port.empty_event_buffer());
 
 #ifndef NDEBUG
-        m_connected.push_back(false);
+        m_connected.emplace_back(false);
 #endif
     }
 
@@ -55,8 +55,9 @@ public:
         BOOST_ASSERT_MSG(
             !m_connected[buffer_index],
             "Input already connected, event_merger needed?");
-        BOOST_ASSERT(m_event_buffers[buffer_index]->type() == ev_buf.type());
-        m_event_buffers[buffer_index] = std::addressof(ev_buf);
+        BOOST_ASSERT(
+            m_event_buffers[buffer_index].get().type() == ev_buf.type());
+        m_event_buffers[buffer_index] = ev_buf;
 
 #ifndef NDEBUG
         m_connected[buffer_index] = true;
@@ -69,14 +70,14 @@ public:
         -> event_buffer<T> const&
     {
         BOOST_ASSERT(buffer_index < m_event_buffers.size());
-        abstract_event_buffer const* const ev_buf =
-            m_event_buffers[buffer_index];
+        abstract_event_buffer const& ev_buf = m_event_buffers[buffer_index];
 
-        return *boost::polymorphic_downcast<event_buffer<T> const*>(ev_buf);
+        return boost::polymorphic_downcast<event_buffer<T> const&>(ev_buf);
     }
 
 private:
-    std::vector<abstract_event_buffer const*> m_event_buffers;
+    std::vector<std::reference_wrapper<abstract_event_buffer const>>
+        m_event_buffers;
 
 #ifndef NDEBUG
     std::vector<bool> m_connected;

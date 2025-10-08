@@ -60,8 +60,8 @@ public:
     auto get(std::size_t const buffer_index) const noexcept -> event_buffer<T>&
     {
         BOOST_ASSERT(buffer_index < m_event_buffers.size());
-        return *boost::polymorphic_downcast<event_buffer<T>*>(
-            m_event_buffers[buffer_index].get());
+        return boost::polymorphic_downcast<event_buffer<T>&>(
+            *m_event_buffers[buffer_index]);
     }
 
     auto get(std::size_t const buffer_index) const noexcept
