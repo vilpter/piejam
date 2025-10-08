@@ -64,6 +64,28 @@ public:
         return m_map.end();
     }
 
+    // for unit tests
+    template <scoped_enum<key> E>
+    [[nodiscard]]
+    auto key_type_is() const noexcept -> bool
+    {
+        return m_key_type == typeid(E);
+    }
+
+    [[nodiscard]]
+    auto contains(key key) const noexcept -> bool
+    {
+        return m_map.contains(key);
+    }
+
+    template <scoped_enum<key> E>
+    [[nodiscard]]
+    auto contains(E key) const noexcept -> bool
+    {
+        BOOST_ASSERT(m_key_type == typeid(E));
+        return contains(std::to_underlying(key));
+    }
+
     auto emplace(key key, parameter_id_t id) -> map&
     {
         BOOST_VERIFY(m_map.emplace(key, id).second);
