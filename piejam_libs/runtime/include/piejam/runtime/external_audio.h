@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <piejam/runtime/channel_index_pair.h>
 #include <piejam/runtime/external_audio_fwd.h>
 #include <piejam/runtime/string_id.h>
 
 #include <piejam/audio/types.h>
 #include <piejam/boxed_map.h>
+#include <piejam/entity_data_map.h>
 #include <piejam/entity_map.h>
 #include <piejam/io_pair.h>
 #include <piejam/npos.h>
@@ -20,18 +20,38 @@ namespace piejam::runtime::external_audio
 struct device
 {
     string_id name;
+    audio::bus_type bus_type;
 
-    audio::bus_type bus_type{};
-
-    //! mono channels hold same device channel in the pair
-    channel_index_pair channels{npos};
-
-    auto operator==(device const&) const noexcept -> bool = default;
+    [[nodiscard]]
+    constexpr auto operator==(device const&) const noexcept -> bool = default;
 };
+
+struct device_channel_key
+{
+    device_id id;
+    audio::bus_channel ch;
+
+    [[nodiscard]]
+    constexpr auto
+    operator<=>(device_channel_key const&) const noexcept = default;
+};
+
+using device_channels_t = entity_data_map<device_channel_key, std::size_t>;
+
+auto get_channels_config(
+    audio::bus_type device_bus_type,
+    device_channels_t const& device_channels,
+    device_id id) -> channels_config_t;
+
+auto get_channels_config(
+    devices_t const& devices,
+    device_channels_t const& device_channels,
+    device_id id) -> channels_config_t;
 
 struct state
 {
     devices_t devices;
+    device_channels_t device_channels;
 
     io_pair<box<device_ids_t>> io_ids;
 };

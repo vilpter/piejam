@@ -6,7 +6,6 @@
 
 #include <piejam/runtime/audio_stream.h>
 #include <piejam/runtime/bool_parameter.h>
-#include <piejam/runtime/channel_index_pair.h>
 #include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/external_audio.h>
 #include <piejam/runtime/float_parameter.h>
@@ -93,10 +92,9 @@ auto make_initial_state() -> state;
 
 auto add_external_audio_device(
     state&,
-    std::string const& name,
+    std::string name,
     io_direction,
-    audio::bus_type,
-    channel_index_pair const&) -> external_audio::device_id;
+    audio::bus_type) -> external_audio::device_id;
 
 auto add_mixer_channel(state&, mixer::channel_type, std::string name)
     -> mixer::channel_id;

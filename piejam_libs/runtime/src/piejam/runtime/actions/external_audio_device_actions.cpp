@@ -52,49 +52,49 @@ default_bus_name(state const& st, io_direction io_dir, audio::bus_type bus_type)
 }
 
 auto
-default_channels(state const& st, io_direction io_dir, audio::bus_type bus_type)
+assigned_channels(state const& st, io_direction io_dir)
 {
     auto num_channels = st.selected_sound_card.num_channels[io_dir];
     std::vector<bool> assigned_channels(num_channels);
 
     auto const& device_ids = *st.external_audio_state.io_ids[io_dir];
 
+    auto mark_assigned = [&](auto const device_id, auto const bus_channel) {
+        if (auto ch = st.external_audio_state.device_channels.at(
+                {device_id, bus_channel});
+            ch < assigned_channels.size())
+        {
+            assigned_channels[ch] = true;
+        }
+    };
+
     for (external_audio::device_id const device_id : device_ids)
     {
-        external_audio::device const* const device =
-            st.external_audio_state.devices.find(device_id);
-        BOOST_ASSERT(device);
-        if (auto ch = device->channels.left; ch != npos)
-        {
-            assigned_channels[ch] = true;
-        }
+        auto const bus_type =
+            st.external_audio_state.devices.at(device_id).bus_type;
 
-        if (auto ch = device->channels.right; ch != npos)
+        if (bus_type == audio::bus_type::mono)
         {
-            assigned_channels[ch] = true;
+            mark_assigned(device_id, audio::bus_channel::mono);
+        }
+        else
+        {
+            mark_assigned(device_id, audio::bus_channel::left);
+            mark_assigned(device_id, audio::bus_channel::right);
         }
     }
 
+    return assigned_channels;
+}
+
+auto
+find_unassigned_channel(std::vector<bool> const& assigned_channels)
+    -> std::size_t
+{
     auto it = std::ranges::find(assigned_channels, false);
-    std::size_t ch = it != assigned_channels.end()
-                         ? std::distance(assigned_channels.begin(), it)
-                         : npos;
-
-    channel_index_pair channels{ch};
-
-    if (bus_type == audio::bus_type::stereo)
-    {
-        if (it != assigned_channels.end())
-        {
-            it = std::find(std::next(it), assigned_channels.end(), false);
-        }
-
-        channels.right = it != assigned_channels.end()
-                             ? std::distance(assigned_channels.begin(), it)
-                             : npos;
-    }
-
-    return channels;
+    return it != assigned_channels.end()
+               ? std::distance(assigned_channels.begin(), it)
+               : npos;
 }
 
 } // namespace
@@ -109,8 +109,30 @@ add_external_audio_device::reduce(state& st) const
         st,
         default_bus_name(st, direction, type),
         direction,
-        type,
-        default_channels(st, direction, type));
+        type);
+
+    auto channels = assigned_channels(st, direction);
+
+    auto find_and_assign_channel = [&](audio::bus_channel bus_ch) {
+        auto ch = find_unassigned_channel(channels);
+        if (ch != npos)
+        {
+            st.external_audio_state.device_channels.set(
+                {added_device_id, bus_ch},
+                ch);
+            channels[ch] = true;
+        }
+    };
+
+    if (type == audio::bus_type::mono)
+    {
+        find_and_assign_channel(audio::bus_channel::mono);
+    }
+    else
+    {
+        find_and_assign_channel(audio::bus_channel::left);
+        find_and_assign_channel(audio::bus_channel::right);
+    }
 
     if (direction == io_direction::output)
     {
@@ -132,22 +154,9 @@ remove_external_audio_device::reduce(state& st) const
 void
 set_external_audio_device_bus_channel::reduce(state& st) const
 {
-    [this](external_audio::device& device) {
-        switch (channel_selector)
-        {
-            case audio::bus_channel::mono:
-                device.channels = channel_index_pair{channel_index};
-                break;
-
-            case audio::bus_channel::left:
-                device.channels.left = channel_index;
-                break;
-
-            case audio::bus_channel::right:
-                device.channels.right = channel_index;
-                break;
-        }
-    }(st.external_audio_state.devices.lock().at(device_id));
+    st.external_audio_state.device_channels.set(
+        {device_id, channel_selector},
+        channel_index);
 }
 
 } // namespace piejam::runtime::actions

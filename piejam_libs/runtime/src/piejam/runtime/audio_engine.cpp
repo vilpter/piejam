@@ -4,7 +4,6 @@
 
 #include <piejam/runtime/audio_engine.h>
 
-#include <piejam/runtime/channel_index_pair.h>
 #include <piejam/runtime/components/make_fx.h>
 #include <piejam/runtime/components/mixer_channel.h>
 #include <piejam/runtime/components/mute_solo.h>
@@ -30,6 +29,7 @@
 #include <piejam/audio/engine/graph.h>
 #include <piejam/audio/engine/graph_algorithms.h>
 #include <piejam/audio/engine/graph_generic_algorithms.h>
+#include <piejam/audio/engine/graph_node.h>
 #include <piejam/audio/engine/graph_to_dag.h>
 #include <piejam/audio/engine/input_processor.h>
 #include <piejam/audio/engine/mix_processor.h>
@@ -366,33 +366,41 @@ void
 connect_mixer_input(
     audio::engine::graph& g,
     mixer::state const& mixer_state,
-    external_audio::devices_t const& devices,
+    external_audio::state const& external_audio_state,
     component_map const& comps,
     std::span<std::unique_ptr<audio::engine::input_processor> const> const
         input_procs,
     mixer::channel_id const& mixer_channel_id,
     audio::engine::component& mixer_channel_in)
 {
-    auto const& mixer_channel = mixer_state.channels.at(mixer_channel_id);
     std::visit(
         boost::hof::match(
             [&](external_audio::device_id const device_id) {
-                external_audio::device const& device = devices.at(device_id);
+                auto const bus_type =
+                    external_audio_state.devices.at(device_id).bus_type;
 
-                if (device.channels.left != npos)
+                auto connect_channel = [&](audio::bus_channel channel,
+                                           std::size_t mixer_port) {
+                    if (auto const ch = external_audio_state.device_channels.at(
+                            {device_id, channel});
+                        ch != npos && ch < input_procs.size())
+                    {
+                        g.audio.insert(
+                            audio::engine::src_endpoint(*input_procs[ch], 0),
+                            audio::engine::dst_endpoint(
+                                mixer_channel_in,
+                                mixer_port));
+                    }
+                };
+
+                if (bus_type == audio::bus_type::mono)
                 {
-                    g.audio.insert(
-                        {.proc = *input_procs[device.channels.left], .port = 0},
-                        mixer_channel_in.inputs()[0]);
+                    connect_channel(audio::bus_channel::mono, 0);
                 }
-
-                if (mixer_channel.type == mixer::channel_type::stereo &&
-                    device.channels.right != npos)
+                else
                 {
-                    g.audio.insert(
-                        {.proc = *input_procs[device.channels.right],
-                         .port = 0},
-                        mixer_channel_in.inputs()[1]);
+                    connect_channel(audio::bus_channel::left, 0);
+                    connect_channel(audio::bus_channel::right, 1);
                 }
             },
             [&](mixer::channel_id const src_channel_id) {
@@ -416,7 +424,7 @@ void
 connect_mixer_output(
     audio::engine::graph& g,
     mixer::state const& mixer_state,
-    external_audio::devices_t const& devices,
+    external_audio::device_channels_t const& device_channels,
     component_map const& comps,
     std::span<std::unique_ptr<audio::engine::output_processor> const> const
         output_procs,
@@ -426,21 +434,22 @@ connect_mixer_output(
     std::visit(
         boost::hof::match(
             [&](external_audio::device_id const device_id) {
-                external_audio::device const& device = devices.at(device_id);
+                auto connect_channel = [&](audio::bus_channel channel,
+                                           std::size_t mixer_port) {
+                    if (auto const ch =
+                            device_channels.at({device_id, channel});
+                        ch != npos && ch < output_procs.size())
+                    {
+                        g.audio.insert(
+                            audio::engine::src_endpoint(
+                                mixer_channel_out_comp,
+                                mixer_port),
+                            audio::engine::dst_endpoint(*output_procs[ch], 0));
+                    }
+                };
 
-                if (auto const ch = device.channels.left; ch != npos)
-                {
-                    g.audio.insert(
-                        mixer_channel_out_comp.outputs()[0],
-                        {.proc = *output_procs[ch], .port = 0});
-                }
-
-                if (auto const ch = device.channels.right; ch != npos)
-                {
-                    g.audio.insert(
-                        mixer_channel_out_comp.outputs()[1],
-                        {.proc = *output_procs[ch], .port = 0});
-                }
+                connect_channel(audio::bus_channel::left, 0);
+                connect_channel(audio::bus_channel::right, 1);
             },
             [&](mixer::channel_id const dst_channel_id) {
                 auto const& dst_channel_in =
@@ -468,7 +477,7 @@ auto
 make_graph(
     component_map const& comps,
     mixer::state const& mixer_state,
-    external_audio::devices_t const& device_buses,
+    external_audio::state const& external_audio_state,
     parameter::store const& params,
     std::span<std::unique_ptr<audio::engine::input_processor> const> const
         input_procs,
@@ -493,7 +502,7 @@ make_graph(
         connect_mixer_input(
             g,
             mixer_state,
-            device_buses,
+            external_audio_state,
             comps,
             input_procs,
             mixer_channel_id,
@@ -509,7 +518,7 @@ make_graph(
         connect_mixer_output(
             g,
             mixer_state,
-            device_buses,
+            external_audio_state.device_channels,
             comps,
             output_procs,
             mixer_state.io_map.at(mixer_channel_id).out(),
@@ -572,7 +581,7 @@ make_graph(
                     connect_mixer_output(
                         g,
                         mixer_state,
-                        device_buses,
+                        external_audio_state.device_channels,
                         comps,
                         output_procs,
                         aux,
@@ -854,7 +863,7 @@ audio_engine::rebuild(
     auto new_graph = make_graph(
         comps,
         st.mixer_state,
-        st.external_audio_state.devices,
+        st.external_audio_state,
         st.params,
         m_impl->input_procs,
         m_impl->output_procs);

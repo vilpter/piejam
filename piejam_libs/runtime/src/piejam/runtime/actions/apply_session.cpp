@@ -24,24 +24,42 @@ template <io_direction D>
 auto
 apply_external_audio_device_configs(
     state& st,
-    std::vector<persistence::session::external_audio_device_config> const&
-        configs,
-    std::size_t const num_ch)
+    std::span<persistence::session::external_audio_device_config const> configs)
 {
     BOOST_ASSERT_MSG(
         st.external_audio_state.io_ids[D]->empty(),
         "configs should be cleared before applying");
-    auto const gte_num_ch = greater_equal(num_ch);
+
     for (auto const& config : configs)
     {
-        auto chs = config.channels;
-        set_if(chs.left, gte_num_ch, npos);
-        set_if(chs.right, gte_num_ch, npos);
-
         auto const type = D == io_direction::output ? audio::bus_type::stereo
                                                     : config.bus_type;
 
-        runtime::add_external_audio_device(st, config.name, D, type, chs);
+        auto device_id =
+            runtime::add_external_audio_device(st, config.name, D, type);
+
+        std::visit(
+            boost::hof::match(
+                [&](std::size_t const mono_channel) {
+                    if (type == audio::bus_type::mono)
+                    {
+                        st.external_audio_state.device_channels.set(
+                            {device_id, audio::bus_channel::mono},
+                            mono_channel);
+                    }
+                },
+                [&](audio::pair<std::size_t> const& stereo_channels) {
+                    if (type == audio::bus_type::stereo)
+                    {
+                        st.external_audio_state.device_channels.set(
+                            {device_id, audio::bus_channel::left},
+                            stereo_channels.left);
+                        st.external_audio_state.device_channels.set(
+                            {device_id, audio::bus_channel::right},
+                            stereo_channels.right);
+                    }
+                }),
+            config.assigned_channels);
     }
 }
 
@@ -203,13 +221,11 @@ apply_session::reduce(state& st) const
 {
     apply_external_audio_device_configs<io_direction::input>(
         st,
-        session->external_audio_input_devices,
-        st.selected_sound_card.num_channels.in());
+        session->external_audio_input_devices);
 
     apply_external_audio_device_configs<io_direction::output>(
         st,
-        session->external_audio_output_devices,
-        st.selected_sound_card.num_channels.out());
+        session->external_audio_output_devices);
 
     BOOST_ASSERT(st.mixer_state.inputs->empty());
     BOOST_ASSERT(st.mixer_state.channels.size() == 1);

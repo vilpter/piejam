@@ -45,7 +45,6 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/audio_stream.h
     include/piejam/runtime/audio_stream_id.h
     include/piejam/runtime/bool_parameter.h
-    include/piejam/runtime/channel_index_pair.h
     include/piejam/runtime/components/make_fx.h
     include/piejam/runtime/components/mixer_channel.h
     include/piejam/runtime/components/mute_solo.h
@@ -151,6 +150,7 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/components/mute_solo.cpp
     src/piejam/runtime/components/solo_switch.cpp
     src/piejam/runtime/components/stream.cpp
+    src/piejam/runtime/external_audio.cpp
     src/piejam/runtime/ladspa_fx/ladspa_fx_component.cpp
     src/piejam/runtime/ladspa_fx/ladspa_fx_module.cpp
     src/piejam/runtime/ladspa_fx_middleware.cpp

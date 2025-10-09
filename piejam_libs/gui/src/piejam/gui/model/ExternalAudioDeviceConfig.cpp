@@ -44,23 +44,28 @@ ExternalAudioDeviceConfig::mono() const noexcept -> mono_property_t
 void
 ExternalAudioDeviceConfig::onSubscribe()
 {
-    observe(
-        runtime::selectors::make_external_audio_device_bus_channel_selector(
-            m_device_id,
-            audio::bus_channel::mono),
-        [this](std::size_t const ch) { setMonoChannel(ch + 1); });
+    if (m_mono)
+    {
+        observe(
+            runtime::selectors::make_external_audio_device_bus_channel_selector(
+                m_device_id,
+                audio::bus_channel::mono),
+            [this](std::size_t const ch) { setMonoChannel(ch + 1); });
+    }
+    else
+    {
+        observe(
+            runtime::selectors::make_external_audio_device_bus_channel_selector(
+                m_device_id,
+                audio::bus_channel::left),
+            [this](std::size_t const ch) { setStereoLeftChannel(ch + 1); });
 
-    observe(
-        runtime::selectors::make_external_audio_device_bus_channel_selector(
-            m_device_id,
-            audio::bus_channel::left),
-        [this](std::size_t const ch) { setStereoLeftChannel(ch + 1); });
-
-    observe(
-        runtime::selectors::make_external_audio_device_bus_channel_selector(
-            m_device_id,
-            audio::bus_channel::right),
-        [this](std::size_t const ch) { setStereoRightChannel(ch + 1); });
+        observe(
+            runtime::selectors::make_external_audio_device_bus_channel_selector(
+                m_device_id,
+                audio::bus_channel::right),
+            [this](std::size_t const ch) { setStereoRightChannel(ch + 1); });
+    }
 }
 
 static void

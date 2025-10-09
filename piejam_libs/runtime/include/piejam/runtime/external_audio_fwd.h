@@ -4,8 +4,10 @@
 
 #pragma once
 
+#include <piejam/audio/fwd.h>
 #include <piejam/fwd.h>
 
+#include <variant>
 #include <vector>
 
 namespace piejam::runtime::external_audio
@@ -16,6 +18,8 @@ using device_id = entity_id<device>;
 using devices_t = boxed_map<entity_map<device>>;
 
 using device_ids_t = std::vector<device_id>;
+
+using channels_config_t = std::variant<std::size_t, audio::pair<std::size_t>>;
 
 struct state;
 

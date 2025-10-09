@@ -451,25 +451,39 @@ make_mixer_channel(state& st, mixer::channel_type type, std::string name)
 auto
 add_external_audio_device(
     state& st,
-    std::string const& name,
+    std::string name,
     io_direction const io_dir,
-    audio::bus_type const bus_type,
-    channel_index_pair const& channels) -> external_audio::device_id
+    audio::bus_type const bus_type) -> external_audio::device_id
 {
-    auto boxed_name = box(name);
-
     auto name_id = string_id::generate();
-    st.strings.insert(name_id, boxed_name);
+    st.strings.insert(name_id, box{std::move(name)});
+
+    BOOST_ASSERT(
+        io_dir == io_direction::input || bus_type == audio::bus_type::stereo);
 
     auto id = st.external_audio_state.devices.emplace(
         external_audio::device{
             .name = name_id,
-            .bus_type = io_dir == io_direction::input ? bus_type
-                                                      : audio::bus_type::stereo,
-            .channels = channels,
+            .bus_type = bus_type,
         });
 
     emplace_back(st.external_audio_state.io_ids[io_dir], id);
+
+    if (bus_type == audio::bus_type::mono)
+    {
+        st.external_audio_state.device_channels.emplace(
+            external_audio::device_channel_key{id, audio::bus_channel::mono},
+            npos);
+    }
+    else
+    {
+        st.external_audio_state.device_channels.emplace(
+            external_audio::device_channel_key{id, audio::bus_channel::left},
+            npos);
+        st.external_audio_state.device_channels.emplace(
+            external_audio::device_channel_key{id, audio::bus_channel::right},
+            npos);
+    }
 
     return id;
 }
@@ -606,10 +620,28 @@ remove_external_audio_device(
     state& st,
     external_audio::device_id const device_id)
 {
-    auto const name_id = st.external_audio_state.devices.at(device_id).name;
-    auto const name = st.strings.at(name_id);
+    auto [name_id, bus_type] = st.external_audio_state.devices.at(device_id);
 
     st.strings.erase(name_id);
+
+    if (bus_type == audio::bus_type::mono)
+    {
+        st.external_audio_state.device_channels.erase(
+            external_audio::device_channel_key{
+                device_id,
+                audio::bus_channel::mono});
+    }
+    else
+    {
+        st.external_audio_state.device_channels.erase(
+            external_audio::device_channel_key{
+                device_id,
+                audio::bus_channel::left});
+        st.external_audio_state.device_channels.erase(
+            external_audio::device_channel_key{
+                device_id,
+                audio::bus_channel::right});
+    }
 
     reset_io_targets(st.mixer_state.io_map, device_id);
 

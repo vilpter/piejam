@@ -77,26 +77,6 @@ struct update_devices final
         st.selected_sound_card = selected_sc;
         st.sample_rate = sample_rate;
         st.period_size = period_size;
-
-        auto devices = st.external_audio_state.devices.lock();
-
-        auto update_channels = [&](auto num_channels, auto const& ids) {
-            auto const ge_num_channels = greater_equal(num_channels);
-            for (auto id : ids)
-            {
-                auto& device = devices.at(id);
-                set_if(device.channels.left, ge_num_channels, npos);
-                set_if(device.channels.right, ge_num_channels, npos);
-            }
-        };
-
-        update_channels(
-            selected_sc.num_channels.in(),
-            st.external_audio_state.io_ids.in().get());
-
-        update_channels(
-            selected_sc.num_channels.out(),
-            st.external_audio_state.io_ids.out().get());
     }
 };
 

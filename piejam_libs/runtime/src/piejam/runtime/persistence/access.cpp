@@ -65,19 +65,24 @@ namespace
 
 auto
 export_external_audio_device_configs(
-    external_audio::devices_t const& devices,
-    external_audio::device_ids_t const& device_ids,
+    external_audio::state const& external_audio_state,
+    io_direction const io_dir,
     strings_t const& strings)
 {
     return algorithm::transform_to_vector(
-        device_ids,
+        external_audio_state.io_ids[io_dir].get(),
         [&](external_audio::device_id const& device_id)
             -> persistence::session::external_audio_device_config {
-            external_audio::device const& device = devices.at(device_id);
+            external_audio::device const& device =
+                external_audio_state.devices.at(device_id);
             return {
                 .name = strings.at(device.name),
                 .bus_type = device.bus_type,
-                .channels = device.channels};
+                .assigned_channels = external_audio::get_channels_config(
+                    device.bus_type,
+                    external_audio_state.device_channels,
+                    device_id),
+            };
         });
 }
 
@@ -347,14 +352,14 @@ save_session(std::filesystem::path const& file, state const& st)
         session ses;
 
         ses.external_audio_input_devices = export_external_audio_device_configs(
-            st.external_audio_state.devices,
-            st.external_audio_state.io_ids.in().get(),
+            st.external_audio_state,
+            io_direction::input,
             st.strings);
 
         ses.external_audio_output_devices =
             export_external_audio_device_configs(
-                st.external_audio_state.devices,
-                st.external_audio_state.io_ids.out().get(),
+                st.external_audio_state,
+                io_direction::output,
                 st.strings);
 
         ses.mixer_channels = export_mixer_channels(st, *st.mixer_state.inputs);

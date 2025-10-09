@@ -139,9 +139,7 @@ void
 from_json(nlohmann::json const& j, parameter_value_assignment& p)
 {
     j.at("key").get_to(p.key);
-
-    auto const& v = j.at("value");
-    parameter_value_assignment_serializer.from_json(v, p.value);
+    parameter_value_assignment_serializer.from_json(j.at("value"), p.value);
 }
 
 } // namespace parameter
@@ -158,11 +156,30 @@ get_version(nlohmann::json const& json_ses) -> unsigned
     return json_ses.at(s_key_version).get<unsigned>();
 }
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    session::external_audio_device_config,
-    name,
-    bus_type,
-    channels);
+static auto const assigned_channels_serializer = variant_serializer{
+    variant_option<std::size_t>{"mono"},
+    variant_option<audio::pair<std::size_t>>{"stereo"}};
+
+void
+to_json(nlohmann::json& j, session::external_audio_device_config const& p)
+{
+    j = nlohmann::json{
+        {"name", p.name},
+        {"bus_type", p.bus_type},
+        {"assigned_channels",
+         assigned_channels_serializer.to_json(p.assigned_channels)},
+    };
+}
+
+void
+from_json(nlohmann::json const& j, session::external_audio_device_config& p)
+{
+    j.at("name").get_to(p.name);
+    j.at("bus_type").get_to(p.bus_type);
+    assigned_channels_serializer.from_json(
+        j.at("assigned_channels"),
+        p.assigned_channels);
+}
 
 static auto const s_key_internal = "internal";
 static auto const s_key_ladspa = "ladspa";

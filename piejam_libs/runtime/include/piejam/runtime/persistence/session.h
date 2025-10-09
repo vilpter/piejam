@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/runtime/channel_index_pair.h>
 #include <piejam/runtime/fx/fwd.h>
 #include <piejam/runtime/material_color.h>
 #include <piejam/runtime/midi_assignment.h>
@@ -13,6 +12,7 @@
 #include <piejam/runtime/persistence/parameter_midi_assignments.h>
 #include <piejam/runtime/persistence/parameter_value_assignments.h>
 
+#include <piejam/audio/pair.h>
 #include <piejam/audio/types.h>
 #include <piejam/ladspa/fwd.h>
 
@@ -34,7 +34,7 @@ struct session
     {
         std::string name;
         audio::bus_type bus_type;
-        channel_index_pair channels;
+        external_audio::channels_config_t assigned_channels;
     };
 
     struct internal_fx

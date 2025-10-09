@@ -30,45 +30,37 @@ SubscribableItem {
 
             currentIndex: root.model ? (root.model.mono ? 0 : 1) : -1
 
-            ChoiceBox {
+            ChannelComboBox {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                model: root.channels
-                currentIndex: root.model ? root.model.monoChannel : -1
-                textHorizontalAlignment: Text.AlignHCenter
-
-                textRole: "text"
+                channels: root.channels
+                channel: root.model ? root.model.monoChannel : -1
 
                 onActivated: root.model.changeMonoChannel(index)
             }
+
 
             RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                ChoiceBox {
+                ChannelComboBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    model: root.channels
-                    currentIndex: root.model ? root.model.stereoLeftChannel : -1
-                    textHorizontalAlignment: Text.AlignHCenter
-
-                    textRole: "text"
+                    channels: root.channels
+                    channel: root.model ? root.model.stereoLeftChannel : -1
 
                     onActivated: root.model.changeStereoLeftChannel(index)
                 }
 
-                ChoiceBox {
+                ChannelComboBox {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    model: root.channels
-                    currentIndex: root.model ? root.model.stereoRightChannel : -1
-                    textHorizontalAlignment: Text.AlignHCenter
-
-                    textRole: "text"
+                    channels: root.channels
+                    channel: root.model ? root.model.stereoRightChannel : -1
 
                     onActivated: root.model.changeStereoRightChannel(index)
                 }
@@ -81,7 +73,7 @@ SubscribableItem {
             text: "X"
             font.bold: true
 
-            onClicked: if (root.model) root.model.remove()
+            onClicked: root.model.remove()
         }
     }
 }

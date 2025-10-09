@@ -185,31 +185,18 @@ make_external_audio_device_bus_type_selector(
         &external_audio::device::bus_type>(device_id);
 }
 
-template <audio::bus_channel BusChannel>
-static auto
-get_external_audio_device_bus_channel(external_audio::device const& device)
-{
-    return BusChannel == audio::bus_channel::right ? device.channels.right
-                                                   : device.channels.left;
-}
-
 auto
 make_external_audio_device_bus_channel_selector(
     external_audio::device_id const device_id,
     audio::bus_channel const bus_channel) -> selector<std::size_t>
 {
-    switch (bus_channel)
-    {
-        case audio::bus_channel::right:
-            return make_external_audio_member_selector<
-                &get_external_audio_device_bus_channel<
-                    audio::bus_channel::right>>(device_id, piejam::npos);
-
-        default:
-            return make_external_audio_member_selector<
-                &get_external_audio_device_bus_channel<
-                    audio::bus_channel::left>>(device_id, piejam::npos);
-    }
+    return make_entity_data_map_selector(
+        [](state const& st) -> auto const& {
+            return st.external_audio_state.device_channels;
+        },
+        boost::hof::always(
+            external_audio::device_channel_key{device_id, bus_channel}),
+        npos);
 }
 
 static auto
