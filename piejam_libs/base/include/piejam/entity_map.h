@@ -24,7 +24,7 @@ public:
     using value_type = typename map_t::value_type;
     using size_type = typename map_t::size_type;
     using const_iterator = typename map_t::const_iterator;
-    using iterator = typename map_t::iterator;
+    using iterator = typename map_t::const_iterator;
 
     [[nodiscard]]
     auto empty() const noexcept -> bool
@@ -45,19 +45,7 @@ public:
     }
 
     [[nodiscard]]
-    auto begin() noexcept -> iterator
-    {
-        return m_map.begin();
-    }
-
-    [[nodiscard]]
     auto end() const noexcept -> const_iterator
-    {
-        return m_map.end();
-    }
-
-    [[nodiscard]]
-    auto end() noexcept -> iterator
     {
         return m_map.end();
     }
@@ -70,12 +58,6 @@ public:
 
     [[nodiscard]]
     auto find(id_t id) const noexcept -> const_iterator
-    {
-        return m_map.find(id);
-    }
-
-    [[nodiscard]]
-    auto find(id_t id) noexcept -> iterator
     {
         return m_map.find(id);
     }

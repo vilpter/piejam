@@ -251,22 +251,24 @@ apply_session::reduce(state& st) const
         apply_mixer_fx_chain(st, added_channel_id, channel_data.fx_chain);
     }
 
-    [&](mixer::channel& main_mixer_channel) {
-        st.strings.set(
-            main_mixer_channel.name,
-            box{session->main_mixer_channel.name});
-        st.material_colors.set(
-            main_mixer_channel.color,
-            session->main_mixer_channel.color);
-        apply_midi_assignments(
-            session->main_mixer_channel.midi,
-            *main_mixer_channel.parameters,
-            mixer_midi_assignments);
-        apply_parameter_values(
-            session->main_mixer_channel.parameter,
-            *main_mixer_channel.parameters,
-            st.params);
-    }(st.mixer_state.channels.lock().at(st.mixer_state.main));
+    auto const& main_mixer_channel =
+        st.mixer_state.channels.at(st.mixer_state.main);
+
+    st.strings.set(
+        main_mixer_channel.name,
+        box{session->main_mixer_channel.name});
+    st.material_colors.set(
+        main_mixer_channel.color,
+        session->main_mixer_channel.color);
+    apply_midi_assignments(
+        session->main_mixer_channel.midi,
+        *main_mixer_channel.parameters,
+        mixer_midi_assignments);
+    apply_parameter_values(
+        session->main_mixer_channel.parameter,
+        *main_mixer_channel.parameters,
+        st.params);
+
     apply_mixer_fx_chain(
         st,
         st.mixer_state.main,
