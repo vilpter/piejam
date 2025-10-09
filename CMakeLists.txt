@@ -12,6 +12,14 @@ set(CMAKE_CXX_STANDARD 26)
 option(PIEJAM_BENCHMARKS "Build benchmarks" OFF)
 option(PIEJAM_TESTS "Build tests" OFF)
 
+# How to run with coverage:
+# cmake -DCMAKE_BUILD_TYPE=Debug -DPIEJAM_TESTS=ON -DPIEJAM_COVERAGE=ON -B build
+# cmake --build build
+# ctest --output-on-failure
+# gcovr -r . build --html --html-details -o coverage.html
+option(PIEJAM_COVERAGE "Enable code coverage" OFF)
+
+
 add_library(piejam_compiler_warnings INTERFACE)
 
 # GNU/Clang warnings
@@ -60,6 +68,11 @@ if(PIEJAM_TESTS)
     find_package(GTest REQUIRED)
     add_library(gtest_driver INTERFACE)
     target_link_libraries(gtest_driver INTERFACE gtest gtest_main pthread)
+
+    if(PIEJAM_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        add_compile_options(-O0 -g --coverage)
+        add_link_options(--coverage)
+    endif()
 endif()
 
 find_package(Boost CONFIG)
