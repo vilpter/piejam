@@ -11,6 +11,8 @@ Item {
 
     property var model: null
 
+    enabled: root.model !== null
+
     ModelSubscription {
         target: root.model
         subscribed: root.visible
