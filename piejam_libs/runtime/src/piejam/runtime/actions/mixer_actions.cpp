@@ -9,18 +9,44 @@
 
 #include <boost/hof/compose.hpp>
 
-#include <iterator>
+#include <format>
 
 namespace piejam::runtime::actions
 {
 
+namespace
+{
+
+auto
+default_name(state const& st, mixer::channel_type channel_type) -> std::string
+{
+    switch (channel_type)
+    {
+        case mixer::channel_type::aux:
+            return std::format(
+                "Aux {}",
+                st.mixer_state.aux_channels.size() + 1);
+
+        default:
+            return std::format(
+                "In {}",
+                st.mixer_state.inputs->size() -
+                    st.mixer_state.aux_channels.size() + 1);
+    }
+}
+
+} // namespace
+
 void
 add_mixer_channel::reduce(state& st) const
 {
-    auto added_mixer_channel_id =
-        runtime::add_mixer_channel(st, channel_type, name);
+    auto added_mixer_channel_id = runtime::add_mixer_channel(
+        st,
+        channel_type,
+        name.empty() ? default_name(st, channel_type) : name);
 
-    if (auto_assign_input && channel_type != mixer::channel_type::aux)
+    // auto-assign to first available external audio device
+    if (channel_type != mixer::channel_type::aux)
     {
         for (auto device_id : *st.external_audio_state.io_ids.in())
         {

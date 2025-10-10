@@ -86,23 +86,9 @@ ViewPane {
                 anchors.leftMargin: 2
                 anchors.rightMargin: 8
 
-                onAddMonoClicked: {
-                    root.model.addMonoChannel(name ? name : "In " + (inputs.count + 1))
-                    name = ""
-                    channelAddStrip.slideToEnd()
-                }
+                model: root.model.channelAdd
 
-                onAddStereoClicked: {
-                    root.model.addStereoChannel(name ? name : "In " + (inputs.count + 1))
-                    name = ""
-                    channelAddStrip.slideToEnd()
-                }
-
-                onAddAuxClicked: {
-                    root.model.addAuxChannel(name ? name : "Aux " + (inputs.count + 1))
-                    name = ""
-                    channelAddStrip.slideToEnd()
-                }
+                onChannelAdded: slideToEnd()
             }
 
             function slideToEnd() {
@@ -112,7 +98,7 @@ ViewPane {
         }
 
         Behavior on contentX {
-            NumberAnimation { duration: 400; easing.type: Easing.InOutQuad }
+            NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
         }
     }
 

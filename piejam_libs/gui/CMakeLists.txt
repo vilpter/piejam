@@ -69,6 +69,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/MidiInputSettings.h
     include/piejam/gui/model/Mixer.h
     include/piejam/gui/model/MixerChannel.h
+    include/piejam/gui/model/MixerChannelAdd.h
     include/piejam/gui/model/MixerChannelAuxSend.h
     include/piejam/gui/model/MixerChannelEdit.h
     include/piejam/gui/model/MixerChannelFx.h
@@ -135,6 +136,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/MidiInputSettings.cpp
     src/piejam/gui/model/Mixer.cpp
     src/piejam/gui/model/MixerChannel.cpp
+    src/piejam/gui/model/MixerChannelAdd.cpp
     src/piejam/gui/model/MixerChannelAuxSend.cpp
     src/piejam/gui/model/MixerChannelEdit.cpp
     src/piejam/gui/model/MixerChannelFx.cpp

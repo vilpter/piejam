@@ -5,6 +5,7 @@
 #include <piejam/gui/model/Mixer.h>
 
 #include <piejam/gui/ListModelEditScriptProcessor.h>
+#include <piejam/gui/model/MixerChannelAdd.h>
 #include <piejam/gui/model/MixerChannelModels.h>
 #include <piejam/gui/model/ObjectListModel.h>
 
@@ -22,6 +23,7 @@ struct Mixer::Impl
         runtime::state_access const& state_access,
         runtime::mixer::channel_id main_channel)
         : mainChannel{state_access, main_channel}
+        , channelAdd{state_access}
     {
     }
 
@@ -29,6 +31,7 @@ struct Mixer::Impl
 
     MixerChannelModels mainChannel;
     MixerChannelsList userChannels;
+    MixerChannelAdd channelAdd;
 };
 
 Mixer::Mixer(runtime::state_access const& state_access)
@@ -51,6 +54,12 @@ Mixer::mainChannel() const noexcept -> MixerChannelModels*
     return &m_impl->mainChannel;
 }
 
+auto
+Mixer::channelAdd() const noexcept -> MixerChannelAdd*
+{
+    return &m_impl->channelAdd;
+}
+
 void
 Mixer::onSubscribe()
 {
@@ -71,37 +80,6 @@ Mixer::onSubscribe()
 
             m_impl->user_channel_ids = user_channel_ids;
         });
-}
-
-void
-Mixer::addMonoChannel(QString const& newChannelName)
-{
-    addChannel(newChannelName, runtime::mixer::channel_type::mono, true);
-}
-
-void
-Mixer::addStereoChannel(QString const& newChannelName)
-{
-    addChannel(newChannelName, runtime::mixer::channel_type::stereo, true);
-}
-
-void
-Mixer::addAuxChannel(QString const& newChannelName)
-{
-    addChannel(newChannelName, runtime::mixer::channel_type::aux, false);
-}
-
-void
-Mixer::addChannel(
-    QString const& name,
-    runtime::mixer::channel_type type,
-    bool auto_assign_input)
-{
-    runtime::actions::add_mixer_channel action;
-    action.name = name.toStdString();
-    action.channel_type = type;
-    action.auto_assign_input = auto_assign_input;
-    dispatch(action);
 }
 
 } // namespace piejam::gui::model

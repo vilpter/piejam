@@ -25,7 +25,6 @@ struct add_mixer_channel final
 {
     std::string name;
     mixer::channel_type channel_type;
-    bool auto_assign_input{};
 
     void reduce(state&) const override;
 };

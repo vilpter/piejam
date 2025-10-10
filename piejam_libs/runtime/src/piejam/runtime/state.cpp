@@ -570,6 +570,8 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
                 remove_aux_send(st, ch_aux_sends.at(mixer_channel_id));
                 ch_aux_sends.erase(mixer_channel_id);
             }
+
+            st.mixer_state.aux_channels.erase(mixer_channel_id);
         }
         else
         {

@@ -37,6 +37,7 @@ class MixerChannelPerform;
 class MixerChannelEdit;
 class MixerChannelFx;
 class MixerChannelAuxSend;
+class MixerChannelAdd;
 class DbScaleData;
 class AudioRouting;
 class AudioRoutingSelection;

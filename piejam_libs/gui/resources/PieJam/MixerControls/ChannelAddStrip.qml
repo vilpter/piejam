@@ -10,14 +10,9 @@ import QtQuick.Layouts 1.15
 ChannelStripBase {
     id: root
 
-    property alias name: nameText.text
-
-    signal addMonoClicked()
-    signal addStereoClicked()
-    signal addAuxClicked()
+    signal channelAdded()
 
     ColumnLayout {
-
         anchors.fill: parent
         spacing: 0
 
@@ -45,7 +40,11 @@ ChannelStripBase {
 
             Material.background: Material.color(Material.Green, Material.Shade400)
 
-            onClicked: root.addMonoClicked()
+            onClicked: {
+                root.model.addMonoChannel(nameText.text)
+                nameText.text = ""
+                root.channelAdded()
+            }
         }
 
         Button {
@@ -56,7 +55,11 @@ ChannelStripBase {
 
             Material.background: Material.color(Material.Green, Material.Shade400)
 
-            onClicked: root.addStereoClicked()
+            onClicked: {
+                root.model.addStereoChannel(nameText.text)
+                nameText.text = ""
+                root.channelAdded()
+            }
         }
 
         Button {
@@ -67,7 +70,11 @@ ChannelStripBase {
 
             Material.background: Material.color(Material.Green, Material.Shade400)
 
-            onClicked: root.addAuxClicked()
+            onClicked: {
+                root.model.addAuxChannel(nameText.text)
+                nameText.text = ""
+                root.channelAdded()
+            }
         }
     }
 }
