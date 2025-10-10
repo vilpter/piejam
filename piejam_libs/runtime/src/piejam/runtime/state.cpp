@@ -168,7 +168,7 @@ insert_fx_module(
         fx_mod.parameters,
         *st.midi_assignments.lock());
 
-    st.mixer_state.fx_chains.set(mixer_channel_id, box{std::move(fx_chain)});
+    st.mixer_state.fx_chains.assign(mixer_channel_id, box{std::move(fx_chain)});
 
     parameter_factory params{st.params};
     st.fx_state.active_modules.emplace(
@@ -301,7 +301,7 @@ remove_fx_module(
     fx::chain_t fx_chain = st.mixer_state.fx_chains.at(fx_chain_id);
     BOOST_ASSERT(std::ranges::contains(fx_chain, fx_mod_id));
     boost::remove_erase(fx_chain, fx_mod_id);
-    st.mixer_state.fx_chains.set(fx_chain_id, box{std::move(fx_chain)});
+    st.mixer_state.fx_chains.assign(fx_chain_id, box{std::move(fx_chain)});
 
     remove_parameters(st, *fx_mod.parameters);
 

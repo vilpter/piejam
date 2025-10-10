@@ -117,7 +117,7 @@ add_external_audio_device::reduce(state& st) const
         auto ch = find_unassigned_channel(channels);
         if (ch != npos)
         {
-            st.external_audio_state.device_channels.set(
+            st.external_audio_state.device_channels.assign(
                 {added_device_id, bus_ch},
                 ch);
             channels[ch] = true;
@@ -154,7 +154,7 @@ remove_external_audio_device::reduce(state& st) const
 void
 set_external_audio_device_bus_channel::reduce(state& st) const
 {
-    st.external_audio_state.device_channels.set(
+    st.external_audio_state.device_channels.assign(
         {device_id, channel_selector},
         channel_index);
 }

@@ -122,6 +122,12 @@ public:
         return locked{*this};
     }
 
+    template <class Key, class Value>
+    auto assign(Key&& key, Value&& value)
+    {
+        lock().at(std::forward<Key>(key)) = std::forward<Value>(value);
+    }
+
     template <class... Args>
     auto emplace(Args&&... args)
     {

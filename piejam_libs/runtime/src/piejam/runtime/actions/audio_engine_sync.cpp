@@ -27,7 +27,7 @@ audio_engine_sync_update::reduce(state& st) const
     for (auto&& [id, buffer] : streams)
     {
         BOOST_ASSERT(st.streams.contains(id));
-        st.streams.set(id, buffer);
+        st.streams.assign(id, buffer);
     }
 }
 

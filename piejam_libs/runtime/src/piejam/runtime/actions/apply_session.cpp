@@ -43,7 +43,7 @@ apply_external_audio_device_configs(
                 [&](std::size_t const mono_channel) {
                     if (type == audio::bus_type::mono)
                     {
-                        st.external_audio_state.device_channels.set(
+                        st.external_audio_state.device_channels.assign(
                             {device_id, audio::bus_channel::mono},
                             mono_channel);
                     }
@@ -51,10 +51,10 @@ apply_external_audio_device_configs(
                 [&](audio::pair<std::size_t> const& stereo_channels) {
                     if (type == audio::bus_type::stereo)
                     {
-                        st.external_audio_state.device_channels.set(
+                        st.external_audio_state.device_channels.assign(
                             {device_id, audio::bus_channel::left},
                             stereo_channels.left);
-                        st.external_audio_state.device_channels.set(
+                        st.external_audio_state.device_channels.assign(
                             {device_id, audio::bus_channel::right},
                             stereo_channels.right);
                     }
@@ -239,7 +239,7 @@ apply_session::reduce(state& st) const
             channel_data.channel_type,
             channel_data.name);
         auto& added_channel = st.mixer_state.channels.at(added_channel_id);
-        st.material_colors.set(added_channel.color, channel_data.color);
+        st.material_colors.assign(added_channel.color, channel_data.color);
         apply_midi_assignments(
             channel_data.midi,
             *added_channel.parameters,
@@ -254,10 +254,10 @@ apply_session::reduce(state& st) const
     auto const& main_mixer_channel =
         st.mixer_state.channels.at(st.mixer_state.main);
 
-    st.strings.set(
+    st.strings.assign(
         main_mixer_channel.name,
         box{session->main_mixer_channel.name});
-    st.material_colors.set(
+    st.material_colors.assign(
         main_mixer_channel.color,
         session->main_mixer_channel.color);
     apply_midi_assignments(

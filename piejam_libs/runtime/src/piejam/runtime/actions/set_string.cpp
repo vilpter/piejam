@@ -12,7 +12,7 @@ namespace piejam::runtime::actions
 void
 set_string::reduce(state& st) const
 {
-    st.strings.set(id, str);
+    st.strings.assign(id, str);
 }
 
 } // namespace piejam::runtime::actions

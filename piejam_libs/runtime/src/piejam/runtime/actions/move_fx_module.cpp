@@ -21,7 +21,7 @@ move_fx_module_up::reduce(state& st) const
     BOOST_ASSERT(it != fx_chain.begin());
     std::iter_swap(it, std::prev(it));
 
-    st.mixer_state.fx_chains.set(
+    st.mixer_state.fx_chains.assign(
         st.focused_fx_chain_id,
         box{std::move(fx_chain)});
 }
@@ -36,7 +36,7 @@ move_fx_module_down::reduce(state& st) const
     BOOST_ASSERT(std::next(it) != fx_chain.end());
     std::iter_swap(it, std::next(it));
 
-    st.mixer_state.fx_chains.set(
+    st.mixer_state.fx_chains.assign(
         st.focused_fx_chain_id,
         box{std::move(fx_chain)});
 }

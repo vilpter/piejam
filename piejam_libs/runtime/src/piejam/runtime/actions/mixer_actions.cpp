@@ -77,7 +77,7 @@ void
 set_mixer_channel_color::reduce(state& st) const
 {
     auto const& channel = st.mixer_state.channels.at(channel_id);
-    st.material_colors.set(channel.color, color);
+    st.material_colors.assign(channel.color, color);
 }
 
 void

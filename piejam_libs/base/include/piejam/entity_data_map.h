@@ -124,7 +124,7 @@ public:
 
     auto operator==(entity_data_map const&) const noexcept -> bool = default;
 
-    void set(id_type id, data_type value)
+    void assign(id_type id, data_type value)
     {
         auto it = m_map.find(id);
         BOOST_ASSERT(it != m_map.end());
