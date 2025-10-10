@@ -46,25 +46,22 @@ public:
         return m_map->end();
     }
 
-    template <class Key>
     [[nodiscard]]
-    auto contains(Key&& key) const noexcept -> bool
+    auto contains(key_type const& key) const noexcept -> bool
     {
-        return m_map->contains(std::forward<Key>(key));
+        return m_map->contains(key);
     }
 
-    template <class Key>
     [[nodiscard]]
-    auto find(Key&& key) const noexcept -> mapped_type const*
+    auto find(key_type const& key) const noexcept -> mapped_type const*
     {
-        return m_map->find(std::forward<Key>(key));
+        return m_map->find(key);
     }
 
-    template <class Key>
     [[nodiscard]]
-    auto at(Key&& key) const noexcept -> mapped_type const&
+    auto at(key_type const& key) const noexcept -> mapped_type const&
     {
-        return m_map->at(std::forward<Key>(key));
+        return m_map->at(key);
     }
 
     class locked
@@ -87,18 +84,16 @@ public:
             return m_locked->end();
         }
 
-        template <class Key>
         [[nodiscard]]
-        auto find(Key&& key) -> mapped_type*
+        auto find(key_type const& key) -> mapped_type*
         {
-            return m_locked->find(std::forward<Key>(key));
+            return m_locked->find(key);
         }
 
-        template <class Key>
         [[nodiscard]]
-        auto at(Key&& key) -> mapped_type&
+        auto at(key_type const& key) -> mapped_type&
         {
-            return m_locked->at(std::forward<Key>(key));
+            return m_locked->at(key);
         }
 
         template <class... Args>
@@ -107,10 +102,9 @@ public:
             return m_locked->emplace(std::forward<Args>(args)...);
         }
 
-        template <class Key>
-        auto erase(Key&& key)
+        auto erase(key_type const& key)
         {
-            return m_locked->erase(std::forward<Key>(key));
+            return m_locked->erase(key);
         }
 
     private:
@@ -122,10 +116,10 @@ public:
         return locked{*this};
     }
 
-    template <class Key, class Value>
-    auto assign(Key&& key, Value&& value)
+    template <class Value>
+    auto assign(key_type const& key, Value&& value)
     {
-        lock().at(std::forward<Key>(key)) = std::forward<Value>(value);
+        lock().at(key) = std::forward<Value>(value);
     }
 
     template <class... Args>
@@ -134,10 +128,9 @@ public:
         return lock().emplace(std::forward<Args>(args)...);
     }
 
-    template <class Key>
-    auto erase(Key&& id)
+    auto erase(key_type const& key)
     {
-        return lock().erase(id);
+        return lock().erase(key);
     }
 
     auto operator==(boxed_map const&) const noexcept -> bool = default;

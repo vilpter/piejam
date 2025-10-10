@@ -72,43 +72,39 @@ public:
         return m_map.end();
     }
 
-    template <class Key>
     [[nodiscard]]
-    constexpr auto contains(Key&& key) const noexcept -> bool
+    constexpr auto contains(key_type const& key) const noexcept -> bool
     {
-        return m_map.contains(std::forward<Key>(key));
+        return m_map.contains(key);
     }
 
-    template <class Key>
     [[nodiscard]]
-    constexpr auto find(Key&& key) const noexcept -> mapped_type const*
+    constexpr auto find(key_type const& key) const noexcept
+        -> mapped_type const*
     {
-        auto it = m_map.find(std::forward<Key>(key));
+        auto it = m_map.find(key);
         return it != m_map.end() ? &it->second : nullptr;
     }
 
-    template <class Key>
     [[nodiscard]]
-    constexpr auto find(Key&& key) noexcept -> mapped_type*
+    constexpr auto find(key_type const& key) noexcept -> mapped_type*
     {
-        auto it = m_map.find(std::forward<Key>(key));
+        auto it = m_map.find(key);
         return it != m_map.end() ? &it->second : nullptr;
     }
 
-    template <class Key>
     [[nodiscard]]
-    constexpr auto at(Key&& key) const noexcept -> mapped_type const&
+    constexpr auto at(key_type const& key) const noexcept -> mapped_type const&
     {
-        auto it = m_map.find(std::forward<Key>(key));
+        auto it = m_map.find(key);
         BOOST_ASSERT(it != m_map.end());
         return it->second;
     }
 
-    template <class Key>
     [[nodiscard]]
-    constexpr auto at(Key&& key) noexcept -> mapped_type&
+    constexpr auto at(key_type const& key) noexcept -> mapped_type&
     {
-        auto it = m_map.find(std::forward<Key>(key));
+        auto it = m_map.find(key);
         BOOST_ASSERT(it != m_map.end());
         return it->second;
     }
@@ -120,12 +116,11 @@ public:
         return m_map.emplace(std::forward<Args>(args)...);
     }
 
-    template <class Key>
     constexpr auto
-    erase(Key&& key) noexcept(noexcept(m_map.erase(std::forward<Key>(key))))
+    erase(key_type const& key) noexcept(noexcept(m_map.erase(key)))
         -> decltype(auto)
     {
-        return m_map.erase(std::forward<Key>(key));
+        return m_map.erase(key);
     }
 
     constexpr auto operator==(lean_map_facade const&) const noexcept
