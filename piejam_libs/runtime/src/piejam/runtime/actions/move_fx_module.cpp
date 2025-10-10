@@ -14,7 +14,7 @@ namespace piejam::runtime::actions
 void
 move_fx_module_up::reduce(state& st) const
 {
-    auto fx_chain = *st.mixer_state.fx_chains.at(st.focused_fx_chain_id);
+    auto fx_chain = st.mixer_state.fx_chains.at(st.focused_fx_chain_id);
 
     auto it = std::ranges::find(fx_chain, st.focused_fx_mod_id);
     BOOST_ASSERT(it != fx_chain.end());
@@ -23,13 +23,13 @@ move_fx_module_up::reduce(state& st) const
 
     st.mixer_state.fx_chains.assign(
         st.focused_fx_chain_id,
-        box{std::move(fx_chain)});
+        std::move(fx_chain));
 }
 
 void
 move_fx_module_down::reduce(state& st) const
 {
-    auto fx_chain = *st.mixer_state.fx_chains.at(st.focused_fx_chain_id);
+    auto fx_chain = st.mixer_state.fx_chains.at(st.focused_fx_chain_id);
 
     auto it = std::ranges::find(fx_chain, st.focused_fx_mod_id);
     BOOST_ASSERT(it != fx_chain.end());
@@ -38,7 +38,7 @@ move_fx_module_down::reduce(state& st) const
 
     st.mixer_state.fx_chains.assign(
         st.focused_fx_chain_id,
-        box{std::move(fx_chain)});
+        std::move(fx_chain));
 }
 
 } // namespace piejam::runtime::actions

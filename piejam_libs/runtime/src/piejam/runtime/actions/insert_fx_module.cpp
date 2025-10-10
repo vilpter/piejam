@@ -71,10 +71,9 @@ replace_missing_ladspa_fx_module::reduce(state& st) const
     {
         for (auto const& [pos, ladspa_instance] : replacements)
         {
-            BOOST_ASSERT(
-                pos < st.mixer_state.fx_chains.at(fx_chain_id)->size());
+            BOOST_ASSERT(pos < st.mixer_state.fx_chains.at(fx_chain_id).size());
             auto const prev_fx_mod_id =
-                st.mixer_state.fx_chains.at(fx_chain_id).get()[pos];
+                st.mixer_state.fx_chains.at(fx_chain_id)[pos];
 
             auto unavail_id = std::get<fx::unavailable_ladspa_id>(
                 st.fx_state.modules.at(prev_fx_mod_id).fx_instance_id);

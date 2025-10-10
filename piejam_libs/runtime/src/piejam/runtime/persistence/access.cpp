@@ -289,7 +289,7 @@ export_mixer_channel(
     result.color = st.material_colors.at(channel.color);
     result.channel_type = channel.type;
     result.fx_chain =
-        export_fx_chain(st, *st.mixer_state.fx_chains.at(channel_id));
+        export_fx_chain(st, st.mixer_state.fx_chains.at(channel_id));
     result.midi =
         export_midi_assignments(channel.parameters, st.midi_assignments);
     result.parameter = export_parameter_values(channel.parameters, st.params);

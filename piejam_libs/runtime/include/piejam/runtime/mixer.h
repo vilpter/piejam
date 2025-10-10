@@ -159,7 +159,8 @@ struct state
 
     aux_sends_t aux_sends;
 
-    using fx_chains_t = entity_data_map<channel_id, box<fx::chain_t>>;
+    using fx_chains_t =
+        boxed_map<boost::container::flat_map<channel_id, fx::chain_t>>;
     fx_chains_t fx_chains;
 };
 

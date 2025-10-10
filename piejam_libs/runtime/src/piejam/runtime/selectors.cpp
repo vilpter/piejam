@@ -705,12 +705,14 @@ auto
 make_fx_chain_selector(mixer::channel_id const channel_id)
     -> selector<box<fx::chain_t>>
 {
-    return make_entity_data_map_selector(
-        [](state const& st) -> mixer::state::fx_chains_t const& {
-            return st.mixer_state.fx_chains;
-        },
-        boost::hof::always(channel_id),
-        box<fx::chain_t>{});
+    auto get =
+        shared_memo([channel_id](mixer::state::fx_chains_t const& fx_chains) {
+            return box{fx_chains.at(channel_id)};
+        });
+
+    return [get = std::move(get)](state const& st) {
+        return get(st.mixer_state.fx_chains);
+    };
 }
 
 template <auto GetMember>
@@ -789,12 +791,10 @@ static auto
 make_fx_module_can_move_selector(mixer::channel_id const fx_chain_id, bool up)
     -> selector<bool>
 {
-    auto get_fx_chain = make_entity_data_map_selector(
-        [](state const& st) -> mixer::state::fx_chains_t const& {
-            return st.mixer_state.fx_chains;
-        },
-        boost::hof::always(fx_chain_id),
-        box<fx::chain_t>{});
+    auto get_fx_chain =
+        shared_memo([fx_chain_id](mixer::state::fx_chains_t const& fx_chains) {
+            return box{fx_chains.at(fx_chain_id)};
+        });
 
     return [fx_chain_id, up, get_fx_chain = std::move(get_fx_chain)](
                state const& st) -> bool {
@@ -803,7 +803,7 @@ make_fx_module_can_move_selector(mixer::channel_id const fx_chain_id, bool up)
             return false;
         }
 
-        auto fx_chain = get_fx_chain(st);
+        auto fx_chain = get_fx_chain(st.mixer_state.fx_chains);
 
         return !fx_chain->empty() &&
                (up ? fx_chain->front() : fx_chain->back()) !=

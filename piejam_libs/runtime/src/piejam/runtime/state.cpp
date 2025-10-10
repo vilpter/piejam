@@ -168,7 +168,7 @@ insert_fx_module(
         fx_mod.parameters,
         *st.midi_assignments.lock());
 
-    st.mixer_state.fx_chains.assign(mixer_channel_id, box{std::move(fx_chain)});
+    st.mixer_state.fx_chains.assign(mixer_channel_id, std::move(fx_chain));
 
     parameter_factory params{st.params};
     st.fx_state.active_modules.emplace(
@@ -301,7 +301,7 @@ remove_fx_module(
     fx::chain_t fx_chain = st.mixer_state.fx_chains.at(fx_chain_id);
     BOOST_ASSERT(std::ranges::contains(fx_chain, fx_mod_id));
     boost::remove_erase(fx_chain, fx_mod_id);
-    st.mixer_state.fx_chains.assign(fx_chain_id, box{std::move(fx_chain)});
+    st.mixer_state.fx_chains.assign(fx_chain_id, std::move(fx_chain));
 
     remove_parameters(st, *fx_mod.parameters);
 
@@ -527,7 +527,7 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
             mixer::channel_aux_sends_t{});
     }
 
-    st.mixer_state.fx_chains.emplace(channel_id);
+    st.mixer_state.fx_chains.emplace(channel_id, fx::chain_t{});
 
     return channel_id;
 }
@@ -587,7 +587,7 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     }(st.mixer_state.aux_sends.lock());
 
     for (auto fx_mod_id :
-         std::views::reverse(*st.mixer_state.fx_chains.at(mixer_channel_id)))
+         std::views::reverse(st.mixer_state.fx_chains.at(mixer_channel_id)))
     {
         remove_fx_module(st, mixer_channel_id, fx_mod_id);
     }

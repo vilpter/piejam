@@ -19,17 +19,17 @@ delete_fx_module::reduce(state& st) const
         auto const& fx_chain = st.mixer_state.fx_chains.at(fx_chain_id);
 
         auto next_focused_fx_mod_id = [&]() -> fx::module_id {
-            BOOST_ASSERT(!fx_chain->empty());
-            if (fx_chain->size() == 1)
+            BOOST_ASSERT(!fx_chain.empty());
+            if (fx_chain.size() == 1)
             {
                 return {};
             }
             else
             {
-                auto fx_mod_it = std::ranges::find(*fx_chain, fx_mod_id);
+                auto fx_mod_it = std::ranges::find(fx_chain, fx_mod_id);
                 auto next_fx_mod_it = std::next(fx_mod_it);
-                return next_fx_mod_it == fx_chain->end() ? *std::prev(fx_mod_it)
-                                                         : *next_fx_mod_it;
+                return next_fx_mod_it == fx_chain.end() ? *std::prev(fx_mod_it)
+                                                        : *next_fx_mod_it;
             }
         }();
 
