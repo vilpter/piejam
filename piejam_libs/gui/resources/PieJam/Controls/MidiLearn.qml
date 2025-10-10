@@ -10,28 +10,4 @@ Item {
     id: root
 
     property bool active: false
-    readonly property bool learning: privates.learningControl != null
-
-    function start(ctrl) {
-        console.assert(ctrl !== null)
-
-        stop()
-        privates.learningControl = ctrl
-        privates.learningControl.startLearn()
-    }
-
-    function stop() {
-        if (privates.learningControl != null) {
-            privates.learningControl.stopLearn()
-            privates.learningControl = null
-        }
-    }
-
-    onActiveChanged: if (!root.active) stop()
-
-    QtObject {
-        id: privates
-
-        property MidiAssignable learningControl: null
-    }
 }

@@ -45,7 +45,7 @@ SubscribableItem {
             border.width: 2
 
             SequentialAnimation on color {
-                running: midiAssign.learning
+                running: root.model && root.model.learning
                 loops: Animation.Infinite
 
                 ColorAnimation {
@@ -75,27 +75,13 @@ SubscribableItem {
         anchors.fill: parent
 
         onClicked: {
-            midiAssign.learning
-                   ? MidiLearn.stop()
-                   : MidiLearn.start(midiAssign)
-        }
-    }
+            console.assert(root.model)
 
-    MidiAssignable {
-        id: midiAssign
-
-        property bool learning: false
-
-        onLearningStarted: {
-            midiAssign.learning = true;
-            if (root.model)
-                root.model.startLearn()
-        }
-
-        onLearningStopped: {
-            midiAssign.learning = false
-            if (root.model)
+            if (root.model.learning) {
                 root.model.stopLearn()
+            } else {
+                root.model.startLearn()
+            }
         }
     }
 

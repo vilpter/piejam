@@ -4,6 +4,7 @@
 
 #include <piejam/gui/model/Info.h>
 
+#include <piejam/runtime/actions/control_midi_assignment.h>
 #include <piejam/runtime/actions/recording.h>
 #include <piejam/runtime/actions/request_info_update.h>
 #include <piejam/runtime/selectors.h>
@@ -33,7 +34,7 @@ Info::onSubscribe()
 
     observe(
         runtime::selectors::select_midi_learning,
-        [this](bool const midi_learning) { setMidiLearn(midi_learning); });
+        [this](bool const midi_learning) { setMidiLearning(midi_learning); });
 
     requestUpdates(std::chrono::milliseconds{40}, [this]() {
         dispatch(runtime::actions::request_info_update{});
@@ -43,8 +44,6 @@ Info::onSubscribe()
 void
 Info::changeRecording(bool const rec)
 {
-    emit recordingChanged();
-
     if (rec)
     {
         dispatch(runtime::actions::start_recording{});
@@ -53,6 +52,12 @@ Info::changeRecording(bool const rec)
     {
         dispatch(runtime::actions::stop_recording{});
     }
+}
+
+void
+Info::stopMidiLearn()
+{
+    dispatch(runtime::actions::stop_midi_learning{});
 }
 
 } // namespace piejam::gui::model

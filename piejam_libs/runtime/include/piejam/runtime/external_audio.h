@@ -9,7 +9,6 @@
 
 #include <piejam/audio/types.h>
 #include <piejam/boxed_map.h>
-#include <piejam/entity_data_map.h>
 #include <piejam/entity_map.h>
 #include <piejam/io_pair.h>
 #include <piejam/npos.h>
@@ -35,8 +34,6 @@ struct device_channel_key
     constexpr auto
     operator<=>(device_channel_key const&) const noexcept = default;
 };
-
-using device_channels_t = entity_data_map<device_channel_key, std::size_t>;
 
 auto get_channels_config(
     audio::bus_type device_bus_type,

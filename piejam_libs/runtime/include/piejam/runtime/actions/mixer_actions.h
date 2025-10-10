@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/runtime/actions/audio_engine_action.h>
 #include <piejam/runtime/actions/ladspa_fx_action.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/material_color.h>
@@ -15,13 +14,13 @@
 #include <piejam/audio/types.h>
 #include <piejam/boxed_string.h>
 #include <piejam/entity_id.h>
+#include <piejam/io_direction.h>
 
 namespace piejam::runtime::actions
 {
 
 struct add_mixer_channel final
     : ui::cloneable_action<add_mixer_channel, reducible_action>
-    , visitable_audio_engine_action<add_mixer_channel>
 {
     std::string name;
     mixer::channel_type channel_type;
@@ -31,7 +30,6 @@ struct add_mixer_channel final
 
 struct delete_mixer_channel final
     : ui::cloneable_action<delete_mixer_channel, reducible_action>
-    , visitable_audio_engine_action<delete_mixer_channel>
     , visitable_ladspa_fx_action<delete_mixer_channel>
 {
     mixer::channel_id mixer_channel_id;
@@ -50,7 +48,6 @@ struct set_mixer_channel_color final
 
 struct set_mixer_channel_route final
     : ui::cloneable_action<set_mixer_channel_route, reducible_action>
-    , visitable_audio_engine_action<set_mixer_channel_route>
 {
     mixer::channel_id channel_id;
     io_direction port;

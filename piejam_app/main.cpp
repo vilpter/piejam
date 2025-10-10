@@ -256,7 +256,7 @@ main(int argc, char* argv[]) -> int
     system::avg_cpu_load_tracker avg_cpu_load(hw_threads);
 
     // slow updates
-    {
+    auto slow_updates_timer = [&] {
         auto timer = new QTimer(&app);
         QObject::connect(timer, &QTimer::timeout, [&]() {
             store.dispatch(runtime::actions::refresh_midi_devices{});
@@ -275,18 +275,23 @@ main(int argc, char* argv[]) -> int
                     std::round(system::disk_usage(locs.home_dir) * 100)));
         });
         timer->start(std::chrono::seconds(1));
-    }
+        return timer;
+    }();
 
     // gui frame updates
-    {
+    auto gui_frame_update_timer = [&] {
         auto timer = new QTimer(&app);
         QObject::connect(timer, &QTimer::timeout, [&]() {
             store.dispatch(runtime::actions::request_audio_engine_sync{});
         });
         timer->start(std::chrono::milliseconds(16));
-    }
+        return timer;
+    }();
 
     auto const app_exec_result = app.exec();
+
+    slow_updates_timer->stop();
+    gui_frame_update_timer->stop();
 
     store.dispatch(runtime::actions::save_app_config(config_file_path(locs)));
     store.dispatch(runtime::actions::save_session(session_file));

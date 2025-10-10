@@ -4,18 +4,17 @@
 
 #pragma once
 
-#include <piejam/box.h>
-#include <piejam/runtime/actions/audio_engine_action.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/persistence/session.h>
 #include <piejam/runtime/ui/cloneable_action.h>
+
+#include <piejam/box.h>
 
 namespace piejam::runtime::actions
 {
 
 struct apply_session final
     : ui::cloneable_action<apply_session, reducible_action>
-    , visitable_audio_engine_action<apply_session>
 {
     box<persistence::session> session;
 

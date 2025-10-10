@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/runtime/actions/audio_engine_action.h>
 #include <piejam/runtime/external_audio_fwd.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/ui/action.h>
@@ -13,13 +12,13 @@
 #include <piejam/audio/types.h>
 #include <piejam/boxed_string.h>
 #include <piejam/entity_id.h>
+#include <piejam/io_direction.h>
 
 namespace piejam::runtime::actions
 {
 
 struct add_external_audio_device final
     : ui::cloneable_action<add_external_audio_device, reducible_action>
-    , visitable_audio_engine_action<add_external_audio_device>
 {
     io_direction direction{};
     audio::bus_type type{};
@@ -29,7 +28,6 @@ struct add_external_audio_device final
 
 struct remove_external_audio_device final
     : ui::cloneable_action<remove_external_audio_device, reducible_action>
-    , visitable_audio_engine_action<remove_external_audio_device>
 {
     external_audio::device_id device_id{};
 
@@ -40,7 +38,6 @@ struct set_external_audio_device_bus_channel final
     : ui::cloneable_action<
           set_external_audio_device_bus_channel,
           reducible_action>
-    , visitable_audio_engine_action<set_external_audio_device_bus_channel>
 {
     external_audio::device_id device_id{};
     audio::bus_channel channel_selector{};

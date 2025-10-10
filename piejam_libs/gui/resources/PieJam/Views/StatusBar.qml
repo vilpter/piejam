@@ -76,6 +76,8 @@ SubscribableItem {
                     property: "active"
                     value: midiLearn.checked
                 }
+
+                onClicked: if (root.model && root.model.midiLearning) root.model.stopMidiLearn()
             }
 
             InfoReadout {
@@ -90,15 +92,6 @@ SubscribableItem {
                 cpuLoad: root.model.cpuLoad
                 cpuTemp: root.model.cpuTemp
             }
-        }
-    }
-
-    Connections {
-        target: root.model
-
-        function onMidiLearnChanged() {
-            if (!root.model.midiLearn)
-                MidiLearn.stop()
         }
     }
 }

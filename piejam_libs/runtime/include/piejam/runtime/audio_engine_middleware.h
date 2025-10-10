@@ -4,11 +4,13 @@
 
 #pragma once
 
-#include <piejam/audio/fwd.h>
-#include <piejam/ladspa/fwd.h>
 #include <piejam/runtime/actions/fwd.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/fx/ladspa_processor_factory.h>
+
+#include <piejam/audio/fwd.h>
+#include <piejam/ladspa/fwd.h>
+#include <piejam/pimpl.h>
 #include <piejam/thread/configuration.h>
 #include <piejam/thread/fwd.h>
 
@@ -62,6 +64,9 @@ private:
 
     std::unique_ptr<audio_engine> m_engine;
     std::unique_ptr<audio::io_process> m_io_process;
+
+    struct rebuild_tracker;
+    pimpl<rebuild_tracker> m_rebuild_tracker;
 };
 
 } // namespace piejam::runtime

@@ -6,17 +6,11 @@
 
 #include <piejam/runtime/actions/activate_midi_device.h>
 #include <piejam/runtime/actions/apply_app_config.h>
-#include <piejam/runtime/actions/apply_session.h>
 #include <piejam/runtime/actions/audio_engine_sync.h>
 #include <piejam/runtime/actions/control_midi_assignment.h>
 #include <piejam/runtime/actions/deactivate_midi_device.h>
-#include <piejam/runtime/actions/delete_fx_module.h>
 #include <piejam/runtime/actions/external_audio_device_actions.h>
-#include <piejam/runtime/actions/fx_chain_actions.h>
 #include <piejam/runtime/actions/initiate_sound_card_selection.h>
-#include <piejam/runtime/actions/insert_fx_module.h>
-#include <piejam/runtime/actions/mixer_actions.h>
-#include <piejam/runtime/actions/move_fx_module.h>
 #include <piejam/runtime/actions/recording.h>
 #include <piejam/runtime/actions/select_period_size.h>
 #include <piejam/runtime/actions/select_sample_rate.h>
@@ -40,13 +34,10 @@
 #include <piejam/audio/sound_card_hw_params.h>
 #include <piejam/audio/sound_card_manager.h>
 #include <piejam/functional/operators.h>
-#include <piejam/ladspa/plugin.h>
-#include <piejam/ladspa/plugin_descriptor.h>
-#include <piejam/ladspa/port_descriptor.h>
 #include <piejam/ladspa/processor_factory.h>
 #include <piejam/midi/event.h>
 #include <piejam/midi/input_event_handler.h>
-#include <piejam/set_if.h>
+#include <piejam/tuple.h>
 #include <piejam/tuple_element_compare.h>
 
 #include <spdlog/spdlog.h>
@@ -92,7 +83,41 @@ struct update_info final : ui::cloneable_action<update_info, reducible_action>
     }
 };
 
+static auto
+current_rebuild_tracker_state(state const& st)
+{
+    return std::tuple{
+        st.mixer_state.io_map,
+        st.mixer_state.fx_chains,
+        st.external_audio_state.device_channels,
+        st.midi_learning.has_value(),
+        st.audio_graph_update_count};
+}
+
 } // namespace
+
+struct audio_engine_middleware::rebuild_tracker
+{
+    auto check(state const& st) -> bool
+    {
+        auto current = current_rebuild_tracker_state(st);
+
+        if (last != current)
+        {
+            last = std::move(current);
+            return true;
+        }
+
+        return false;
+    }
+
+private:
+    using last_t =
+        tuple::decay_elements_t<decltype(current_rebuild_tracker_state(
+            std::declval<state>()))>;
+
+    last_t last;
+};
 
 audio_engine_middleware::audio_engine_middleware(
     thread::configuration const& audio_thread_config,
@@ -108,6 +133,7 @@ audio_engine_middleware::audio_engine_middleware(
           midi_controller ? std::move(midi_controller)
                           : make_dummy_midi_input_controller())
     , m_io_process(audio::make_dummy_io_process())
+    , m_rebuild_tracker{make_pimpl<rebuild_tracker>()}
 {
 }
 
@@ -324,15 +350,7 @@ audio_engine_middleware::process_engine_action(
         m_engine->set_parameter_value(a.id, a.value);
     }
 
-    state const& st = mw_fs.get_state();
-    auto const audio_graph_update_count = st.audio_graph_update_count;
-
     mw_fs.next(a);
-
-    if (audio_graph_update_count != st.audio_graph_update_count)
-    {
-        rebuild(st);
-    }
 }
 
 template <std::ranges::range Parameters>
@@ -426,20 +444,14 @@ audio_engine_middleware::process_engine_action(
             if (auto const* const cc_event =
                     std::get_if<midi::channel_cc_event>(&learned_midi->event))
             {
-                actions::update_midi_assignments next_action;
-                next_action.assignments.emplace(
-                    *mw_fs.get_state().midi_learning,
-                    midi_assignment{
-                        .channel = cc_event->channel,
-                        .control_type = midi_assignment::type::cc,
-                        .control_id = cc_event->data.cc});
+                actions::stop_midi_learning next_action;
+                next_action.learned = midi_assignment{
+                    .channel = cc_event->channel,
+                    .control_type = midi_assignment::type::cc,
+                    .control_id = cc_event->data.cc};
 
                 mw_fs.next(next_action);
             }
-
-            mw_fs.next(actions::stop_midi_learning{});
-
-            rebuild(mw_fs.get_state());
         }
     }
 }
@@ -558,10 +570,20 @@ audio_engine_middleware::operator()(
             [&](auto&& a) { process_engine_action(mw_fs, a); });
 
         a->visit(v);
+
+        if (m_rebuild_tracker->check(mw_fs.get_state()))
+        {
+            rebuild(mw_fs.get_state());
+        }
     }
     else
     {
         mw_fs.next(action);
+
+        if (m_rebuild_tracker->check(mw_fs.get_state()))
+        {
+            rebuild(mw_fs.get_state());
+        }
     }
 }
 

@@ -4,21 +4,18 @@
 
 #pragma once
 
-#include <piejam/entity_id.h>
-#include <piejam/runtime/actions/audio_engine_action.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/midi_assignment.h>
 #include <piejam/runtime/ui/action.h>
 #include <piejam/runtime/ui/cloneable_action.h>
 
-#include <boost/container/flat_map.hpp>
+#include <optional>
 
 namespace piejam::runtime::actions
 {
 
 struct start_midi_learning final
     : ui::cloneable_action<start_midi_learning, reducible_action>
-    , visitable_audio_engine_action<start_midi_learning>
 {
     parameter_id assignment_id;
 
@@ -27,18 +24,10 @@ struct start_midi_learning final
 
 struct stop_midi_learning final
     : ui::cloneable_action<stop_midi_learning, reducible_action>
-    , visitable_audio_engine_action<stop_midi_learning>
 {
     void reduce(state&) const override;
-};
 
-struct update_midi_assignments final
-    : ui::cloneable_action<update_midi_assignments, reducible_action>
-    , visitable_audio_engine_action<update_midi_assignments>
-{
-    midi_assignments_map assignments;
-
-    void reduce(state&) const override;
+    std::optional<midi_assignment> learned;
 };
 
 } // namespace piejam::runtime::actions

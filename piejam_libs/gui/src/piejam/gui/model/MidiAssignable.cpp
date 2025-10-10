@@ -38,6 +38,10 @@ void
 MidiAssignable::onSubscribe()
 {
     observe(
+        runtime::selectors::make_is_midi_learning_selector(m_assignment_id),
+        [this](bool learning) { setLearning(learning); });
+
+    observe(
         runtime::selectors::make_midi_assignment_selector(m_assignment_id),
         [this](std::optional<runtime::midi_assignment> const& ass) {
             setAssignment(ass ? toQString(*ass) : QString());

@@ -18,13 +18,16 @@ start_midi_learning::reduce(state& st) const
 void
 stop_midi_learning::reduce(state& st) const
 {
-    st.midi_learning.reset();
-}
+    BOOST_ASSERT(st.midi_learning);
 
-void
-update_midi_assignments::reduce(state& st) const
-{
-    runtime::update_midi_assignments(st, assignments);
+    if (learned)
+    {
+        update_midi_assignments(
+            st,
+            midi_assignments_map{{*st.midi_learning, *learned}});
+    }
+
+    st.midi_learning.reset();
 }
 
 } // namespace piejam::runtime::actions

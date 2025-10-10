@@ -190,13 +190,15 @@ make_external_audio_device_bus_channel_selector(
     external_audio::device_id const device_id,
     audio::bus_channel const bus_channel) -> selector<std::size_t>
 {
-    return make_entity_data_map_selector(
-        [](state const& st) -> auto const& {
-            return st.external_audio_state.device_channels;
-        },
-        boost::hof::always(
-            external_audio::device_channel_key{device_id, bus_channel}),
-        npos);
+    auto get = shared_memo(
+        [device_id, bus_channel](external_audio::device_channels_t const& m) {
+            auto const* const ch = m.find({device_id, bus_channel});
+            return ch ? *ch : npos;
+        });
+
+    return [get = std::move(get)](state const& st) {
+        return get(st.external_audio_state.device_channels);
+    };
 }
 
 static auto
@@ -1012,6 +1014,12 @@ make_parameter_is_midi_assignable_selector(parameter_id param_id)
             };
         },
         param_id);
+}
+
+auto
+make_is_midi_learning_selector(parameter_id const id) -> selector<bool>
+{
+    return [id](state const& st) { return st.midi_learning == id; };
 }
 
 auto

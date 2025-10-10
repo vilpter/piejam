@@ -7,6 +7,8 @@
 #include <piejam/audio/fwd.h>
 #include <piejam/fwd.h>
 
+#include <boost/container/container_fwd.hpp>
+
 #include <variant>
 #include <vector>
 
@@ -19,6 +21,9 @@ using devices_t = boxed_map<entity_map<device>>;
 
 using device_ids_t = std::vector<device_id>;
 
+struct device_channel_key;
+using device_channels_t =
+    boxed_map<boost::container::flat_map<device_channel_key, std::size_t>>;
 using channels_config_t = std::variant<std::size_t, audio::pair<std::size_t>>;
 
 struct state;
