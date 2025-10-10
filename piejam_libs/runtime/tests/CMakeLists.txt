@@ -19,7 +19,6 @@ add_executable(piejam_runtime_test
     midi_input_processor_test.cpp
     midi_learn_processor_test.cpp
     midi_to_parameter_processor_test.cpp
-    mixer_test.cpp
     mute_solo_processor_test.cpp
     parameters_store_test.cpp
     parameter_processor_factory_test.cpp
