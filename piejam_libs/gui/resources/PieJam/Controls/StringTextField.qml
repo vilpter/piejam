@@ -5,8 +5,12 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+import PieJam.Models 1.0 as PJModels
+
 SubscribableItem {
     id: root
+
+    property PJModels.String model: null
 
     implicitWidth: item.implicitWidth
     implicitHeight: item.implicitHeight

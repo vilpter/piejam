@@ -14,6 +14,8 @@ import PieJam.ParameterControls 1.0
 SubscribableItem {
     id: root
 
+    property PJModels.AuxSend model: null
+
     property int expandedHeight: 362
 
     signal expanded()

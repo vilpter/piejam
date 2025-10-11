@@ -9,11 +9,13 @@ import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
 import PieJam.FxChainControls 1.0
-import PieJam.Models 1.0 as PJModels
+import PieJam.FxModules.Models 1.0 as PJFxModels
 import PieJam.Util 1.0
 
 SubscribableItem {
     id: root
+
+    property PJFxModels.FxTuner model: null
 
     property bool active: true
 

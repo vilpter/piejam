@@ -8,15 +8,20 @@
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/pimpl.h>
-#include <piejam/runtime/state_access.h>
-#include <piejam/runtime/subscriber.h>
 
 #include <QObject>
+
+namespace piejam::runtime
+{
+
+class state_access;
+
+} // namespace piejam::runtime
 
 namespace piejam::gui
 {
 
-class ModelManager final : public QObject
+class Root final : public QObject
 {
     Q_OBJECT
 
@@ -45,7 +50,7 @@ class ModelManager final : public QObject
     M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::RootView*, rootView)
 
 public:
-    explicit ModelManager(runtime::state_access const&);
+    explicit Root(runtime::state_access const&);
 
 private:
     struct Impl;

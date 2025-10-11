@@ -7,10 +7,12 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
 import PieJam.Controls 1.0
-import PieJam.Models 1.0
+import PieJam.Models 1.0 as PJModels
 
 SubscribableItem {
     id: root
+
+    property PJModels.BoolParameter model: null
 
     property bool flat: false
     property alias text: button.text
@@ -19,7 +21,7 @@ SubscribableItem {
     QtObject {
         id: private_
 
-        readonly property var paramModel: root.model && root.model.type === Parameter.Type.Bool ? root.model : null
+        readonly property var paramModel: root.model
         readonly property bool value: private_.paramModel && private_.paramModel.value
     }
 

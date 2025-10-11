@@ -8,10 +8,12 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
-import PieJam.Models 1.0
+import PieJam.Models 1.0 as PJModels
 
 SubscribableItem {
     id: root
+
+    property PJModels.Parameter model: null
 
     property int orientation: Qt.Vertical
     property bool stepButtonsVisible: true
@@ -19,7 +21,7 @@ SubscribableItem {
     QtObject {
         id: private_
 
-        readonly property var paramModel: root.model && (root.model.type === Parameter.Type.Int || root.model.type === Parameter.Type.Enum)
+        readonly property var paramModel: root.model && (root.model.type === PJModels.Parameter.Type.Int || root.model.type === PJModels.Parameter.Type.Enum)
                                           ? root.model
                                           : null
         readonly property int from: private_.paramModel ? private_.paramModel.minValue : 0

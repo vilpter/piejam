@@ -9,7 +9,7 @@ import QtQuick.Layouts 1.15
 import QtQml 2.15
 
 import PieJam.Controls 1.0
-import PieJam.Models 1.0
+import PieJam.Models 1.0 as PJModels
 
 ViewPane {
     id: root
@@ -46,10 +46,10 @@ ViewPane {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                currentIndex: private_.contentType ? FxModuleRegistry.indexOf(private_.contentType) : -1
+                currentIndex: private_.contentType ? PJModels.FxModuleRegistry.indexOf(private_.contentType) : -1
 
                 Repeater {
-                    model: FxModuleRegistry.items
+                    model: PJModels.FxModuleRegistry.items
 
                     delegate: BusyLoader {
                         id: fxModuleViewLoader

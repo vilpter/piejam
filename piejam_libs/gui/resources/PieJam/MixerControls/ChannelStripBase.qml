@@ -7,9 +7,12 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
 import PieJam.Controls 1.0
+import PieJam.Models 1.0 as PJModels
 
 SubscribableItem {
     id: root
+
+    property PJModels.MixerChannel model: null
 
     default property alias contentData: frame.contentData
 

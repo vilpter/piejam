@@ -8,16 +8,18 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
-import PieJam.Models 1.0
+import PieJam.Models 1.0 as PJModels
 import PieJam.Util 1.0
 
 SubscribableItem {
     id: root
 
+    property PJModels.FloatParameter model: null
+
     QtObject {
         id: private_
 
-        readonly property var paramModel: root.model && root.model.type === Parameter.Type.Float ? root.model : null
+        readonly property var paramModel: root.model
         readonly property real value: private_.paramModel ? private_.paramModel.normalizedValue : 0
         readonly property bool bipolar: private_.paramModel ? private_.paramModel.bipolar : false
     }

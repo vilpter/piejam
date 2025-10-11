@@ -10,9 +10,12 @@ import QtQuick.Layouts 1.15
 import QtQml 2.15
 
 import PieJam.Controls 1.0
+import PieJam.Models 1.0 as PJModels
 
 SubscribableItem {
     id: root
+
+    property PJModels.Info model: null
 
     implicitHeight: 48
 

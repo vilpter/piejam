@@ -8,22 +8,19 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
-import PieJam.Models 1.0
+import PieJam.Models 1.0 as PJModels
 
 Item {
     id: root
 
-    property var modelX: null
-    property var modelY: null
+    property PJModels.FloatParameter modelX: null
+    property PJModels.FloatParameter modelY: null
 
     QtObject {
         id: private_
 
-        readonly property var paramModelX: root.modelX && root.modelX.type === Parameter.Type.Float ? root.modelX : null
-        readonly property real valueX: private_.paramModelX ? private_.paramModelX.normalizedValue : 0
-
-        readonly property var paramModelY: root.modelY && root.modelY.type === Parameter.Type.Float ? root.modelY : null
-        readonly property real valueY: private_.paramModelY ? 1 - private_.paramModelY.normalizedValue : 0
+        readonly property real valueX: root.modelX ? root.modelX.normalizedValue : 0
+        readonly property real valueY: root.modelY ? 1 - root.modelY.normalizedValue : 0
     }
 
     XYPad {
@@ -38,11 +35,11 @@ Item {
         }
 
         onMoved: {
-            if (private_.paramModelX)
-                private_.paramModelX.changeNormalizedValue(x)
+            if (root.modelX)
+                root.modelX.changeNormalizedValue(x)
 
-            if (private_.paramModelY)
-                private_.paramModelY.changeNormalizedValue(1 - y)
+            if (root.modelY)
+                root.modelY.changeNormalizedValue(1 - y)
         }
     }
 

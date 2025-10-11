@@ -8,9 +8,12 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
+import PieJam.Models 1.0 as PJModels
 
 SubscribableItem {
     id: root
+
+    property PJModels.BoolParameter model: null
 
     property alias iconSource: button.icon.source
     property alias text: button.text

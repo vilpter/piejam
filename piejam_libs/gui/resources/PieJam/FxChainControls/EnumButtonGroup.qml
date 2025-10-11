@@ -8,20 +8,16 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
-import PieJam.Models 1.0
+import PieJam.Models 1.0 as PJModels
 
 SubscribableItem {
     id: root
 
+    property PJModels.EnumParameter model: null
+
     property var icons: null
     property int alignment: Qt.Horizontal
     property int spacing: 5
-
-    QtObject {
-        id: private_
-
-        readonly property var paramModel: root.model && root.model.type === Parameter.Type.Enum ? root.model : null
-    }
 
     GridLayout {
         anchors.fill: parent
@@ -32,7 +28,7 @@ SubscribableItem {
         rowSpacing: root.spacing
 
         Repeater {
-            model: private_.paramModel ? private_.paramModel.values : null
+            model: root.model ? root.model.values : null
 
             delegate: Button {
                 Layout.fillWidth: true
@@ -47,11 +43,11 @@ SubscribableItem {
 
                 display: icons ? AbstractButton.IconOnly : AbstractButton.TextOnly
 
-                checked: model.value === private_.paramModel.value
+                checked: model.value === root.model.value
 
                 onClicked: {
-                    private_.paramModel.changeValue(model.value)
-                    Info.showParameterValue(private_.paramModel)
+                    root.model.changeValue(model.value)
+                    Info.showParameterValue(root.model)
                 }
             }
         }
@@ -60,6 +56,6 @@ SubscribableItem {
     MidiAssignArea {
         anchors.fill: parent
 
-        model: private_.paramModel ? private_.paramModel.midi : null
+        model: root.model ? root.model.midi : null
     }
 }

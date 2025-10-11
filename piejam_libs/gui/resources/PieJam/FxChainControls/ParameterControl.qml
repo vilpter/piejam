@@ -8,7 +8,7 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
-import PieJam.Models 1.0
+import PieJam.Models 1.0 as PJModels
 
 Item {
     id: root
@@ -89,15 +89,15 @@ Item {
                 currentIndex: root.paramModel ? root.paramModel.type : -1
 
                 ParameterTouchstrip {
-                    model: root.paramModel && root.paramModel.type === Parameter.Type.Float ? root.paramModel : null
+                    model: root.paramModel && root.paramModel.type === PJModels.Parameter.Type.Float ? root.paramModel : null
                 }
 
                 IntSlider {
-                    model: root.paramModel && root.paramModel.type === Parameter.Type.Int ? root.paramModel : null
+                    model: root.paramModel && root.paramModel.type === PJModels.Parameter.Type.Int ? root.paramModel : null
                 }
 
                 ParameterSwitch {
-                    model: root.paramModel && root.paramModel.type === Parameter.Type.Bool ? root.paramModel : null
+                    model: root.paramModel && root.paramModel.type === PJModels.Parameter.Type.Bool ? root.paramModel : null
                 }
             }
         }

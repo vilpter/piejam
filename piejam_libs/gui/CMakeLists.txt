@@ -25,7 +25,6 @@ set(PIEJAM_QML_IMPORT_PATHS ${PIEJAM_QML_IMPORT_PATHS} PARENT_SCOPE)
 add_library(piejam_gui STATIC
     ${RESOURCES}
     include/piejam/gui/ListModelEditScriptProcessor.h
-    include/piejam/gui/ModelManager.h
     include/piejam/gui/PropertyMacros.h
     include/piejam/gui/init.h
     include/piejam/gui/item/DbScale.h
@@ -80,6 +79,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/Parameter.h
     include/piejam/gui/model/ParameterId.h
     include/piejam/gui/model/PitchGenerator.h
+    include/piejam/gui/model/Root.h
     include/piejam/gui/model/RootView.h
     include/piejam/gui/model/ScopeGenerator.h
     include/piejam/gui/model/ScopeSlot.h
@@ -100,7 +100,6 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/WaveformSlot.h
     include/piejam/gui/model/fwd.h
     include/piejam/gui/qt_log.h
-    src/piejam/gui/ModelManager.cpp
     src/piejam/gui/init.cpp
     src/piejam/gui/item/DbScale.cpp
     src/piejam/gui/item/FixedLinearScaleGrid.cpp
@@ -145,6 +144,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/MixerDbScales.cpp
     src/piejam/gui/model/Parameter.cpp
     src/piejam/gui/model/PitchGenerator.cpp
+    src/piejam/gui/model/Root.cpp
     src/piejam/gui/model/RootView.cpp
     src/piejam/gui/model/ScopeGenerator.cpp
     src/piejam/gui/model/SpectrumGenerator.cpp

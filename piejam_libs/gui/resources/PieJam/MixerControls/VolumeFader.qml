@@ -9,11 +9,14 @@ import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
 
 import PieJam.Controls 1.0
+import PieJam.Models 1.0 as PJModels
 import PieJam.Items 1.0 as PJItems
 import PieJam.Util 1.0
 
 SubscribableItem {
     id: root
+
+    property PJModels.FloatParameter model: null
 
     property var scaleData: null
     property bool muted: false

@@ -6,9 +6,9 @@
 #include <piejam/audio/engine/processor.h>
 #include <piejam/audio/sound_card_manager.h>
 #include <piejam/fx_modules/init.h>
-#include <piejam/gui/ModelManager.h>
 #include <piejam/gui/init.h>
 #include <piejam/gui/model/Info.h>
+#include <piejam/gui/model/Root.h>
 #include <piejam/gui/qt_log.h>
 #include <piejam/ladspa/instance_manager_processor_factory.h>
 #include <piejam/ladspa/plugin.h>
@@ -228,7 +228,7 @@ main(int argc, char* argv[]) -> int
 
     store.dispatch(runtime::actions::scan_ladspa_fx_plugins("/usr/lib/ladspa"));
 
-    gui::ModelManager modelManager(
+    gui::Root modelManager(
         runtime::state_access{store, state_change_subscriber});
 
     QQmlApplicationEngine engine;

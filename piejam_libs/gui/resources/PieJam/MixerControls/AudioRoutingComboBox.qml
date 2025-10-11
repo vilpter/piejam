@@ -13,6 +13,8 @@ import PieJam.Models 1.0 as PJModels
 SubscribableItem {
     id: root
 
+    property PJModels.AudioRouting model: null
+
     property bool hasSelectableDefault: true
 
     implicitHeight: comboBox.implicitHeight

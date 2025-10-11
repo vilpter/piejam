@@ -9,8 +9,6 @@ import QtQml 2.15
 Item {
     id: root
 
-    property var model: null
-
     enabled: root.model !== null
 
     ModelSubscription {

@@ -6,8 +6,12 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
+import PieJam.Models 1.0 as PJModels
+
 SubscribableItem {
     id: root
+
+    property PJModels.MidiAssignable model: null
 
     implicitWidth: 100
     implicitHeight: 100

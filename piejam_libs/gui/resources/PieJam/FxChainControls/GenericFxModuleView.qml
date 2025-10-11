@@ -5,9 +5,12 @@
 import QtQuick 2.15
 
 import PieJam.Controls 1.0
+import PieJam.Models 1.0 as PJModels
 
 SubscribableItem {
     id: root
+
+    property PJModels.FxGenericModule model: null
 
     property bool active: true
 
