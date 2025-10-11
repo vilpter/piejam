@@ -8,16 +8,16 @@
 
 #include <utility>
 
-namespace piejam
+namespace piejam::asserted
 {
 
 template <class N>
 [[nodiscard]]
 constexpr auto
-assert_deref(N&& n) noexcept(noexcept(*std::forward<N>(n))) -> decltype(auto)
+deref(N&& n) noexcept(noexcept(*std::forward<N>(n))) -> decltype(auto)
 {
     BOOST_ASSERT(!!n);          // runtime check
     return *std::forward<N>(n); // safe dereference
 }
 
-} // namespace piejam
+} // namespace piejam::asserted

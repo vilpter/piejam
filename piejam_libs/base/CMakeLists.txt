@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: CC0-1.0
 
 add_library(piejam_base INTERFACE
-    include/piejam/assert_deref.h
+    include/piejam/asserted.h
     include/piejam/bool.h
     include/piejam/box.h
     include/piejam/boxed_map.h

@@ -22,6 +22,7 @@
 
 #include <piejam/algorithm/for_each_adjacent.h>
 #include <piejam/algorithm/transform_to_vector.h>
+#include <piejam/asserted.h>
 #include <piejam/audio/engine/clip_processor.h>
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/engine/dag.h>
@@ -404,16 +405,12 @@ connect_mixer_input(
                 }
             },
             [&](mixer::channel_id const src_channel_id) {
-                BOOST_ASSERT(mixer_state.channels.contains(src_channel_id));
-
-                auto* const source_mixer_channel_out =
-                    comps.mixer_outputs.find(src_channel_id);
-                BOOST_ASSERT(
-                    source_mixer_channel_out && *source_mixer_channel_out);
+                auto& source_mixer_channel_out =
+                    asserted::deref(comps.mixer_outputs.at(src_channel_id));
 
                 audio::engine::connect(
                     g,
-                    *source_mixer_channel_out->get(),
+                    source_mixer_channel_out,
                     mixer_channel_in);
             },
             [](auto const&) {}),
@@ -457,16 +454,13 @@ connect_mixer_output(
 
                 if (std::holds_alternative<mixer::mix_input>(dst_channel_in))
                 {
-                    auto* const dst_mixer_channel_in_comp =
-                        comps.mixer_inputs.find(dst_channel_id);
-                    BOOST_ASSERT(
-                        dst_mixer_channel_in_comp &&
-                        *dst_mixer_channel_in_comp);
+                    auto& dst_mixer_channel_in_comp =
+                        asserted::deref(comps.mixer_inputs.at(dst_channel_id));
 
                     audio::engine::connect(
                         g,
                         mixer_channel_out_comp,
-                        *dst_mixer_channel_in_comp->get());
+                        dst_mixer_channel_in_comp);
                 }
             },
             [](auto const&) {}),
@@ -484,9 +478,8 @@ connect_aux_sends(
     if (auto const* const channel_aux_sends =
             mixer_state.aux_sends.find(mixer_channel_id))
     {
-        auto const mixer_channel_out =
-            comps.mixer_outputs.at(mixer_channel_id).get();
-        BOOST_ASSERT(mixer_channel_out);
+        auto& mixer_channel_out =
+            asserted::deref(comps.mixer_outputs.at(mixer_channel_id));
 
         for (auto const& [aux, aux_send] : *channel_aux_sends)
         {
@@ -534,12 +527,12 @@ connect_aux_sends(
                 }();
 
                 g.audio.insert(
-                    audio::engine::src_endpoint(*mixer_channel_out, out_L),
+                    audio::engine::src_endpoint(mixer_channel_out, out_L),
                     audio::engine::dst_endpoint(
                         *mixer_channel_aux_send->get(),
                         0));
                 g.audio.insert(
-                    audio::engine::src_endpoint(*mixer_channel_out, out_R),
+                    audio::engine::src_endpoint(mixer_channel_out, out_R),
                     audio::engine::dst_endpoint(
                         *mixer_channel_aux_send->get(),
                         1));
@@ -577,16 +570,14 @@ make_graph(
 
     for (auto const& [mixer_channel_id, mixer_channel] : mixer_state.channels)
     {
-        audio::engine::component* const mixer_channel_in =
-            comps.mixer_inputs.at(mixer_channel_id).get();
-        BOOST_ASSERT(mixer_channel_in);
+        audio::engine::component& mixer_channel_in =
+            asserted::deref(comps.mixer_inputs.at(mixer_channel_id));
 
-        audio::engine::component* const mixer_channel_out =
-            comps.mixer_outputs.at(mixer_channel_id).get();
-        BOOST_ASSERT(mixer_channel_out);
+        audio::engine::component& mixer_channel_out =
+            asserted::deref(comps.mixer_outputs.at(mixer_channel_id));
 
-        mixer_channel_in->connect(g);
-        mixer_channel_out->connect(g);
+        mixer_channel_in.connect(g);
+        mixer_channel_out.connect(g);
 
         connect_mixer_input(
             g,
@@ -595,14 +586,14 @@ make_graph(
             comps,
             input_procs,
             mixer_channel_id,
-            *mixer_channel_in);
+            mixer_channel_in);
 
         connect_mixer_channel_with_fx_chain(
             g,
             comps,
-            *mixer_channel_in,
+            mixer_channel_in,
             mixer_state.fx_chains.at(mixer_channel_id),
-            *mixer_channel_out);
+            mixer_channel_out);
 
         connect_mixer_output(
             g,
@@ -611,7 +602,7 @@ make_graph(
             comps,
             output_procs,
             mixer_state.io_map.at(mixer_channel_id).out(),
-            *mixer_channel_out);
+            mixer_channel_out);
 
         connect_aux_sends(g, mixer_state, mixer_channel_id, comps, params);
     }
