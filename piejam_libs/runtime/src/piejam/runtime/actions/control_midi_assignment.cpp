@@ -30,4 +30,11 @@ stop_midi_learning::reduce(state& st) const
     st.midi_learning.reset();
 }
 
+void
+clear_midi_assignment::reduce(state& st) const
+{
+    st.midi_assignments.lock()->erase(assignment_id);
+    st.midi_learning.reset();
+}
+
 } // namespace piejam::runtime::actions

@@ -20,6 +20,7 @@ public:
 
     Q_INVOKABLE void startLearn();
     Q_INVOKABLE void stopLearn();
+    Q_INVOKABLE void clearAssignment();
 
 private:
     void onSubscribe() override;

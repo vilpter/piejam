@@ -87,6 +87,12 @@ SubscribableItem {
                 root.model.startLearn()
             }
         }
+
+        onDoubleClicked: {
+            console.assert(root.model)
+
+            root.model.clearAssignment()
+        }
     }
 
     enabled: root.model && MidiLearn.active

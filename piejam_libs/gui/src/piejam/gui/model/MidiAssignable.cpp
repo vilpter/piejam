@@ -62,4 +62,12 @@ MidiAssignable::stopLearn()
     dispatch(runtime::actions::stop_midi_learning{});
 }
 
+void
+MidiAssignable::clearAssignment()
+{
+    runtime::actions::clear_midi_assignment action;
+    action.assignment_id = m_assignment_id;
+    dispatch(action);
+}
+
 } // namespace piejam::gui::model

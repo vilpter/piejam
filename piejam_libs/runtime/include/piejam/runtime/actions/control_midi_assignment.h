@@ -30,4 +30,12 @@ struct stop_midi_learning final
     std::optional<midi_assignment> learned;
 };
 
+struct clear_midi_assignment final
+    : ui::cloneable_action<clear_midi_assignment, reducible_action>
+{
+    parameter_id assignment_id;
+
+    void reduce(state&) const override;
+};
+
 } // namespace piejam::runtime::actions
