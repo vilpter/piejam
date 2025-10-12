@@ -12,6 +12,7 @@
 #include <piejam/runtime/enum_parameter.h>
 #include <piejam/runtime/float_parameter.h>
 #include <piejam/runtime/fx/module.h>
+#include <piejam/runtime/internal_fx_module_factory.h>
 #include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_factory.h>
 

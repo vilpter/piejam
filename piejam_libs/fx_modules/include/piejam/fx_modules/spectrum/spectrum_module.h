@@ -4,12 +4,8 @@
 
 #pragma once
 
-#include <piejam/runtime/audio_stream.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/fx/fwd.h>
-#include <piejam/runtime/internal_fx_module_factory.h>
-
-#include <piejam/audio/types.h>
 
 namespace piejam::fx_modules::spectrum
 {

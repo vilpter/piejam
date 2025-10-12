@@ -4,10 +4,8 @@
 
 #pragma once
 
-#include <piejam/audio/types.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/fx/fwd.h>
-#include <piejam/runtime/internal_fx_module_factory.h>
 
 namespace piejam::fx_modules::dual_pan
 {

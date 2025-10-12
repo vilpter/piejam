@@ -73,14 +73,14 @@ add_library(piejam_fx_modules STATIC
     src/piejam/fx_modules/utility/utility_internal_id.cpp
     src/piejam/fx_modules/utility/utility_module.cpp
 
-    include/piejam/fx_modules/tuner/tuner_internal_id.h
-    src/piejam/fx_modules/tuner/tuner_internal_id.cpp
     include/piejam/fx_modules/tuner/gui/FxTuner.h
     include/piejam/fx_modules/tuner/tuner_component.h
+    include/piejam/fx_modules/tuner/tuner_internal_id.h
     include/piejam/fx_modules/tuner/tuner_module.h
-    src/piejam/fx_modules/tuner/tuner_module.cpp
-    src/piejam/fx_modules/tuner/tuner_component.cpp
     src/piejam/fx_modules/tuner/gui/FxTuner.cpp
+    src/piejam/fx_modules/tuner/tuner_component.cpp
+    src/piejam/fx_modules/tuner/tuner_internal_id.cpp
+    src/piejam/fx_modules/tuner/tuner_module.cpp
 )
 
 target_include_directories(piejam_fx_modules PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -6,7 +6,6 @@
 
 #include <piejam/audio/engine/fwd.h>
 #include <piejam/runtime/fwd.h>
-#include <piejam/runtime/fx/fwd.h>
 
 #include <memory>
 
