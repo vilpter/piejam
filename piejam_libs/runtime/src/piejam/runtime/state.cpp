@@ -351,10 +351,10 @@ make_aux_send(parameter_factory const& params_factory)
                          {
                              .min = 0.f,
                              .max = 1.f,
+                             .to_normalized = &to_normalized_send,
+                             .from_normalized = &from_normalized_send,
                          })
-                         .set_value_to_string(&volume_to_string)
-                         .set_to_normalized(&to_normalized_send)
-                         .set_from_normalized(&from_normalized_send))},
+                         .set_value_to_string(&volume_to_string))},
             }}}};
 }
 
@@ -412,10 +412,10 @@ make_mixer_channel(state& st, mixer::channel_type type, std::string name)
                              {
                                  .min = 0.f,
                                  .max = numeric::from_dB(6.f),
+                                 .to_normalized = &to_normalized_volume,
+                                 .from_normalized = &from_normalized_volume,
                              })
-                             .set_value_to_string(&volume_to_string)
-                             .set_to_normalized(&to_normalized_volume)
-                             .set_from_normalized(&from_normalized_volume))},
+                             .set_value_to_string(&volume_to_string))},
                     {mixer::channel::parameter_key::pan_balance,
                      params_factory.make_parameter(
                          make_float_parameter(
@@ -426,7 +426,7 @@ make_mixer_channel(state& st, mixer::channel_type type, std::string name)
                                      "Balance"sv),
                                  .default_value = 0.f,
                              },
-                             linear_float_parameter_range<-1.f, 1.f>{})
+                             linear_float_parameter_range<-1.f, 1.f>())
                              .set_flags({parameter_flags::bipolar}))},
                     {mixer::channel::parameter_key::record,
                      params_factory.make_parameter(make_bool_parameter({

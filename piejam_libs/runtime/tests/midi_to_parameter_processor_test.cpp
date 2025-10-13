@@ -119,7 +119,7 @@ struct midi_to_float_parameter_processor_test
 
     float_parameter param{make_float_parameter(
         {.name = "foo", .default_value = 7.f},
-        {.min = 5.f, .max = 10.f})};
+        linear_float_parameter_range(5.f, 10.f))};
 
     std::unique_ptr<audio::engine::processor> proc{
         make_midi_cc_to_parameter_processor(param)};

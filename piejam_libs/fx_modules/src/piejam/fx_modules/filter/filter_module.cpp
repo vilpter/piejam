@@ -97,7 +97,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                              },
                              runtime::logarithmic_float_parameter_range<
                                  10.f,
-                                 20000.f>{})
+                                 20000.f>())
                              .set_value_to_string(&to_cutoff_string))},
                     {parameter_key::resonance,
                      params_factory.make_parameter(
@@ -106,7 +106,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .name = "Resonance",
                                  .default_value = 0.f,
                              },
-                             runtime::linear_float_parameter_range<0.f, 1.f>{})
+                             runtime::linear_float_parameter_range<0.f, 1.f>())
                              .set_value_to_string(&to_resonance_string))},
                 }}),
         .streams =

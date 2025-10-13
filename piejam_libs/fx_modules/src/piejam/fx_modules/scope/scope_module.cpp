@@ -178,7 +178,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .default_value = 0.f,
                              },
                              runtime::
-                                 linear_float_parameter_range<-1.f, 1.f>{}))},
+                                 linear_float_parameter_range<-1.f, 1.f>()))},
                     {parameter_key::hold_time,
                      params_factory.make_parameter(
                          runtime::make_float_parameter(
@@ -188,7 +188,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .default_value = 80.f,
                              },
                              runtime::
-                                 linear_float_parameter_range<16.f, 1600.f>{})
+                                 linear_float_parameter_range<16.f, 1600.f>())
                              .set_value_to_string(&to_hold_time_string))},
                     {parameter_key::waveform_window_size,
                      params_factory.make_parameter(
@@ -232,7 +232,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .name = "Gain A",
                                  .default_value = 1.f,
                              },
-                             runtime::dB_float_parameter_range<-24.f, 24.f>{})
+                             runtime::dB_float_parameter_range<-24.f, 24.f>())
                              .set_value_to_string(
                                  &runtime::default_float_to_dB_string))},
                     {parameter_key::gain_b,
@@ -242,7 +242,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .name = "Gain B",
                                  .default_value = 1.f,
                              },
-                             runtime::dB_float_parameter_range<-24.f, 24.f>{})
+                             runtime::dB_float_parameter_range<-24.f, 24.f>())
                              .set_value_to_string(
                                  &runtime::default_float_to_dB_string))},
                     {parameter_key::freeze,

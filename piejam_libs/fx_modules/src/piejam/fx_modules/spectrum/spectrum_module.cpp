@@ -93,7 +93,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .name = "Gain A",
                                  .default_value = 1.f,
                              },
-                             runtime::dB_float_parameter_range<-24.f, 24.f>{})
+                             runtime::dB_float_parameter_range<-24.f, 24.f>())
                              .set_value_to_string(
                                  &runtime::default_float_to_dB_string))},
                     {parameter_key::gain_b,
@@ -103,7 +103,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .name = "Gain B",
                                  .default_value = 1.f,
                              },
-                             runtime::dB_float_parameter_range<-24.f, 24.f>{})
+                             runtime::dB_float_parameter_range<-24.f, 24.f>())
                              .set_value_to_string(
                                  &runtime::default_float_to_dB_string))},
                     {parameter_key::freeze,

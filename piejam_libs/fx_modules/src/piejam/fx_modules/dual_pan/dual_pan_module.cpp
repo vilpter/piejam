@@ -44,7 +44,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                  .name = "Pan Left",
                                  .default_value = -1.f,
                              },
-                             runtime::linear_float_parameter_range<-1.f, 1.f>{})
+                             runtime::linear_float_parameter_range<-1.f, 1.f>())
                              .set_flags({runtime::parameter_flags::bipolar}))},
                     {parameter_key::pan_right,
                      params_factory.make_parameter(
@@ -54,7 +54,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
                                          "Right",
                                  .default_value = 1.f,
                              },
-                             runtime::linear_float_parameter_range<-1.f, 1.f>{})
+                             runtime::linear_float_parameter_range<-1.f, 1.f>())
                              .set_flags({runtime::parameter_flags::bipolar}))},
                     {parameter_key::mute_right,
                      params_factory.make_parameter(

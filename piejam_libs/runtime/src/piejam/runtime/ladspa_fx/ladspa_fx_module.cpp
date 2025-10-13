@@ -52,10 +52,6 @@ private:
     {
         parameter_factory params_factory{m_params};
 
-        auto const range_kind = p.logarithmic && p.min > 0.f && p.max > 0.f
-                                    ? float_parameter_range_kind::logarithmic
-                                    : float_parameter_range_kind::linear;
-
         module_params.emplace(
             port_desc.index,
             params_factory.make_parameter(make_float_parameter(
@@ -63,11 +59,9 @@ private:
                     .name = port_desc.name,
                     .default_value = p.default_value,
                 },
-                {
-                    .min = p.min,
-                    .max = p.max,
-                    .kind = range_kind,
-                })));
+                p.logarithmic && p.min > 0.f && p.max > 0.f
+                    ? logarithmic_float_parameter_range(p.min, p.max)
+                    : linear_float_parameter_range(p.min, p.max))));
     }
 
     void operator()(
