@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/module_registration.h>
+#include "module_registration.h"
 
 #include <piejam/gui/model/FxBrowserEntryInternalData.h>
 #include <piejam/gui/model/FxModuleRegistry.h>

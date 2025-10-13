@@ -2,15 +2,26 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/utility/utility_internal_id.h>
+#include "utility_internal_id.h"
 
-#include <piejam/fx_modules/module_registration.h>
-#include <piejam/fx_modules/utility/gui/FxUtility.h>
-#include <piejam/fx_modules/utility/utility_component.h>
-#include <piejam/fx_modules/utility/utility_module.h>
+#include "gui/FxUtility.h"
+#include "utility_component.h"
+#include "utility_module.h"
+
+#include "../module_registration.h"
 
 namespace piejam::fx_modules::utility
 {
+
+void
+init()
+{
+    static std::once_flag s_init;
+    std::call_once(s_init, []() {
+        PIEJAM_FX_MODULES_MODEL(gui::FxUtility, "FxUtility");
+        internal_id();
+    });
+}
 
 auto
 internal_id() -> runtime::fx::internal_id

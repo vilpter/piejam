@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/scope/scope_component.h>
+#include "scope_component.h"
 
-#include <piejam/fx_modules/scope/scope_module.h>
+#include "scope_module.h"
 
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/sample_rate.h>

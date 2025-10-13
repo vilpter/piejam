@@ -2,10 +2,10 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/tuner/gui/FxTuner.h>
+#include "FxTuner.h"
 
-#include <piejam/fx_modules/tuner/tuner_internal_id.h>
-#include <piejam/fx_modules/tuner/tuner_module.h>
+#include "../tuner_internal_id.h"
+#include "../tuner_module.h"
 
 #include <piejam/audio/pitch.h>
 #include <piejam/gui/model/AudioStreamProvider.h>

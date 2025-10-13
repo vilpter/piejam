@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/spectrum/spectrum_component.h>
+#include "spectrum_component.h"
 
-#include <piejam/fx_modules/spectrum/spectrum_module.h>
+#include "spectrum_module.h"
 
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/sample_rate.h>

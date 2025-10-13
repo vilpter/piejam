@@ -2,9 +2,10 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/utility/utility_module.h>
+#include "utility_module.h"
 
-#include <piejam/fx_modules/utility/utility_internal_id.h>
+#include "utility_internal_id.h"
+
 #include <piejam/numeric/dB_convert.h>
 #include <piejam/runtime/bool_parameter.h>
 #include <piejam/runtime/float_parameter.h>

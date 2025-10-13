@@ -11,11 +11,20 @@
 #include <piejam/runtime/internal_fx_module_factory.h>
 
 #include <QString>
+#include <qqml.h>
 
 #include <string>
 
 namespace piejam::fx_modules
 {
+
+#define PIEJAM_FX_MODULES_MODEL(type, name)                                    \
+    qmlRegisterUncreatableType<type>(                                          \
+        "PieJam.FxModules.Models",                                             \
+        1,                                                                     \
+        0,                                                                     \
+        name,                                                                  \
+        "C++ type");
 
 struct module_registration
 {

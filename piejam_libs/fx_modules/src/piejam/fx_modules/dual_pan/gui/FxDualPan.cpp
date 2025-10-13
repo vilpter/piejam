@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/dual_pan/gui/FxDualPan.h>
+#include "FxDualPan.h"
 
-#include <piejam/fx_modules/dual_pan/dual_pan_internal_id.h>
+#include "../dual_pan_internal_id.h"
 
 namespace piejam::fx_modules::dual_pan::gui
 {

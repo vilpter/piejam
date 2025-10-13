@@ -2,15 +2,26 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/tuner/tuner_internal_id.h>
+#include "tuner_internal_id.h"
 
-#include <piejam/fx_modules/module_registration.h>
-#include <piejam/fx_modules/tuner/gui/FxTuner.h>
-#include <piejam/fx_modules/tuner/tuner_component.h>
-#include <piejam/fx_modules/tuner/tuner_module.h>
+#include "gui/FxTuner.h"
+#include "tuner_component.h"
+#include "tuner_module.h"
+
+#include "../module_registration.h"
 
 namespace piejam::fx_modules::tuner
 {
+
+void
+init()
+{
+    static std::once_flag s_init;
+    std::call_once(s_init, []() {
+        PIEJAM_FX_MODULES_MODEL(gui::FxTuner, "FxTuner");
+        internal_id();
+    });
+}
 
 auto
 internal_id() -> runtime::fx::internal_id

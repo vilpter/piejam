@@ -2,15 +2,26 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/spectrum/spectrum_internal_id.h>
+#include "spectrum_internal_id.h"
 
-#include <piejam/fx_modules/module_registration.h>
-#include <piejam/fx_modules/spectrum/gui/FxSpectrum.h>
-#include <piejam/fx_modules/spectrum/spectrum_component.h>
-#include <piejam/fx_modules/spectrum/spectrum_module.h>
+#include "gui/FxSpectrum.h"
+#include "spectrum_component.h"
+#include "spectrum_module.h"
+
+#include "../module_registration.h"
 
 namespace piejam::fx_modules::spectrum
 {
+
+void
+init()
+{
+    static std::once_flag s_init;
+    std::call_once(s_init, []() {
+        PIEJAM_FX_MODULES_MODEL(gui::FxSpectrum, "FxSpectrum");
+        internal_id();
+    });
+}
 
 auto
 internal_id() -> runtime::fx::internal_id

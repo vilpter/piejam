@@ -24,74 +24,27 @@ add_library(piejam_fx_modules STATIC
     ${RESOURCES}
 
     include/piejam/fx_modules/init.h
-    include/piejam/fx_modules/module_registration.h
     src/piejam/fx_modules/init.cpp
+    src/piejam/fx_modules/module_registration.h
     src/piejam/fx_modules/module_registration.cpp
-
-    include/piejam/fx_modules/filter/filter_component.h
-    include/piejam/fx_modules/filter/filter_internal_id.h
-    include/piejam/fx_modules/filter/filter_module.h
-    include/piejam/fx_modules/filter/gui/FxFilter.h
-    src/piejam/fx_modules/filter/filter_component.cpp
-    src/piejam/fx_modules/filter/filter_internal_id.cpp
-    src/piejam/fx_modules/filter/filter_module.cpp
-    src/piejam/fx_modules/filter/gui/FxFilter.cpp
-
-    include/piejam/fx_modules/scope/gui/FxScope.h
-    include/piejam/fx_modules/scope/scope_component.h
-    include/piejam/fx_modules/scope/scope_internal_id.h
-    include/piejam/fx_modules/scope/scope_module.h
-    src/piejam/fx_modules/scope/gui/FxScope.cpp
-    src/piejam/fx_modules/scope/scope_component.cpp
-    src/piejam/fx_modules/scope/scope_internal_id.cpp
-    src/piejam/fx_modules/scope/scope_module.cpp
-
-    include/piejam/fx_modules/spectrum/gui/FxSpectrum.h
-    include/piejam/fx_modules/spectrum/spectrum_component.h
-    include/piejam/fx_modules/spectrum/spectrum_internal_id.h
-    include/piejam/fx_modules/spectrum/spectrum_module.h
-    src/piejam/fx_modules/spectrum/gui/FxSpectrum.cpp
-    src/piejam/fx_modules/spectrum/spectrum_component.cpp
-    src/piejam/fx_modules/spectrum/spectrum_internal_id.cpp
-    src/piejam/fx_modules/spectrum/spectrum_module.cpp
-
-    include/piejam/fx_modules/dual_pan/gui/FxDualPan.h
-    include/piejam/fx_modules/dual_pan/dual_pan_component.h
-    include/piejam/fx_modules/dual_pan/dual_pan_internal_id.h
-    include/piejam/fx_modules/dual_pan/dual_pan_module.h
-    src/piejam/fx_modules/dual_pan/gui/FxDualPan.cpp
-    src/piejam/fx_modules/dual_pan/dual_pan_component.cpp
-    src/piejam/fx_modules/dual_pan/dual_pan_internal_id.cpp
-    src/piejam/fx_modules/dual_pan/dual_pan_module.cpp
-
-    include/piejam/fx_modules/utility/gui/FxUtility.h
-    include/piejam/fx_modules/utility/utility_component.h
-    include/piejam/fx_modules/utility/utility_internal_id.h
-    include/piejam/fx_modules/utility/utility_module.h
-    src/piejam/fx_modules/utility/gui/FxUtility.cpp
-    src/piejam/fx_modules/utility/utility_component.cpp
-    src/piejam/fx_modules/utility/utility_internal_id.cpp
-    src/piejam/fx_modules/utility/utility_module.cpp
-
-    include/piejam/fx_modules/tuner/gui/FxTuner.h
-    include/piejam/fx_modules/tuner/tuner_component.h
-    include/piejam/fx_modules/tuner/tuner_internal_id.h
-    include/piejam/fx_modules/tuner/tuner_module.h
-    src/piejam/fx_modules/tuner/gui/FxTuner.cpp
-    src/piejam/fx_modules/tuner/tuner_component.cpp
-    src/piejam/fx_modules/tuner/tuner_internal_id.cpp
-    src/piejam/fx_modules/tuner/tuner_module.cpp
 )
+
+add_subdirectory(src/piejam/fx_modules/dual_pan)
+add_subdirectory(src/piejam/fx_modules/filter)
+add_subdirectory(src/piejam/fx_modules/scope)
+add_subdirectory(src/piejam/fx_modules/spectrum)
+add_subdirectory(src/piejam/fx_modules/tuner)
+add_subdirectory(src/piejam/fx_modules/utility)
 
 target_include_directories(piejam_fx_modules PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(piejam_fx_modules
     PUBLIC
-    piejam_runtime
-    piejam_gui
 
     PRIVATE
     piejam_compiler_warnings
+    piejam_runtime
+    piejam_gui
 )
 
 unset(RESOURCE_FILES)

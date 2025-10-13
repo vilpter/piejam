@@ -2,15 +2,26 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/filter/filter_internal_id.h>
+#include "filter_internal_id.h"
 
-#include <piejam/fx_modules/filter/filter_component.h>
-#include <piejam/fx_modules/filter/filter_module.h>
-#include <piejam/fx_modules/filter/gui/FxFilter.h>
-#include <piejam/fx_modules/module_registration.h>
+#include "filter_component.h"
+#include "filter_module.h"
+#include "gui/FxFilter.h"
+
+#include "../module_registration.h"
 
 namespace piejam::fx_modules::filter
 {
+
+void
+init()
+{
+    static std::once_flag s_init;
+    std::call_once(s_init, []() {
+        PIEJAM_FX_MODULES_MODEL(gui::FxFilter, "FxFilter");
+        internal_id();
+    });
+}
 
 auto
 internal_id() -> runtime::fx::internal_id

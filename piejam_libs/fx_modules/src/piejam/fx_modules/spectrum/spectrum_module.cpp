@@ -2,11 +2,12 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/spectrum/spectrum_module.h>
+#include "spectrum_module.h"
+
+#include "spectrum_internal_id.h"
 
 #include <piejam/audio/multichannel_buffer.h>
 #include <piejam/entity_map.h>
-#include <piejam/fx_modules/spectrum/spectrum_internal_id.h>
 #include <piejam/numeric/dB_convert.h>
 #include <piejam/runtime/bool_parameter.h>
 #include <piejam/runtime/enum_parameter.h>

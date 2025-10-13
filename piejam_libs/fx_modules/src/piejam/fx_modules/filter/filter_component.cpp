@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/filter/filter_component.h>
+#include "filter_component.h"
 
-#include <piejam/fx_modules/filter/filter_module.h>
+#include "filter_module.h"
 
 #include <piejam/audio/dsp/biquad_filter.h>
 #include <piejam/audio/engine/component.h>

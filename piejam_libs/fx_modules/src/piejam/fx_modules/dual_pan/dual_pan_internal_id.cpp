@@ -2,15 +2,26 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/dual_pan/dual_pan_internal_id.h>
+#include "dual_pan_internal_id.h"
 
-#include <piejam/fx_modules/dual_pan/dual_pan_component.h>
-#include <piejam/fx_modules/dual_pan/dual_pan_module.h>
-#include <piejam/fx_modules/dual_pan/gui/FxDualPan.h>
-#include <piejam/fx_modules/module_registration.h>
+#include "dual_pan_component.h"
+#include "dual_pan_module.h"
+#include "gui/FxDualPan.h"
+
+#include "../module_registration.h"
 
 namespace piejam::fx_modules::dual_pan
 {
+
+void
+init()
+{
+    static std::once_flag s_init;
+    std::call_once(s_init, []() {
+        PIEJAM_FX_MODULES_MODEL(gui::FxDualPan, "FxDualPan");
+        internal_id();
+    });
+}
 
 auto
 internal_id() -> runtime::fx::internal_id

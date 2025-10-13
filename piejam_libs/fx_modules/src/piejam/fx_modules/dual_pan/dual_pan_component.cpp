@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/fx_modules/dual_pan/dual_pan_component.h>
+#include "dual_pan_component.h"
 
-#include <piejam/fx_modules/dual_pan/dual_pan_module.h>
+#include "dual_pan_module.h"
 
 #include <piejam/audio/components/pan_balance.h>
 #include <piejam/audio/engine/component.h>
