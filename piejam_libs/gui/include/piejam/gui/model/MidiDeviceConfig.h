@@ -16,8 +16,8 @@ class MidiDeviceConfig final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(QString, name, setName)
-    M_PIEJAM_GUI_PROPERTY(bool, enabled, setEnabled)
+    PIEJAM_GUI_PROPERTY(QString, name, setName)
+    PIEJAM_GUI_PROPERTY(bool, enabled, setEnabled)
 
 public:
     MidiDeviceConfig(runtime::state_access const&, midi::device_id_t);

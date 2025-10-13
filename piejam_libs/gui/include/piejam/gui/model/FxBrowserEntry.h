@@ -16,10 +16,10 @@ class FxBrowserEntry : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(QString, name, setName)
-    M_PIEJAM_GUI_PROPERTY(QString, section, setSection)
-    M_PIEJAM_GUI_PROPERTY(QString, description, setDescription)
-    M_PIEJAM_GUI_PROPERTY(QString, author, setAuthor)
+    PIEJAM_GUI_PROPERTY(QString, name, setName)
+    PIEJAM_GUI_PROPERTY(QString, section, setSection)
+    PIEJAM_GUI_PROPERTY(QString, description, setDescription)
+    PIEJAM_GUI_PROPERTY(QString, author, setAuthor)
 
 public:
     using SubscribableModel::SubscribableModel;

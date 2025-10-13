@@ -19,10 +19,10 @@ class EnumParameter final : public Parameter
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(int, value, setValue)
-    M_PIEJAM_GUI_PROPERTY(int, minValue, setMinValue)
-    M_PIEJAM_GUI_PROPERTY(int, maxValue, setMaxValue)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, values)
+    PIEJAM_GUI_PROPERTY(int, value, setValue)
+    PIEJAM_GUI_PROPERTY(int, minValue, setMinValue)
+    PIEJAM_GUI_PROPERTY(int, maxValue, setMaxValue)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, values)
 
 public:
     EnumParameter(runtime::state_access const&, runtime::enum_parameter_id);

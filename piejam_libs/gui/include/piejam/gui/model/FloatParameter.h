@@ -14,9 +14,9 @@ class FloatParameter : public Parameter
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(double, value, setValue)
-    M_PIEJAM_GUI_PROPERTY(double, normalizedValue, setNormalizedValue)
-    M_PIEJAM_GUI_PROPERTY(bool, bipolar, setBipolar)
+    PIEJAM_GUI_PROPERTY(double, value, setValue)
+    PIEJAM_GUI_PROPERTY(double, normalizedValue, setNormalizedValue)
+    PIEJAM_GUI_PROPERTY(bool, bipolar, setBipolar)
 
 public:
     FloatParameter(runtime::state_access const&, runtime::float_parameter_id);

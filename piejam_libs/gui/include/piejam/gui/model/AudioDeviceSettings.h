@@ -19,20 +19,17 @@ class AudioDeviceSettings final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, soundCards)
-    M_PIEJAM_GUI_PROPERTY(
-        int,
-        selectedSoundCardIndex,
-        setSelectedSoundCardIndex)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, sampleRates)
-    M_PIEJAM_GUI_PROPERTY(int, selectedSampleRate, setSelectedSampleRate)
-    M_PIEJAM_GUI_PROPERTY(int, periodSizesCount, setPeriodSizesCount)
-    M_PIEJAM_GUI_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, soundCards)
+    PIEJAM_GUI_PROPERTY(int, selectedSoundCardIndex, setSelectedSoundCardIndex)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, sampleRates)
+    PIEJAM_GUI_PROPERTY(int, selectedSampleRate, setSelectedSampleRate)
+    PIEJAM_GUI_PROPERTY(int, periodSizesCount, setPeriodSizesCount)
+    PIEJAM_GUI_PROPERTY(
         int,
         selectedPeriodSizeIndex,
         setSelectedPeriodSizeIndex)
-    M_PIEJAM_GUI_PROPERTY(int, selectedPeriodSize, setSelectedPeriodSize)
-    M_PIEJAM_GUI_PROPERTY(double, bufferLatency, setBufferLatency)
+    PIEJAM_GUI_PROPERTY(int, selectedPeriodSize, setSelectedPeriodSize)
+    PIEJAM_GUI_PROPERTY(double, bufferLatency, setBufferLatency)
 
 public:
     explicit AudioDeviceSettings(runtime::state_access const&);

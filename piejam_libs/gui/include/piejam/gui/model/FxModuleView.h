@@ -19,10 +19,10 @@ class FxModuleView : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(MaterialColor, color, setColor)
-    M_PIEJAM_GUI_PROPERTY(QString, chainName, setChainName)
-    M_PIEJAM_GUI_PROPERTY(QString, name, setName)
-    M_PIEJAM_GUI_PROPERTY(piejam::gui::model::BoolParameter*, active, setActive)
+    PIEJAM_GUI_PROPERTY(MaterialColor, color, setColor)
+    PIEJAM_GUI_PROPERTY(QString, chainName, setChainName)
+    PIEJAM_GUI_PROPERTY(QString, name, setName)
+    PIEJAM_GUI_PROPERTY(piejam::gui::model::BoolParameter*, active, setActive)
 
     Q_PROPERTY(
         piejam::gui::model::FxModule* content READ content NOTIFY contentChanged

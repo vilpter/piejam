@@ -25,29 +25,29 @@ class Root final : public QObject
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::AudioDeviceSettings*,
         audioDeviceSettings)
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::AudioInputOutputSettings*,
         audioInputSettings)
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::AudioInputOutputSettings*,
         audioOutputSettings)
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::MidiInputSettings*,
         midiInputSettings)
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Mixer*, mixer)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Info*, info)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Log*, log)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FxBrowser*, fxBrowser)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FxModuleView*, fxModule)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Mixer*, mixer)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Info*, info)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Log*, log)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FxBrowser*, fxBrowser)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FxModuleView*, fxModule)
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::RootView*, rootView)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::RootView*, rootView)
 
 public:
     explicit Root(runtime::state_access const&);

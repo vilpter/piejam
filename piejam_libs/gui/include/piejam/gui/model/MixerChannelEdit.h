@@ -18,10 +18,10 @@ class MixerChannelEdit final : public MixerChannel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(bool, canMoveLeft, setCanMoveLeft)
-    M_PIEJAM_GUI_PROPERTY(bool, canMoveRight, setCanMoveRight)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AudioRouting*, in)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AudioRouting*, out)
+    PIEJAM_GUI_PROPERTY(bool, canMoveLeft, setCanMoveLeft)
+    PIEJAM_GUI_PROPERTY(bool, canMoveRight, setCanMoveRight)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AudioRouting*, in)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AudioRouting*, out)
 
 public:
     MixerChannelEdit(runtime::state_access const&, runtime::mixer::channel_id);

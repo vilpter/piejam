@@ -14,9 +14,9 @@ class IntParameter : public Parameter
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(int, value, setValue)
-    M_PIEJAM_GUI_PROPERTY(int, minValue, setMinValue)
-    M_PIEJAM_GUI_PROPERTY(int, maxValue, setMaxValue)
+    PIEJAM_GUI_PROPERTY(int, value, setValue)
+    PIEJAM_GUI_PROPERTY(int, minValue, setMinValue)
+    PIEJAM_GUI_PROPERTY(int, maxValue, setMaxValue)
 
 public:
     IntParameter(runtime::state_access const&, runtime::int_parameter_id);

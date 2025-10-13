@@ -20,8 +20,8 @@ class AudioInputOutputSettings : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, channels)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, deviceConfigs)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, channels)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, deviceConfigs)
 
 public:
     AudioInputOutputSettings(runtime::state_access const&, io_direction);

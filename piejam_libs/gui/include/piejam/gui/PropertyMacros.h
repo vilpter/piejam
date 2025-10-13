@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#define M_PIEJAM_GUI_PROPERTY(type, name, setterName)                          \
+#define PIEJAM_GUI_PROPERTY(type, name, setterName)                            \
 private:                                                                       \
     Q_PROPERTY(type name READ name NOTIFY name##Changed FINAL)                 \
     type m_##name{};                                                           \
@@ -34,7 +34,7 @@ public:                                                                        \
                                                                                \
 private:
 
-#define M_PIEJAM_GUI_CONSTANT_PROPERTY(type, name)                             \
+#define PIEJAM_GUI_CONSTANT_PROPERTY(type, name)                               \
 private:                                                                       \
     Q_PROPERTY(type name READ name CONSTANT FINAL)                             \
                                                                                \
@@ -46,7 +46,7 @@ public:                                                                        \
                                                                                \
 private:
 
-#define M_PIEJAM_GUI_WRITABLE_PROPERTY(type, name, setterName)                 \
+#define PIEJAM_GUI_WRITABLE_PROPERTY(type, name, setterName)                   \
 private:                                                                       \
     Q_PROPERTY(                                                                \
         type name READ name WRITE setterName NOTIFY name##Changed FINAL)       \

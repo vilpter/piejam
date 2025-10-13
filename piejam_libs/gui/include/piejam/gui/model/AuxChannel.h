@@ -18,7 +18,7 @@ class AuxChannel final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::EnumParameter*,
         defaultFaderTap)
 

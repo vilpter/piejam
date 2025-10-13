@@ -19,9 +19,9 @@ class Parameter : public SubscribableModel
     Q_OBJECT
 
     Q_PROPERTY(Type type READ type CONSTANT FINAL)
-    M_PIEJAM_GUI_PROPERTY(QString, name, setName)
-    M_PIEJAM_GUI_PROPERTY(QString, valueString, setValueString)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::MidiAssignable*, midi)
+    PIEJAM_GUI_PROPERTY(QString, name, setName)
+    PIEJAM_GUI_PROPERTY(QString, valueString, setValueString)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::MidiAssignable*, midi)
 
 public:
     Parameter(

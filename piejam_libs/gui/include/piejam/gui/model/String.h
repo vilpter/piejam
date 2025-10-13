@@ -17,7 +17,7 @@ class String final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(QString, value, setValue)
+    PIEJAM_GUI_PROPERTY(QString, value, setValue)
 
 public:
     String(runtime::state_access const&, runtime::string_id);

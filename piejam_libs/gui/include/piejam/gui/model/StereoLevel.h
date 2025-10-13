@@ -19,8 +19,8 @@ class StereoLevel : public QObject
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(double, levelLeft, setLevelLeft)
-    M_PIEJAM_GUI_PROPERTY(double, levelRight, setLevelRight)
+    PIEJAM_GUI_PROPERTY(double, levelLeft, setLevelLeft)
+    PIEJAM_GUI_PROPERTY(double, levelRight, setLevelRight)
 
 public:
     template <audio::pair_channel C>

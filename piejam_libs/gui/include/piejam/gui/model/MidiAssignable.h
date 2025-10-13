@@ -12,8 +12,8 @@ class MidiAssignable final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(bool, learning, setLearning)
-    M_PIEJAM_GUI_PROPERTY(QString, assignment, setAssignment)
+    PIEJAM_GUI_PROPERTY(bool, learning, setLearning)
+    PIEJAM_GUI_PROPERTY(QString, assignment, setAssignment)
 
 public:
     MidiAssignable(runtime::state_access const&, runtime::parameter_id const&);

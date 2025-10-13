@@ -19,8 +19,8 @@ class FxChainModule : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(QString, name, setName)
-    M_PIEJAM_GUI_PROPERTY(bool, focused, setFocused)
+    PIEJAM_GUI_PROPERTY(QString, name, setName)
+    PIEJAM_GUI_PROPERTY(bool, focused, setFocused)
 
 public:
     FxChainModule(

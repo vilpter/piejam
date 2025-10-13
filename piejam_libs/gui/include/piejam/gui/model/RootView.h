@@ -30,8 +30,8 @@ public:
     Q_ENUM(Mode)
 
 private:
-    M_PIEJAM_GUI_PROPERTY(bool, canShowFxModule, setCanShowFxModule)
-    M_PIEJAM_GUI_PROPERTY(Mode, mode, setMode)
+    PIEJAM_GUI_PROPERTY(bool, canShowFxModule, setCanShowFxModule)
+    PIEJAM_GUI_PROPERTY(Mode, mode, setMode)
 
 public:
     explicit RootView(runtime::state_access const&);

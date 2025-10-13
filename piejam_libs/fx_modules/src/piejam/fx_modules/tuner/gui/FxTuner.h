@@ -20,9 +20,9 @@ class FxTuner final : public piejam::gui::model::FxModule
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(float, detectedFrequency, setDetectedFrequency)
-    M_PIEJAM_GUI_PROPERTY(QString, detectedPitch, setDetectedPitch)
-    M_PIEJAM_GUI_PROPERTY(int, detectedCents, setDetectedCents)
+    PIEJAM_GUI_PROPERTY(float, detectedFrequency, setDetectedFrequency)
+    PIEJAM_GUI_PROPERTY(QString, detectedPitch, setDetectedPitch)
+    PIEJAM_GUI_PROPERTY(int, detectedCents, setDetectedCents)
 
 public:
     FxTuner(runtime::state_access const&, runtime::fx::module_id);

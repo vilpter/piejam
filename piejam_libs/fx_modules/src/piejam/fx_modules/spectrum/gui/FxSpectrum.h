@@ -21,15 +21,15 @@ class FxSpectrum final : public piejam::gui::model::FxModule
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumA)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumB)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeA)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeB)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, channelA)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, channelB)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, gainA)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, gainB)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, freeze)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumA)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumB)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeA)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeB)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, channelA)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, channelB)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, gainA)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, gainB)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, freeze)
 
 public:
     FxSpectrum(runtime::state_access const&, runtime::fx::module_id);

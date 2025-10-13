@@ -18,11 +18,11 @@ class AuxSend final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(QString, name, setName)
-    M_PIEJAM_GUI_PROPERTY(bool, canToggle, setCanToggle)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, active)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, faderTap)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, volume)
+    PIEJAM_GUI_PROPERTY(QString, name, setName)
+    PIEJAM_GUI_PROPERTY(bool, canToggle, setCanToggle)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, active)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::EnumParameter*, faderTap)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, volume)
 
 public:
     AuxSend(

@@ -20,8 +20,8 @@ class MixerChannelAuxSend final : public MixerChannel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, sends)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AuxChannel*, aux)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, sends)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::AuxChannel*, aux)
 
 public:
     MixerChannelAuxSend(

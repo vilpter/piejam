@@ -19,7 +19,7 @@ class MidiInputSettings final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, devices)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, devices)
 
 public:
     MidiInputSettings(runtime::state_access const&);

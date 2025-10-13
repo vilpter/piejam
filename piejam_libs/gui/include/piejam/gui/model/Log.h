@@ -20,7 +20,7 @@ class Log final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, logMessages)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, logMessages)
 
 public:
     Log(runtime::state_access const&);

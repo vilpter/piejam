@@ -19,11 +19,11 @@ class Mixer final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, userChannels)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, userChannels)
+    PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::MixerChannelModels*,
         mainChannel)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(
+    PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::MixerChannelAdd*,
         channelAdd)
 

@@ -18,11 +18,11 @@ class ExternalAudioDeviceConfig final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::String*, name)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(bool, mono)
-    M_PIEJAM_GUI_PROPERTY(int, monoChannel, setMonoChannel)
-    M_PIEJAM_GUI_PROPERTY(int, stereoLeftChannel, setStereoLeftChannel)
-    M_PIEJAM_GUI_PROPERTY(int, stereoRightChannel, setStereoRightChannel)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::String*, name)
+    PIEJAM_GUI_CONSTANT_PROPERTY(bool, mono)
+    PIEJAM_GUI_PROPERTY(int, monoChannel, setMonoChannel)
+    PIEJAM_GUI_PROPERTY(int, stereoLeftChannel, setStereoLeftChannel)
+    PIEJAM_GUI_PROPERTY(int, stereoRightChannel, setStereoRightChannel)
 
 public:
     ExternalAudioDeviceConfig(

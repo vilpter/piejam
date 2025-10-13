@@ -14,7 +14,7 @@ class BoolParameter final : public Parameter
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(bool, value, setValue)
+    PIEJAM_GUI_PROPERTY(bool, value, setValue)
 
 public:
     BoolParameter(runtime::state_access const&, runtime::bool_parameter_id);

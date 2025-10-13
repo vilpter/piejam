@@ -20,10 +20,10 @@ class MixerChannelFx final : public MixerChannel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(bool, focused, setFocused)
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, fxChain)
-    M_PIEJAM_GUI_PROPERTY(bool, canMoveUpFxModule, setCanMoveUpFxModule)
-    M_PIEJAM_GUI_PROPERTY(bool, canMoveDownFxModule, setCanMoveDownFxModule)
+    PIEJAM_GUI_PROPERTY(bool, focused, setFocused)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, fxChain)
+    PIEJAM_GUI_PROPERTY(bool, canMoveUpFxModule, setCanMoveUpFxModule)
+    PIEJAM_GUI_PROPERTY(bool, canMoveDownFxModule, setCanMoveDownFxModule)
 
 public:
     MixerChannelFx(runtime::state_access const&, runtime::mixer::channel_id);

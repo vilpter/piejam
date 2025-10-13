@@ -18,9 +18,9 @@ class FixedLinearScaleGrid : public QQuickItem
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_WRITABLE_PROPERTY(Qt::Orientation, orientation, setOrientation)
-    M_PIEJAM_GUI_WRITABLE_PROPERTY(QColor, color, setColor)
-    M_PIEJAM_GUI_WRITABLE_PROPERTY(QVector<double>, ticks, setTicks)
+    PIEJAM_GUI_WRITABLE_PROPERTY(Qt::Orientation, orientation, setOrientation)
+    PIEJAM_GUI_WRITABLE_PROPERTY(QColor, color, setColor)
+    PIEJAM_GUI_WRITABLE_PROPERTY(QVector<double>, ticks, setTicks)
 
     QML_ELEMENT
 

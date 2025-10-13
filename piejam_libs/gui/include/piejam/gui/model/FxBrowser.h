@@ -20,7 +20,7 @@ class FxBrowser final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, entries)
+    PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, entries)
 
 public:
     FxBrowser(runtime::state_access const&);

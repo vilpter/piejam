@@ -30,8 +30,8 @@ public:
     Q_ENUM(State)
 
 private:
-    M_PIEJAM_GUI_PROPERTY(State, state, setState)
-    M_PIEJAM_GUI_PROPERTY(QString, label, setLabel)
+    PIEJAM_GUI_PROPERTY(State, state, setState)
+    PIEJAM_GUI_PROPERTY(QString, label, setLabel)
 
 public:
     AudioRoutingSelection(

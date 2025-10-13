@@ -16,13 +16,13 @@ class Info final : public SubscribableModel
 {
     Q_OBJECT
 
-    M_PIEJAM_GUI_PROPERTY(double, audioLoad, setAudioLoad)
-    M_PIEJAM_GUI_PROPERTY(unsigned, xruns, setXruns)
-    M_PIEJAM_GUI_PROPERTY(QList<float>, cpuLoad, setCpuLoad)
-    M_PIEJAM_GUI_PROPERTY(int, cpuTemp, setCpuTemp)
-    M_PIEJAM_GUI_PROPERTY(bool, recording, setRecording)
-    M_PIEJAM_GUI_PROPERTY(bool, midiLearning, setMidiLearning)
-    M_PIEJAM_GUI_PROPERTY(int, diskUsage, setDiskUsage)
+    PIEJAM_GUI_PROPERTY(double, audioLoad, setAudioLoad)
+    PIEJAM_GUI_PROPERTY(unsigned, xruns, setXruns)
+    PIEJAM_GUI_PROPERTY(QList<float>, cpuLoad, setCpuLoad)
+    PIEJAM_GUI_PROPERTY(int, cpuTemp, setCpuTemp)
+    PIEJAM_GUI_PROPERTY(bool, recording, setRecording)
+    PIEJAM_GUI_PROPERTY(bool, midiLearning, setMidiLearning)
+    PIEJAM_GUI_PROPERTY(int, diskUsage, setDiskUsage)
 
 public:
     Info(runtime::state_access const&);
