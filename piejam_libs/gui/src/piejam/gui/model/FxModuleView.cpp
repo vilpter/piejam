@@ -55,12 +55,6 @@ FxModuleView::FxModuleView(runtime::state_access const& state_access)
 {
 }
 
-auto
-FxModuleView::content() noexcept -> FxModule*
-{
-    return m_impl->content.get();
-}
-
 void
 FxModuleView::onSubscribe()
 {
@@ -86,7 +80,7 @@ FxModuleView::onSubscribe()
 
                 auto content = makeModuleContent(state_access(), fx_mod_id);
                 std::swap(m_impl->content, content);
-                emit contentChanged();
+                setContent(m_impl->content.get());
 
                 auto active = std::make_unique<BoolParameter>(
                     state_access(),

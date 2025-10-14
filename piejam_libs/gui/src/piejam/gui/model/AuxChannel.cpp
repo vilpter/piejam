@@ -33,7 +33,6 @@ AuxChannel::AuxChannel(
     runtime::state_access const& state_access,
     runtime::mixer::channel_id aux_id)
     : SubscribableModel{state_access}
-    , m_aux_id{aux_id}
     , m_impl{make_pimpl<Impl>(state_access, aux_id)}
 {
 }

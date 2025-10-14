@@ -20,44 +20,50 @@ namespace piejam::gui::model
 
 struct AudioRouting::Impl
 {
+    Impl(
+        runtime::state_access const& state_access,
+        runtime::mixer::channel_id const id,
+        io_direction const io_dir)
+        : mixer_channel_id{id}
+        , io_dir{io_dir}
+        , channel_type{state_access.observe_once(
+              runtime::selectors::make_mixer_channel_type_selector(id))}
+        , selected{state_access, id, io_dir}
+    {
+    }
+
     runtime::mixer::channel_id mixer_channel_id;
-    io_direction port;
+    io_direction io_dir;
     runtime::mixer::channel_type channel_type;
-
-    std::unique_ptr<AudioRoutingSelection> selected;
-    Strings devicesList{};
-    Strings channelsList{};
-
     boxed_vector<runtime::selectors::mixer_device_route> devices{};
     boxed_vector<runtime::selectors::mixer_channel_route> channels{};
+
+    AudioRoutingSelection selected;
+    Strings devicesList{};
+    Strings channelsList{};
 };
 
 AudioRouting::AudioRouting(
     runtime::state_access const& state_access,
     runtime::mixer::channel_id const id,
-    io_direction const io_socket)
+    io_direction const io_dir)
     : SubscribableModel(state_access)
-    , m_impl{make_pimpl<Impl>(
-          id,
-          io_socket,
-          observe_once(
-              runtime::selectors::make_mixer_channel_type_selector(id)),
-          std::make_unique<AudioRoutingSelection>(state_access, id, io_socket))}
+    , m_impl{make_pimpl<Impl>(state_access, id, io_dir)}
 {
-    attachChildModel(*m_impl->selected);
+    attachChildModel(m_impl->selected);
 }
 
 auto
 AudioRouting::mixIsAvailable() const noexcept -> mixIsValid_property_t
 {
     return m_impl->channel_type != runtime::mixer::channel_type::mono &&
-           m_impl->port == io_direction::input;
+           m_impl->io_dir == io_direction::input;
 }
 
 auto
 AudioRouting::selected() const noexcept -> AudioRoutingSelection*
 {
-    return m_impl->selected.get();
+    return &m_impl->selected;
 }
 
 auto
@@ -86,7 +92,7 @@ AudioRouting::onSubscribe()
     observe(
         runtime::selectors::make_mixer_device_routes_selector(
             m_impl->channel_type,
-            m_impl->port),
+            m_impl->io_dir),
         [this](
             boxed_vector<runtime::selectors::mixer_device_route> const&
                 devices) {
@@ -106,7 +112,7 @@ AudioRouting::onSubscribe()
     observe(
         runtime::selectors::make_mixer_channel_routes_selector(
             m_impl->mixer_channel_id,
-            m_impl->port),
+            m_impl->io_dir),
         [this](
             boxed_vector<runtime::selectors::mixer_channel_route> const&
                 channels) {
@@ -144,7 +150,7 @@ AudioRouting::changeToNone()
     dispatch_set_mixer_channel_route_action(
         state_access(),
         m_impl->mixer_channel_id,
-        m_impl->port,
+        m_impl->io_dir,
         {});
 }
 
@@ -155,7 +161,7 @@ AudioRouting::changeToMix()
     dispatch_set_mixer_channel_route_action(
         state_access(),
         m_impl->mixer_channel_id,
-        m_impl->port,
+        m_impl->io_dir,
         runtime::mixer::mix_input{});
 }
 
@@ -167,7 +173,7 @@ AudioRouting::changeToDevice(unsigned index)
     dispatch_set_mixer_channel_route_action(
         state_access(),
         m_impl->mixer_channel_id,
-        m_impl->port,
+        m_impl->io_dir,
         (*m_impl->devices)[index].device_id);
 }
 
@@ -179,7 +185,7 @@ AudioRouting::changeToChannel(unsigned index)
     dispatch_set_mixer_channel_route_action(
         state_access(),
         m_impl->mixer_channel_id,
-        m_impl->port,
+        m_impl->io_dir,
         (*m_impl->channels)[index].channel_id);
 }
 

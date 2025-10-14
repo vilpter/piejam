@@ -28,8 +28,6 @@ public:
 private:
     void onSubscribe() override;
 
-    runtime::mixer::channel_id m_aux_id;
-
     struct Impl;
     pimpl<Impl> m_impl;
 };

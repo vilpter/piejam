@@ -37,9 +37,8 @@ public:
 private:
     void onSubscribe() override;
 
-    runtime::external_audio::device_id m_device_id;
-    pimpl<String> m_string;
-    bool m_mono;
+    struct Impl;
+    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

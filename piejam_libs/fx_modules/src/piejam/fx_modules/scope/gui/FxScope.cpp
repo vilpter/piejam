@@ -60,12 +60,6 @@ struct FxScope::Impl
 {
     static constexpr audio::sample_rate default_sample_rate{48000u};
 
-    Impl(BusType busType)
-        : busType{busType}
-    {
-    }
-
-    BusType busType;
     audio::sample_rate sample_rate{default_sample_rate};
 
     std::unique_ptr<EnumParameter> mode;
@@ -138,7 +132,7 @@ FxScope::FxScope(
     runtime::state_access const& state_access,
     runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
-    , m_impl{make_pimpl<Impl>(busType())}
+    , m_impl{make_pimpl<Impl>()}
 {
     auto const& parameters = this->parameters();
 
@@ -206,7 +200,7 @@ FxScope::FxScope(
 
     auto clear_fn = [this]() { clear(); };
 
-    if (m_impl->busType == BusType::Mono)
+    if (busType() == BusType::Mono)
     {
         QObject::connect(
             m_impl->stream.get(),

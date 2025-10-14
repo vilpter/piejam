@@ -23,18 +23,10 @@ class FxModuleView : public SubscribableModel
     PIEJAM_GUI_PROPERTY(QString, chainName, setChainName)
     PIEJAM_GUI_PROPERTY(QString, name, setName)
     PIEJAM_GUI_PROPERTY(piejam::gui::model::BoolParameter*, active, setActive)
-
-    Q_PROPERTY(
-        piejam::gui::model::FxModule* content READ content NOTIFY contentChanged
-            FINAL)
+    PIEJAM_GUI_PROPERTY(piejam::gui::model::FxModule*, content, setContent)
 
 public:
     FxModuleView(runtime::state_access const&);
-
-    auto content() noexcept -> FxModule*;
-
-signals:
-    void contentChanged();
 
 private:
     void onSubscribe() override;

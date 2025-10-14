@@ -20,7 +20,9 @@ struct AuxSend::Impl
         runtime::state_access const& state_access,
         runtime::mixer::channel_id ch_id,
         runtime::mixer::channel_id aux_id)
-        : active{state_access, state_access.observe_once(runtime::selectors::make_aux_send_active_selector(ch_id, aux_id))}
+        : channel_id{ch_id}
+        , aux_id{aux_id}
+        , active{state_access, state_access.observe_once(runtime::selectors::make_aux_send_active_selector(ch_id, aux_id))}
         , faderTap{state_access, state_access.observe_once(runtime::selectors::make_aux_send_fader_tap_selector(ch_id, aux_id))}
         , volume{
               state_access,
@@ -30,6 +32,9 @@ struct AuxSend::Impl
                       aux_id))}
     {
     }
+
+    runtime::mixer::channel_id channel_id;
+    runtime::mixer::channel_id aux_id;
 
     BoolParameter active;
     EnumParameter faderTap;
@@ -41,8 +46,6 @@ AuxSend::AuxSend(
     runtime::mixer::channel_id ch_id,
     runtime::mixer::channel_id aux_id)
     : SubscribableModel{state_access}
-    , m_channel_id{ch_id}
-    , m_aux_id{aux_id}
     , m_impl{make_pimpl<Impl>(state_access, ch_id, aux_id)}
 {
 }
@@ -71,12 +74,12 @@ AuxSend::onSubscribe()
     setName(
         QString::fromStdString(observe_once(
             runtime::selectors::make_mixer_channel_name_string_selector(
-                m_aux_id))));
+                m_impl->aux_id))));
 
     observe(
         runtime::selectors::make_can_toggle_aux_send_selector(
-            m_channel_id,
-            m_aux_id),
+            m_impl->channel_id,
+            m_impl->aux_id),
         [this](bool const x) { setCanToggle(x); });
 }
 

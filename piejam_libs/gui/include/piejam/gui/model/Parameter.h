@@ -9,7 +9,7 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <memory>
+#include <piejam/pimpl.h>
 
 namespace piejam::gui::model
 {
@@ -27,7 +27,6 @@ public:
     Parameter(
         runtime::state_access const&,
         piejam::gui::model::ParameterId const&);
-    ~Parameter();
 
     auto paramId() const -> ParameterId;
 
@@ -49,8 +48,8 @@ protected:
     void onSubscribe() override;
 
 private:
-    ParameterId m_paramId;
-    std::unique_ptr<MidiAssignable> m_midi;
+    struct Impl;
+    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

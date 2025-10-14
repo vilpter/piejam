@@ -49,7 +49,8 @@ private:
 
     auto paramId() const -> runtime::enum_parameter_id;
 
-    pimpl<EnumListModel> m_values;
+    struct Impl;
+    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

@@ -13,6 +13,8 @@ struct FxModule::Impl
 {
     box<runtime::parameters_map> parameters;
     box<runtime::fx::module_streams> streams;
+
+    BusType busType;
 };
 
 FxModule::FxModule(
@@ -24,16 +26,17 @@ FxModule::FxModule(
               runtime::selectors::make_fx_module_parameters_selector(
                   fx_mod_id)),
           observe_once(
-              runtime::selectors::make_fx_module_streams_selector(fx_mod_id)))}
-    , m_busType{bool_enum_to<BusType>(observe_once(
-          runtime::selectors::make_fx_module_bus_type_selector(fx_mod_id)))}
+              runtime::selectors::make_fx_module_streams_selector(fx_mod_id)),
+          bool_enum_to<BusType>(observe_once(
+              runtime::selectors::make_fx_module_bus_type_selector(
+                  fx_mod_id))))}
 {
 }
 
 auto
 FxModule::busType() const noexcept -> busType_property_t
 {
-    return m_busType;
+    return m_impl->busType;
 }
 
 auto

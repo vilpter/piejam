@@ -35,8 +35,6 @@ protected:
 private:
     struct Impl;
     pimpl<Impl> m_impl;
-
-    BusType m_busType;
 };
 
 } // namespace piejam::gui::model

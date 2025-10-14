@@ -33,7 +33,7 @@ public:
     AudioRouting(
         runtime::state_access const&,
         runtime::mixer::channel_id,
-        io_direction);
+        io_direction io_dir);
 
     Q_INVOKABLE void changeToNone();
     Q_INVOKABLE void changeToMix();

@@ -17,6 +17,7 @@ namespace piejam::gui::model
 struct MidiInputSettings::Impl
 {
     box<midi::device_ids_t> device_ids;
+
     MidiDeviceList devices;
 };
 
