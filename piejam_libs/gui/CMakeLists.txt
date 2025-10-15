@@ -77,7 +77,6 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/MixerDbScales.h
     include/piejam/gui/model/ObjectListModel.h
     include/piejam/gui/model/Parameter.h
-    include/piejam/gui/model/ParameterId.h
     include/piejam/gui/model/PitchGenerator.h
     include/piejam/gui/model/Root.h
     include/piejam/gui/model/RootView.h

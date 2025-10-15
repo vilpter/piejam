@@ -10,9 +10,9 @@
 #include <piejam/gui/model/IntParameter.h>
 #include <piejam/gui/model/ObjectListModel.h>
 #include <piejam/gui/model/Parameter.h>
-#include <piejam/gui/model/ParameterId.h>
 
 #include <piejam/runtime/parameter/map.h>
+#include <piejam/runtime/parameters.h>
 #include <piejam/runtime/selectors.h>
 
 #include <boost/container/flat_map.hpp>
@@ -33,8 +33,7 @@ using IdToModel = boost::mp11::mp_list<
 auto
 makeParameter(
     runtime::state_access const& state_access,
-    piejam::gui::model::ParameterId const& paramId)
-    -> std::unique_ptr<Parameter>
+    runtime::parameter_id const& paramId) -> std::unique_ptr<Parameter>
 {
     return std::visit(
         [&]<class ParamId>(

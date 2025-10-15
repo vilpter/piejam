@@ -5,11 +5,11 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
-#include <piejam/gui/model/ParameterId.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/pimpl.h>
+#include <piejam/runtime/parameters.h>
 
 namespace piejam::gui::model
 {
@@ -24,11 +24,9 @@ class Parameter : public SubscribableModel
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::MidiAssignable*, midi)
 
 public:
-    Parameter(
-        runtime::state_access const&,
-        piejam::gui::model::ParameterId const&);
+    Parameter(runtime::state_access const&, runtime::parameter_id const&);
 
-    auto paramId() const -> ParameterId;
+    auto paramId() const -> runtime::parameter_id;
 
     enum class Type
     {

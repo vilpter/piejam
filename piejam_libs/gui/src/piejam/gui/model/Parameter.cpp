@@ -18,30 +18,32 @@ namespace piejam::gui::model
 
 struct Parameter::Impl
 {
-    Impl(runtime::state_access const& state_access, ParameterId const& paramId)
-        : paramId{paramId}
+    Impl(
+        runtime::state_access const& state_access,
+        runtime::parameter_id const& param_id)
+        : param_id{param_id}
     {
         if (state_access.observe_once(
                 runtime::selectors::make_parameter_is_midi_assignable_selector(
-                    paramId)))
+                    param_id)))
         {
-            midi = std::make_unique<MidiAssignable>(state_access, paramId);
+            midi = std::make_unique<MidiAssignable>(state_access, param_id);
         }
     }
 
-    ParameterId paramId;
+    runtime::parameter_id param_id;
     std::unique_ptr<MidiAssignable> midi;
 };
 
 Parameter::Parameter(
     runtime::state_access const& state_access,
-    ParameterId const& paramId)
+    runtime::parameter_id const& param_id)
     : SubscribableModel(state_access)
-    , m_impl{make_pimpl<Impl>(state_access, paramId)}
+    , m_impl{make_pimpl<Impl>(state_access, param_id)}
 {
     setName(
         QString::fromStdString(observe_once(
-            runtime::selectors::make_parameter_name_selector(paramId))));
+            runtime::selectors::make_parameter_name_selector(param_id))));
 }
 
 void
@@ -49,7 +51,7 @@ Parameter::onSubscribe()
 {
     observe(
         runtime::selectors::make_parameter_value_string_selector(
-            m_impl->paramId),
+            m_impl->param_id),
         [this](std::string const& text) {
             setValueString(QString::fromStdString(text));
         });
@@ -65,13 +67,13 @@ void
 Parameter::resetToDefault()
 {
     dispatch(
-        runtime::actions::reset_parameter_to_default_value(m_impl->paramId));
+        runtime::actions::reset_parameter_to_default_value(m_impl->param_id));
 }
 
 auto
-Parameter::paramId() const -> ParameterId
+Parameter::paramId() const -> runtime::parameter_id
 {
-    return m_impl->paramId;
+    return m_impl->param_id;
 }
 
 } // namespace piejam::gui::model
