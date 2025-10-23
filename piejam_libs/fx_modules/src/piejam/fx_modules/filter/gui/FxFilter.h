@@ -9,7 +9,6 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/fx/fwd.h>
 
 namespace piejam::fx_modules::filter::gui
@@ -18,6 +17,8 @@ namespace piejam::fx_modules::filter::gui
 class FxFilter final : public piejam::gui::model::FxModule
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumIn)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumOut)
@@ -35,9 +36,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::fx_modules::filter::gui

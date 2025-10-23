@@ -8,16 +8,14 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
-
-class QAbstractListModel;
-
 namespace piejam::gui::model
 {
 
-class Mixer final : public SubscribableModel
+class Mixer final : public CompositeSubscribableModel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, userChannels)
     PIEJAM_GUI_CONSTANT_PROPERTY(
@@ -28,13 +26,10 @@ class Mixer final : public SubscribableModel
         channelAdd)
 
 public:
-    Mixer(runtime::state_access const&);
+    explicit Mixer(runtime::state_access const&);
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> const m_impl;
 };
 
 } // namespace piejam::gui::model

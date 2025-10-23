@@ -8,13 +8,12 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/external_audio_fwd.h>
 
 namespace piejam::gui::model
 {
 
-class ExternalAudioDeviceConfig final : public SubscribableModel
+class ExternalAudioDeviceConfig final : public CompositeSubscribableModel
 {
     Q_OBJECT
 
@@ -37,8 +36,7 @@ public:
 private:
     void onSubscribe() override;
 
-    struct Impl;
-    pimpl<Impl> m_impl;
+    runtime::external_audio::device_id m_device_id;
 };
 
 } // namespace piejam::gui::model

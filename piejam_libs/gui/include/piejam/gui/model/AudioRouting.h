@@ -9,17 +9,16 @@
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/io_direction.h>
-#include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
-
-class QAbstractListModel;
 
 namespace piejam::gui::model
 {
 
-class AudioRouting final : public SubscribableModel
+class AudioRouting final : public CompositeSubscribableModel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_CONSTANT_PROPERTY(bool, mixIsAvailable)
     PIEJAM_GUI_PROPERTY(bool, mixIsValid, setMixIsValid)
@@ -42,9 +41,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

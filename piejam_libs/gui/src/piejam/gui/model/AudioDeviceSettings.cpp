@@ -18,6 +18,8 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 namespace piejam::gui::model
 {
 
@@ -45,29 +47,16 @@ struct AudioDeviceSettings::Impl
     audio::sample_rates_t sample_rates;
     audio::period_sizes_t period_sizes;
     std::vector<runtime::selectors::sound_card_info> sound_cards;
-
-    SoundCardInfoList soundCards;
-    StringList sampleRates;
 };
 
 AudioDeviceSettings::AudioDeviceSettings(
     runtime::state_access const& state_access)
-    : SubscribableModel(state_access)
+    : CompositeSubscribableModel(state_access)
     , m_impl{make_pimpl<Impl>()}
+    , m_soundCards{&addQObject<SoundCardInfoList>()}
+    , m_selectedSoundCardIndex{-1}
+    , m_sampleRates{&addQObject<StringList>()}
 {
-    m_selectedSoundCardIndex = -1;
-}
-
-auto
-AudioDeviceSettings::soundCards() const noexcept -> soundCards_property_t
-{
-    return &m_impl->soundCards;
-}
-
-auto
-AudioDeviceSettings::sampleRates() const noexcept -> sampleRates_property_t
-{
-    return &m_impl->sampleRates;
 }
 
 void
@@ -81,7 +70,8 @@ AudioDeviceSettings::onSubscribe()
             algorithm::apply_edit_script(
                 algorithm::edit_script(m_impl->sound_cards, choice.available),
                 ListModelEditScriptProcessor{
-                    m_impl->soundCards,
+                    boost::polymorphic_downcast<SoundCardInfoList&>(
+                        *m_soundCards),
                     [](runtime::selectors::sound_card_info const& info) {
                         return SoundCardInfo{
                             .name = QString::fromStdString(info.name),
@@ -104,7 +94,7 @@ AudioDeviceSettings::onSubscribe()
                     m_impl->sample_rates,
                     sample_rate.available),
                 ListModelEditScriptProcessor{
-                    m_impl->sampleRates,
+                    boost::polymorphic_downcast<StringList&>(*m_sampleRates),
                     [](auto const sr) { return QString::number(sr.value()); }});
             m_impl->sample_rates = sample_rate.available;
 

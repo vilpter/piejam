@@ -10,35 +10,28 @@
 
 #include <spdlog/spdlog.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 namespace piejam::gui::model
 {
 
-struct Log::Impl
-{
-    StringList messages{};
-};
-
 Log::Log(runtime::state_access const& state_access)
-    : SubscribableModel{state_access}
-    , m_impl{make_pimpl<Impl>()}
+    : CompositeSubscribableModel{state_access}
+    , m_logMessages{&addQObject<StringList>()}
 {
     spdlog::default_logger()->sinks().push_back(
         std::make_shared<log::generic_log_sink_mt>(
             [this](spdlog::details::log_msg const& msg) {
+                auto& logMessages =
+                    boost::polymorphic_downcast<StringList&>(*m_logMessages);
                 auto qtMsg = QString::fromStdString(
                     std::format(
                         "[{}] {}",
                         spdlog::level::to_string_view(msg.level),
                         msg.payload));
-                m_impl->messages.add(m_impl->messages.size(), qtMsg);
+                logMessages.add(logMessages.size(), qtMsg);
             },
             []() {}));
-}
-
-auto
-Log::logMessages() const noexcept -> logMessages_property_t
-{
-    return &m_impl->messages;
 }
 
 void

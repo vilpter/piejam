@@ -7,29 +7,20 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/SubscribableModel.h>
 
-#include <piejam/pimpl.h>
-
-#include <QObject>
-
-class QAbstractListModel;
-
 namespace piejam::gui::model
 {
 
-class Log final : public SubscribableModel
+class Log final : public CompositeSubscribableModel
 {
     Q_OBJECT
 
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, logMessages)
 
 public:
-    Log(runtime::state_access const&);
+    explicit Log(runtime::state_access const&);
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

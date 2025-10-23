@@ -35,30 +35,18 @@ toChannelType(runtime::mixer::channel_type t) -> ChannelType
 MixerChannel::MixerChannel(
     runtime::state_access const& state_access,
     runtime::mixer::channel_id const id)
-    : SubscribableModel{state_access}
-    , m_color{static_cast<MaterialColor>(observe_once(
-          runtime::selectors::make_mixer_channel_color_selector(id)))}
-    , m_channel_id{id}
+    : CompositeSubscribableModel{state_access}
     , m_channelType{toChannelType(observe_once(
           runtime::selectors::make_mixer_channel_type_selector(id)))}
     , m_busType{bool_enum_to<BusType>(to_bus_type(observe_once(
           runtime::selectors::make_mixer_channel_type_selector(id))))}
+    , m_color{static_cast<MaterialColor>(observe_once(
+          runtime::selectors::make_mixer_channel_color_selector(id)))}
+    , m_channel_id{id}
 {
 }
 
 MixerChannel::~MixerChannel() = default;
-
-auto
-MixerChannel::channelType() const noexcept -> ChannelType
-{
-    return m_channelType;
-}
-
-auto
-MixerChannel::busType() const noexcept -> BusType
-{
-    return m_busType;
-}
 
 void
 MixerChannel::onSubscribe()

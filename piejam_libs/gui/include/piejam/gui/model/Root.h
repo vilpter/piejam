@@ -5,11 +5,8 @@
 #pragma once
 
 #include <piejam/gui/PropertyMacros.h>
+#include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
-
-#include <piejam/pimpl.h>
-
-#include <QObject>
 
 namespace piejam::runtime
 {
@@ -18,10 +15,10 @@ class state_access;
 
 } // namespace piejam::runtime
 
-namespace piejam::gui
+namespace piejam::gui::model
 {
 
-class Root final : public QObject
+class Root final : public CompositeSubscribableModel
 {
     Q_OBJECT
 
@@ -53,8 +50,7 @@ public:
     explicit Root(runtime::state_access const&);
 
 private:
-    struct Impl;
-    pimpl<Impl> m_impl;
+    void onSubscribe() override;
 };
 
-} // namespace piejam::gui
+} // namespace piejam::gui::model

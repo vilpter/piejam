@@ -8,13 +8,12 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
 
 namespace piejam::gui::model
 {
 
-class AuxChannel final : public SubscribableModel
+class AuxChannel final : public CompositeSubscribableModel
 {
     Q_OBJECT
 
@@ -27,9 +26,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

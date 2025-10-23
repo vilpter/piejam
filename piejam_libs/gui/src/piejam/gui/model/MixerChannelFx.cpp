@@ -14,14 +14,14 @@
 #include <piejam/runtime/actions/root_view_actions.h>
 #include <piejam/runtime/selectors.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 namespace piejam::gui::model
 {
 
 struct MixerChannelFx::Impl
 {
     box<runtime::fx::chain_t> fx_chain;
-
-    FxChainModulesList modules;
 };
 
 MixerChannelFx::MixerChannelFx(
@@ -29,13 +29,8 @@ MixerChannelFx::MixerChannelFx(
     runtime::mixer::channel_id const mixer_channel_id)
     : MixerChannel{state_access, mixer_channel_id}
     , m_impl{make_pimpl<Impl>()}
+    , m_fxChain{&addQObject<FxChainModulesList>()}
 {
-}
-
-auto
-MixerChannelFx::fxChain() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->modules;
 }
 
 void
@@ -87,7 +82,8 @@ MixerChannelFx::onSubscribe()
             algorithm::apply_edit_script(
                 algorithm::edit_script(*m_impl->fx_chain, *fx_chain),
                 ListModelEditScriptProcessor{
-                    m_impl->modules,
+                    boost::polymorphic_downcast<FxChainModulesList&>(
+                        *m_fxChain),
                     [this](runtime::fx::module_id const& fx_mod_id) {
                         return std::make_unique<FxChainModule>(
                             state_access(),

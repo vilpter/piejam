@@ -21,6 +21,8 @@ class FxSpectrum final : public piejam::gui::model::FxModule
 {
     Q_OBJECT
 
+    PIEJAM_GUI_MODEL_PIMPL
+
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumA)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::SpectrumSlot*, spectrumB)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BoolParameter*, activeA)
@@ -40,9 +42,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::fx_modules::spectrum::gui

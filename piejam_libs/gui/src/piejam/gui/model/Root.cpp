@@ -14,100 +14,29 @@
 #include <piejam/gui/model/Mixer.h>
 #include <piejam/gui/model/RootView.h>
 
-namespace piejam::gui
+namespace piejam::gui::model
 {
-
-struct Root::Impl
-{
-    Impl(runtime::state_access const& state_access)
-        : audioDeviceSettings{state_access}
-        , audioInputSettings{state_access, io_direction::input}
-        , audioOutputSettings{state_access, io_direction::output}
-        , midiInputSettings{state_access}
-        , mixer{state_access}
-        , info{state_access}
-        , log{state_access}
-        , fxBrowser{state_access}
-        , fxModule{state_access}
-        , rootView{state_access}
-    {
-    }
-
-    model::AudioDeviceSettings audioDeviceSettings;
-    model::AudioInputOutputSettings audioInputSettings;
-    model::AudioInputOutputSettings audioOutputSettings;
-    model::MidiInputSettings midiInputSettings;
-    model::Mixer mixer;
-    model::Info info;
-    model::Log log;
-    model::FxBrowser fxBrowser;
-    model::FxModuleView fxModule;
-    model::RootView rootView;
-};
 
 Root::Root(runtime::state_access const& state_access)
-    : m_impl{make_pimpl<Impl>(state_access)}
+    : CompositeSubscribableModel{state_access}
+    , m_audioDeviceSettings{&addModel<AudioDeviceSettings>()}
+    , m_audioInputSettings{&addModel<AudioInputOutputSettings>(
+          io_direction::input)}
+    , m_audioOutputSettings{&addModel<AudioInputOutputSettings>(
+          io_direction::output)}
+    , m_midiInputSettings{&addModel<MidiInputSettings>()}
+    , m_mixer{&addModel<Mixer>()}
+    , m_info{&addModel<Info>()}
+    , m_log{&addModel<Log>()}
+    , m_fxBrowser{&addModel<FxBrowser>()}
+    , m_fxModule{&addModel<FxModuleView>()}
+    , m_rootView{&addModel<RootView>()}
 {
 }
 
-auto
-Root::audioDeviceSettings() const noexcept -> model::AudioDeviceSettings*
+void
+Root::onSubscribe()
 {
-    return &m_impl->audioDeviceSettings;
 }
 
-auto
-Root::audioInputSettings() const noexcept -> model::AudioInputOutputSettings*
-{
-    return &m_impl->audioInputSettings;
-}
-
-auto
-Root::audioOutputSettings() const noexcept -> model::AudioInputOutputSettings*
-{
-    return &m_impl->audioOutputSettings;
-}
-
-auto
-Root::midiInputSettings() const noexcept -> model::MidiInputSettings*
-{
-    return &m_impl->midiInputSettings;
-}
-
-auto
-Root::mixer() const noexcept -> model::Mixer*
-{
-    return &m_impl->mixer;
-}
-
-auto
-Root::info() const noexcept -> model::Info*
-{
-    return &m_impl->info;
-}
-
-auto
-Root::log() const noexcept -> model::Log*
-{
-    return &m_impl->log;
-}
-
-auto
-Root::fxBrowser() const noexcept -> model::FxBrowser*
-{
-    return &m_impl->fxBrowser;
-}
-
-auto
-Root::fxModule() const noexcept -> model::FxModuleView*
-{
-    return &m_impl->fxModule;
-}
-
-auto
-Root::rootView() const noexcept -> model::RootView*
-{
-    return &m_impl->rootView;
-}
-
-} // namespace piejam::gui
+} // namespace piejam::gui::model

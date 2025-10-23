@@ -14,6 +14,8 @@
 #include <piejam/runtime/fx/registry.h>
 #include <piejam/runtime/selectors.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 #include <ranges>
 
 namespace piejam::gui::model
@@ -44,46 +46,14 @@ makeBrowserEntry(
 
 struct FxBrowser::Impl
 {
-    void updateEntries(runtime::state_access const& state_access)
-    {
-        std::vector<runtime::fx::registry::item> new_entries;
-        std::ranges::copy(
-            fx_registry.entries.get() |
-                std::views::filter(
-                    runtime::fx::is_available_for_bus_type{bus_type_filter}),
-            std::back_inserter(new_entries));
-
-        algorithm::apply_edit_script(
-            algorithm::edit_script(filtered_fx_registry, new_entries),
-            ListModelEditScriptProcessor{entries, [&](auto const& item) {
-                                             return std::visit(
-                                                 [&](auto&& x) {
-                                                     return makeBrowserEntry(
-                                                         state_access,
-                                                         x);
-                                                 },
-                                                 item);
-                                         }});
-        filtered_fx_registry = std::move(new_entries);
-    }
-
-    audio::bus_type bus_type_filter{audio::bus_type::mono};
-    runtime::fx::registry fx_registry;
-    std::vector<runtime::fx::registry::item> filtered_fx_registry;
-
-    FxBrowserList entries;
+    std::vector<runtime::fx::registry::item> filtered_fx_registry{};
 };
 
 FxBrowser::FxBrowser(runtime::state_access const& state_access)
-    : SubscribableModel(state_access)
+    : CompositeSubscribableModel(state_access)
     , m_impl(make_pimpl<Impl>())
+    , m_entries{&addQObject<FxBrowserList>()}
 {
-}
-
-auto
-FxBrowser::entries() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->entries;
 }
 
 void
@@ -97,11 +67,33 @@ FxBrowser::showMixer()
 void
 FxBrowser::onSubscribe()
 {
-    m_impl->bus_type_filter = to_bus_type(observe_once(
+    auto bus_type_filter = to_bus_type(observe_once(
         runtime::selectors::make_mixer_channel_type_selector(
             observe_once(runtime::selectors::select_fx_browser_fx_chain))));
-    m_impl->fx_registry = observe_once(runtime::selectors::select_fx_registry);
-    m_impl->updateEntries(state_access());
+    auto fx_registry = observe_once(runtime::selectors::select_fx_registry);
+
+    auto& entries = boost::polymorphic_downcast<FxBrowserList&>(*m_entries);
+
+    std::vector<runtime::fx::registry::item> new_entries;
+    std::ranges::copy(
+        fx_registry.entries.get() |
+            std::views::filter(
+                runtime::fx::is_available_for_bus_type{bus_type_filter}),
+        std::back_inserter(new_entries));
+
+    algorithm::apply_edit_script(
+        algorithm::edit_script(m_impl->filtered_fx_registry, new_entries),
+        ListModelEditScriptProcessor{entries, [&](auto const& item) {
+                                         return std::visit(
+                                             [&](auto&& x) {
+                                                 return makeBrowserEntry(
+                                                     state_access(),
+                                                     x);
+                                             },
+                                             item);
+                                     }});
+
+    m_impl->filtered_fx_registry = std::move(new_entries);
 }
 
 } // namespace piejam::gui::model

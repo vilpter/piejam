@@ -7,11 +7,7 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/MixerChannel.h>
 
-#include <piejam/audio/types.h>
-#include <piejam/pimpl.h>
-#include <piejam/runtime/external_audio_fwd.h>
 #include <piejam/runtime/mixer_fwd.h>
-#include <piejam/runtime/parameters.h>
 
 namespace piejam::gui::model
 {
@@ -20,9 +16,11 @@ class MixerChannelPerform final : public MixerChannel
 {
     Q_OBJECT
 
-    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, volume)
+    PIEJAM_GUI_MODEL_PIMPL
+
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StereoLevel*, peakLevel)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::StereoLevel*, rmsLevel)
+    PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::FloatParameter*, volume)
     PIEJAM_GUI_CONSTANT_PROPERTY(
         piejam::gui::model::FloatParameter*,
         panBalance)
@@ -38,9 +36,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

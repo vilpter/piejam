@@ -25,13 +25,9 @@ using namespace piejam::gui::model;
 struct FxTuner::Impl
 {
     static constexpr audio::sample_rate default_sample_rate{48000u};
-
-    BusType busType;
     audio::sample_rate sample_rate{default_sample_rate};
 
     PitchGenerator pitchGenerator{sample_rate};
-
-    std::unique_ptr<AudioStreamProvider> stream{};
 
     void updateSampleRate(audio::sample_rate sr)
     {
@@ -47,19 +43,18 @@ FxTuner::FxTuner(
     runtime::state_access const& state_access,
     runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
-    , m_impl{make_pimpl<Impl>(busType())}
+    , m_impl{make_pimpl<Impl>()}
 {
-    makeStream(
-        m_impl->stream,
+    auto& stream = addAttachedModel<AudioStreamProvider>(
         streams().at(std::to_underlying(stream_key::input)));
 
     QObject::connect(
-        m_impl->stream.get(),
+        &stream,
         &AudioStreamProvider::captured,
         this,
         [this](AudioStream captured) {
             float const detectedFrequency =
-                m_impl->busType == BusType::Mono
+                busType() == BusType::Mono
                     ? m_impl->pitchGenerator.process(captured.samples())
                     : m_impl->pitchGenerator.process(
                           toMiddle(captured.channels_cast<2>()));

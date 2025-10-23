@@ -15,18 +15,26 @@
 
 #include <boost/range/iterator_range_core.hpp>
 
-#include <memory>
-
 namespace piejam::gui::model
 {
 
 template <class Derived>
 struct StreamProcessor
 {
+    StreamProcessor(
+        BoolParameter& active,
+        EnumParameter& channel,
+        FloatParameter& gain)
+        : active{active}
+        , channel{channel}
+        , gain{gain}
+    {
+    }
+
     template <class Samples>
     auto processSamples(Samples&& samples)
     {
-        auto const g = static_cast<float>(gain->value());
+        auto const g = static_cast<float>(gain.value());
         switch (switch_cast(g))
         {
             case switch_cast(1.f):
@@ -46,12 +54,12 @@ struct StreamProcessor
 
     void processStereo(StereoAudioStream stream)
     {
-        if (!active->value())
+        if (!active.value())
         {
             return;
         }
 
-        switch (static_cast<StereoChannel>(channel->value()))
+        switch (static_cast<StereoChannel>(channel.value()))
         {
             case StereoChannel::Left:
                 processSamples(toLeft(stream));
@@ -71,9 +79,9 @@ struct StreamProcessor
         }
     }
 
-    std::unique_ptr<BoolParameter> active;
-    std::unique_ptr<EnumParameter> channel;
-    std::unique_ptr<FloatParameter> gain;
+    BoolParameter& active;
+    EnumParameter& channel;
+    FloatParameter& gain;
 };
 
 } // namespace piejam::gui::model

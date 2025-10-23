@@ -14,9 +14,11 @@
 #include <QTimerEvent>
 
 #include <boost/assert.hpp>
-#include <boost/core/ignore_unused.hpp>
 
+#include <chrono>
 #include <functional>
+#include <utility>
+#include <vector>
 
 namespace piejam::gui::model
 {
@@ -96,44 +98,6 @@ protected:
 
     virtual void onSubscribe() = 0;
 
-    auto attachChildModel(SubscribableModel& child)
-    {
-        return QObject::connect(
-            this,
-            &SubscribableModel::subscribedChanged,
-            &child,
-            [this, &child]() { child.setSubscribed(subscribed()); });
-    }
-
-    template <class Model, class... Args>
-    auto makeModel(Args&&... args)
-    {
-        return make_pimpl<Model>(m_state_access, std::forward<Args>(args)...);
-    }
-
-    template <class Model, class... Args>
-    auto makeChildModel(Args&&... args)
-    {
-        auto child = makeModel<Model>(std::forward<Args>(args)...);
-        attachChildModel(*child);
-        return child;
-    }
-
-    template <class ParameterT, class ParameterIdT>
-    void makeParameter(
-        std::unique_ptr<ParameterT>& param,
-        ParameterIdT const param_id)
-    {
-        param = std::make_unique<ParameterT>(m_state_access, param_id);
-    }
-
-    template <class StreamT, class StreamIdT>
-    void makeStream(std::unique_ptr<StreamT>& stream, StreamIdT const stream_id)
-    {
-        stream = std::make_unique<StreamT>(m_state_access, stream_id);
-        attachChildModel(*stream);
-    }
-
 private:
     void subscribe()
     {
@@ -151,21 +115,62 @@ private:
         }
     }
 
-    void timerEvent(QTimerEvent* const event) final
+    void timerEvent([[maybe_unused]] QTimerEvent* const event) final
     {
         BOOST_ASSERT(event->timerId() == m_updateTimerId);
         BOOST_ASSERT(m_requestUpdate);
-        boost::ignore_unused(event);
         m_requestUpdate();
     }
 
-    bool m_subscribed{};
-
     runtime::state_access m_state_access;
+
+    bool m_subscribed{};
     std::vector<redux::subscription> m_subs;
 
     int m_updateTimerId{};
     std::function<void()> m_requestUpdate;
+};
+
+class CompositeSubscribableModel : public SubscribableModel
+{
+public:
+    using SubscribableModel::SubscribableModel;
+
+protected:
+    auto attachChildModel(SubscribableModel& child)
+    {
+        return QObject::connect(
+            this,
+            &SubscribableModel::subscribedChanged,
+            &child,
+            [this, &child]() { child.setSubscribed(subscribed()); });
+    }
+
+    template <class Object, class... Args>
+    auto addQObject(Args&&... args) -> Object&
+    {
+        auto child = make_pimpl<Object>(std::forward<Args>(args)...);
+        auto result = child.get();
+        m_objects.emplace_back(std::move(child));
+        return *result;
+    }
+
+    template <class Model, class... Args>
+    auto addModel(Args&&... args) -> Model&
+    {
+        return addQObject<Model>(state_access(), std::forward<Args>(args)...);
+    }
+
+    template <class Model, class... Args>
+    auto addAttachedModel(Args&&... args) -> Model&
+    {
+        auto& child = addModel<Model>(std::forward<Args>(args)...);
+        attachChildModel(child);
+        return child;
+    }
+
+private:
+    std::vector<pimpl<QObject>> m_objects;
 };
 
 } // namespace piejam::gui::model

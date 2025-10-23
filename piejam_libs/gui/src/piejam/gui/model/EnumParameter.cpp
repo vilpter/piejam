@@ -12,25 +12,12 @@
 namespace piejam::gui::model
 {
 
-struct EnumParameter::Impl
-{
-    Impl(
-        runtime::state_access const& state_access,
-        runtime::enum_parameter_id param_id)
-        : values{state_access.observe_once(
-              runtime::selectors::make_enum_parameter_values_selector(
-                  param_id))}
-    {
-    }
-
-    EnumListModel values;
-};
-
 EnumParameter::EnumParameter(
     runtime::state_access const& state_access,
     runtime::enum_parameter_id param_id)
     : Parameter{state_access, param_id}
-    , m_impl{make_pimpl<Impl>(state_access, param_id)}
+    , m_values{&addQObject<EnumListModel>(observe_once(
+          runtime::selectors::make_enum_parameter_values_selector(param_id)))}
 
 {
     setMinValue(observe_once(
@@ -44,12 +31,6 @@ auto
 EnumParameter::paramId() const -> runtime::enum_parameter_id
 {
     return std::get<runtime::enum_parameter_id>(Parameter::paramId());
-}
-
-auto
-EnumParameter::values() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->values;
 }
 
 void

@@ -10,15 +10,16 @@
 #include <piejam/gui/model/Types.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/fx/fwd.h>
 
 namespace piejam::gui::model
 {
 
-class FxModule : public SubscribableModel
+class FxModule : public CompositeSubscribableModel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     Q_PROPERTY(piejam::gui::model::FxModuleType type READ type CONSTANT FINAL)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::BusType, busType)
@@ -31,10 +32,6 @@ public:
 protected:
     auto parameters() const -> runtime::parameters_map const&;
     auto streams() const -> runtime::fx::module_streams const&;
-
-private:
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

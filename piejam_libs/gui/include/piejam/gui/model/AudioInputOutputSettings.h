@@ -9,31 +9,27 @@
 #include <piejam/gui/model/fwd.h>
 
 #include <piejam/io_direction.h>
-#include <piejam/pimpl.h>
-
-class QAbstractListModel;
 
 namespace piejam::gui::model
 {
 
-class AudioInputOutputSettings : public SubscribableModel
+class AudioInputOutputSettings : public CompositeSubscribableModel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, channels)
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, deviceConfigs)
 
 public:
-    AudioInputOutputSettings(runtime::state_access const&, io_direction);
+    AudioInputOutputSettings(runtime::state_access const&, io_direction io_dir);
 
     Q_INVOKABLE void addMonoDevice();
     Q_INVOKABLE void addStereoDevice();
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

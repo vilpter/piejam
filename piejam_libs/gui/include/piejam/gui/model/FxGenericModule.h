@@ -7,10 +7,7 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/FxModule.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/fx/fwd.h>
-
-class QAbstractListModel;
 
 namespace piejam::gui::model
 {
@@ -31,9 +28,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

@@ -17,6 +17,7 @@
 
 #include <boost/container/flat_map.hpp>
 #include <boost/mp11/map.hpp>
+#include <boost/polymorphic_cast.hpp>
 
 namespace piejam::gui::model
 {
@@ -49,29 +50,20 @@ makeParameter(
 
 } // namespace
 
-struct FxGenericModule::Impl
-{
-    FxParametersList parametersList;
-};
-
 FxGenericModule::FxGenericModule(
     runtime::state_access const& state_access,
     runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
-    , m_impl{make_pimpl<Impl>()}
+    , m_parametersList{&addQObject<FxParametersList>()}
 {
+    auto& parametersList =
+        boost::polymorphic_downcast<FxParametersList&>(*m_parametersList);
     for (auto const& [key, paramId] : parameters())
     {
-        m_impl->parametersList.add(
-            m_impl->parametersList.size(),
+        parametersList.add(
+            parametersList.size(),
             model::makeParameter(state_access, paramId));
     }
-}
-
-auto
-FxGenericModule::parametersList() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->parametersList;
 }
 
 void

@@ -14,50 +14,24 @@
 #include <piejam/runtime/actions/mixer_actions.h>
 #include <piejam/runtime/selectors.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 namespace piejam::gui::model
 {
 
 struct Mixer::Impl
 {
-    Impl(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id main_channel)
-        : mainChannel{state_access, main_channel}
-        , channelAdd{state_access}
-    {
-    }
-
     box<runtime::mixer::channel_ids_t> user_channel_ids;
-
-    MixerChannelModels mainChannel;
-    MixerChannelsList userChannels;
-    MixerChannelAdd channelAdd;
 };
 
 Mixer::Mixer(runtime::state_access const& state_access)
-    : SubscribableModel{state_access}
-    , m_impl{make_pimpl<Impl>(
-          state_access,
+    : CompositeSubscribableModel{state_access}
+    , m_impl{make_pimpl<Impl>()}
+    , m_userChannels{&addQObject<MixerChannelsList>()}
+    , m_mainChannel{&addModel<MixerChannelModels>(
           observe_once(runtime::selectors::select_mixer_main_channel))}
+    , m_channelAdd{&addModel<MixerChannelAdd>()}
 {
-}
-
-auto
-Mixer::userChannels() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->userChannels;
-}
-
-auto
-Mixer::mainChannel() const noexcept -> MixerChannelModels*
-{
-    return &m_impl->mainChannel;
-}
-
-auto
-Mixer::channelAdd() const noexcept -> MixerChannelAdd*
-{
-    return &m_impl->channelAdd;
 }
 
 void
@@ -71,7 +45,8 @@ Mixer::onSubscribe()
                     *m_impl->user_channel_ids,
                     *user_channel_ids),
                 ListModelEditScriptProcessor{
-                    m_impl->userChannels,
+                    boost::polymorphic_downcast<MixerChannelsList&>(
+                        *m_userChannels),
                     [this](auto const& channel_id) {
                         return std::make_unique<MixerChannelModels>(
                             state_access(),

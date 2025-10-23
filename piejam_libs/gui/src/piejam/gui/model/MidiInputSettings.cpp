@@ -17,20 +17,13 @@ namespace piejam::gui::model
 struct MidiInputSettings::Impl
 {
     box<midi::device_ids_t> device_ids;
-
-    MidiDeviceList devices;
 };
 
 MidiInputSettings::MidiInputSettings(runtime::state_access const& state_access)
-    : SubscribableModel(state_access)
-    , m_impl(make_pimpl<Impl>())
+    : CompositeSubscribableModel(state_access)
+    , m_impl{make_pimpl<Impl>()}
+    , m_devices{&addQObject<MidiDeviceList>()}
 {
-}
-
-auto
-MidiInputSettings::devices() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->devices;
 }
 
 void
@@ -42,7 +35,7 @@ MidiInputSettings::onSubscribe()
             algorithm::apply_edit_script(
                 algorithm::edit_script(*m_impl->device_ids, *devs),
                 ListModelEditScriptProcessor{
-                    m_impl->devices,
+                    static_cast<MidiDeviceList&>(*m_devices),
                     [this](midi::device_id_t device_id) {
                         return std::make_unique<MidiDeviceConfig>(
                             state_access(),

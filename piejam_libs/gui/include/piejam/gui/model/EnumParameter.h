@@ -8,10 +8,6 @@
 #include <piejam/gui/model/Parameter.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
-
-class QAbstractListModel;
-
 namespace piejam::gui::model
 {
 
@@ -48,9 +44,6 @@ private:
     void onSubscribe() override;
 
     auto paramId() const -> runtime::enum_parameter_id;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

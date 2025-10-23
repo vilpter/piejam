@@ -7,8 +7,6 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/MixerChannel.h>
 
-#include <piejam/audio/types.h>
-#include <piejam/pimpl.h>
 #include <piejam/runtime/mixer_fwd.h>
 
 class QAbstractListModel;
@@ -19,6 +17,8 @@ namespace piejam::gui::model
 class MixerChannelFx final : public MixerChannel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_PROPERTY(bool, focused, setFocused)
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, fxChain)
@@ -34,9 +34,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

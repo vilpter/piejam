@@ -15,67 +15,36 @@
 #include <piejam/runtime/selectors.h>
 #include <piejam/runtime/ui/thunk_action.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 namespace piejam::gui::model
 {
 
 struct AudioRouting::Impl
 {
-    Impl(
-        runtime::state_access const& state_access,
-        runtime::mixer::channel_id const id,
-        io_direction const io_dir)
-        : mixer_channel_id{id}
-        , io_dir{io_dir}
-        , channel_type{state_access.observe_once(
-              runtime::selectors::make_mixer_channel_type_selector(id))}
-        , selected{state_access, id, io_dir}
-    {
-    }
-
     runtime::mixer::channel_id mixer_channel_id;
     io_direction io_dir;
     runtime::mixer::channel_type channel_type;
+
     boxed_vector<runtime::selectors::mixer_device_route> devices{};
     boxed_vector<runtime::selectors::mixer_channel_route> channels{};
-
-    AudioRoutingSelection selected;
-    Strings devicesList{};
-    Strings channelsList{};
 };
 
 AudioRouting::AudioRouting(
     runtime::state_access const& state_access,
     runtime::mixer::channel_id const id,
     io_direction const io_dir)
-    : SubscribableModel(state_access)
-    , m_impl{make_pimpl<Impl>(state_access, id, io_dir)}
+    : CompositeSubscribableModel(state_access)
+    , m_impl{make_pimpl<Impl>(
+          id,
+          io_dir,
+          observe_once(
+              runtime::selectors::make_mixer_channel_type_selector(id)))}
+    , m_mixIsAvailable{m_impl->channel_type != runtime::mixer::channel_type::mono && m_impl->io_dir == io_direction::input}
+    , m_selected{&addAttachedModel<AudioRoutingSelection>(id, io_dir)}
+    , m_devices{&addQObject<Strings>()}
+    , m_channels{&addQObject<Strings>()}
 {
-    attachChildModel(m_impl->selected);
-}
-
-auto
-AudioRouting::mixIsAvailable() const noexcept -> mixIsValid_property_t
-{
-    return m_impl->channel_type != runtime::mixer::channel_type::mono &&
-           m_impl->io_dir == io_direction::input;
-}
-
-auto
-AudioRouting::selected() const noexcept -> AudioRoutingSelection*
-{
-    return &m_impl->selected;
-}
-
-auto
-AudioRouting::devices() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->devicesList;
-}
-
-auto
-AudioRouting::channels() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->channelsList;
 }
 
 void
@@ -99,7 +68,7 @@ AudioRouting::onSubscribe()
             algorithm::apply_edit_script(
                 algorithm::edit_script(*m_impl->devices, *devices),
                 ListModelEditScriptProcessor{
-                    m_impl->devicesList,
+                    boost::polymorphic_downcast<Strings&>(*m_devices),
                     [this](auto const& route) {
                         return std::make_unique<String>(
                             state_access(),
@@ -119,7 +88,7 @@ AudioRouting::onSubscribe()
             algorithm::apply_edit_script(
                 algorithm::edit_script(*m_impl->channels, *channels),
                 ListModelEditScriptProcessor{
-                    m_impl->channelsList,
+                    boost::polymorphic_downcast<Strings&>(*m_channels),
                     [this](auto const& route) {
                         return std::make_unique<String>(
                             state_access(),

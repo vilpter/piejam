@@ -6,13 +6,10 @@
 
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/FxModule.h>
-#include <piejam/gui/model/ScopeSlot.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/Types.h>
-#include <piejam/gui/model/WaveformSlot.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/fx/fwd.h>
 
 namespace piejam::fx_modules::scope::gui
@@ -21,6 +18,8 @@ namespace piejam::fx_modules::scope::gui
 class FxScope final : public piejam::gui::model::FxModule
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_PROPERTY(double, sampleRate, setSampleRate)
     PIEJAM_GUI_WRITABLE_PROPERTY(int, viewSize, setViewSize)
@@ -68,9 +67,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::fx_modules::scope::gui

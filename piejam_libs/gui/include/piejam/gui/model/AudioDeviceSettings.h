@@ -8,16 +8,14 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
-
-class QAbstractListModel;
-
 namespace piejam::gui::model
 {
 
-class AudioDeviceSettings final : public SubscribableModel
+class AudioDeviceSettings final : public CompositeSubscribableModel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, soundCards)
     PIEJAM_GUI_PROPERTY(int, selectedSoundCardIndex, setSelectedSoundCardIndex)
@@ -42,9 +40,6 @@ private:
     void onSubscribe() override;
 
     void refreshSoundCardLists();
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

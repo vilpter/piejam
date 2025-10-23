@@ -24,25 +24,10 @@ using namespace piejam::gui::model;
 struct FxFilter::Impl
 {
     static constexpr audio::sample_rate default_sample_rate{48000u};
-
-    Impl(BusType busType)
-        : busType{busType}
-    {
-    }
-
-    BusType busType;
     audio::sample_rate sample_rate{default_sample_rate};
 
     SpectrumGenerator spectrumInGenerator{sample_rate};
     SpectrumGenerator spectrumOutGenerator{sample_rate};
-
-    SpectrumSlot spectrumIn;
-    SpectrumSlot spectrumOut;
-
-    std::unique_ptr<EnumParameter> filterTypeParam;
-    std::unique_ptr<FloatParameter> cutoffParam;
-    std::unique_ptr<FloatParameter> resonanceParam;
-    std::unique_ptr<AudioStreamProvider> inOutStream;
 
     void updateSampleRate(audio::sample_rate sr)
     {
@@ -59,55 +44,48 @@ FxFilter::FxFilter(
     runtime::state_access const& state_access,
     runtime::fx::module_id const fx_mod_id)
     : FxModule{state_access, fx_mod_id}
-    , m_impl{make_pimpl<Impl>(bool_enum_to<BusType>(observe_once(
-          runtime::selectors::make_fx_module_bus_type_selector(fx_mod_id))))}
+    , m_impl{make_pimpl<Impl>()}
+    , m_spectrumIn{&addQObject<SpectrumSlot>()}
+    , m_spectrumOut{&addQObject<SpectrumSlot>()}
+    , m_filterType{&addModel<EnumParameter>(
+          parameters().get<runtime::enum_parameter_id>(parameter_key::type))}
+    , m_cutoff{&addModel<FloatParameter>(
+          parameters().get<runtime::float_parameter_id>(parameter_key::cutoff))}
+    , m_resonance{&addModel<FloatParameter>(
+          parameters().get<runtime::float_parameter_id>(
+              parameter_key::resonance))}
 {
-    auto const& parameters = this->parameters();
-
-    makeParameter(
-        m_impl->filterTypeParam,
-        parameters.get<runtime::enum_parameter_id>(parameter_key::type));
-
-    makeParameter(
-        m_impl->cutoffParam,
-        parameters.get<runtime::float_parameter_id>(parameter_key::cutoff));
-
-    makeParameter(
-        m_impl->resonanceParam,
-        parameters.get<runtime::float_parameter_id>(parameter_key::resonance));
-
-    makeStream(
-        m_impl->inOutStream,
+    auto& inOutStream = addAttachedModel<AudioStreamProvider>(
         streams().at(std::to_underlying(stream_key::in_out)));
 
-    if (m_impl->busType == BusType::Mono)
+    if (busType() == BusType::Mono)
     {
         QObject::connect(
-            m_impl->inOutStream.get(),
+            &inOutStream,
             &AudioStreamProvider::captured,
             this,
             [this](AudioStream captured) {
                 BOOST_ASSERT(captured.num_channels() == 2);
 
-                m_impl->spectrumIn.update(m_impl->spectrumInGenerator.process(
+                m_spectrumIn->update(m_impl->spectrumInGenerator.process(
                     captured.channels_cast<2>().channels()[0]));
-                m_impl->spectrumOut.update(m_impl->spectrumOutGenerator.process(
+                m_spectrumOut->update(m_impl->spectrumOutGenerator.process(
                     captured.channels_cast<2>().channels()[1]));
             });
     }
     else
     {
         QObject::connect(
-            m_impl->inOutStream.get(),
+            &inOutStream,
             &AudioStreamProvider::captured,
             this,
             [this](AudioStream captured) {
                 BOOST_ASSERT(captured.num_channels() == 4);
 
-                m_impl->spectrumIn.update(
+                m_spectrumIn->update(
                     m_impl->spectrumInGenerator.process(toMiddle(
                         captured.channels_subview(0, 2).channels_cast<2>())));
-                m_impl->spectrumOut.update(
+                m_spectrumOut->update(
                     m_impl->spectrumOutGenerator.process(toMiddle(
                         captured.channels_subview(2, 2).channels_cast<2>())));
             });
@@ -127,41 +105,11 @@ FxFilter::type() const noexcept -> FxModuleType
     return {.id = internal_id()};
 }
 
-auto
-FxFilter::spectrumIn() const noexcept -> SpectrumSlot*
-{
-    return &m_impl->spectrumIn;
-}
-
-auto
-FxFilter::spectrumOut() const noexcept -> SpectrumSlot*
-{
-    return &m_impl->spectrumOut;
-}
-
 void
 FxFilter::clear()
 {
-    m_impl->spectrumIn.clear();
-    m_impl->spectrumOut.clear();
-}
-
-auto
-FxFilter::filterType() const noexcept -> EnumParameter*
-{
-    return m_impl->filterTypeParam.get();
-}
-
-auto
-FxFilter::cutoff() const noexcept -> FloatParameter*
-{
-    return m_impl->cutoffParam.get();
-}
-
-auto
-FxFilter::resonance() const noexcept -> FloatParameter*
-{
-    return m_impl->resonanceParam.get();
+    m_spectrumIn->clear();
+    m_spectrumOut->clear();
 }
 
 } // namespace piejam::fx_modules::filter::gui

@@ -10,7 +10,6 @@
 #include <piejam/gui/model/Types.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/fx/fwd.h>
 
 namespace piejam::fx_modules::tuner::gui
@@ -19,6 +18,8 @@ namespace piejam::fx_modules::tuner::gui
 class FxTuner final : public piejam::gui::model::FxModule
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_PROPERTY(float, detectedFrequency, setDetectedFrequency)
     PIEJAM_GUI_PROPERTY(QString, detectedPitch, setDetectedPitch)
@@ -33,9 +34,6 @@ private:
     void onSubscribe() override;
 
     void onChannelChanged();
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::fx_modules::tuner::gui

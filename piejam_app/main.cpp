@@ -228,12 +228,12 @@ main(int argc, char* argv[]) -> int
 
     store.dispatch(runtime::actions::scan_ladspa_fx_plugins("/usr/lib/ladspa"));
 
-    gui::Root modelManager(
+    gui::model::Root rootModel(
         runtime::state_access{store, state_change_subscriber});
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
-    engine.rootContext()->setContextProperty("g_modelManager", &modelManager);
+    engine.rootContext()->setContextProperty("g_modelManager", &rootModel);
 
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
     if (engine.rootObjects().isEmpty())
@@ -261,16 +261,16 @@ main(int argc, char* argv[]) -> int
         QObject::connect(timer, &QTimer::timeout, [&]() {
             store.dispatch(runtime::actions::refresh_midi_devices{});
 
-            modelManager.info()->setCpuTemp(system::cpu_temp());
+            rootModel.info()->setCpuTemp(system::cpu_temp());
 
             avg_cpu_load.update();
             auto cpu_load_per_core = avg_cpu_load.per_core();
-            modelManager.info()->setCpuLoad(
+            rootModel.info()->setCpuLoad(
                 QList<float>(
                     cpu_load_per_core.begin(),
                     cpu_load_per_core.end()));
 
-            modelManager.info()->setDiskUsage(
+            rootModel.info()->setDiskUsage(
                 static_cast<int>(
                     std::round(system::disk_usage(locs.home_dir) * 100)));
         });

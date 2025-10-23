@@ -12,15 +12,14 @@
 #include <piejam/algorithm/edit_script.h>
 #include <piejam/runtime/selectors.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 namespace piejam::gui::model
 {
 
 struct MixerChannelAuxSend::Impl
 {
     box<runtime::mixer::channel_ids_t> send_ids;
-
-    std::unique_ptr<AuxChannel> auxChannel;
-    std::unique_ptr<AuxSendsList> auxSends;
 };
 
 MixerChannelAuxSend::MixerChannelAuxSend(
@@ -28,27 +27,11 @@ MixerChannelAuxSend::MixerChannelAuxSend(
     runtime::mixer::channel_id const id)
     : MixerChannel{state_access, id}
     , m_impl{make_pimpl<Impl>()}
+    , m_sends{channelType() != ChannelType::Aux ? &addQObject<AuxSendsList>() : nullptr}
+    , m_aux{
+          channelType() == ChannelType::Aux ? &addModel<AuxChannel>(id)
+                                            : nullptr}
 {
-    if (channelType() == ChannelType::Aux)
-    {
-        m_impl->auxChannel = std::make_unique<AuxChannel>(state_access, id);
-    }
-    else
-    {
-        m_impl->auxSends = std::make_unique<AuxSendsList>();
-    }
-}
-
-auto
-MixerChannelAuxSend::sends() const noexcept -> sends_property_t
-{
-    return m_impl->auxSends.get();
-}
-
-auto
-MixerChannelAuxSend::aux() const noexcept -> aux_property_t
-{
-    return m_impl->auxChannel.get();
 }
 
 void
@@ -64,7 +47,7 @@ MixerChannelAuxSend::onSubscribe()
                 algorithm::apply_edit_script(
                     algorithm::edit_script(*m_impl->send_ids, *send_ids),
                     ListModelEditScriptProcessor{
-                        *m_impl->auxSends,
+                        boost::polymorphic_downcast<AuxSendsList&>(*m_sends),
                         [this](auto const& send_id) {
                             return std::make_unique<AuxSend>(
                                 state_access(),

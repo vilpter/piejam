@@ -9,29 +9,24 @@
 #include <piejam/gui/model/Types.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
-
-class QAbstractListModel;
-
 namespace piejam::gui::model
 {
 
-class FxBrowser final : public SubscribableModel
+class FxBrowser final : public CompositeSubscribableModel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, entries)
 
 public:
-    FxBrowser(runtime::state_access const&);
+    explicit FxBrowser(runtime::state_access const&);
 
     Q_INVOKABLE void showMixer();
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

@@ -72,18 +72,10 @@ calcRmsLevel(
 
 struct MixerChannelPerform::Impl
 {
+    MixerChannelPerform& self;
+
     static constexpr audio::sample_rate default_sample_rate{48000u};
     audio::sample_rate sample_rate{default_sample_rate};
-
-    StereoLevel peakLevel;
-    StereoLevel rmsLevel;
-    std::unique_ptr<AudioStreamProvider> outStream;
-
-    std::unique_ptr<FloatParameter> volume;
-    std::unique_ptr<FloatParameter> panBalance;
-    std::unique_ptr<BoolParameter> record;
-    std::unique_ptr<BoolParameter> solo;
-    std::unique_ptr<BoolParameter> mute;
 
     void updateSampleRate(audio::sample_rate sr)
     {
@@ -96,25 +88,25 @@ struct MixerChannelPerform::Impl
     template <audio::pair_channel C>
     void updatePeakLevel(std::span<float const> ch)
     {
-        peakLevel.setLevel<C>(static_cast<double>(calcPeakLevel<float>(
+        self.m_peakLevel->setLevel<C>(static_cast<double>(calcPeakLevel<float>(
             ch,
-            static_cast<float>(peakLevel.level<C>()),
+            static_cast<float>(self.m_peakLevel->level<C>()),
             sample_rate)));
     }
 
     template <audio::pair_channel C>
     void updateRmsLevel(std::span<float const> ch)
     {
-        rmsLevel.setLevel<C>(static_cast<double>(calcRmsLevel<float>(
+        self.m_rmsLevel->setLevel<C>(static_cast<double>(calcRmsLevel<float>(
             ch,
-            static_cast<float>(rmsLevel.level<C>()),
+            static_cast<float>(self.m_rmsLevel->level<C>()),
             sample_rate)));
     }
 
     void resetLevelMeter()
     {
-        peakLevel.reset();
-        rmsLevel.reset();
+        self.m_peakLevel->reset();
+        self.m_rmsLevel->reset();
     }
 };
 
@@ -122,15 +114,29 @@ MixerChannelPerform::MixerChannelPerform(
     runtime::state_access const& state_access,
     runtime::mixer::channel_id const id)
     : MixerChannel{state_access, id}
-    , m_impl{make_pimpl<Impl>()}
+    , m_impl{make_pimpl<Impl>(*this)}
+    , m_peakLevel{&addQObject<StereoLevel>()}
+    , m_rmsLevel{&addQObject<StereoLevel>()}
+    , m_volume{&addModel<FloatParameter>(observe_once(
+          runtime::selectors::make_mixer_channel_volume_parameter_selector(
+              id)))}
+    , m_panBalance{&addModel<FloatParameter>(observe_once(
+          runtime::selectors::make_mixer_channel_pan_balance_parameter_selector(
+              id)))}
+    , m_record{&addModel<BoolParameter>(observe_once(
+          runtime::selectors::make_mixer_channel_record_parameter_selector(
+              id)))}
+    , m_solo{&addModel<BoolParameter>(observe_once(
+          runtime::selectors::make_mixer_channel_solo_parameter_selector(id)))}
+    , m_mute{&addModel<BoolParameter>(observe_once(
+          runtime::selectors::make_mixer_channel_mute_parameter_selector(id)))}
 {
-    makeStream(
-        m_impl->outStream,
-        observe_once(
+    AudioStreamProvider& outStream =
+        addAttachedModel<AudioStreamProvider>(observe_once(
             runtime::selectors::make_mixer_channel_out_stream_selector(id)));
 
     QObject::connect(
-        m_impl->outStream.get(),
+        &outStream,
         &AudioStreamProvider::captured,
         this,
         [this](AudioStream captured) {
@@ -146,78 +152,6 @@ MixerChannelPerform::MixerChannelPerform(
             m_impl->updateRmsLevel<audio::pair_channel::right>(
                 captured_stereo.channels()[1]);
         });
-
-    makeParameter(
-        m_impl->volume,
-        observe_once(
-            runtime::selectors::make_mixer_channel_volume_parameter_selector(
-                id)));
-
-    makeParameter(
-        m_impl->panBalance,
-        observe_once(
-            runtime::selectors::
-                make_mixer_channel_pan_balance_parameter_selector(id)));
-
-    makeParameter(
-        m_impl->record,
-        observe_once(
-            runtime::selectors::make_mixer_channel_record_parameter_selector(
-                id)));
-
-    makeParameter(
-        m_impl->solo,
-        observe_once(
-            runtime::selectors::make_mixer_channel_solo_parameter_selector(
-                id)));
-
-    makeParameter(
-        m_impl->mute,
-        observe_once(
-            runtime::selectors::make_mixer_channel_mute_parameter_selector(
-                id)));
-}
-
-auto
-MixerChannelPerform::peakLevel() const noexcept -> StereoLevel*
-{
-    return &m_impl->peakLevel;
-}
-
-auto
-MixerChannelPerform::rmsLevel() const noexcept -> StereoLevel*
-{
-    return &m_impl->rmsLevel;
-}
-
-auto
-MixerChannelPerform::volume() const noexcept -> FloatParameter*
-{
-    return m_impl->volume.get();
-}
-
-auto
-MixerChannelPerform::panBalance() const noexcept -> FloatParameter*
-{
-    return m_impl->panBalance.get();
-}
-
-auto
-MixerChannelPerform::record() const noexcept -> BoolParameter*
-{
-    return m_impl->record.get();
-}
-
-auto
-MixerChannelPerform::solo() const noexcept -> BoolParameter*
-{
-    return m_impl->solo.get();
-}
-
-auto
-MixerChannelPerform::mute() const noexcept -> BoolParameter*
-{
-    return m_impl->mute.get();
 }
 
 void

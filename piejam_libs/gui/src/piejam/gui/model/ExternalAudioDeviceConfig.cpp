@@ -9,58 +9,31 @@
 #include <piejam/runtime/actions/external_audio_device_actions.h>
 #include <piejam/runtime/selectors.h>
 
+#include <boost/assert.hpp>
+
 namespace piejam::gui::model
 {
-
-struct ExternalAudioDeviceConfig::Impl
-{
-    Impl(
-        runtime::state_access const& state_access,
-        runtime::external_audio::device_id const device_id)
-        : device_id{device_id}
-        , mono{state_access.observe_once(runtime::selectors::make_external_audio_device_bus_type_selector(device_id)) == audio::bus_type::mono}
-        , name{
-              state_access,
-              state_access.observe_once(
-                  runtime::selectors::make_external_audio_device_name_selector(
-                      device_id))}
-    {
-    }
-
-    runtime::external_audio::device_id device_id;
-    bool mono;
-
-    String name;
-};
 
 ExternalAudioDeviceConfig::ExternalAudioDeviceConfig(
     runtime::state_access const& state_access,
     runtime::external_audio::device_id const device_id)
-    : SubscribableModel(state_access)
-    , m_impl{make_pimpl<Impl>(state_access, device_id)}
+    : CompositeSubscribableModel(state_access)
+    , m_name{&addModel<String>(observe_once(
+          runtime::selectors::make_external_audio_device_name_selector(
+              device_id)))}
+    , m_mono{observe_once(runtime::selectors::make_external_audio_device_bus_type_selector(device_id)) == audio::bus_type::mono}
+    , m_device_id{device_id}
 {
-}
-
-auto
-ExternalAudioDeviceConfig::name() const noexcept -> String*
-{
-    return &m_impl->name;
-}
-
-auto
-ExternalAudioDeviceConfig::mono() const noexcept -> mono_property_t
-{
-    return m_impl->mono;
 }
 
 void
 ExternalAudioDeviceConfig::onSubscribe()
 {
-    if (m_impl->mono)
+    if (m_mono)
     {
         observe(
             runtime::selectors::make_external_audio_device_bus_channel_selector(
-                m_impl->device_id,
+                m_device_id,
                 audio::bus_channel::mono),
             [this](std::size_t const ch) { setMonoChannel(ch + 1); });
     }
@@ -68,13 +41,13 @@ ExternalAudioDeviceConfig::onSubscribe()
     {
         observe(
             runtime::selectors::make_external_audio_device_bus_channel_selector(
-                m_impl->device_id,
+                m_device_id,
                 audio::bus_channel::left),
             [this](std::size_t const ch) { setStereoLeftChannel(ch + 1); });
 
         observe(
             runtime::selectors::make_external_audio_device_bus_channel_selector(
-                m_impl->device_id,
+                m_device_id,
                 audio::bus_channel::right),
             [this](std::size_t const ch) { setStereoRightChannel(ch + 1); });
     }
@@ -97,41 +70,29 @@ changeChannel(
 void
 ExternalAudioDeviceConfig::changeMonoChannel(unsigned const ch)
 {
-    Q_ASSERT(m_impl->mono);
-    changeChannel(
-        state_access(),
-        m_impl->device_id,
-        audio::bus_channel::mono,
-        ch);
+    BOOST_ASSERT(m_mono);
+    changeChannel(state_access(), m_device_id, audio::bus_channel::mono, ch);
 }
 
 void
 ExternalAudioDeviceConfig::changeStereoLeftChannel(unsigned const ch)
 {
-    Q_ASSERT(!m_impl->mono);
-    changeChannel(
-        state_access(),
-        m_impl->device_id,
-        audio::bus_channel::left,
-        ch);
+    BOOST_ASSERT(!m_mono);
+    changeChannel(state_access(), m_device_id, audio::bus_channel::left, ch);
 }
 
 void
 ExternalAudioDeviceConfig::changeStereoRightChannel(unsigned const ch)
 {
-    Q_ASSERT(!m_impl->mono);
-    changeChannel(
-        state_access(),
-        m_impl->device_id,
-        audio::bus_channel::right,
-        ch);
+    BOOST_ASSERT(!m_mono);
+    changeChannel(state_access(), m_device_id, audio::bus_channel::right, ch);
 }
 
 void
 ExternalAudioDeviceConfig::remove()
 {
     runtime::actions::remove_external_audio_device action;
-    action.device_id = m_impl->device_id;
+    action.device_id = m_device_id;
     dispatch(action);
 }
 

@@ -8,16 +8,14 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
-
-class QAbstractListModel;
-
 namespace piejam::gui::model
 {
 
-class MidiInputSettings final : public SubscribableModel
+class MidiInputSettings final : public CompositeSubscribableModel
 {
     Q_OBJECT
+
+    PIEJAM_GUI_MODEL_PIMPL
 
     PIEJAM_GUI_CONSTANT_PROPERTY(QAbstractListModel*, devices)
 
@@ -26,9 +24,6 @@ public:
 
 private:
     void onSubscribe() override;
-
-    struct Impl;
-    pimpl<Impl> m_impl;
 };
 
 } // namespace piejam::gui::model

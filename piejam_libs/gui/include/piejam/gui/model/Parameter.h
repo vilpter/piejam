@@ -8,13 +8,12 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
-#include <piejam/pimpl.h>
 #include <piejam/runtime/parameters.h>
 
 namespace piejam::gui::model
 {
 
-class Parameter : public SubscribableModel
+class Parameter : public CompositeSubscribableModel
 {
     Q_OBJECT
 
@@ -26,7 +25,10 @@ class Parameter : public SubscribableModel
 public:
     Parameter(runtime::state_access const&, runtime::parameter_id const&);
 
-    auto paramId() const -> runtime::parameter_id;
+    auto paramId() const noexcept -> runtime::parameter_id
+    {
+        return m_param_id;
+    }
 
     enum class Type
     {
@@ -46,8 +48,7 @@ protected:
     void onSubscribe() override;
 
 private:
-    struct Impl;
-    pimpl<Impl> m_impl;
+    runtime::parameter_id m_param_id;
 };
 
 } // namespace piejam::gui::model

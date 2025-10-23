@@ -14,7 +14,7 @@
 namespace piejam::gui::model
 {
 
-class MixerChannel : public SubscribableModel
+class MixerChannel : public CompositeSubscribableModel
 {
     Q_OBJECT
 
@@ -37,8 +37,6 @@ protected:
 
 private:
     runtime::mixer::channel_id m_channel_id;
-    ChannelType m_channelType{ChannelType::Mono};
-    BusType m_busType{BusType::Mono};
 };
 
 } // namespace piejam::gui::model

@@ -14,6 +14,8 @@
 #include <piejam/runtime/actions/external_audio_device_actions.h>
 #include <piejam/runtime/selectors.h>
 
+#include <boost/polymorphic_cast.hpp>
+
 namespace piejam::gui::model
 {
 
@@ -21,29 +23,16 @@ struct AudioInputOutputSettings::Impl
 {
     io_direction io_dir;
     box<runtime::external_audio::device_ids_t> device_ids{};
-
-    StringList channels{};
-    ExternalAudioDeviceConfigList deviceConfigs{};
 };
 
 AudioInputOutputSettings::AudioInputOutputSettings(
     runtime::state_access const& state_access,
-    io_direction const settings_type)
-    : SubscribableModel(state_access)
-    , m_impl{make_pimpl<Impl>(settings_type)}
+    io_direction const io_dir)
+    : CompositeSubscribableModel(state_access)
+    , m_impl{make_pimpl<Impl>(io_dir)}
+    , m_channels{&addQObject<StringList>()}
+    , m_deviceConfigs{&addQObject<ExternalAudioDeviceConfigList>()}
 {
-}
-
-auto
-AudioInputOutputSettings::channels() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->channels;
-}
-
-auto
-AudioInputOutputSettings::deviceConfigs() const noexcept -> QAbstractListModel*
-{
-    return &m_impl->deviceConfigs;
 }
 
 void
@@ -61,7 +50,8 @@ AudioInputOutputSettings::onSubscribe()
                 channels.push_back(QString::number(n + 1));
             }
 
-            m_impl->channels.set(std::move(channels));
+            boost::polymorphic_downcast<StringList&>(*m_channels)
+                .set(std::move(channels));
         });
 
     observe(
@@ -70,7 +60,8 @@ AudioInputOutputSettings::onSubscribe()
             algorithm::apply_edit_script(
                 algorithm::edit_script(*m_impl->device_ids, *device_ids),
                 ListModelEditScriptProcessor{
-                    m_impl->deviceConfigs,
+                    boost::polymorphic_downcast<ExternalAudioDeviceConfigList&>(
+                        *m_deviceConfigs),
                     [this](runtime::external_audio::device_id device_id) {
                         return std::make_unique<ExternalAudioDeviceConfig>(
                             state_access(),
@@ -83,12 +74,12 @@ AudioInputOutputSettings::onSubscribe()
 
 static void
 addDevice(
-    runtime::state_access state_access,
-    io_direction direction,
-    audio::bus_type bus_type)
+    runtime::state_access const& state_access,
+    io_direction const io_dir,
+    audio::bus_type const bus_type)
 {
     runtime::actions::add_external_audio_device action;
-    action.direction = direction;
+    action.direction = io_dir;
     action.type = bus_type;
     state_access.dispatch(action);
 }

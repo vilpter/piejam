@@ -30,9 +30,6 @@ public:
     Q_INVOKABLE float dBToPosition(float const dB) const;
 
     Q_INVOKABLE float dBAt(float const position) const;
-
-private:
-    QVector<DbScaleTick> m_ticks;
 };
 
 } // namespace piejam::gui::model
