@@ -98,7 +98,7 @@ struct io_pair
     }
 
 private:
-    std::array<T, 2> m_p;
+    std::array<T, 2> m_p{};
 };
 
 // get<0> -> in(), get<1> -> out()
