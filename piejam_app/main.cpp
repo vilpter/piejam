@@ -115,9 +115,6 @@ main(int argc, char* argv[]) -> int
 
     std::size_t const hw_threads = std::thread::hardware_concurrency();
 
-    // run app on the second cpu, first one is for the system
-    this_thread::set_affinity(hw_threads > 1 ? 1 : 0);
-
     piejam::gui::init();
     piejam::fx_modules::init();
 
