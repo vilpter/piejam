@@ -14,42 +14,34 @@ Item {
     property alias gradient: backgroundRect.gradient
     property color fillColor: "#000000"
 
-    width: 40
-    height: 200
-
-    QtObject {
-        id: private_
-
-        readonly property color peakFillColor: ColorExt.setAlpha(root.fillColor, 0.5)
-    }
+    implicitWidth: 40
+    implicitHeight: 200
 
     Rectangle {
         id: backgroundRect
 
         anchors.fill: parent
+    }
 
-        Rectangle {
-            z: 1
+    Rectangle {
+        color: root.fillColor
 
-            color: private_.peakFillColor
+        opacity: 0.5
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-            height: (1 - root.rmsLevel) * parent.height
-        }
+        height: (1 - root.rmsLevel) * parent.height
+    }
 
-        Rectangle {
-            z: 2
+    Rectangle {
+        color: root.fillColor
 
-            color: root.fillColor
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            height: (1 - Math.max(root.peakLevel, root.rmsLevel)) * parent.height
-        }
+        height: (1 - Math.max(root.peakLevel, root.rmsLevel)) * parent.height
     }
 }
