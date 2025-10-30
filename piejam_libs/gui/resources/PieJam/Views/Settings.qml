@@ -17,6 +17,7 @@ Pane {
     property alias audioInputModel: audioSettings.inputModel
     property alias audioOutputModel: audioSettings.outputModel
     property alias midiInputModel: midiSettings.model
+    property alias displayModel: displaySettings.model
 
     padding: 0
 
@@ -34,7 +35,7 @@ Pane {
             spacing: 0
             interactive: false
 
-            model: ["Audio", "MIDI"]
+            model: ["Audio", "MIDI", "Display"]
 
             delegate: Button {
                 width: 96
@@ -78,6 +79,10 @@ Pane {
 
             MidiSettings {
                 id: midiSettings
+            }
+
+            DisplaySettings {
+                id: displaySettings
             }
         }
     }

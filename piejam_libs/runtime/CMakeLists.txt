@@ -12,6 +12,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/actions/control_midi_assignment.h
     include/piejam/runtime/actions/deactivate_midi_device.h
     include/piejam/runtime/actions/delete_fx_module.h
+    include/piejam/runtime/actions/display_actions.h
     include/piejam/runtime/actions/external_audio_device_actions.h
     include/piejam/runtime/actions/finalize_ladspa_fx_plugin_scan.h
     include/piejam/runtime/actions/fwd.h
@@ -131,6 +132,7 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/actions/control_midi_assignment.cpp
     src/piejam/runtime/actions/deactivate_midi_device.cpp
     src/piejam/runtime/actions/delete_fx_module.cpp
+    src/piejam/runtime/actions/display_actions.cpp
     src/piejam/runtime/actions/external_audio_device_actions.cpp
     src/piejam/runtime/actions/finalize_ladspa_fx_plugin_scan.cpp
     src/piejam/runtime/actions/fx_chain_actions.cpp

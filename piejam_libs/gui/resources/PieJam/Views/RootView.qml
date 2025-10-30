@@ -16,10 +16,10 @@ import PieJam.MixerControls 1.0
 import PieJam.Models 1.0 as PJModels
 import PieJam.Util 1.0
 
-Item {
+SubscribableItem {
     id: root
 
-    property var modelManager: null
+    property PJModels.Root model: null
 
     RowLayout {
         anchors.fill: parent
@@ -43,7 +43,7 @@ Item {
 
                     onClicked: {
                         MixerViewSettings.forceMode(MixerViewSettings.perform)
-                        root.modelManager.rootView.showMixer()
+                        root.model.showMixer()
                     }
                 }
 
@@ -51,11 +51,11 @@ Item {
                     text: "FX"
 
                     onClicked: {
-                        if (root.modelManager.rootView.canShowFxModule && root.modelManager.rootView.mode !== PJModels.RootView.Mode.FxModule) {
-                            root.modelManager.rootView.showFxModule()
+                        if (root.model.canShowFxModule && root.model.mode !== PJModels.Root.Mode.FxModule) {
+                            root.model.showFxModule()
                         } else {
                             MixerViewSettings.forceMode(MixerViewSettings.fx)
-                            root.modelManager.rootView.showMixer()
+                            root.model.showMixer()
                         }
                     }
                 }
@@ -67,7 +67,7 @@ Item {
 
                 InfoToolButton {
                     property int lastMessagesCount: 0
-                    property var logMessages: root.modelManager.log.logMessages
+                    property var logMessages: root.model.log.logMessages
 
                     icon.width: 24
                     icon.height: 24
@@ -76,7 +76,7 @@ Item {
 
                     onClicked: {
                         lastMessagesCount = logMessages.count
-                        root.modelManager.rootView.showInfo()
+                        root.model.showInfo()
                     }
 
                     info: logMessages.count === lastMessagesCount ? "" : logMessages.count - lastMessagesCount
@@ -88,7 +88,7 @@ Item {
                     icon.source: "qrc:///images/icons/cog.svg"
                     display: AbstractButton.IconOnly
 
-                    onClicked: root.modelManager.rootView.showSettings()
+                    onClicked: root.model.showSettings()
                 }
 
                 ToolButton {
@@ -97,7 +97,7 @@ Item {
                     icon.source: "qrc:///images/icons/power.svg"
                     display: AbstractButton.IconOnly
 
-                    onClicked: root.modelManager.rootView.showPower()
+                    onClicked: root.model.showPower()
                 }
             }
         }
@@ -111,7 +111,7 @@ Item {
             StatusBar {
                 Layout.fillWidth: true
 
-                model: root.modelManager.info
+                model: root.model.info
             }
 
             Rectangle {
@@ -125,25 +125,26 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                currentIndex: root.modelManager.rootView.mode
+                currentIndex: root.model.mode
 
                 Mixer {
-                    model: root.modelManager.mixer
+                    model: root.model.mixer
                 }
 
                 Loader {
                     sourceComponent: Log {
-                        model: root.modelManager.log
+                        model: root.model.log
                     }
                     asynchronous: true
                 }
 
                 Loader {
                     sourceComponent: Settings {
-                        audioDeviceModel: root.modelManager.audioDeviceSettings
-                        audioInputModel: root.modelManager.audioInputSettings
-                        audioOutputModel: root.modelManager.audioOutputSettings
-                        midiInputModel: root.modelManager.midiInputSettings
+                        audioDeviceModel: root.model.audioDeviceSettings
+                        audioInputModel: root.model.audioInputSettings
+                        audioOutputModel: root.model.audioOutputSettings
+                        midiInputModel: root.model.midiInputSettings
+                        displayModel: root.model.displaySettings
                     }
                     asynchronous: true
                 }
@@ -156,14 +157,14 @@ Item {
 
                 Loader {
                     sourceComponent: FxBrowser {
-                        model: root.modelManager.fxBrowser
+                        model: root.model.fxBrowser
                     }
                     asynchronous: true
                 }
 
                 Loader {
                     sourceComponent: FxModule {
-                        model: root.modelManager.fxModule
+                        model: root.model.fxModule
                     }
                     asynchronous: true
                 }
@@ -188,12 +189,14 @@ Item {
         function onLayoutChanged() {
             if (inputPanel.keyboard.layout !== "") {
                 var hideKey = QmlExt.findChild(inputPanel.keyboard, function(obj) { return obj instanceof HideKeyboardKey })
-                if (hideKey !== null)
+                if (hideKey !== null) {
                     hideKey.visible = false
+                }
 
                 var changeLanguageKey = QmlExt.findChild(inputPanel.keyboard, function(obj) { return obj instanceof ChangeLanguageKey })
-                if (changeLanguageKey !== null)
+                if (changeLanguageKey !== null) {
                     changeLanguageKey.visible = false
+                }
             }
         }
     }
@@ -202,10 +205,5 @@ Item {
         target: VirtualKeyboardSettings
         property: "fullScreenMode"
         value: Qt.inputMethod.visible
-    }
-
-    ModelSubscription {
-        target: root.modelManager.rootView
-        subscribed: root.visible
     }
 }

@@ -75,8 +75,9 @@ class ScopeSlot;
 
 class MidiDeviceConfig;
 using MidiDeviceList = ObjectListModel<MidiDeviceConfig>;
-
 class MidiInputSettings;
+
+class DisplaySettings;
 
 class MidiAssignable;
 

@@ -1057,6 +1057,10 @@ selector<float> const select_cpu_load([](state const& st) {
     return st.cpu_load;
 });
 
+selector<std::size_t> const select_display_rotation([](state const& st) {
+    return st.display_rotation;
+});
+
 selector<root_view_mode> const select_root_view_mode([](state const& st) {
     return st.root_view_mode;
 });

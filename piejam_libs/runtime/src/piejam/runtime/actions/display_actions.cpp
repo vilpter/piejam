@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/runtime/actions/apply_app_config.h>
+#include <piejam/runtime/actions/display_actions.h>
 
 #include <piejam/runtime/state.h>
 
@@ -10,10 +10,9 @@ namespace piejam::runtime::actions
 {
 
 void
-apply_app_config::reduce(state& st) const
+set_display_rotation::reduce(state& st) const
 {
-    st.rec_session = conf.rec_session;
-    st.display_rotation = conf.display_rotation;
+    st.display_rotation = display_rotation;
 }
 
 } // namespace piejam::runtime::actions

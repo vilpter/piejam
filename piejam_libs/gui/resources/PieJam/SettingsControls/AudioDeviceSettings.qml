@@ -66,8 +66,7 @@ SubscribableItem {
                 highlighted: root.model.selectedSoundCardIndex === index
             }
 
-            nameLabelText: qsTr("Device:")
-            unselectedText: qsTr("Select...")
+            name: qsTr("Device")
 
             onOptionSelected: root.model.selectSoundCard(index)
         }
@@ -80,72 +79,52 @@ SubscribableItem {
             model: root.model.sampleRates
             currentIndex: root.model.selectedSampleRate
 
-            nameLabelText: qsTr("Sample rate:")
-            unselectedText: qsTr("Select sample rate...")
+            name: qsTr("Sample rate")
 
             onOptionSelected: root.model.selectSampleRate(index)
         }
 
         Frame {
             Layout.fillWidth: true
-            Layout.preferredHeight: 96
+            Layout.preferredHeight: 112
+
+            spacing: 0
 
             visible: root.model.selectedSoundCardIndex !== -1
 
             ColumnLayout {
                 anchors.fill: parent
 
-                RowLayout {
+                Label {
                     Layout.fillWidth: true
-                    Layout.maximumHeight: 32
 
-                    Label {
-                        Layout.preferredWidth: 128
-                        Layout.fillHeight: true
+                    textFormat: Text.PlainText
+                    font.pixelSize: 18
 
-                        verticalAlignment: Text.AlignVCenter
-                        textFormat: Text.PlainText
-                        font.pixelSize: 18
-
-                        text: qsTr("Buffer size:")
-                    }
-
-                    Slider {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        from: 0
-                        to: root.model.periodSizesCount
-                        stepSize: 1
-                        value: root.model.selectedPeriodSizeIndex
-
-                        onMoved: root.model.selectPeriodSize(value)
-                    }
+                    text: qsTr("Buffer size")
                 }
 
-                RowLayout {
+                Label {
                     Layout.fillWidth: true
-                    Layout.maximumHeight: 32
 
-                    Item {
-                        Layout.preferredWidth: 128
-                        Layout.fillHeight: true
-                    }
+                    textFormat: Text.PlainText
+                    font.pixelSize: 14
 
-                    Label {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                    text: (root.model.selectedPeriodSizeIndex === -1 ? "0" : root.model.selectedPeriodSize) +
+                            " Samples / " +
+                            root.model.bufferLatency.toFixed(2) +
+                            " ms"
+                }
 
-                        verticalAlignment: Text.AlignVCenter
-                        font.italic: true
-                        textFormat: Text.PlainText
-                        font.pixelSize: 18
+                Slider {
+                    Layout.fillWidth: true
 
-                        text: (root.model.selectedPeriodSizeIndex === -1 ? "0" : root.model.selectedPeriodSize) +
-                              " Samples / " +
-                              root.model.bufferLatency.toFixed(2) +
-                              " ms"
-                    }
+                    from: 0
+                    to: root.model.periodSizesCount
+                    stepSize: 1
+                    value: root.model.selectedPeriodSizeIndex
+
+                    onMoved: root.model.selectPeriodSize(value)
                 }
             }
         }

@@ -27,6 +27,8 @@ struct app_config
     std::vector<std::string> enabled_midi_input_devices;
 
     std::size_t rec_session{};
+
+    std::size_t display_rotation{};
 };
 
 auto load_app_config(std::istream&) -> app_config;

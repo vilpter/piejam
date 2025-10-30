@@ -17,6 +17,7 @@
 #include <piejam/gui/model/AuxSend.h>
 #include <piejam/gui/model/BoolParameter.h>
 #include <piejam/gui/model/DbScaleData.h>
+#include <piejam/gui/model/DisplaySettings.h>
 #include <piejam/gui/model/EnumListModel.h>
 #include <piejam/gui/model/EnumParameter.h>
 #include <piejam/gui/model/ExternalAudioDeviceConfig.h>
@@ -43,7 +44,7 @@
 #include <piejam/gui/model/MixerChannelPerform.h>
 #include <piejam/gui/model/MixerDbScales.h>
 #include <piejam/gui/model/Parameter.h>
-#include <piejam/gui/model/RootView.h>
+#include <piejam/gui/model/Root.h>
 #include <piejam/gui/model/ScopeSlot.h>
 #include <piejam/gui/model/SpectrumSlot.h>
 #include <piejam/gui/model/StereoLevel.h>
@@ -93,6 +94,7 @@ runRegistration()
     PIEJAM_GUI_MODEL(model::AuxSend, "AuxSend");
     PIEJAM_GUI_MODEL(model::BoolParameter, "BoolParameter");
     PIEJAM_GUI_MODEL(model::DbScaleData, "DbScaleData");
+    PIEJAM_GUI_MODEL(model::DisplaySettings, "DisplaySettings");
     PIEJAM_GUI_MODEL(model::EnumListModel, "EnumListModel");
     PIEJAM_GUI_MODEL(model::EnumParameter, "EnumParameter");
     PIEJAM_GUI_MODEL(
@@ -121,7 +123,7 @@ runRegistration()
     PIEJAM_GUI_MODEL(model::MixerChannelModels, "MixerChannelModels");
     PIEJAM_GUI_MODEL(model::MixerChannelPerform, "MixerChannelPerform");
     PIEJAM_GUI_MODEL(model::Parameter, "Parameter");
-    PIEJAM_GUI_MODEL(model::RootView, "RootView");
+    PIEJAM_GUI_MODEL(model::Root, "Root");
     PIEJAM_GUI_MODEL(model::ScopeSlot, "ScopeSlot");
     PIEJAM_GUI_MODEL(model::SpectrumSlot, "SpectrumSlot");
     PIEJAM_GUI_MODEL(model::StereoLevel, "StereoLevel");

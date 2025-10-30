@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 module PieJam.Views
-MainWindow 1.0 MainWindow.qml
+RootView 1.0 RootView.qml

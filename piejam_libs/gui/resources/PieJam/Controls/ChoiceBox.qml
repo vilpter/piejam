@@ -10,14 +10,14 @@ import QtQuick.Controls.Material 2.15
 Item {
     id: root
 
-    property alias count: comboBox.count
+    readonly property alias count: comboBox.count
     property int currentIndex: -1
     property alias currentText: comboBox.currentText
     property alias delegate: comboBox.delegate
     property alias displayText: comboBox.displayText
     property alias elideMode: contentTextItem.elide
     property alias font: comboBox.font
-    property var model: null
+    property alias model: comboBox.model
     property alias popup: comboBox.popup
     property alias textHorizontalAlignment: contentTextItem.horizontalAlignment
     property alias textVerticalAlignment: contentTextItem.verticalAlignment
@@ -34,7 +34,6 @@ Item {
 
         anchors.fill: parent
 
-        model: root.model
         currentIndex: root.currentIndex
 
         contentItem: Text {

@@ -225,24 +225,6 @@ main(int argc, char* argv[]) -> int
 
     store.dispatch(runtime::actions::scan_ladspa_fx_plugins("/usr/lib/ladspa"));
 
-    gui::model::Root rootModel(
-        runtime::state_access{store, state_change_subscriber});
-
-    QQmlApplicationEngine engine;
-    engine.addImportPath("qrc:/");
-    engine.rootContext()->setContextProperty("g_modelManager", &rootModel);
-
-    engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
-    if (engine.rootObjects().isEmpty())
-    {
-        return -1;
-    }
-
-    QObject::connect(
-        &engine,
-        &QQmlApplicationEngine::quit,
-        &QGuiApplication::quit);
-
     auto session_file = locs.home_dir / "last.pjs";
 
     store.dispatch(runtime::actions::refresh_sound_cards{});
@@ -250,7 +232,28 @@ main(int argc, char* argv[]) -> int
     store.dispatch(runtime::actions::load_app_config(config_file_path(locs)));
     store.dispatch(runtime::actions::load_session(session_file));
 
-    system::avg_cpu_load_tracker avg_cpu_load(hw_threads);
+    gui::model::Root rootModel(
+        runtime::state_access{store, state_change_subscriber});
+
+    QQmlApplicationEngine engine;
+    engine.addImportPath("qrc:/");
+
+    engine.setInitialProperties({
+        {"model", QVariant::fromValue(&rootModel)},
+    });
+    engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
+    if (engine.rootObjects().isEmpty())
+    {
+        qFatal("Could not load Main.qml");
+        return 1;
+    }
+
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::quit,
+        &QGuiApplication::quit);
+
+    system::avg_cpu_load_tracker avg_cpu_load{hw_threads};
 
     // slow updates
     auto slow_updates_timer = [&] {

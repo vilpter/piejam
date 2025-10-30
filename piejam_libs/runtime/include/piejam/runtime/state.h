@@ -78,6 +78,8 @@ struct state
     std::size_t xruns{};
     float cpu_load{};
 
+    std::size_t display_rotation{};
+
     runtime::root_view_mode root_view_mode{};
     mixer::channel_id fx_browser_fx_chain_id;
 

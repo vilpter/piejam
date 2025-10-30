@@ -51,6 +51,8 @@ save_app_config(
 
         conf.rec_session = state.rec_session + 1;
 
+        conf.display_rotation = state.display_rotation;
+
         persistence::save_app_config(out, conf);
     }
     catch (std::exception const& err)

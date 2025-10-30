@@ -107,6 +107,11 @@ public:
         onSizeChanged();
     }
 
+    void append(ListItem item)
+    {
+        add(m_list.size(), std::move(item));
+    }
+
     void remove(std::size_t const pos)
     {
         BOOST_ASSERT(pos < m_list.size());

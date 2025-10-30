@@ -9,11 +9,9 @@ import QtQuick.Layouts 1.15
 import PieJam.Controls 1.0
 
 Item {
-
     id: root
 
-    property alias nameLabelWidth: nameLabel.width
-    property alias nameLabelText: nameLabel.text
+    property alias name: nameLabel.text
     property alias model: comboBox.model
     property alias currentIndex: comboBox.currentIndex
     property alias delegate: comboBox.delegate
@@ -24,7 +22,7 @@ Item {
     signal optionSelected(int index)
 
     implicitWidth: 300
-    implicitHeight: 56
+    implicitHeight: 96
 
     Frame {
         id: frame
@@ -33,19 +31,14 @@ Item {
 
         spacing: 0
 
-        topPadding: 2
-        bottomPadding: 2
-
-        RowLayout {
+        ColumnLayout {
             anchors.fill: parent
 
             Label {
                 id: nameLabel
 
-                Layout.preferredWidth: 128
-                Layout.fillHeight: true
+                Layout.fillWidth: true
 
-                verticalAlignment: Text.AlignVCenter
                 textFormat: Text.PlainText
                 font.pixelSize: 18
             }
@@ -54,7 +47,6 @@ Item {
                 id: comboBox
 
                 Layout.fillWidth: true
-                Layout.fillHeight: true
 
                 displayText: comboBox.count === 0
                         ? root.emptyText

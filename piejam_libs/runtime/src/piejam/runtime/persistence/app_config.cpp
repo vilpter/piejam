@@ -44,7 +44,8 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     sample_rate,
     period_size,
     enabled_midi_input_devices,
-    rec_session);
+    rec_session,
+    display_rotation);
 
 using upgrade_function = void (*)(nlohmann::json&);
 using upgrade_functions_array =
