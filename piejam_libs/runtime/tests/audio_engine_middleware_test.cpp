@@ -50,6 +50,11 @@ TEST_F(
         {
         }
     } action;
+
+    state test_state;
+
+    EXPECT_CALL(mf_mock, get_state())
+        .WillRepeatedly(testing::ReturnRef(test_state));
     EXPECT_CALL(mf_mock, next(::testing::Ref(action)));
     sut(make_middleware_functors(mf_mock), action);
 }
