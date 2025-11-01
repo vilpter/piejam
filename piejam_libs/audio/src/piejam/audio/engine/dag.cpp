@@ -100,12 +100,11 @@ public:
         , m_event_memory(event_memory_size)
     {
         m_run_queue.reserve(m_nodes.size());
-    }
 
-    auto operator()(std::size_t const buffer_size)
-        -> std::chrono::nanoseconds override
-    {
-        auto const start = thread::cpu_clock::now();
+        // do a dry run to gather a static execution order
+
+        std::vector<node*> run_queue;
+        run_queue.reserve(m_nodes.size());
 
         for (auto& [id, nd] : m_nodes)
         {
@@ -113,21 +112,21 @@ public:
 
             if (nd.num_parents == 0)
             {
-                BOOST_ASSERT(m_run_queue.size() < m_run_queue.capacity());
-                m_run_queue.emplace_back(std::addressof(nd));
+                BOOST_ASSERT(run_queue.size() < run_queue.capacity());
+                run_queue.emplace_back(std::addressof(nd));
             }
         }
 
-        m_thread_context.buffer_size = buffer_size;
-
-        while (!m_run_queue.empty())
+        while (!run_queue.empty())
         {
-            node* const nd = m_run_queue.back();
-            m_run_queue.pop_back();
+            node* const nd = run_queue.back();
+            run_queue.pop_back();
 
             BOOST_ASSERT(
                 nd->parents_to_process.load(std::memory_order_relaxed) == 0);
-            nd->task(m_thread_context);
+
+            // store into real run queue
+            m_run_queue.emplace_back(nd);
 
             for (node& child : nd->children)
             {
@@ -135,10 +134,23 @@ public:
                              1,
                              std::memory_order_relaxed))
                 {
-                    BOOST_ASSERT(m_run_queue.size() < m_run_queue.capacity());
-                    m_run_queue.push_back(std::addressof(child));
+                    BOOST_ASSERT(run_queue.size() < run_queue.capacity());
+                    run_queue.push_back(std::addressof(child));
                 }
             }
+        }
+    }
+
+    auto operator()(std::size_t const buffer_size)
+        -> std::chrono::nanoseconds override
+    {
+        auto const start = thread::cpu_clock::now();
+
+        m_thread_context.buffer_size = buffer_size;
+
+        for (node* const nd : m_run_queue)
+        {
+            nd->task(m_thread_context);
         }
 
         m_event_memory.release();
