@@ -100,21 +100,6 @@ ChannelStripBase {
             }
 
             Button {
-                visible: root.deletable
-                enabled: root.deletable
-
-                Layout.fillWidth: true
-
-                icon.width: 24
-                icon.height: 24
-                icon.source: "qrc:///images/icons/delete_forever.svg"
-
-                Material.background: Material.color(Material.Red, Material.Shade400)
-
-                onClicked: root.model.deleteChannel()
-            }
-
-            Button {
                 Layout.fillWidth: true
 
                 enabled: root.model && root.model.canMoveRight
@@ -125,6 +110,20 @@ ChannelStripBase {
 
                 onClicked: root.model.moveRight()
             }
+        }
+
+        Button {
+            visible: root.deletable
+            enabled: root.deletable
+
+            Layout.fillWidth: true
+
+            text: qsTr("Delete")
+            font.bold: true
+
+            Material.background: Material.color(Material.Red, Material.Shade400)
+
+            onClicked: root.model.deleteChannel()
         }
     }
 }

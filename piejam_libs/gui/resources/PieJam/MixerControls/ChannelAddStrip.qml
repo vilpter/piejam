@@ -18,7 +18,7 @@ ChannelStripBase {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 0
+        spacing: 4
 
         TextField {
             id: nameText
