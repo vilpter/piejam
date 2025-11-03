@@ -17,7 +17,7 @@ Item {
     property alias displayText: comboBox.displayText
     property alias elideMode: contentTextItem.elide
     property alias font: comboBox.font
-    property alias model: comboBox.model
+    property var model: null
     property alias popup: comboBox.popup
     property alias textHorizontalAlignment: contentTextItem.horizontalAlignment
     property alias textVerticalAlignment: contentTextItem.verticalAlignment
@@ -34,6 +34,7 @@ Item {
 
         anchors.fill: parent
 
+        model: root.model
         currentIndex: root.currentIndex
 
         contentItem: Text {
