@@ -23,7 +23,6 @@
 #include <piejam/algorithm/for_each_adjacent.h>
 #include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/asserted.h>
-#include <piejam/audio/engine/clip_processor.h>
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/engine/dag.h>
 #include <piejam/audio/engine/dag_executor.h>

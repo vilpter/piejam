@@ -7,7 +7,6 @@ if(NOT PIEJAM_TESTS)
 endif()
 
 add_executable(piejam_audio_test
-    clip_processor_test.cpp
     component_mock.h
     dag_test.cpp
     dsp_pitch_yin_test.cpp

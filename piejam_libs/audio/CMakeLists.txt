@@ -14,7 +14,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/dsp/pitch_yin.h
     include/piejam/audio/dsp/rms_level_meter.h
     include/piejam/audio/dsp/smoother.h
-    include/piejam/audio/engine/clip_processor.h
     include/piejam/audio/engine/component.h
     include/piejam/audio/engine/dag.h
     include/piejam/audio/engine/dag_executor.h
@@ -90,7 +89,6 @@ add_library(piejam_audio STATIC
     src/piejam/audio/components/identity.cpp
     src/piejam/audio/components/pan_balance.cpp
     src/piejam/audio/dsp/pitch_yin.cpp
-    src/piejam/audio/engine/clip_processor.cpp
     src/piejam/audio/engine/dag.cpp
     src/piejam/audio/engine/export_graph_as_dot.cpp
     src/piejam/audio/engine/graph.cpp
