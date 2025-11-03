@@ -271,8 +271,11 @@ export_mixer_aux_sends(state const& st, mixer::channel_id const channel_id)
             result.emplace_back(
                 session::mixer_aux_send{
                     .channel_index = channel_index(st.mixer_state, aux),
-                    .parameters =
+                    .parameter =
                         export_parameter_values(aux_send.parameters, st.params),
+                    .midi = export_midi_assignments(
+                        aux_send.parameters,
+                        st.midi_assignments),
                 });
         }
     }
@@ -323,7 +326,7 @@ export_aux_channel(
 {
     session::aux_channel result;
     result.channel_index = channel_index(st.mixer_state, aux_id);
-    result.parameters = export_parameter_values(aux.parameters, st.params);
+    result.parameter = export_parameter_values(aux.parameters, st.params);
     return result;
 }
 

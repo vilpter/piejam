@@ -177,6 +177,11 @@ auto can_toggle_aux(
     aux_sends_t const&,
     parameter::store const&) -> bool;
 
+auto disabled_by_routing_aux_sends(
+    io_map_t const& io_map,
+    aux_sends_t const& aux_sends,
+    parameter::store const& params) -> std::vector<parameter_id>;
+
 auto valid_channels(
     channel_id,
     io_direction,

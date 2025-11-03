@@ -136,6 +136,7 @@ apply_mixer_io(
     parameter::store& params,
     external_audio::state& external_audio_state,
     mixer::state& mixer_state,
+    midi_assignments_map& midi_assigns_store,
     mixer::channel_id const& channel_id,
     persistence::session::mixer_io const& in,
     persistence::session::mixer_io const& out,
@@ -181,9 +182,14 @@ apply_mixer_io(
                 if (auto aux_send = channel_aux_sends->find(*route))
                 {
                     apply_parameter_values(
-                        aux_send_data.parameters,
+                        aux_send_data.parameter,
                         aux_send->parameters,
                         params);
+
+                    apply_midi_assignments(
+                        aux_send_data.midi,
+                        aux_send->parameters,
+                        midi_assigns_store);
                 }
             }
         }
@@ -206,7 +212,7 @@ apply_aux_channels(
                 aux_channel)
             {
                 apply_parameter_values(
-                    aux_channel_data.parameters,
+                    aux_channel_data.parameter,
                     aux_channel->parameters,
                     params);
             }
@@ -276,8 +282,6 @@ apply_session::reduce(state& st) const
 
     apply_aux_channels(st.params, st.mixer_state, session->aux_channels);
 
-    runtime::update_midi_assignments(st, mixer_midi_assignments);
-
     // mixer I/O can only be applied after all channels are created
     for (std::size_t channel_index : range::indices(session->mixer_channels))
     {
@@ -288,6 +292,7 @@ apply_session::reduce(state& st) const
             st.params,
             st.external_audio_state,
             st.mixer_state,
+            mixer_midi_assignments,
             channel_id,
             channel_data.in,
             channel_data.out,
@@ -298,10 +303,13 @@ apply_session::reduce(state& st) const
         st.params,
         st.external_audio_state,
         st.mixer_state,
+        mixer_midi_assignments,
         st.mixer_state.main,
         session->main_mixer_channel.in,
         session->main_mixer_channel.out,
         session->main_mixer_channel.aux_sends);
+
+    runtime::update_midi_assignments(st, mixer_midi_assignments);
 }
 
 } // namespace piejam::runtime::actions

@@ -1010,7 +1010,7 @@ make_parameter_is_midi_assignable_selector(parameter_id param_id)
         [](auto const id) -> selector<bool> {
             return [id](state const& st) -> bool {
                 return !st.params.at(id).param().flags.test(
-                    parameter_flags::audio_graph_affecting);
+                    parameter_flags::not_midi_assignable);
             };
         },
         param_id);

@@ -86,7 +86,8 @@ struct session
     struct mixer_aux_send
     {
         std::size_t channel_index;
-        parameter_value_assignments parameters;
+        parameter_value_assignments parameter;
+        parameter_midi_assignments midi;
     };
 
     struct mixer_channel
@@ -105,7 +106,7 @@ struct session
     struct aux_channel
     {
         std::size_t channel_index;
-        parameter_value_assignments parameters;
+        parameter_value_assignments parameter;
     };
 
     std::vector<external_audio_device_config> external_audio_input_devices;

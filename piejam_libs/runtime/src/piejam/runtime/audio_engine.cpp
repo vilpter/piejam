@@ -275,20 +275,21 @@ make_midi_processors(
 auto
 make_midi_assignment_processors(
     midi_assignments_map const& assignments,
+    std::span<parameter_id const> disabled_assignments,
     parameter::store const& params,
     parameter_processor_factory& param_procs,
     processor_map& procs,
     processor_map& prev_procs)
 {
-    if (assignments.empty())
-    {
-        return;
-    }
-
     procs.midi_assign = processors::make_midi_assignment_processor(assignments);
 
     for (auto const& [param_id, assignment] : assignments)
     {
+        if (std::ranges::contains(disabled_assignments, param_id))
+        {
+            continue;
+        }
+
         std::visit(
             [&]<class ParamId>(ParamId const typed_param_id) {
                 auto it_prev = prev_procs.midi_assignments.find(
@@ -615,7 +616,8 @@ connect_midi(
     audio::engine::graph& g,
     processor_map const& procs,
     audio::engine::processor* midi_learn_output_proc,
-    midi_assignments_map const& assignments)
+    midi_assignments_map const& assignments,
+    std::span<parameter_id const> disabled_assignments)
 {
     auto* const midi_in_proc = procs.midi_input.get();
     if (!midi_in_proc)
@@ -645,6 +647,11 @@ connect_midi(
         std::size_t out_index{};
         for (auto const& [id, assignment] : assignments)
         {
+            if (std::ranges::contains(disabled_assignments, id))
+            {
+                continue;
+            }
+
             std::visit(
                 [&](auto const& param_id) {
                     auto it_midi_conv_procs = procs.midi_assignments.find(
@@ -863,8 +870,13 @@ audio_engine::rebuild(
 
     bool const midi_learn = static_cast<bool>(st.midi_learning);
     make_midi_processors(std::move(midi_in), midi_learn, procs);
+    auto disabled_assignments = mixer::disabled_by_routing_aux_sends(
+        st.mixer_state.io_map,
+        st.mixer_state.aux_sends,
+        st.params);
     make_midi_assignment_processors(
         st.midi_assignments,
+        disabled_assignments,
         st.params,
         m_impl->param_procs,
         procs,
@@ -888,7 +900,8 @@ audio_engine::rebuild(
         new_graph,
         procs,
         midi_learn_output_proc.get(),
-        st.midi_assignments);
+        st.midi_assignments,
+        disabled_assignments);
 
     connect_solo_groups(new_graph, comps, solo_groups);
 

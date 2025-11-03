@@ -178,7 +178,9 @@ insert_fx_module(
                                     .name = "Active",
                                     .default_value = true,
                                 })
-                .set_flags({parameter_flags::audio_graph_affecting})));
+                .set_flags(
+                    {parameter_flags::not_midi_assignable,
+                     parameter_flags::audio_graph_affecting})));
 }
 
 auto
@@ -340,7 +342,9 @@ make_aux_send(parameter_factory const& params_factory)
                          "Fader Tap",
                          mixer::aux_send_fader_tap::auto_,
                          &mixer::aux_send::to_fader_tap_string)
-                         .set_flags({parameter_flags::audio_graph_affecting}))},
+                         .set_flags(
+                             {parameter_flags::not_midi_assignable,
+                              parameter_flags::audio_graph_affecting}))},
                 {mixer::aux_send::parameter_key::volume,
                  params_factory.make_parameter(
                      make_float_parameter(
@@ -371,7 +375,9 @@ make_aux_channel(parameter_factory& params)
                          "Fader Tap",
                          mixer::aux_channel_fader_tap::post,
                          &mixer::aux_channel::to_fader_tap_string)
-                         .set_flags({parameter_flags::audio_graph_affecting}))},
+                         .set_flags(
+                             {parameter_flags::not_midi_assignable,
+                              parameter_flags::audio_graph_affecting}))},
             }}}};
 }
 

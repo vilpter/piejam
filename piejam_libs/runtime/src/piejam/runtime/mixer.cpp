@@ -189,6 +189,39 @@ can_toggle_aux(
 }
 
 auto
+disabled_by_routing_aux_sends(
+    io_map_t const& io_map,
+    aux_sends_t const& aux_sends,
+    parameter::store const& params) -> std::vector<parameter_id>
+{
+    std::vector<parameter_id> result;
+
+    auto channels_io = extract_channels_io(io_map, aux_sends, params);
+
+    for (auto const& [ch_id, auxs] : aux_sends)
+    {
+        for (auto const& [aux_id, aux_send] : auxs)
+        {
+            if (params.at(aux_send.active()).get())
+            {
+                continue; // skip already enabled
+            }
+
+            channels_io[ch_id].aux_sends.emplace_back(aux_id);
+
+            if (has_cycle(make_channels_io_graph(channels_io)))
+            {
+                result.emplace_back(aux_send.active());
+            }
+
+            channels_io[ch_id].aux_sends.pop_back();
+        }
+    }
+
+    return result;
+}
+
+auto
 valid_channels(
     channel_id const ch_id,
     io_direction const io_dir,
