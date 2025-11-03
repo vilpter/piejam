@@ -54,12 +54,12 @@ graph_to_dag(graph const& g) -> dag
     // create a job for each processor
     for (auto const& [src, dst] : g.audio)
     {
-        if (!processor_job_mapping.count(src.proc))
+        if (!processor_job_mapping.contains(src.proc))
         {
             add_job(src);
         }
 
-        if (!processor_job_mapping.count(dst.proc))
+        if (!processor_job_mapping.contains(dst.proc))
         {
             add_job(dst);
         }
@@ -67,12 +67,12 @@ graph_to_dag(graph const& g) -> dag
 
     for (auto const& [src, dst] : g.event)
     {
-        if (!processor_job_mapping.count(src.proc))
+        if (!processor_job_mapping.contains(src.proc))
         {
             add_job(src);
         }
 
-        if (!processor_job_mapping.count(dst.proc))
+        if (!processor_job_mapping.contains(dst.proc))
         {
             add_job(dst);
         }
