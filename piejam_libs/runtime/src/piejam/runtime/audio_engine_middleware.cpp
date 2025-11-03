@@ -139,15 +139,6 @@ audio_engine_middleware::audio_engine_middleware(
 
 audio_engine_middleware::~audio_engine_middleware() = default;
 
-template <class Action>
-void
-audio_engine_middleware::process_device_action(
-    middleware_functors const& mw_fs,
-    Action const& a)
-{
-    mw_fs.next(a);
-}
-
 static auto
 make_update_devices_action(
     audio::sound_card_manager& device_manager,
@@ -327,16 +318,6 @@ audio_engine_middleware::process_device_action(
 {
     m_midi_controller->deactivate_input_device(action.device_id);
     mw_fs.next(action);
-}
-
-template <class Action>
-void
-audio_engine_middleware::process_engine_action(
-    middleware_functors const& mw_fs,
-    Action const& a)
-{
-    mw_fs.next(a);
-    rebuild(mw_fs.get_state());
 }
 
 template <class Parameter>
