@@ -8,13 +8,30 @@
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <array>
-#include <span>
-#include <vector>
+#include <boost/core/demangle.hpp>
 
 namespace piejam::audio::engine::test
 {
+
+namespace
+{
+
+struct my_data
+{
+};
+
+} // namespace
+
+TEST(value_io_processor_test, type_name)
+{
+    EXPECT_EQ(value_io_processor<float>{}.type_name(), "float_io");
+    EXPECT_EQ(value_io_processor<bool>{}.type_name(), "bool_io");
+    EXPECT_EQ(value_io_processor<int>{}.type_name(), "int_io");
+
+    // namespace is stripped from type_name
+    ASSERT_NE(boost::core::demangle(typeid(my_data).name()), "my_data");
+    EXPECT_EQ(value_io_processor<my_data>{}.type_name(), "my_data_io");
+}
 
 TEST(
     value_io_processor_test,

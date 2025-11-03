@@ -44,8 +44,14 @@ public:
 
     auto type_name() const noexcept -> std::string_view override
     {
-        static std::string s_type_name{
-            std::format("{}_io", boost::core::demangle(typeid(T).name()))};
+        constexpr auto last_name = [](std::string_view s) {
+            auto r = s.rfind(':');
+            return r == std::string_view::npos ? s : s.substr(r + 1);
+        };
+
+        static std::string s_type_name{std::format(
+            "{}_io",
+            last_name(boost::core::demangle(typeid(T).name())))};
         return s_type_name;
     }
 
