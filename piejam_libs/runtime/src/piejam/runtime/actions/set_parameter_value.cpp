@@ -14,9 +14,13 @@
 
 #include <boost/assert.hpp>
 
-namespace piejam::runtime::actions
+namespace piejam::runtime
 {
 
+namespace
+{
+
+[[maybe_unused]]
 auto
 parameter_value_is_in_range(bool_parameter const&, bool)
 {
@@ -24,6 +28,7 @@ parameter_value_is_in_range(bool_parameter const&, bool)
 }
 
 template <class Parameter>
+[[maybe_unused]]
 auto
 parameter_value_is_in_range(
     Parameter const& param,
@@ -32,23 +37,43 @@ parameter_value_is_in_range(
     return in_closed(value, param.min, param.max);
 }
 
+} // namespace
+
+template <class Parameter>
+void
+set_parameter_value(
+    state& st,
+    parameter::id_t<Parameter> id,
+    parameter::value_type_t<Parameter> value)
+{
+    auto& slot = st.params.at(id);
+
+    if (slot.get() != value)
+    {
+        BOOST_ASSERT(parameter_value_is_in_range(slot.param(), value));
+
+        slot.set(value);
+
+        if (slot.param().flags.test(parameter_flags::solo_state_affecting))
+        {
+            ++st.solo_state_update_count;
+        }
+
+        if (slot.param().flags.test(parameter_flags::audio_graph_affecting))
+        {
+            ++st.audio_graph_update_count;
+        }
+    }
+}
+
+namespace actions
+{
+
 template <class Parameter>
 void
 set_parameter_value<Parameter>::reduce(state& st) const
 {
-    auto& slot = st.params.at(id);
-    BOOST_ASSERT(parameter_value_is_in_range(slot.param(), value));
-    slot.set(value);
-
-    if (slot.param().flags.test(parameter_flags::solo_state_affecting))
-    {
-        ++st.solo_state_update_count;
-    }
-
-    if (slot.param().flags.test(parameter_flags::audio_graph_affecting))
-    {
-        ++st.audio_graph_update_count;
-    }
+    runtime::set_parameter_value(st, id, value);
 }
 
 template struct set_parameter_value<bool_parameter>;
@@ -87,4 +112,5 @@ set_float_parameter_normalized(
     };
 }
 
-} // namespace piejam::runtime::actions
+} // namespace actions
+} // namespace piejam::runtime

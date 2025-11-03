@@ -20,8 +20,9 @@ add_executable(piejam_runtime_test
     midi_learn_processor_test.cpp
     midi_to_parameter_processor_test.cpp
     mute_solo_processor_test.cpp
-    parameters_store_test.cpp
     parameter_processor_factory_test.cpp
+    parameters_store_test.cpp
+    set_parameter_value_test.cpp
     sound_card_manager_mock.h
     state_test.cpp
     stream_processor_factory_test.cpp

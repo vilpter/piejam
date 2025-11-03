@@ -12,7 +12,16 @@
 
 #include <piejam/entity_id.h>
 
-namespace piejam::runtime::actions
+namespace piejam::runtime
+{
+
+template <class Parameter>
+void set_parameter_value(
+    state&,
+    parameter::id_t<Parameter> id,
+    parameter::value_type_t<Parameter> value);
+
+namespace actions
 {
 
 template <class Parameter>
@@ -30,7 +39,7 @@ struct set_parameter_value final
     void reduce(state&) const override;
 
     parameter::id_t<Parameter> id{};
-    parameter::tagged_value<Parameter> value{};
+    parameter::value_type_t<Parameter> value{};
 };
 
 template <class Parameter, class V>
@@ -42,4 +51,5 @@ auto reset_parameter_to_default_value(parameter_id) -> thunk_action;
 auto set_float_parameter_normalized(float_parameter_id, float norm_value)
     -> thunk_action;
 
-} // namespace piejam::runtime::actions
+} // namespace actions
+} // namespace piejam::runtime
