@@ -49,6 +49,7 @@ SubscribableItem {
 
                 ToolButton {
                     text: "FX"
+                    font.bold: true
 
                     onClicked: {
                         if (root.model.canShowFxModule && root.model.mode !== PJModels.Root.Mode.FxModule) {
