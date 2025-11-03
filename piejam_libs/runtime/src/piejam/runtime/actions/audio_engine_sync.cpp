@@ -4,6 +4,7 @@
 
 #include <piejam/runtime/actions/audio_engine_sync.h>
 
+#include <piejam/runtime/actions/set_parameter_value.h>
 #include <piejam/runtime/parameter/store.h>
 #include <piejam/runtime/state.h>
 
@@ -17,12 +18,14 @@ namespace piejam::runtime::actions
 void
 audio_engine_sync_update::reduce(state& st) const
 {
-    boost::mp11::tuple_for_each(values, [&st](auto const& id_value_pairs) {
-        for (auto const& [id, value] : id_value_pairs)
-        {
-            st.params.at(id).set(value);
-        }
-    });
+    boost::mp11::tuple_for_each(
+        values,
+        [&st]<class P>(id_value_map_t<P> const& id_value_pairs) {
+            for (auto [id, value] : id_value_pairs)
+            {
+                runtime::set_parameter_value<P>(st, id, value);
+            }
+        });
 
     for (auto&& [id, buffer] : streams)
     {
