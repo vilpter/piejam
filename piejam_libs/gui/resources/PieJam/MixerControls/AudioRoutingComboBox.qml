@@ -43,6 +43,8 @@ SubscribableItem {
         Material.foreground: selectedStateToColor(root.model ? root.model.selected.state : null)
 
         popup: Menu {
+            cascade: true
+
             MenuItem {
                 enabled: root.hasSelectableDefault
 
