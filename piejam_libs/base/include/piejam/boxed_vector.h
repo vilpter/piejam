@@ -30,7 +30,7 @@ emplace_back(boxed_vector<T>& vec, Args&&... args)
 {
     auto vec_ = vec.lock();
 
-    vec_->template emplace_back(std::forward<decltype(args)>(args)...);
+    vec_->template emplace_back<Args...>(std::forward<decltype(args)>(args)...);
 }
 
 } // namespace piejam
