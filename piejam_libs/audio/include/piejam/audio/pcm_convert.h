@@ -7,9 +7,10 @@
 #include <piejam/audio/pcm_sample_type.h>
 
 #include <piejam/numeric/clamp.h>
-#include <piejam/numeric/endian.h>
 #include <piejam/numeric/intops.h>
 #include <piejam/numeric/intx.h>
+
+#include <boost/endian/conversion.hpp>
 
 namespace piejam::audio::pcm_convert
 {
@@ -19,8 +20,8 @@ constexpr auto
 endian_to_native(pcm_sample_t<F> x) noexcept -> pcm_sample_t<F>
 {
     return pcm_sample_descriptor_t<F>::little_endian
-               ? numeric::endian::little_to_native(x)
-               : numeric::endian::big_to_native(x);
+               ? boost::endian::little_to_native(x)
+               : boost::endian::big_to_native(x);
 }
 
 template <pcm_format F>
@@ -28,8 +29,8 @@ constexpr auto
 endian_to_format(pcm_sample_t<F> x) noexcept -> pcm_sample_t<F>
 {
     return pcm_sample_descriptor_t<F>::little_endian
-               ? numeric::endian::native_to_little(x)
-               : numeric::endian::native_to_big(x);
+               ? boost::endian::native_to_little(x)
+               : boost::endian::native_to_big(x);
 }
 
 template <pcm_format F>

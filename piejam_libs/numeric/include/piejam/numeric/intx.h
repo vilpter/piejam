@@ -81,6 +81,17 @@ struct intx_io_t
 using int24_io_t = intx_io_t<int, 24>;
 using uint24_io_t = intx_io_t<unsigned, 24>;
 
+template <class T>
+[[nodiscard]]
+constexpr auto
+endian_reverse(intx_io_t<T, 24> x) noexcept -> intx_io_t<T, 24>
+{
+    return intx_io_t<T, 24>{
+        ((x.value & 0xff0000) >> 16) | //
+        (x.value & 0xff00) |           //
+        ((x.value & 0xff) << 16)};
+}
+
 } // namespace piejam::numeric
 
 template <class Integer, std::size_t Bits>

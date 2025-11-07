@@ -81,4 +81,36 @@ TYPED_TEST(pcm_convert_test, to_max)
         to<desc_t::format>(desc_t::fmax));
 }
 
+TEST(pcm_convert_mixed, s32_le_to_s24_3le)
+{
+    std::int32_t original{0x45678900};
+    auto unpacked = from<pcm_format::s32_le>(original);
+    auto packed = to<pcm_format::s24_3le>(unpacked);
+    EXPECT_EQ(numeric::int24_io_t{0x456789}, packed);
+}
+
+TEST(pcm_convert_mixed, s32_le_to_s24_3be)
+{
+    std::int32_t original{0x45678900};
+    auto unpacked = from<pcm_format::s32_le>(original);
+    auto packed = to<pcm_format::s24_3be>(unpacked);
+    EXPECT_EQ(numeric::int24_io_t{0x896745}, packed);
+}
+
+TEST(pcm_convert_mixed, s32_be_to_s24_3le)
+{
+    std::int32_t original{0x00896745};
+    auto unpacked = from<pcm_format::s32_be>(original);
+    auto packed = to<pcm_format::s24_3le>(unpacked);
+    EXPECT_EQ(numeric::int24_io_t{0x456789}, packed);
+}
+
+TEST(pcm_convert_mixed, s32_be_to_s24_3be)
+{
+    std::int32_t original{0x00896745};
+    auto unpacked = from<pcm_format::s32_be>(original);
+    auto packed = to<pcm_format::s24_3be>(unpacked);
+    EXPECT_EQ(numeric::int24_io_t{0x896745}, packed);
+}
+
 } // namespace piejam::audio::pcm_convert::test
