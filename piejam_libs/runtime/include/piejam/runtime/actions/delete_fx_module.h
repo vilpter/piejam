@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/runtime/actions/ladspa_fx_action.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/fx/fwd.h>
 #include <piejam/runtime/mixer_fwd.h>
@@ -18,7 +17,6 @@ namespace piejam::runtime::actions
 
 struct delete_fx_module final
     : ui::cloneable_action<delete_fx_module, reducible_action>
-    , visitable_ladspa_fx_action<delete_fx_module>
 {
     mixer::channel_id fx_chain_id;
     fx::module_id fx_mod_id;

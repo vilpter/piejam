@@ -13,8 +13,6 @@ namespace piejam::runtime::actions
 struct ladspa_fx_action_visitor
     : ui::action_visitor_interface<
           load_ladspa_fx_plugin,
-          delete_fx_module,
-          delete_mixer_channel,
           reload_missing_plugins>
 {
 };

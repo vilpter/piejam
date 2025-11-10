@@ -20,9 +20,15 @@
 namespace piejam::runtime
 {
 
+struct ladspa_fx_middleware::impl
+{
+    fx::ladspa_instances_t instances;
+};
+
 ladspa_fx_middleware::ladspa_fx_middleware(
     ladspa::instance_manager& ladspa_control)
-    : m_ladspa_control(ladspa_control)
+    : m_ladspa_control{ladspa_control}
+    , m_impl{make_pimpl<impl>()}
 {
 }
 
@@ -42,6 +48,25 @@ ladspa_fx_middleware::operator()(
     else
     {
         mw_fs.next(action);
+    }
+
+    unload_removed_instances(mw_fs.get_state());
+}
+
+void
+ladspa_fx_middleware::unload_removed_instances(state const& st)
+{
+    if (m_impl->instances != st.fx_state.ladspa_instances)
+    {
+        for (auto const& [id, _] : m_impl->instances)
+        {
+            if (!st.fx_state.ladspa_instances.find(id))
+            {
+                m_ladspa_control.unload(id);
+            }
+        }
+
+        m_impl->instances = st.fx_state.ladspa_instances;
     }
 }
 
@@ -86,55 +111,6 @@ ladspa_fx_middleware::process_ladspa_fx_action(
         .midi_assignments = a.midi_assignments};
     next_action.name = a.name;
     mw_fs.next(next_action);
-}
-
-template <>
-void
-ladspa_fx_middleware::process_ladspa_fx_action(
-    middleware_functors const& mw_fs,
-    actions::delete_fx_module const& a)
-{
-    fx::module const& fx_mod =
-        mw_fs.get_state().fx_state.modules.at(a.fx_mod_id);
-
-    auto const fx_instance_id = fx_mod.fx_instance_id;
-
-    mw_fs.next(a);
-
-    if (ladspa::instance_id const* const instance_id =
-            std::get_if<ladspa::instance_id>(&fx_instance_id))
-    {
-        m_ladspa_control.unload(*instance_id);
-    }
-}
-
-template <>
-void
-ladspa_fx_middleware::process_ladspa_fx_action(
-    middleware_functors const& mw_fs,
-    actions::delete_mixer_channel const& a)
-{
-    auto const& st = mw_fs.get_state();
-
-    std::vector<fx::instance_id> fx_instance_ids;
-
-    for (auto fx_mod_id : st.mixer_state.fx_chains.at(a.mixer_channel_id))
-    {
-        fx::module const& fx_mod =
-            mw_fs.get_state().fx_state.modules.at(fx_mod_id);
-        fx_instance_ids.emplace_back(fx_mod.fx_instance_id);
-    }
-
-    mw_fs.next(a);
-
-    for (auto fx_instance_id : fx_instance_ids)
-    {
-        if (ladspa::instance_id const* const instance_id =
-                std::get_if<ladspa::instance_id>(&fx_instance_id))
-        {
-            m_ladspa_control.unload(*instance_id);
-        }
-    }
 }
 
 template <>

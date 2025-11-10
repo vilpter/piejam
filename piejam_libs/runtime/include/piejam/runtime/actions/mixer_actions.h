@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <piejam/runtime/actions/ladspa_fx_action.h>
 #include <piejam/runtime/fwd.h>
 #include <piejam/runtime/material_color.h>
 #include <piejam/runtime/mixer_fwd.h>
@@ -30,7 +29,6 @@ struct add_mixer_channel final
 
 struct delete_mixer_channel final
     : ui::cloneable_action<delete_mixer_channel, reducible_action>
-    , visitable_ladspa_fx_action<delete_mixer_channel>
 {
     mixer::channel_id mixer_channel_id;
 

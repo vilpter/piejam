@@ -24,8 +24,8 @@ struct unavailable_ladspa;
 using unavailable_ladspa_id = entity_id<unavailable_ladspa>;
 using unavailable_ladspa_plugins_t = boxed_map<entity_map<unavailable_ladspa>>;
 
-using ladspa_instances_t =
-    std::unordered_map<ladspa::instance_id, ladspa::plugin_descriptor>;
+using ladspa_instances_t = boxed_map<
+    boost::container::flat_map<ladspa::instance_id, ladspa::plugin_descriptor>>;
 
 using instance_id =
     std::variant<internal_id, ladspa::instance_id, unavailable_ladspa_id>;
