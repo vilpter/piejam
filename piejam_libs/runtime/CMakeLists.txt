@@ -21,7 +21,6 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/actions/insert_fx_module.h
     include/piejam/runtime/actions/ladspa_fx_action.h
     include/piejam/runtime/actions/load_app_config.h
-    include/piejam/runtime/actions/load_session.h
     include/piejam/runtime/actions/midi_control_action.h
     include/piejam/runtime/actions/mixer_actions.h
     include/piejam/runtime/actions/move_fx_module.h
@@ -34,13 +33,14 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/actions/request_info_update.h
     include/piejam/runtime/actions/root_view_actions.h
     include/piejam/runtime/actions/save_app_config.h
-    include/piejam/runtime/actions/save_session.h
     include/piejam/runtime/actions/scan_for_sound_cards.h
     include/piejam/runtime/actions/scan_ladspa_fx_plugins.h
     include/piejam/runtime/actions/select_period_size.h
     include/piejam/runtime/actions/select_sample_rate.h
+    include/piejam/runtime/actions/session_actions.h
     include/piejam/runtime/actions/set_parameter_value.h
     include/piejam/runtime/actions/set_string.h
+    include/piejam/runtime/actions/shutdown.h
     include/piejam/runtime/audio_engine.h
     include/piejam/runtime/audio_engine_middleware.h
     include/piejam/runtime/audio_stream.h
@@ -113,6 +113,7 @@ add_library(piejam_runtime STATIC
     include/piejam/runtime/selected_sound_card.h
     include/piejam/runtime/selectors.h
     include/piejam/runtime/solo_group.h
+    include/piejam/runtime/startup_session.h
     include/piejam/runtime/state.h
     include/piejam/runtime/state_access.h
     include/piejam/runtime/store.h
@@ -142,6 +143,7 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/actions/root_view_actions.cpp
     src/piejam/runtime/actions/scan_for_sound_cards.cpp
     src/piejam/runtime/actions/scan_ladspa_fx_plugins.cpp
+    src/piejam/runtime/actions/session_actions.cpp
     src/piejam/runtime/actions/set_parameter_value.cpp
     src/piejam/runtime/actions/set_string.cpp
     src/piejam/runtime/audio_engine.cpp

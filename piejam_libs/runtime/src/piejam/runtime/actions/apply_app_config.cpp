@@ -14,6 +14,8 @@ apply_app_config::reduce(state& st) const
 {
     st.rec_session = conf.rec_session;
     st.display_rotation = conf.display_rotation;
+    st.startup_session = conf.startup_session;
+    st.current_session = conf.last_session_file;
 }
 
 } // namespace piejam::runtime::actions

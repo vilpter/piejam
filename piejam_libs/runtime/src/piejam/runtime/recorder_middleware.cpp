@@ -63,15 +63,6 @@ recorder_middleware::operator()(
     }
 }
 
-template <class Action>
-void
-recorder_middleware::process_recorder_action(
-    middleware_functors const&,
-    Action const&)
-{
-    BOOST_ASSERT_MSG(false, "unhandled action");
-}
-
 template <>
 void
 recorder_middleware::process_recorder_action(

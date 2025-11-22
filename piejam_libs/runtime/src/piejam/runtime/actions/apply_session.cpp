@@ -225,6 +225,8 @@ apply_aux_channels(
 void
 apply_session::reduce(state& st) const
 {
+    reset_state(st);
+
     apply_external_audio_device_configs<io_direction::input>(
         st,
         session->external_audio_input_devices);
@@ -310,6 +312,9 @@ apply_session::reduce(state& st) const
         session->main_mixer_channel.aux_sends);
 
     runtime::update_midi_assignments(st, mixer_midi_assignments);
+
+    st.current_session = current_session;
+    st.session_modified = false;
 }
 
 } // namespace piejam::runtime::actions

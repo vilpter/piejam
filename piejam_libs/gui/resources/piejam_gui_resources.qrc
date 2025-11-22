@@ -20,7 +20,9 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/Controls/MidiAssignArea.qml</file>
         <file>PieJam/Controls/MidiLearn.qml</file>
         <file>PieJam/Controls/ModelSubscription.qml</file>
+        <file>PieJam/Controls/OpenFileDialog.qml</file>
         <file>PieJam/Controls/QuickSpinBox.qml</file>
+        <file>PieJam/Controls/SaveFileDialog.qml</file>
         <file>PieJam/Controls/StringTextField.qml</file>
         <file>PieJam/Controls/SubscribableItem.qml</file>
         <file>PieJam/Controls/SymmetricBipolarSlider.qml</file>
@@ -70,6 +72,7 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/SettingsControls/ExternalAudioDeviceConfig.qml</file>
         <file>PieJam/SettingsControls/MidiDeviceConfig.qml</file>
         <file>PieJam/SettingsControls/MidiSettings.qml</file>
+        <file>PieJam/SettingsControls/SessionSettings.qml</file>
         <file>PieJam/SettingsControls/qmldir</file>
         <file>PieJam/Util/ColorExt.js</file>
         <file>PieJam/Util/DbConvert.js</file>
@@ -98,12 +101,18 @@ SPDX-License-Identifier: CC0-1.0
         <file>images/icons/cog.svg</file>
         <file>images/icons/cycle_arrows.svg</file>
         <file>images/icons/delete_forever.svg</file>
+        <file>images/icons/file.svg</file>
+        <file>images/icons/folder.svg</file>
         <file>images/icons/info.svg</file>
         <file>images/icons/micro-sd.svg</file>
         <file>images/icons/midi-port.svg</file>
+        <file>images/icons/new_folder.svg</file>
+        <file>images/icons/parent_folder.svg</file>
         <file>images/icons/pencil.svg</file>
         <file>images/icons/power.svg</file>
         <file>images/icons/tune-vertical.svg</file>
         <file>qtquickcontrols2.conf</file>
+        <file>PieJam/Controls/YesNoCancelDialog.qml</file>
+        <file>PieJam/Controls/FileSelectDialog.qml</file>
     </qresource>
 </RCC>

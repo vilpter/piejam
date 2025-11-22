@@ -67,6 +67,20 @@ volume_to_string(float volume) -> std::string
     return std::format("{:.1f} dB", volume_dB);
 }
 
+void
+reset_to_default(parameter::store& params, parameters_map const& map)
+{
+    for (auto [key, id] : map)
+    {
+        std::visit(
+            [&]<class P>(parameter::id_t<P> id) {
+                auto& slot = params.at(id);
+                slot.set(slot.param().default_value);
+            },
+            id);
+    }
+}
+
 } // namespace
 
 auto
@@ -74,18 +88,16 @@ make_initial_state() -> state
 {
     state st;
     st.mixer_state.main =
-        add_mixer_channel(st, mixer::channel_type::stereo, "Main");
+        add_mixer_channel(st, mixer::channel_type::stereo, "Main", true);
 
     // main doesn't belong into inputs
     remove_erase(st.mixer_state.inputs, st.mixer_state.main);
 
     // reset io
-    st.mixer_state.io_map.lock().at(
-        st.mixer_state.main) = {mixer::mix_input{}, default_t{}};
+    st.mixer_state.io_map.assign(
+        st.mixer_state.main,
+        io_pair<mixer::io_address_t>{mixer::mix_input{}, default_t{}});
 
-    // enable record on main
-    st.params.at(st.mixer_state.channels.at(st.mixer_state.main).record())
-        .set(true);
     return st;
 }
 
@@ -181,6 +193,8 @@ insert_fx_module(
                 .set_flags(
                     {parameter_flags::not_midi_assignable,
                      parameter_flags::audio_graph_affecting})));
+
+    st.session_modified = true;
 }
 
 auto
@@ -322,6 +336,8 @@ remove_fx_module(
     st.fx_state.active_modules.erase(fx_mod_id);
 
     st.fx_state.modules.erase(fx_mod_id);
+
+    st.session_modified = true;
 }
 
 static auto
@@ -388,7 +404,11 @@ remove_aux_send(state& st, mixer::aux_send const& aux_send)
 }
 
 static auto
-make_mixer_channel(state& st, mixer::channel_type type, std::string name)
+make_mixer_channel(
+    state& st,
+    mixer::channel_type type,
+    std::string name,
+    bool default_record)
 {
     using namespace std::string_view_literals;
 
@@ -437,6 +457,7 @@ make_mixer_channel(state& st, mixer::channel_type type, std::string name)
                     {mixer::channel::parameter_key::record,
                      params_factory.make_parameter(make_bool_parameter({
                          .name = "Record"sv,
+                         .default_value = default_record,
                      }))},
                     {mixer::channel::parameter_key::mute,
                      params_factory.make_parameter(make_bool_parameter({
@@ -491,14 +512,20 @@ add_external_audio_device(
             npos);
     }
 
+    st.session_modified = true;
+
     return id;
 }
 
 auto
-add_mixer_channel(state& st, mixer::channel_type type, std::string name)
-    -> mixer::channel_id
+add_mixer_channel(
+    state& st,
+    mixer::channel_type type,
+    std::string name,
+    bool default_record) -> mixer::channel_id
 {
-    auto channel_id = make_mixer_channel(st, type, std::move(name));
+    auto channel_id =
+        make_mixer_channel(st, type, std::move(name), default_record);
     emplace_back(st.mixer_state.inputs, channel_id);
 
     st.mixer_state.io_map.emplace(
@@ -534,6 +561,8 @@ add_mixer_channel(state& st, mixer::channel_type type, std::string name)
     }
 
     st.mixer_state.fx_chains.emplace(channel_id, fx::chain_t{});
+
+    st.session_modified = true;
 
     return channel_id;
 }
@@ -621,6 +650,8 @@ remove_mixer_channel(state& st, mixer::channel_id const mixer_channel_id)
     st.mixer_state.fx_chains.erase(mixer_channel_id);
 
     st.mixer_state.channels.erase(mixer_channel_id);
+
+    st.session_modified = true;
 }
 
 void
@@ -667,12 +698,64 @@ remove_external_audio_device(
     }
 
     st.external_audio_state.devices.erase(device_id);
+
+    st.session_modified = true;
 }
 
 void
 update_midi_assignments(state& st, midi_assignments_map const& assignments)
 {
     update_midi_assignments(*st.midi_assignments.lock(), assignments);
+
+    st.session_modified = true;
+}
+
+void
+reset_state(state& st)
+{
+    using namespace std::string_literals;
+
+    auto inputs = st.mixer_state.inputs;
+    for (auto input_id : inputs.get())
+    {
+        remove_mixer_channel(st, input_id);
+    }
+
+    auto main_fx_chain = st.mixer_state.fx_chains.at(st.mixer_state.main);
+    for (auto fx_mod_id : main_fx_chain)
+    {
+        remove_fx_module(st, st.mixer_state.main, fx_mod_id);
+    }
+
+    for (auto const& [device_id, device] : st.external_audio_state.devices)
+    {
+        remove_external_audio_device(st, device_id);
+    }
+
+    // reset main channel
+    auto const& main_channel = st.mixer_state.channels.at(st.mixer_state.main);
+    st.strings.assign(main_channel.name, box{"Main"s});
+    st.material_colors.assign(main_channel.color, material_color::pink);
+    reset_to_default(st.params, main_channel.parameters);
+    st.mixer_state.io_map.assign(
+        st.mixer_state.main,
+        io_pair<mixer::io_address_t>{mixer::mix_input{}, default_t{}});
+
+    st.midi_assignments.lock()->clear();
+
+    st.recording = false;
+    st.rec_session += 1;
+    st.rec_take = 0;
+
+    st.current_session = {};
+    st.session_modified = false;
+
+    BOOST_ASSERT(st.strings.size() == 1);
+    BOOST_ASSERT(st.material_colors.size() == 1);
+    BOOST_ASSERT(st.external_audio_state.devices.empty());
+    BOOST_ASSERT(st.mixer_state.inputs->empty());
+    BOOST_ASSERT(st.mixer_state.channels.size() == 1);
+    BOOST_ASSERT(st.midi_assignments->empty());
 }
 
 } // namespace piejam::runtime

@@ -35,7 +35,7 @@ save_app_config(
         std::ofstream out(file);
         if (!out.is_open())
         {
-            throw std::runtime_error("could not open config file");
+            throw std::runtime_error("Could not open config file");
         }
 
         persistence::app_config conf;
@@ -52,13 +52,17 @@ save_app_config(
         conf.rec_session = state.rec_session + 1;
 
         conf.display_rotation = state.display_rotation;
+        conf.startup_session = state.startup_session;
+        conf.last_session_file = state.startup_session == startup_session::last
+                                     ? state.current_session
+                                     : std::filesystem::path{};
 
         persistence::save_app_config(out, conf);
     }
     catch (std::exception const& err)
     {
         auto const* const message = err.what();
-        spdlog::error("could not save config file: {}", message);
+        spdlog::error("Could not save config file: {}", message);
     }
 }
 
@@ -351,7 +355,8 @@ save_session(std::filesystem::path const& file, state const& st)
         std::ofstream out(file);
         if (!out.is_open())
         {
-            throw std::runtime_error("could not open session file");
+            throw std::runtime_error(
+                std::format("Could not open session file: {}", file.string()));
         }
 
         session ses;

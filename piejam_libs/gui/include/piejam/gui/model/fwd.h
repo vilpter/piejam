@@ -78,8 +78,12 @@ using MidiDeviceList = ObjectListModel<MidiDeviceConfig>;
 class MidiInputSettings;
 
 class DisplaySettings;
+class SessionSettings;
 
 class MidiAssignable;
+
+class FileDialog;
+class FileDialogEntry;
 
 class RootView;
 

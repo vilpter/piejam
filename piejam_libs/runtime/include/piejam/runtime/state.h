@@ -23,6 +23,7 @@
 #include <piejam/runtime/parameters.h>
 #include <piejam/runtime/root_view_mode.h>
 #include <piejam/runtime/selected_sound_card.h>
+#include <piejam/runtime/startup_session.h>
 #include <piejam/runtime/string_id.h>
 
 #include <piejam/audio/period_size.h>
@@ -88,6 +89,10 @@ struct state
 
     std::size_t audio_graph_update_count{};
     std::size_t solo_state_update_count{};
+
+    runtime::startup_session startup_session{runtime::startup_session::last};
+    box<std::filesystem::path> current_session;
+    bool session_modified{false};
 };
 
 auto make_initial_state() -> state;
@@ -98,8 +103,11 @@ auto add_external_audio_device(
     io_direction,
     audio::bus_type) -> external_audio::device_id;
 
-auto add_mixer_channel(state&, mixer::channel_type, std::string name)
-    -> mixer::channel_id;
+auto add_mixer_channel(
+    state&,
+    mixer::channel_type,
+    std::string name,
+    bool default_record = false) -> mixer::channel_id;
 
 void remove_mixer_channel(state&, mixer::channel_id);
 
@@ -146,5 +154,7 @@ void remove_fx_module(
     fx::module_id fx_mod_id);
 
 void update_midi_assignments(state&, midi_assignments_map const&);
+
+void reset_state(state&);
 
 } // namespace piejam::runtime

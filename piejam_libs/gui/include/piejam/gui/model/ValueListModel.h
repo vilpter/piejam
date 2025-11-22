@@ -55,22 +55,6 @@ public:
         return s_roles;
     }
 
-    auto get(int index, QString const& roleName) const -> QVariant
-    {
-        if (index < 0 || rowCount() <= index)
-        {
-            return {};
-        }
-
-        int const roleId = roleNames().key(roleName, -1);
-        if (roleId == -1)
-        {
-            return {};
-        }
-
-        return data(this->index(index), roleId);
-    }
-
     auto get(int index, int roleId) const -> QVariant
     {
         if (index < 0 || rowCount() <= index)
@@ -79,6 +63,11 @@ public:
         }
 
         return data(this->index(index), roleId);
+    }
+
+    auto get(int index, QString const& roleName) const -> QVariant
+    {
+        return get(index, roleNames().key(roleName, -1));
     }
 
     [[nodiscard]]

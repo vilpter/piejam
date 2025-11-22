@@ -15,7 +15,11 @@ struct persistence_action_visitor
           load_app_config,
           save_app_config,
           load_session,
-          save_session>
+          save_session,
+          initiate_startup_session,
+          shutdown,
+          set_session_template,
+          new_session>
 {
 };
 

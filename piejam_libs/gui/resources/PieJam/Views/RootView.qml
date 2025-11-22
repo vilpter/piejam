@@ -146,6 +146,7 @@ SubscribableItem {
                         audioOutputModel: root.model.audioOutputSettings
                         midiInputModel: root.model.midiInputSettings
                         displayModel: root.model.displaySettings
+                        sessionModel: root.model.sessionSettings
                     }
                     asynchronous: true
                 }

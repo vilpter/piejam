@@ -24,13 +24,13 @@
 #include <piejam/redux/thunk_middleware.h>
 #include <piejam/runtime/actions/audio_engine_sync.h>
 #include <piejam/runtime/actions/load_app_config.h>
-#include <piejam/runtime/actions/load_session.h>
 #include <piejam/runtime/actions/recording.h>
 #include <piejam/runtime/actions/refresh_midi_devices.h>
 #include <piejam/runtime/actions/refresh_sound_cards.h>
 #include <piejam/runtime/actions/save_app_config.h>
-#include <piejam/runtime/actions/save_session.h>
 #include <piejam/runtime/actions/scan_ladspa_fx_plugins.h>
+#include <piejam/runtime/actions/session_actions.h>
+#include <piejam/runtime/actions/shutdown.h>
 #include <piejam/runtime/audio_engine_middleware.h>
 #include <piejam/runtime/ladspa_fx_middleware.h>
 #include <piejam/runtime/locations.h>
@@ -68,16 +68,32 @@ namespace
 {
 
 auto
-config_file_path(piejam::runtime::locations const& locs)
+create_directories_if_missing(piejam::runtime::locations const& locs)
 {
-    BOOST_ASSERT(!locs.config_dir.empty());
+    auto create_directory_if_missing = [](auto const& dir) {
+        BOOST_ASSERT(!dir.empty());
 
-    if (!std::filesystem::exists(locs.config_dir))
-    {
-        std::filesystem::create_directories(locs.config_dir);
-    }
+        try
+        {
+            if (!std::filesystem::exists(dir))
+            {
+                std::filesystem::create_directories(dir);
+            }
+        }
+        catch (std::exception const& err)
+        {
+            spdlog::error(
+                "could not create directory: {} - {}",
+                dir.string(),
+                err.what());
+        }
+    };
 
-    return locs.config_dir / "piejam.config";
+    create_directory_if_missing(locs.config_dir);
+    create_directory_if_missing(locs.sessions_dir);
+    create_directory_if_missing(locs.recordings_dir);
+
+    return;
 }
 
 constexpr int realtime_priority = 96;
@@ -121,24 +137,21 @@ main(int argc, char* argv[]) -> int
     gui::qt_log::install_handler();
     spdlog::set_level(spdlog::level::level_enum::debug);
 
-    auto log_file_directory =
-        QStandardPaths::writableLocation(
-            QStandardPaths::StandardLocation::HomeLocation)
-            .toStdString();
-    std::filesystem::create_directories(log_file_directory);
+    runtime::locations locs{
+        .home_dir = QStandardPaths::writableLocation(
+                        QStandardPaths::StandardLocation::HomeLocation)
+                        .toStdString(),
+        .config_dir = QStandardPaths::writableLocation(
+                          QStandardPaths::StandardLocation::ConfigLocation)
+                          .toStdString(),
+    };
+
+    create_directories_if_missing(locs);
+
     spdlog::default_logger()->sinks().push_back(
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            log_file_directory + "/piejam.log",
+            locs.log_file,
             true));
-
-    runtime::locations locs;
-    locs.config_dir = QStandardPaths::writableLocation(
-                          QStandardPaths::StandardLocation::ConfigLocation)
-                          .toStdString();
-    locs.home_dir = QStandardPaths::writableLocation(
-                        QStandardPaths::StandardLocation::HomeLocation)
-                        .toStdString();
-    locs.rec_dir = locs.home_dir / "recordings";
 
     QGuiApplication app(argc, argv);
 
@@ -168,10 +181,13 @@ main(int argc, char* argv[]) -> int
         runtime::make_initial_state());
 
     store.apply_middleware(
-        middleware_factory::make<runtime::persistence_middleware>());
+        middleware_factory::make<runtime::persistence_middleware>(
+            locs.home_dir,
+            locs.sessions_dir));
 
     store.apply_middleware(
-        middleware_factory::make<runtime::recorder_middleware>(locs.rec_dir));
+        middleware_factory::make<runtime::recorder_middleware>(
+            locs.recordings_dir));
 
     auto audio_workers = piejam::algorithm::transform_to_vector(
         piejam::range::iota(hw_threads - 1),
@@ -225,15 +241,14 @@ main(int argc, char* argv[]) -> int
 
     store.dispatch(runtime::actions::scan_ladspa_fx_plugins("/usr/lib/ladspa"));
 
-    auto session_file = locs.home_dir / "last.pjs";
-
     store.dispatch(runtime::actions::refresh_sound_cards{});
     store.dispatch(runtime::actions::refresh_midi_devices{});
-    store.dispatch(runtime::actions::load_app_config(config_file_path(locs)));
-    store.dispatch(runtime::actions::load_session(session_file));
+    store.dispatch(runtime::actions::load_app_config(locs.config_file));
+    store.dispatch(runtime::actions::initiate_startup_session{});
 
     gui::model::Root rootModel(
-        runtime::state_access{store, state_change_subscriber});
+        runtime::state_access{store, state_change_subscriber},
+        locs.sessions_dir);
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
@@ -293,8 +308,8 @@ main(int argc, char* argv[]) -> int
     slow_updates_timer->stop();
     gui_frame_update_timer->stop();
 
-    store.dispatch(runtime::actions::save_app_config(config_file_path(locs)));
-    store.dispatch(runtime::actions::save_session(session_file));
+    store.dispatch(runtime::actions::save_app_config{locs.config_file});
+    store.dispatch(runtime::actions::shutdown{});
 
     return app_exec_result;
 }

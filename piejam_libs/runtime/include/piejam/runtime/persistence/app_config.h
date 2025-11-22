@@ -4,11 +4,14 @@
 
 #pragma once
 
+#include <piejam/runtime/startup_session.h>
+
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 
 #include <nlohmann/json_fwd.hpp>
 
+#include <filesystem>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -29,6 +32,9 @@ struct app_config
     std::size_t rec_session{};
 
     std::size_t display_rotation{};
+
+    runtime::startup_session startup_session;
+    std::filesystem::path last_session_file;
 };
 
 auto load_app_config(std::istream&) -> app_config;

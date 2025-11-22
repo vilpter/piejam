@@ -63,6 +63,8 @@ set_parameter_value(
         {
             ++st.audio_graph_update_count;
         }
+
+        st.session_modified = true;
     }
 }
 

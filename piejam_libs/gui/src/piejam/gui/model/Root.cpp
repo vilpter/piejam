@@ -13,6 +13,7 @@
 #include <piejam/gui/model/Log.h>
 #include <piejam/gui/model/MidiInputSettings.h>
 #include <piejam/gui/model/Mixer.h>
+#include <piejam/gui/model/SessionSettings.h>
 
 #include <piejam/runtime/actions/root_view_actions.h>
 #include <piejam/runtime/selectors.h>
@@ -20,7 +21,9 @@
 namespace piejam::gui::model
 {
 
-Root::Root(runtime::state_access const& state_access)
+Root::Root(
+    runtime::state_access const& state_access,
+    std::filesystem::path sessions_dir)
     : CompositeSubscribableModel{state_access}
     , m_audioDeviceSettings{&addModel<AudioDeviceSettings>()}
     , m_audioInputSettings{&addModel<AudioInputOutputSettings>(
@@ -29,6 +32,7 @@ Root::Root(runtime::state_access const& state_access)
           io_direction::output)}
     , m_midiInputSettings{&addModel<MidiInputSettings>()}
     , m_displaySettings{&addModel<DisplaySettings>()}
+    , m_sessionSettings{&addModel<SessionSettings>(std::move(sessions_dir))}
     , m_mixer{&addModel<Mixer>()}
     , m_info{&addModel<Info>()}
     , m_log{&addModel<Log>()}

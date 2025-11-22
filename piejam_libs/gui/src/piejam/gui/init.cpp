@@ -21,6 +21,10 @@
 #include <piejam/gui/model/EnumListModel.h>
 #include <piejam/gui/model/EnumParameter.h>
 #include <piejam/gui/model/ExternalAudioDeviceConfig.h>
+#include <piejam/gui/model/FileDialog.h>
+#include <piejam/gui/model/FileDialogEntry.h>
+#include <piejam/gui/model/FilePath.h>
+#include <piejam/gui/model/Filesystem.h>
 #include <piejam/gui/model/FloatParameter.h>
 #include <piejam/gui/model/FxBrowser.h>
 #include <piejam/gui/model/FxChainModule.h>
@@ -46,6 +50,7 @@
 #include <piejam/gui/model/Parameter.h>
 #include <piejam/gui/model/Root.h>
 #include <piejam/gui/model/ScopeSlot.h>
+#include <piejam/gui/model/SessionSettings.h>
 #include <piejam/gui/model/SpectrumSlot.h>
 #include <piejam/gui/model/StereoLevel.h>
 #include <piejam/gui/model/String.h>
@@ -100,6 +105,8 @@ runRegistration()
     PIEJAM_GUI_MODEL(
         model::ExternalAudioDeviceConfig,
         "ExternalAudioDeviceConfig");
+    PIEJAM_GUI_MODEL(model::FileDialog, "FileDialog");
+    PIEJAM_GUI_MODEL(model::FileDialogEntry, "FileDialogEntry");
     PIEJAM_GUI_MODEL(model::FloatParameter, "FloatParameter");
     PIEJAM_GUI_MODEL(model::FxBrowser, "FxBrowser");
     PIEJAM_GUI_MODEL(model::FxChainModule, "FxChainModule");
@@ -123,6 +130,7 @@ runRegistration()
     PIEJAM_GUI_MODEL(model::MixerChannelModels, "MixerChannelModels");
     PIEJAM_GUI_MODEL(model::MixerChannelPerform, "MixerChannelPerform");
     PIEJAM_GUI_MODEL(model::Parameter, "Parameter");
+    PIEJAM_GUI_MODEL(model::SessionSettings, "SessionSettings");
     PIEJAM_GUI_MODEL(model::Root, "Root");
     PIEJAM_GUI_MODEL(model::ScopeSlot, "ScopeSlot");
     PIEJAM_GUI_MODEL(model::SpectrumSlot, "SpectrumSlot");
@@ -152,6 +160,15 @@ runRegistration()
         0,
         "FxModuleRegistry",
         &model::fxModuleRegistrySingleton());
+
+    qmlRegisterSingletonInstance<model::Filesystem>(
+        "PieJam.Models",
+        1,
+        0,
+        "Filesystem",
+        &model::filesystemSingleton());
+
+    qRegisterMetaType<model::FilePath>();
 
     PIEJAM_GUI_ITEM(item::FixedLinearScaleGrid, "FixedLinearScaleGrid");
     PIEJAM_GUI_ITEM(item::FixedLogScaleGrid, "FixedLogScaleGrid");

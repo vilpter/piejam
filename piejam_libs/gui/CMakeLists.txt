@@ -48,6 +48,9 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/EnumListModel.h
     include/piejam/gui/model/EnumParameter.h
     include/piejam/gui/model/ExternalAudioDeviceConfig.h
+    include/piejam/gui/model/FileDialog.h
+    include/piejam/gui/model/FileDialogEntry.h
+    include/piejam/gui/model/FilePath.h
     include/piejam/gui/model/FloatParameter.h
     include/piejam/gui/model/FxBrowser.h
     include/piejam/gui/model/FxBrowserEntry.h
@@ -82,6 +85,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/Root.h
     include/piejam/gui/model/ScopeGenerator.h
     include/piejam/gui/model/ScopeSlot.h
+    include/piejam/gui/model/SessionSettings.h
     include/piejam/gui/model/SoundCardInfo.h
     include/piejam/gui/model/SpectrumDataPoint.h
     include/piejam/gui/model/SpectrumGenerator.h
@@ -118,6 +122,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/DisplaySettings.cpp
     src/piejam/gui/model/EnumParameter.cpp
     src/piejam/gui/model/ExternalAudioDeviceConfig.cpp
+    src/piejam/gui/model/FileDialog.cpp
     src/piejam/gui/model/FloatParameter.cpp
     src/piejam/gui/model/FxBrowser.cpp
     src/piejam/gui/model/FxBrowserEntryInternal.cpp
@@ -146,9 +151,12 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/PitchGenerator.cpp
     src/piejam/gui/model/Root.cpp
     src/piejam/gui/model/ScopeGenerator.cpp
+    src/piejam/gui/model/SessionSettings.cpp
     src/piejam/gui/model/SpectrumGenerator.cpp
     src/piejam/gui/model/String.cpp
     src/piejam/gui/qt_log.cpp
+    include/piejam/gui/model/Filesystem.h
+    src/piejam/gui/model/Filesystem.cpp
 )
 
 target_include_directories(piejam_gui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

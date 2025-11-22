@@ -255,7 +255,8 @@ make_mixer_channel_color_selector(mixer::channel_id const channel_id)
     return make_entity_data_map_selector(
         [](state const& st) -> auto& { return st.material_colors; },
         [channel_id](state const& st) {
-            return st.mixer_state.channels.at(channel_id).color;
+            auto channel = st.mixer_state.channels.find(channel_id);
+            return channel ? channel->color : material_color_id{};
         },
         material_color::pink);
 }
@@ -657,8 +658,8 @@ struct muted_by_solo_state
         }
 
         auto it = solo_groups.find(channel_id);
-        BOOST_ASSERT(it != solo_groups.end());
-        return sg_state.mutes().test(solo_groups.index_of(it));
+        return it != solo_groups.end() &&
+               sg_state.mutes().test(solo_groups.index_of(it));
     }
 
     solo_groups_t solo_groups;
@@ -1107,5 +1108,16 @@ selector<material_color> const select_focused_fx_module_color(
             st.mixer_state.channels.at(st.focused_fx_chain_id).color);
         return color ? *color : material_color::pink;
     });
+
+selector<startup_session> const select_startup_session([](state const& st) {
+    return st.startup_session;
+});
+
+selector<box<std::filesystem::path>> const
+    select_current_session([](state const& st) { return st.current_session; });
+
+selector<bool> const select_session_modified([](state const& st) {
+    return st.session_modified;
+});
 
 } // namespace piejam::runtime::selectors

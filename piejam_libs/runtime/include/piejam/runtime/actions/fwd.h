@@ -66,13 +66,18 @@ struct stop_midi_learning;
 
 struct load_app_config;
 struct save_app_config;
-struct apply_app_config;
 struct load_session;
 struct save_session;
+struct initiate_startup_session;
+struct apply_app_config;
 struct apply_session;
+struct set_session_template;
+struct new_session;
 
 struct start_recording;
 struct stop_recording;
+
+struct shutdown;
 
 // visitors
 

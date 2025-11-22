@@ -8,6 +8,8 @@
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
 
+#include <filesystem>
+
 namespace piejam::gui::model
 {
 
@@ -37,6 +39,10 @@ class Root final : public CompositeSubscribableModel
         piejam::gui::model::DisplaySettings*,
         displaySettings)
 
+    PIEJAM_GUI_CONSTANT_PROPERTY(
+        piejam::gui::model::SessionSettings*,
+        sessionSettings)
+
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Mixer*, mixer)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Info*, info)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Log*, log)
@@ -61,7 +67,9 @@ private:
     PIEJAM_GUI_PROPERTY(Mode, mode, setMode)
 
 public:
-    explicit Root(runtime::state_access const&);
+    explicit Root(
+        runtime::state_access const&,
+        std::filesystem::path sessions_dir);
 
     Q_INVOKABLE void showMixer();
     Q_INVOKABLE void showFxModule();

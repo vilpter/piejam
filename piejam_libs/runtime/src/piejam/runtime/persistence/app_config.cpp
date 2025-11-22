@@ -26,7 +26,14 @@ M_PIEJAM_PERSISTENCE_DEFINE_STRONG_TYPE_SERIALIER(
 
 } // namespace piejam::audio
 
-namespace piejam::runtime::persistence
+namespace piejam::runtime
+{
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+    startup_session,
+    {{startup_session::new_, "new"}, {startup_session::last, "last"}})
+
+namespace persistence
 {
 
 static auto const s_key_version = "version";
@@ -45,7 +52,9 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     period_size,
     enabled_midi_input_devices,
     rec_session,
-    display_rotation);
+    display_rotation,
+    startup_session,
+    last_session_file);
 
 using upgrade_function = void (*)(nlohmann::json&);
 using upgrade_functions_array =
@@ -123,4 +132,6 @@ save_app_config(std::ostream& out, app_config const& conf)
     out << json_conf.dump(4) << '\n';
 }
 
-} // namespace piejam::runtime::persistence
+} // namespace persistence
+
+} // namespace piejam::runtime

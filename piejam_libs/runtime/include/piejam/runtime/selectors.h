@@ -25,6 +25,7 @@
 #include <piejam/redux/fwd.h>
 
 #include <cstddef>
+#include <filesystem>
 #include <optional>
 
 namespace piejam::runtime::selectors
@@ -245,5 +246,9 @@ extern selector<mixer::channel_id> const select_focused_fx_chain;
 extern selector<fx::module_id> const select_focused_fx_module;
 extern selector<boxed_string> const select_focused_fx_module_name;
 extern selector<material_color> const select_focused_fx_module_color;
+
+extern selector<startup_session> const select_startup_session;
+extern selector<box<std::filesystem::path>> const select_current_session;
+extern selector<bool> const select_session_modified;
 
 } // namespace piejam::runtime::selectors

@@ -10,6 +10,8 @@
 
 #include <piejam/box.h>
 
+#include <filesystem>
+
 namespace piejam::runtime::actions
 {
 
@@ -17,6 +19,7 @@ struct apply_session final
     : ui::cloneable_action<apply_session, reducible_action>
 {
     box<persistence::session> session;
+    box<std::filesystem::path> current_session;
 
     void reduce(state&) const override;
 };

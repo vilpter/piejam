@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <piejam/runtime/actions/set_string.h>
+#include <piejam/runtime/actions/session_actions.h>
 
 #include <piejam/runtime/state.h>
 
@@ -10,14 +10,15 @@ namespace piejam::runtime::actions
 {
 
 void
-set_string::reduce(state& st) const
+switch_startup_session::reduce(state& st) const
 {
-    if (st.strings.at(id).get() != str.get())
-    {
-        st.strings.assign(id, str);
+    st.startup_session = startup_session;
+}
 
-        st.session_modified = true;
-    }
+void
+new_session::reduce(state& st) const
+{
+    reset_state(st);
 }
 
 } // namespace piejam::runtime::actions
