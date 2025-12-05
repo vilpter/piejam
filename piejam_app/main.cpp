@@ -32,6 +32,7 @@
 #include <piejam/runtime/actions/session_actions.h>
 #include <piejam/runtime/actions/shutdown.h>
 #include <piejam/runtime/audio_engine_middleware.h>
+#include <piejam/runtime/exception_middleware.h>
 #include <piejam/runtime/ladspa_fx_middleware.h>
 #include <piejam/runtime/locations.h>
 #include <piejam/runtime/midi_control_middleware.h>
@@ -192,17 +193,17 @@ main(int argc, char* argv[]) -> int
     auto audio_workers = piejam::algorithm::transform_to_vector(
         piejam::range::iota(hw_threads - 1),
         [=](std::size_t const i) {
-            std::size_t const cpu = (3 + i) % hw_threads;
+            std::size_t const cpu = (2 + i) % hw_threads;
             return thread::configuration{
                 .affinity = cpu,
                 .realtime_priority = realtime_priority,
-                .name = "audio_worker_" + std::to_string(i)};
+                .name = std::format("audio_worker_{}", i)};
         });
 
     store.apply_middleware(
         middleware_factory::make<runtime::audio_engine_middleware>(
             thread::configuration{
-                .affinity = hw_threads > 2 ? 2 : 0,
+                .affinity = hw_threads > 1 ? 1 : 0,
                 .realtime_priority = realtime_priority,
                 .name = "audio_main"},
             audio_workers,
@@ -231,6 +232,10 @@ main(int argc, char* argv[]) -> int
             redux::thread_delegate_middleware<QtThreadDelegator>>(
             std::this_thread::get_id(),
             QtThreadDelegator{&app}));
+
+    store.apply_middleware(
+        middleware_factory::make<
+            runtime::exception_middleware<runtime::action>>());
 
     runtime::subscriber state_change_subscriber(
         [&store]() -> runtime::state const& { return store.state(); });
