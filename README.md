@@ -33,3 +33,4 @@ More [documentation](https://piejam.readthedocs.io/en/latest/)
 * Support for LADSPA plugins
 * Parameter control through MIDI CC
 * Session recorder
+* Session/project management
