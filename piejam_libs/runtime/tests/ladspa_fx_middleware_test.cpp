@@ -42,8 +42,11 @@ TEST_F(ladspa_fx_middleware_test, unknown_action_is_passed_to_next)
 
     ladspa_fx_middleware sut(lfx_ctrl_mock);
 
+    state st;
+
     some_action action;
-    EXPECT_CALL(mf_mock, next(testing::Ref(action)));
+    EXPECT_CALL(mf_mock, next(::testing::Ref(action)));
+    EXPECT_CALL(mf_mock, get_state()).WillRepeatedly(::testing::ReturnRef(st));
     sut(make_middleware_functors(mf_mock), action);
 }
 
