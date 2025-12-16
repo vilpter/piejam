@@ -12,7 +12,6 @@ add_executable(piejam_audio_benchmark
     mix_benchmark.cpp
     mix_processor_benchmark.cpp
     multiply_processor_benchmark.cpp
-    peak_level_meter_benchmark.cpp
     pitch_yin_benchmark.cpp
 )
 target_link_libraries(piejam_audio_benchmark benchmark benchmark_main piejam_audio)

@@ -10,7 +10,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/dsp/biquad.h
     include/piejam/audio/dsp/biquad_filter.h
     include/piejam/audio/dsp/pan.h
-    include/piejam/audio/dsp/peak_level_meter.h
     include/piejam/audio/dsp/pitch_yin.h
     include/piejam/audio/dsp/rms_level_meter.h
     include/piejam/audio/engine/component.h
