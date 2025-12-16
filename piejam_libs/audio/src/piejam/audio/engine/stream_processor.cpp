@@ -4,7 +4,7 @@
 
 #include <piejam/audio/engine/stream_processor.h>
 
-#include <piejam/audio/engine/verify_process_context.h>
+#include <piejam/audio/engine/process_context.h>
 
 namespace piejam::audio::engine
 {
@@ -23,8 +23,6 @@ stream_processor::stream_processor(
 void
 stream_processor::process(process_context const& ctx)
 {
-    verify_process_context(*this, ctx);
-
     m_buffer.write(ctx.inputs, ctx.buffer_size);
 }
 

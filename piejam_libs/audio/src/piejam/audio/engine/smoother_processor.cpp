@@ -8,7 +8,7 @@
 #include <piejam/audio/engine/event_port.h>
 #include <piejam/audio/engine/named_processor.h>
 #include <piejam/audio/engine/single_event_input_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
+#include <piejam/audio/slice.h>
 
 #include <boost/assert.hpp>
 
@@ -67,8 +67,6 @@ public:
 
     void process(engine::process_context const& ctx) override
     {
-        verify_process_context(*this, ctx);
-
         ctx.results[0] = ctx.outputs[0];
 
         process_sliced(ctx);

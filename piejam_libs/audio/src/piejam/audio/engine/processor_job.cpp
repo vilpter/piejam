@@ -15,12 +15,52 @@
 namespace piejam::audio::engine
 {
 
-static auto
+namespace
+{
+
+auto
 empty_result_ref() -> std::reference_wrapper<slice<float> const>
 {
     static slice<float> res;
     return std::cref(res);
 }
+
+void
+verify_process_context(
+    [[maybe_unused]] processor const& proc,
+    [[maybe_unused]] process_context const& ctx)
+{
+    BOOST_ASSERT(proc.num_inputs() == ctx.inputs.size());
+    BOOST_ASSERT(proc.num_outputs() == ctx.outputs.size());
+    BOOST_ASSERT(proc.num_outputs() == ctx.results.size());
+    BOOST_ASSERT(proc.event_inputs().size() == ctx.event_inputs.size());
+    BOOST_ASSERT(proc.event_outputs().size() == ctx.event_outputs.size());
+    BOOST_ASSERT(std::ranges::all_of(ctx.inputs, [&](slice<float> const& b) {
+        return b.is_constant() || (b.span().size() == ctx.buffer_size &&
+                                   mipp::isAligned(b.span().data()));
+    }));
+    BOOST_ASSERT(
+        std::ranges::all_of(ctx.outputs, [&](std::span<float> const b) {
+            return b.data() &&
+                   (b.size() == ctx.buffer_size && mipp::isAligned(b.data()));
+        }));
+    BOOST_ASSERT(
+        std::ranges::equal(
+            proc.event_inputs(),
+            ctx.event_inputs,
+            [](event_port const& p, abstract_event_buffer const& b) {
+                return p.type() == b.type();
+            }));
+    BOOST_ASSERT(
+        std::ranges::equal(
+            proc.event_outputs(),
+            ctx.event_outputs,
+            [](event_port const& p, auto const& b) {
+                return p.type() == b->type();
+            }));
+}
+
+} // namespace
 
 processor_job::processor_job(processor& proc)
     : m_proc(proc)
@@ -98,6 +138,7 @@ processor_job::operator()(thread_context const& ctx)
     BOOST_ASSERT(ctx.event_memory);
     m_event_outputs.set_event_memory(ctx.event_memory);
 
+    verify_process_context(m_proc, m_process_context);
     m_proc.process(m_process_context);
 }
 

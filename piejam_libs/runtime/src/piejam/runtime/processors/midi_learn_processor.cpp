@@ -8,7 +8,7 @@
 #include <piejam/audio/engine/event_output_buffers.h>
 #include <piejam/audio/engine/event_port.h>
 #include <piejam/audio/engine/named_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
+#include <piejam/audio/engine/process_context.h>
 #include <piejam/midi/event.h>
 
 #include <memory>
@@ -60,8 +60,6 @@ public:
 
     void process(audio::engine::process_context const& ctx) override
     {
-        audio::engine::verify_process_context(*this, ctx);
-
         auto const& in = ctx.event_inputs.get<midi::external_event>(0);
 
         auto& out = ctx.event_outputs.get<midi::external_event>(1);

@@ -8,6 +8,7 @@
 #include <piejam/audio/engine/event_converter_processor.h>
 
 #include <array>
+#include <format>
 
 namespace piejam::audio::engine
 {

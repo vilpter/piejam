@@ -48,7 +48,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/engine/stream_ring_buffer.h
     include/piejam/audio/engine/thread_context.h
     include/piejam/audio/engine/value_io_processor.h
-    include/piejam/audio/engine/verify_process_context.h
     include/piejam/audio/fwd.h
     include/piejam/audio/io_process.h
     include/piejam/audio/multichannel_buffer.h

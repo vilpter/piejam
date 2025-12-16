@@ -6,7 +6,6 @@
 
 #include <piejam/audio/engine/named_processor.h>
 #include <piejam/audio/engine/process_context.h>
-#include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/audio/slice_algorithms.h>
 
 #include <piejam/functional/operators.h>
@@ -99,8 +98,6 @@ public:
 
     void process(process_context const& ctx) override
     {
-        verify_process_context(*this, ctx);
-
         ctx.results[0] = mix<NumInputs>(ctx);
     }
 

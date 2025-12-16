@@ -10,8 +10,8 @@
 #include <piejam/algorithm/transform_to_vector.h>
 #include <piejam/audio/engine/event_input_buffers.h>
 #include <piejam/audio/engine/event_port.h>
+#include <piejam/audio/engine/process_context.h>
 #include <piejam/audio/engine/processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/audio/period_size.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/slice_algorithms.h>
@@ -498,8 +498,6 @@ public:
 
     void process(audio::engine::process_context const& ctx) override
     {
-        audio::engine::verify_process_context(*this, ctx);
-
         BOOST_ASSERT(ctx.event_inputs.size() == m_event_inputs.size());
         for (std::size_t i : range::indices(ctx.event_inputs))
         {

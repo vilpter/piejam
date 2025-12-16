@@ -16,7 +16,6 @@
 #include <piejam/audio/engine/named_processor.h>
 #include <piejam/audio/engine/single_event_input_processor.h>
 #include <piejam/audio/engine/stream_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/slice_algorithms.h>
 #include <piejam/make_constant.h>
@@ -159,8 +158,6 @@ public:
 
     void process(audio::engine::process_context const& ctx) override
     {
-        verify_process_context(*this, ctx);
-
         ctx.results[0] = ctx.outputs[0];
 
         process_sliced(ctx);

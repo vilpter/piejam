@@ -8,7 +8,6 @@
 #include <piejam/audio/engine/component.h>
 #include <piejam/audio/engine/graph.h>
 #include <piejam/audio/engine/named_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/range/indices.h>
 #include <piejam/range/iota.h>
 #include <piejam/runtime/parameter_processor_factory.h>
@@ -63,8 +62,6 @@ public:
 
     void process(audio::engine::process_context const& ctx) override
     {
-        audio::engine::verify_process_context(*this, ctx);
-
         bool send_update{};
         for (std::size_t const in_index : range::indices(ctx.event_inputs))
         {

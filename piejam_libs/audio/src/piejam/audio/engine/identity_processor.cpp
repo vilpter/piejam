@@ -5,7 +5,6 @@
 #include <piejam/audio/engine/identity_processor.h>
 
 #include <piejam/audio/engine/named_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
 
 #include <boost/assert.hpp>
 
@@ -18,7 +17,7 @@ namespace
 class identity_processor final : public named_processor
 {
 public:
-    identity_processor(std::string_view const name)
+    explicit identity_processor(std::string_view const name)
         : named_processor(name)
     {
     }
@@ -53,15 +52,11 @@ public:
         return {};
     }
 
-    void process(process_context const& ctx) override
+    void process(process_context const&) override
     {
         BOOST_ASSERT_MSG(
             false,
             "Should be removed from graph before executing.");
-
-        verify_process_context(*this, ctx);
-
-        ctx.results[0] = ctx.inputs[0];
     }
 };
 

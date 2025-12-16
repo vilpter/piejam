@@ -9,7 +9,6 @@
 #include <piejam/audio/engine/event_port.h>
 #include <piejam/audio/engine/named_processor.h>
 #include <piejam/audio/engine/process_context.h>
-#include <piejam/audio/engine/verify_process_context.h>
 #include <piejam/thread/spsc_slot.h>
 
 #include <boost/core/demangle.hpp>
@@ -78,8 +77,6 @@ public:
 
     void process(engine::process_context const& ctx) override
     {
-        verify_process_context(*this, ctx);
-
         auto& out = ctx.event_outputs.get<T>(0);
 
         m_in_value.consume([&out](T const& value) { out.insert(0, value); });

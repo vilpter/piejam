@@ -4,10 +4,13 @@
 
 #pragma once
 
+#include <piejam/audio/engine/event_input_buffers.h>
+#include <piejam/audio/engine/event_output_buffers.h>
 #include <piejam/audio/engine/event_port.h>
 #include <piejam/audio/engine/lockstep_events.h>
 #include <piejam/audio/engine/named_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
+#include <piejam/audio/engine/process_context.h>
+
 #include <piejam/tuple.h>
 
 #include <boost/callable_traits/args.hpp>
@@ -92,8 +95,6 @@ public:
 
     void process(process_context const& ctx) override
     {
-        verify_process_context(*this, ctx);
-
         process_events(ctx);
     }
 

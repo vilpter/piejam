@@ -4,11 +4,16 @@
 
 #include <piejam/runtime/processors/midi_input_processor.h>
 
+#include <piejam/audio/engine/event_buffer.h>
+#include <piejam/audio/engine/event_output_buffers.h>
+#include <piejam/audio/engine/event_port.h>
 #include <piejam/audio/engine/named_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
+#include <piejam/audio/engine/process_context.h>
 #include <piejam/midi/event.h>
 #include <piejam/midi/event_handler.h>
 #include <piejam/midi/input_event_handler.h>
+
+#include <boost/assert.hpp>
 
 namespace piejam::runtime::processors
 {
@@ -75,8 +80,6 @@ public:
 
     void process(audio::engine::process_context const& ctx) override
     {
-        audio::engine::verify_process_context(*this, ctx);
-
         event_handler ev_handler(
             ctx.event_outputs.get<midi::external_event>(0));
         m_midi_in->process(ev_handler);

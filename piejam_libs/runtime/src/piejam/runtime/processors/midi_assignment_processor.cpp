@@ -5,12 +5,16 @@
 #include <piejam/runtime/processors/midi_assignment_processor.h>
 
 #include <piejam/algorithm/index_of.h>
+#include <piejam/audio/engine/event_input_buffers.h>
+#include <piejam/audio/engine/event_output_buffers.h>
+#include <piejam/audio/engine/event_port.h>
 #include <piejam/audio/engine/named_processor.h>
-#include <piejam/audio/engine/verify_process_context.h>
+#include <piejam/audio/engine/process_context.h>
 #include <piejam/midi/event.h>
 
 #include <boost/container/flat_map.hpp>
 
+#include <format>
 #include <ranges>
 #include <vector>
 
@@ -75,8 +79,6 @@ public:
 
     void process(audio::engine::process_context const& ctx) override
     {
-        audio::engine::verify_process_context(*this, ctx);
-
         for (auto const& ev : ctx.event_inputs.get<midi::external_event>(0))
         {
             std::visit(
