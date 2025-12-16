@@ -9,6 +9,7 @@ add_library(piejam_numeric STATIC
     include/piejam/numeric/concepts.h
     include/piejam/numeric/constants.h
     include/piejam/numeric/dB_convert.h
+    include/piejam/numeric/dB_lut.h
     include/piejam/numeric/dft.h
     include/piejam/numeric/float_compare.h
     include/piejam/numeric/flush_to_zero_if.h

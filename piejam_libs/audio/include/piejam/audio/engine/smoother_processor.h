@@ -7,15 +7,15 @@
 #include <piejam/audio/engine/fwd.h>
 
 #include <memory>
+#include <span>
 #include <string_view>
 
 namespace piejam::audio::engine
 {
 
-inline constexpr std::size_t default_smooth_length = 256;
-
-auto make_event_to_audio_smoother_processor(
-    std::size_t smooth_length = default_smooth_length,
+auto make_lut_smoother_processor(
+    std::span<float const> lut,
+    float current,
     std::string_view name = {}) -> std::unique_ptr<processor>;
 
 } // namespace piejam::audio::engine

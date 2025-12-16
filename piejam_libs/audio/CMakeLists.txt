@@ -13,7 +13,6 @@ add_library(piejam_audio STATIC
     include/piejam/audio/dsp/peak_level_meter.h
     include/piejam/audio/dsp/pitch_yin.h
     include/piejam/audio/dsp/rms_level_meter.h
-    include/piejam/audio/dsp/smoother.h
     include/piejam/audio/engine/component.h
     include/piejam/audio/engine/dag.h
     include/piejam/audio/engine/dag_executor.h

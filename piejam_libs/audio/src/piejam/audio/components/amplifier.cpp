@@ -12,6 +12,7 @@
 #include <piejam/audio/engine/smoother_processor.h>
 
 #include <piejam/algorithm/transform_to_vector.h>
+#include <piejam/numeric/dB_lut.h>
 #include <piejam/range/iota.h>
 
 #include <boost/assert.hpp>
@@ -19,6 +20,8 @@
 
 #include <array>
 #include <format>
+#include <memory>
+#include <vector>
 
 namespace piejam::audio::components
 {
@@ -55,13 +58,16 @@ format_name(
     }
 }
 
+auto gain_smoother_lut = numeric::dB_lut<float, -120.f, 24.f, 1024>;
+
 //! amplifies with same gain all channels
 class amplifier final : public engine::component
 {
 public:
     amplifier(std::size_t num_channels, std::string_view name)
-        : m_gain_proc{engine::make_event_to_audio_smoother_processor(
-              engine::default_smooth_length,
+        : m_gain_proc{engine::make_lut_smoother_processor(
+              gain_smoother_lut,
+              1.f,
               std::format("{} gain", name))}
         , m_amp_procs{algorithm::transform_to_vector(
               range::iota(num_channels),
@@ -126,8 +132,9 @@ public:
         : m_gain_procs{algorithm::transform_to_vector(
               range::iota(num_channels),
               [=](auto ch) {
-                  return engine::make_event_to_audio_smoother_processor(
-                      engine::default_smooth_length,
+                  return engine::make_lut_smoother_processor(
+                      gain_smoother_lut,
+                      1.f,
                       format_name(name, "gain", ch, num_channels));
               })}
         , m_amp_procs{algorithm::transform_to_vector(

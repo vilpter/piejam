@@ -17,7 +17,6 @@ add_executable(piejam_audio_test
     event_input_buffers_test.cpp
     event_output_buffers_test.cpp
     event_test.cpp
-    event_to_audio_processor_test.cpp
     fake_processor.h
     graph_algorithms_test.cpp
     graph_test.cpp
@@ -43,7 +42,7 @@ add_executable(piejam_audio_test
     sample_rate_test.cpp
     slice_algorithms_test.cpp
     slice_test.cpp
-    smoother_test.cpp
+    smoother_processor_test.cpp
     stream_processor_test.cpp
     stream_ring_buffer_test.cpp
     value_io_processor_test.cpp
