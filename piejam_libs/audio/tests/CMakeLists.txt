@@ -37,7 +37,6 @@ add_executable(piejam_audio_test
     process_test.cpp
     process_thread_test.cpp
     processor_mock.h
-    rms_level_meter_test.cpp
     rt_task_executor_test.cpp
     sample_rate_test.cpp
     slice_algorithms_test.cpp
