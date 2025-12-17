@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <mipp.h>
+
 #include <concepts>
 #include <utility>
 
@@ -25,7 +27,7 @@ public:
 
     constexpr biquad() noexcept = default;
 
-    constexpr biquad(coefficients c) noexcept
+    constexpr explicit biquad(coefficients c) noexcept
         : coeffs{std::move(c)}
     {
     }
@@ -34,7 +36,6 @@ public:
     constexpr auto process(T const x) noexcept -> T
     {
         T const y = coeffs.a0 * x + m_z1;
-        //
         m_z1 = coeffs.a1 * x - coeffs.b1 * y + m_z2;
         m_z2 = coeffs.a2 * x - coeffs.b2 * y;
         return y;

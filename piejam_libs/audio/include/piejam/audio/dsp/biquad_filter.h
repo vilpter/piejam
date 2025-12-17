@@ -5,7 +5,6 @@
 #pragma once
 
 #include <piejam/audio/dsp/biquad.h>
-#include <piejam/numeric/linear_map.h>
 
 #include <cmath>
 #include <numbers>
@@ -31,14 +30,14 @@ struct Q_limits
     static constexpr T lp_hp_max = T{10};
 
     // Band-pass
-    static constexpr T bp_min(T cutoff, T inv_sr) noexcept
+    static constexpr auto bp_min(T cutoff, T inv_sr) noexcept -> T
     {
         return cutoff * T{4} * inv_sr;
     }
     static constexpr T bp_max = T{25};
 
     // Band-reject / Notch
-    static constexpr T br_min(T cutoff, T inv_sr) noexcept
+    static constexpr auto br_min(T cutoff, T inv_sr) noexcept -> T
     {
         return cutoff * T{4} * inv_sr;
     }
@@ -49,7 +48,7 @@ template <std::floating_point T>
 constexpr auto
 calc_Q(T const res, T const min_Q, T const max_Q) noexcept -> T
 {
-    return numeric::linear_map(res, T{0}, T{1}, min_Q, max_Q);
+    return std::lerp(min_Q, max_Q, res);
 }
 
 template <std::floating_point T>

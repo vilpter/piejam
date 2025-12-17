@@ -18,7 +18,6 @@
 #include <piejam/audio/engine/stream_processor.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/slice_algorithms.h>
-#include <piejam/make_constant.h>
 #include <piejam/runtime/components/stream.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
@@ -26,91 +25,84 @@
 #include <piejam/runtime/parameter_processor_factory.h>
 #include <piejam/runtime/processors/stream_processor_factory.h>
 
-#include <boost/hof/match.hpp>
-#include <boost/mp11/map.hpp>
-
 namespace piejam::fx_modules::filter
 {
 
 namespace
 {
 
-struct event_value
-{
-    using coeffs_t = audio::dsp::biquad<float>::coefficients;
-
-    type tp{type::bypass};
-    coeffs_t coeffs;
-};
-
-using lp2_tag = make_constant<type::lp2>;
-using lp4_tag = make_constant<type::lp4>;
-using bp2_tag = make_constant<type::bp2>;
-using bp4_tag = make_constant<type::bp4>;
-using hp2_tag = make_constant<type::hp2>;
-using hp4_tag = make_constant<type::hp4>;
-using br_tag = make_constant<type::br>;
-
-namespace biqflt = audio::dsp::biquad_filter;
-
-using tag_make_coefficients_map = boost::mp11::mp_list<
-    std::pair<lp2_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
-    std::pair<lp4_tag, make_constant<&biqflt::make_lp_coefficients<float>>>,
-    std::pair<bp2_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
-    std::pair<bp4_tag, make_constant<&biqflt::make_bp_coefficients<float>>>,
-    std::pair<hp2_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
-    std::pair<hp4_tag, make_constant<&biqflt::make_hp_coefficients<float>>>,
-    std::pair<br_tag, make_constant<&biqflt::make_br_coefficients<float>>>>;
-
-template <class Tag>
-constexpr auto
-make_coefficients(
-    Tag tag,
-    float const cutoff,
-    float const res,
-    float const inv_sr) noexcept
-{
-    using make_t = typename boost::mp11::
-        mp_map_find<tag_make_coefficients_map, Tag>::second_type;
-    return event_value{.tp = tag, .coeffs = make_t::value(cutoff, res, inv_sr)};
-}
+using coeffs_t = audio::dsp::biquad<float>::coefficients;
 
 auto
 make_coefficent_converter_processor(audio::sample_rate const sample_rate)
 {
     using namespace std::string_view_literals;
     static constexpr std::array s_input_names{"type"sv, "cutoff"sv, "res"sv};
-    static constexpr std::array s_output_names{"coeffs"sv};
+    static constexpr std::array s_output_names{"coeffs1"sv, "coeffs2"sv};
     return audio::engine::make_event_converter_processor(
         [inv_sr = 1.f / sample_rate.as<float>()](
             int const type,
             float const cutoff,
             float const res) {
+            using namespace audio::dsp::biquad_filter;
+
             switch (static_cast<filter::type>(type))
             {
                 case type::lp2:
-                    return make_coefficients(lp2_tag{}, cutoff, res, inv_sr);
+                    return std::tuple{
+                        make_lp_coefficients(cutoff, res, inv_sr),
+                        coeffs_t{}};
 
                 case type::lp4:
-                    return make_coefficients(lp4_tag{}, cutoff, res, inv_sr);
+                {
+                    auto coeffs = make_lp_coefficients(cutoff, res, inv_sr);
+                    return std::tuple{coeffs, coeffs};
+                }
 
                 case type::bp2:
-                    return make_coefficients(bp2_tag{}, cutoff, res, inv_sr);
+                    return std::tuple{
+                        make_bp_coefficients(cutoff, res, inv_sr),
+                        coeffs_t{}};
 
                 case type::bp4:
-                    return make_coefficients(bp4_tag{}, cutoff, res, inv_sr);
+                {
+                    constexpr float bw_min = 0.1f;
+                    constexpr float bw_max = 6.f;
+                    float const bw_oct = std::lerp(bw_max, bw_min, res);
+                    float const half_bw = bw_oct * 0.5f;
+
+                    float const fc_low =
+                        std::max(cutoff * std::pow(2.f, -half_bw), 10.f);
+                    float const fc_high =
+                        std::min(cutoff * std::pow(2.f, +half_bw), 20000.f);
+                    BOOST_ASSERT(fc_low < fc_high);
+
+                    float const res_bp = std::lerp(0.f, 0.03152f, res);
+
+                    return std::tuple{
+                        make_hp_coefficients(fc_low, res_bp, inv_sr),
+                        make_lp_coefficients(fc_high, res_bp, inv_sr),
+                    };
+                }
 
                 case type::hp2:
-                    return make_coefficients(hp2_tag{}, cutoff, res, inv_sr);
+                    return std::tuple{
+                        make_hp_coefficients(cutoff, res, inv_sr),
+                        coeffs_t{}};
 
                 case type::hp4:
-                    return make_coefficients(hp4_tag{}, cutoff, res, inv_sr);
+                {
+                    auto coeffs = make_hp_coefficients(cutoff, res, inv_sr);
+                    return std::tuple{coeffs, coeffs};
+                }
 
                 case type::br:
-                    return make_coefficients(br_tag{}, cutoff, res, inv_sr);
+                    return std::tuple{
+                        make_br_coefficients(cutoff, res, inv_sr),
+                        coeffs_t{}};
 
                 default:
-                    return event_value{};
+                    return std::tuple{coeffs_t{}, coeffs_t{}};
             }
         },
         s_input_names,
@@ -120,7 +112,7 @@ make_coefficent_converter_processor(audio::sample_rate const sample_rate)
 
 class processor final
     : public audio::engine::named_processor
-    , public audio::engine::single_event_input_processor<processor, event_value>
+    , public audio::engine::single_event_input_processor<processor, coeffs_t>
 {
 public:
     processor(std::string_view const name)
@@ -145,9 +137,8 @@ public:
 
     auto event_inputs() const noexcept -> event_ports override
     {
-        static std::array s_ports{audio::engine::event_port{
-            std::in_place_type<event_value>,
-            "coeffs"}};
+        static std::array s_ports{
+            audio::engine::event_port{std::in_place_type<coeffs_t>, "coeffs"}};
         return s_ports;
     }
 
@@ -165,14 +156,9 @@ public:
 
     void process_buffer(audio::engine::process_context const& ctx)
     {
-        if (m_type == type::bypass)
-        {
-            ctx.results[0] = ctx.inputs[0];
-        }
-        else
-        {
-            process_slice(ctx, 0, ctx.buffer_size);
-        }
+        visit(
+            [this, out = ctx.outputs[0]](auto const in) { process(in, out); },
+            ctx.inputs[0].get());
     }
 
     void process_slice(
@@ -180,65 +166,34 @@ public:
         std::size_t const offset,
         std::size_t const count)
     {
-        auto out_it = std::next(ctx.outputs[0].begin(), offset);
-
         visit(
-            boost::hof::match(
-                [=, this, &out_it](float const c) {
-                    std::ranges::generate_n(
-                        out_it,
-                        count,
-                        std::bind_front(m_process_sample, this, c));
-                },
-                [=, this, &out_it](audio::slice<float>::span_t const& buf) {
-                    std::ranges::transform(
-                        buf,
-                        out_it,
-                        std::bind_front(m_process_sample, this));
-                }),
+            [this, out = ctx.outputs[0].subspan(offset, count)](auto const in) {
+                process(in, out);
+            },
             subslice(ctx.inputs[0].get(), offset, count));
     }
 
     void process_event(
         audio::engine::process_context const& /*ctx*/,
-        audio::engine::event<event_value> const& ev)
+        audio::engine::event<coeffs_t> const& ev)
     {
-        m_type = ev.value().tp;
-
-        m_biquad_first.coeffs = ev.value().coeffs;
-
-        switch (m_type)
-        {
-            case type::lp4:
-            case type::bp4:
-            case type::hp4:
-                m_biquad_second.coeffs = ev.value().coeffs;
-                m_process_sample = &processor::process_sample;
-                break;
-
-            default:
-                m_biquad_second.coeffs = {};
-                m_process_sample = &processor::process_sample_first_only;
-                break;
-        }
-    }
-
-    auto process_sample(float const x0) -> float
-    {
-        return m_biquad_second.process(m_biquad_first.process(x0));
-    }
-
-    auto process_sample_first_only(float const x0) -> float
-    {
-        return m_biquad_first.process(x0);
+        m_biquad.coeffs = ev.value();
     }
 
 private:
-    type m_type{type::bypass};
-    audio::dsp::biquad<float> m_biquad_first;
-    audio::dsp::biquad<float> m_biquad_second;
-    using process_sample_t = float (processor::*)(float);
-    process_sample_t m_process_sample{&processor::process_sample_first_only};
+    void process(float const c, std::span<float> out)
+    {
+        std::ranges::generate(out, [this, c]() { return m_biquad.process(c); });
+    }
+
+    void process(audio::slice<float>::span_t const in, std::span<float> out)
+    {
+        std::ranges::transform(in, out.begin(), [this](float const s) {
+            return m_biquad.process(s);
+        });
+    }
+
+    audio::dsp::biquad<float> m_biquad;
 };
 
 template <std::size_t NumChannels>
@@ -358,7 +313,15 @@ public:
              g,
              *m_coeffs_proc,
              from<0>,
-             *m_filter_procs[Channel],
+             *m_filter1_procs[Channel],
+             to<0>),
+         ...);
+
+        (audio::engine::connect_event(
+             g,
+             *m_coeffs_proc,
+             from<1>,
+             *m_filter2_procs[Channel],
              to<0>),
          ...);
 
@@ -366,7 +329,15 @@ public:
              g,
              *m_input_procs[Channel],
              from<0>,
-             *m_filter_procs[Channel],
+             *m_filter1_procs[Channel],
+             to<0>),
+         ...);
+
+        (audio::engine::connect(
+             g,
+             *m_filter1_procs[Channel],
+             from<0>,
+             *m_filter2_procs[Channel],
              to<0>),
          ...);
 
@@ -380,7 +351,7 @@ public:
 
         (audio::engine::connect(
              g,
-             *m_filter_procs[Channel],
+             *m_filter2_procs[Channel],
              from<0>,
              *m_in_out_stream,
              to<Channel + num_channels>),
@@ -396,7 +367,12 @@ private:
         m_input_procs{
             ((void)Channel, audio::engine::make_identity_processor())...};
     std::array<std::unique_ptr<audio::engine::processor>, num_channels>
-        m_filter_procs{
+        m_filter1_procs{
+            ((void)Channel,
+             std::make_unique<processor>(
+                 filter_channel_name<num_channels>(Channel)))...};
+    std::array<std::unique_ptr<audio::engine::processor>, num_channels>
+        m_filter2_procs{
             ((void)Channel,
              std::make_unique<processor>(
                  filter_channel_name<num_channels>(Channel)))...};
@@ -407,7 +383,7 @@ private:
             .port = 0}...};
     std::array<audio::engine::graph_endpoint, num_channels> m_outputs{
         audio::engine::graph_endpoint{
-            .proc = *m_filter_procs[Channel],
+            .proc = *m_filter2_procs[Channel],
             .port = 0}...};
     std::array<audio::engine::graph_endpoint, 3> m_event_inputs{
         audio::engine::graph_endpoint{.proc = *m_type_input_proc, .port = 0},
