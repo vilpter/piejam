@@ -12,6 +12,7 @@ Item {
 
     property alias iconSource: button.icon.source
     property alias text: button.text
+    property bool checkable: true
     property bool checked: false
 
     signal clicked()
@@ -31,7 +32,7 @@ Item {
 
         font.pixelSize: 12
 
-        checkable: true
+        checkable: root.checkable
         checked: root.checked
 
         onClicked: root.clicked()
