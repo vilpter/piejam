@@ -24,9 +24,14 @@ class FxModuleView : public SubscribableModel
     PIEJAM_GUI_PROPERTY(QString, name, setName)
     PIEJAM_GUI_PROPERTY(piejam::gui::model::BoolParameter*, active, setActive)
     PIEJAM_GUI_PROPERTY(piejam::gui::model::FxModule*, content, setContent)
+    PIEJAM_GUI_PROPERTY(bool, canShowPrev, setCanShowPrev)
+    PIEJAM_GUI_PROPERTY(bool, canShowNext, setCanShowNext)
 
 public:
     FxModuleView(runtime::state_access const&);
+
+    Q_INVOKABLE void showPrevModule();
+    Q_INVOKABLE void showNextModule();
 
 private:
     void onSubscribe() override;

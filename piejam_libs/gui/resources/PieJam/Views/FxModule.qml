@@ -83,8 +83,23 @@ ViewPane {
                 model: root.model ? root.model.active : null
             }
 
+            ViewToolBarButton {
+                iconSource: "qrc:///images/icons/chevron-up.svg"
+                checkable: false
+                enabled: root.model && root.model.canShowPrev
+
+                onClicked: root.model.showPrevModule()
+            }
+
+            ViewToolBarButton {
+                iconSource: "qrc:///images/icons/chevron-down.svg"
+                checkable: false
+                enabled: root.model && root.model.canShowNext
+
+                onClicked: root.model.showNextModule()
+            }
+
             Item {
-                Layout.fillWidth: true
                 Layout.fillHeight: true
             }
         }

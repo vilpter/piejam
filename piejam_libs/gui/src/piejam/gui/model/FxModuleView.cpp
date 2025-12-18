@@ -67,9 +67,11 @@ FxModuleView::onSubscribe()
             runtime::selectors::make_mixer_channel_name_string_selector(
                 observe_once(runtime::selectors::select_focused_fx_chain)))));
 
-    setName(
-        QString::fromStdString(
-            *observe_once(runtime::selectors::select_focused_fx_module_name)));
+    observe(
+        runtime::selectors::select_focused_fx_module_name,
+        [this](std::string const& name) {
+            setName(QString::fromStdString(name));
+        });
 
     observe(
         runtime::selectors::select_focused_fx_module,
@@ -91,6 +93,30 @@ FxModuleView::onSubscribe()
                 setActive(m_impl->active.get());
             }
         });
+
+    observe(
+        runtime::selectors::select_can_show_prev_fx_module,
+        [this](bool const can_show_prev) { setCanShowPrev(can_show_prev); });
+
+    observe(
+        runtime::selectors::select_can_show_next_fx_module,
+        [this](bool const can_show_next) { setCanShowNext(can_show_next); });
+}
+
+void
+FxModuleView::showPrevModule()
+{
+    BOOST_ASSERT(canShowPrev());
+
+    dispatch(runtime::actions::show_prev_fx_module{});
+}
+
+void
+FxModuleView::showNextModule()
+{
+    BOOST_ASSERT(canShowNext());
+
+    dispatch(runtime::actions::show_next_fx_module{});
 }
 
 } // namespace piejam::gui::model

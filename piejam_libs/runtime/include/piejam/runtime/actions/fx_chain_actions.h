@@ -33,4 +33,16 @@ struct show_fx_module final
     void reduce(state&) const override;
 };
 
+struct show_prev_fx_module final
+    : ui::cloneable_action<show_prev_fx_module, reducible_action>
+{
+    void reduce(state&) const override;
+};
+
+struct show_next_fx_module final
+    : ui::cloneable_action<show_next_fx_module, reducible_action>
+{
+    void reduce(state&) const override;
+};
+
 } // namespace piejam::runtime::actions

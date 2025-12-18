@@ -1109,6 +1109,18 @@ selector<material_color> const select_focused_fx_module_color(
         return color ? *color : material_color::pink;
     });
 
+selector<bool> const select_can_show_prev_fx_module([](state const& st) {
+    auto fx_chain = st.mixer_state.fx_chains.find(st.focused_fx_chain_id);
+    return fx_chain && !fx_chain->empty() &&
+           fx_chain->front() != st.focused_fx_mod_id;
+});
+
+selector<bool> const select_can_show_next_fx_module([](state const& st) {
+    auto fx_chain = st.mixer_state.fx_chains.find(st.focused_fx_chain_id);
+    return fx_chain && !fx_chain->empty() &&
+           fx_chain->back() != st.focused_fx_mod_id;
+});
+
 selector<startup_session> const select_startup_session([](state const& st) {
     return st.startup_session;
 });
