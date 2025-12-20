@@ -68,6 +68,23 @@ set_parameter_value(
     }
 }
 
+template void set_parameter_value<bool_parameter>(
+    state&,
+    parameter::id_t<bool_parameter>,
+    parameter::value_type_t<bool_parameter>);
+template void set_parameter_value<int_parameter>(
+    state&,
+    parameter::id_t<int_parameter>,
+    parameter::value_type_t<int_parameter>);
+template void set_parameter_value<float_parameter>(
+    state&,
+    parameter::id_t<float_parameter>,
+    parameter::value_type_t<float_parameter>);
+template void set_parameter_value<enum_parameter>(
+    state&,
+    parameter::id_t<enum_parameter>,
+    parameter::value_type_t<enum_parameter>);
+
 namespace actions
 {
 
@@ -81,6 +98,7 @@ set_parameter_value<Parameter>::reduce(state& st) const
 template struct set_parameter_value<bool_parameter>;
 template struct set_parameter_value<int_parameter>;
 template struct set_parameter_value<float_parameter>;
+template struct set_parameter_value<enum_parameter>;
 
 auto
 reset_parameter_to_default_value(parameter_id param_id) -> thunk_action
