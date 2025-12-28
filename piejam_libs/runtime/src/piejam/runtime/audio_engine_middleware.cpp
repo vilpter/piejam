@@ -422,17 +422,27 @@ audio_engine_middleware::process_engine_action(
     {
         if (auto learned_midi = m_engine->get_learned_midi())
         {
-            if (auto const* const cc_event =
-                    std::get_if<midi::channel_cc_event>(&learned_midi->event))
-            {
-                actions::stop_midi_learning next_action;
-                next_action.learned = midi_assignment{
-                    .channel = cc_event->channel,
-                    .control_type = midi_assignment::type::cc,
-                    .control_id = cc_event->data.cc};
+            std::visit(
+                boost::hof::match(
+                    [&](midi::channel_cc_event const& cc_event) {
+                        actions::stop_midi_learning next_action;
+                        next_action.learned = midi_assignment{
+                            .channel = cc_event.channel,
+                            .control_type = midi_assignment::type::cc,
+                            .control_id = cc_event.data.cc};
 
-                mw_fs.next(next_action);
-            }
+                        mw_fs.next(next_action);
+                    },
+                    [&](midi::channel_pitch_bend_event const& pb_event) {
+                        actions::stop_midi_learning next_action;
+                        next_action.learned = midi_assignment{
+                            .channel = pb_event.channel,
+                            .control_type = midi_assignment::type::pitch_bend,
+                        };
+
+                        mw_fs.next(next_action);
+                    }),
+                learned_midi->event);
         }
     }
 }

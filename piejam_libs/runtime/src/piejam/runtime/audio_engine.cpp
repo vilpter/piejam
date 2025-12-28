@@ -83,7 +83,7 @@ struct processor_map
 
     struct midi_assignment_processors
     {
-        shared_processor_ptr cc_to_param;
+        shared_processor_ptr midi_to_param;
         shared_processor_ptr param;
     };
 
@@ -307,8 +307,9 @@ make_midi_assignment_processors(
                             .param_id = typed_param_id,
                             .assignment = assignment},
                         processor_map::midi_assignment_processors{
-                            .cc_to_param =
-                                processors::make_midi_cc_to_parameter_processor(
+                            .midi_to_param =
+                                processors::make_midi_to_parameter_processor(
+                                    assignment,
                                     param),
                             .param = param_procs.find_or_make_processor(
                                 typed_param_id)});
@@ -661,15 +662,15 @@ connect_midi(
 
                     processor_map::midi_assignment_processors const&
                         midi_conv_procs = it_midi_conv_procs->second;
-                    BOOST_ASSERT(midi_conv_procs.cc_to_param);
+                    BOOST_ASSERT(midi_conv_procs.midi_to_param);
                     BOOST_ASSERT(midi_conv_procs.param);
 
                     g.event.insert(
                         {.proc = *midi_assign_proc, .port = out_index++},
-                        {.proc = *midi_conv_procs.cc_to_param, .port = 0});
+                        {.proc = *midi_conv_procs.midi_to_param, .port = 0});
 
                     g.event.insert(
-                        {.proc = *midi_conv_procs.cc_to_param, .port = 0},
+                        {.proc = *midi_conv_procs.midi_to_param, .port = 0},
                         {.proc = *midi_conv_procs.param, .port = 0});
                 },
                 id);

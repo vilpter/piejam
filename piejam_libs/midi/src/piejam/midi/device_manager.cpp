@@ -42,9 +42,9 @@ struct alsa_event_handler final : alsa::event_handler
     void process_cc_event(
         alsa::midi_client_id_t const client_id,
         alsa::midi_port_t const port,
-        std::size_t const channel,
-        std::size_t const cc_id,
-        std::size_t const value) override
+        std::uint8_t const channel,
+        std::uint8_t const cc_id,
+        std::int8_t const value) override
     {
         if (auto it = m_devices.find(std::pair{client_id, port});
             it != m_devices.end())
@@ -54,7 +54,30 @@ struct alsa_event_handler final : alsa::event_handler
                     .device_id = it->second,
                     .event = midi::channel_cc_event{
                         .channel = channel,
-                        .data = cc_event{.cc = cc_id, .value = value}}});
+                        .data = cc_event{
+                            .cc = cc_id,
+                            .value = value,
+                        }}});
+        }
+    }
+
+    void process_pitch_bend_event(
+        alsa::midi_client_id_t const client_id,
+        alsa::midi_port_t const port,
+        std::uint8_t const channel,
+        std::int16_t const value) override
+    {
+        if (auto it = m_devices.find(std::pair{client_id, port});
+            it != m_devices.end())
+        {
+            m_ev_handler.process(
+                midi::external_event{
+                    .device_id = it->second,
+                    .event = midi::channel_pitch_bend_event{
+                        .channel = channel,
+                        .data = pitch_bend_event{
+                            .value = value,
+                        }}});
         }
     }
 

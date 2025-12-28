@@ -18,13 +18,15 @@ class input_event_handler;
 class device_manager;
 
 struct cc_event;
+struct pitch_bend_event;
 
 template <class E>
 struct channel_event;
 
 using channel_cc_event = channel_event<cc_event>;
+using channel_pitch_bend_event = channel_event<pitch_bend_event>;
 
-using event_t = std::variant<channel_cc_event>;
+using event_t = std::variant<channel_cc_event, channel_pitch_bend_event>;
 
 struct external_event;
 

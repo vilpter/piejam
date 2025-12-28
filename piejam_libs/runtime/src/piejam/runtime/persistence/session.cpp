@@ -43,7 +43,8 @@ namespace piejam::runtime
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
     midi_assignment::type,
-    {{midi_assignment::type::cc, "cc"}})
+    {{midi_assignment::type::cc, "cc"},
+     {midi_assignment::type::pitch_bend, "pitch_bend"}})
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     midi_assignment,

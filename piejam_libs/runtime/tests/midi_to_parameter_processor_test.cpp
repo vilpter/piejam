@@ -89,7 +89,7 @@ TEST_F(midi_to_bool_parameter_processor_test, with_event_to_true)
 }
 
 struct midi_to_float_parameter_processor_test
-    : testing::TestWithParam<std::pair<std::size_t, float>>
+    : testing::TestWithParam<std::pair<std::int8_t, float>>
 {
     midi_to_float_parameter_processor_test()
     {
@@ -149,12 +149,12 @@ INSTANTIATE_TEST_SUITE_P(
     values,
     midi_to_float_parameter_processor_test,
     testing::Values(
-        std::make_pair(0u, 5.f),
-        std::make_pair(64u, 5.f * (64.f / 127.f) + 5.f),
-        std::make_pair(127u, 10.f)));
+        std::make_pair(0, 5.f),
+        std::make_pair(64, 5.f * (64.f / 127.f) + 5.f),
+        std::make_pair(127, 10.f)));
 
 struct midi_to_int_parameter_processor_test
-    : testing::TestWithParam<std::pair<std::size_t, int>>
+    : testing::TestWithParam<std::pair<std::int8_t, int>>
 {
     midi_to_int_parameter_processor_test()
     {
@@ -217,21 +217,21 @@ INSTANTIATE_TEST_SUITE_P(
     values,
     midi_to_int_parameter_processor_test,
     testing::Values(
-        std::make_pair(0u, 10),
-        std::make_pair(5u, 10),
-        std::make_pair(9u, 11),
-        std::make_pair(10u, 11),
-        std::make_pair(20u, 11),
-        std::make_pair(30u, 12),
-        std::make_pair(40u, 13),
-        std::make_pair(50u, 14),
-        std::make_pair(60u, 14),
-        std::make_pair(70u, 15),
-        std::make_pair(80u, 16),
-        std::make_pair(90u, 16),
-        std::make_pair(100u, 17),
-        std::make_pair(110u, 18),
-        std::make_pair(120u, 19),
-        std::make_pair(127u, 19)));
+        std::make_pair(0, 10),
+        std::make_pair(5, 10),
+        std::make_pair(9, 11),
+        std::make_pair(10, 11),
+        std::make_pair(20, 11),
+        std::make_pair(30, 12),
+        std::make_pair(40, 13),
+        std::make_pair(50, 14),
+        std::make_pair(60, 14),
+        std::make_pair(70, 15),
+        std::make_pair(80, 16),
+        std::make_pair(90, 16),
+        std::make_pair(100, 17),
+        std::make_pair(110, 18),
+        std::make_pair(120, 19),
+        std::make_pair(127, 19)));
 
 } // namespace piejam::runtime::processors::test

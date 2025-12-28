@@ -31,6 +31,6 @@ More [documentation](https://piejam.readthedocs.io/en/latest/)
     * Tuner
     * Utility
 * Support for LADSPA plugins
-* Parameter control through MIDI CC
+* Parameter control through MIDI CC, Pitch Bend
 * Session recorder
 * Session/project management

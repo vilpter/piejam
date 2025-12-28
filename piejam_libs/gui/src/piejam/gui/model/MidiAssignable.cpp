@@ -21,6 +21,9 @@ toQString(runtime::midi_assignment const& ass) -> QString
             return QString("CC %1 @%2")
                 .arg(ass.control_id)
                 .arg(ass.channel + 1);
+
+        case runtime::midi_assignment::type::pitch_bend:
+            return QString("PB @%2").arg(ass.channel + 1);
     }
 
     [[assume(false)]];

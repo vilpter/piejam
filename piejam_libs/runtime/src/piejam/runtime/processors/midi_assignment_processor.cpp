@@ -44,6 +44,11 @@ public:
                         std::in_place_type<midi::cc_event>,
                         std::format("{} CC {}", ass.channel, ass.control_id));
                     break;
+
+                case midi_assignment::type::pitch_bend:
+                    m_output_ports.emplace_back(
+                        std::in_place_type<midi::pitch_bend_event>,
+                        std::format("{} PB", ass.channel));
             }
         }
     }
@@ -99,11 +104,32 @@ public:
             midi_assignment{
                 .channel = ev.channel,
                 .control_type = midi_assignment::type::cc,
-                .control_id = ev.data.cc});
+                .control_id = static_cast<std::size_t>(ev.data.cc),
+            });
 
         if (out_index != algorithm::npos)
         {
             auto& out = ctx.event_outputs.get<midi::cc_event>(out_index);
+            out.insert(offset, ev.data);
+        }
+    }
+
+    void process_event(
+        audio::engine::process_context const& ctx,
+        std::size_t const offset,
+        midi::channel_pitch_bend_event const& ev)
+    {
+        auto const out_index = algorithm::index_of(
+            m_midi_assignments,
+            midi_assignment{
+                .channel = ev.channel,
+                .control_type = midi_assignment::type::pitch_bend,
+            });
+
+        if (out_index != algorithm::npos)
+        {
+            auto& out =
+                ctx.event_outputs.get<midi::pitch_bend_event>(out_index);
             out.insert(offset, ev.data);
         }
     }

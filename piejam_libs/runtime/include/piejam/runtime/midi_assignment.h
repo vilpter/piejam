@@ -21,6 +21,7 @@ struct midi_assignment
     enum class type
     {
         cc,
+        pitch_bend,
     } control_type{};
 
     std::size_t control_id{};

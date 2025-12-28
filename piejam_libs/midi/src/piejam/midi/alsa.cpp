@@ -209,7 +209,15 @@ midi_io::process_input(event_handler& handler)
                     ev.source.port,
                     ev.data.control.channel,
                     ev.data.control.param,
-                    ev.data.control.value);
+                    static_cast<std::int8_t>(ev.data.control.value));
+                break;
+
+            case SNDRV_SEQ_EVENT_PITCHBEND:
+                handler.process_pitch_bend_event(
+                    ev.source.client,
+                    ev.source.port,
+                    ev.data.control.channel,
+                    static_cast<std::int16_t>(ev.data.control.value));
                 break;
 
             default:

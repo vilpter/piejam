@@ -7,6 +7,7 @@
 #include <piejam/pimpl.h>
 #include <piejam/system/device.h>
 
+#include <cstdint>
 #include <string>
 #include <thread>
 #include <variant>
@@ -26,9 +27,15 @@ public:
     virtual void process_cc_event(
         midi_client_id_t,
         midi_port_t,
-        std::size_t channel,
-        std::size_t cc_id,
-        std::size_t value) = 0;
+        std::uint8_t channel,
+        std::uint8_t cc_id,
+        std::int8_t value) = 0;
+
+    virtual void process_pitch_bend_event(
+        midi_client_id_t,
+        midi_port_t,
+        std::uint8_t channel,
+        std::int16_t value) = 0;
 };
 
 class midi_io
