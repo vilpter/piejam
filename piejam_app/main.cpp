@@ -47,6 +47,7 @@
 #include <piejam/system/avg_cpu_load_tracker.h>
 #include <piejam/system/cpu_temp.h>
 #include <piejam/system/disk_usage.h>
+#include <piejam/system/memory.h>
 #include <piejam/thread/affinity.h>
 
 #include <QQuickStyle>
@@ -137,6 +138,11 @@ main(int argc, char* argv[]) -> int
 
     gui::qt_log::install_handler();
     spdlog::set_level(spdlog::level::level_enum::debug);
+
+    if (auto err = piejam::system::mlockall())
+    {
+        spdlog::warn("could not lock memory: {}", err.message());
+    }
 
     runtime::locations locs{
         .home_dir = QStandardPaths::writableLocation(
