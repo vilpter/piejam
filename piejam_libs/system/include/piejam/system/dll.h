@@ -5,9 +5,7 @@
 #pragma once
 
 #include <filesystem>
-#include <functional>
 #include <string_view>
-#include <type_traits>
 
 namespace piejam::system
 {
@@ -63,7 +61,7 @@ public:
 
 private:
     [[nodiscard]]
-    auto symbol(std::string_view const name) const -> void*;
+    auto symbol(std::string_view name) const -> void*;
 
     void* m_handle{};
 };
