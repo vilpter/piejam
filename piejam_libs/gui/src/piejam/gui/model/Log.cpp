@@ -1,5 +1,5 @@
 // PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <piejam/gui/model/Log.h>

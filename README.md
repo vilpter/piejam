@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2020 Dimitrij Kotrev
+SPDX-FileCopyrightText: 2020-2026 Dimitrij Kotrev
 
 SPDX-License-Identifier: CC0-1.0
 -->

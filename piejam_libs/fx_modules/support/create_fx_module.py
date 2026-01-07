@@ -9,7 +9,7 @@ FX_ROOT = PROJECT_ROOT / "src" / "piejam" / "fx_modules"
 
 # --- templates ---
 COMPONENT_H_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -29,7 +29,7 @@ auto make_component(runtime::internal_fx_component_factory_args const&)
 """
 
 INTERNAL_ID_H_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -45,7 +45,7 @@ auto internal_id() -> runtime::fx::internal_id;
 """
 
 MODULE_H_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -71,7 +71,7 @@ auto make_module(runtime::internal_fx_module_factory_args const&)
 """
 
 COMPONENT_CPP_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "{module}_component.h"
@@ -133,7 +133,7 @@ make_component(runtime::internal_fx_component_factory_args const& /*args*/)
 """
 
 INTERNAL_ID_CPP_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "{module}_internal_id.h"
@@ -182,7 +182,7 @@ internal_id() -> runtime::fx::internal_id
 """
 
 MODULE_CPP_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "{module}_module.h"
@@ -218,7 +218,7 @@ make_module(runtime::internal_fx_module_factory_args const& args)
 """
 
 FX_GUI_H_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -254,7 +254,7 @@ private:
 """
 
 FX_GUI_CPP_TEMPLATE = """// PieJam - An audio mixer for Raspberry Pi.
-// SPDX-FileCopyrightText: 2020-2025  Dimitrij Kotrev
+// SPDX-FileCopyrightText: 2020-2026  Dimitrij Kotrev
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "Fx{Class}.h"
@@ -290,7 +290,7 @@ Fx{Class}::onSubscribe()
 }} // namespace piejam::fx_modules::{module}::gui
 """
 
-CMAKE_TEMPLATE = """# SPDX-FileCopyrightText: 2020-2025 Dimitrij Kotrev
+CMAKE_TEMPLATE = """# SPDX-FileCopyrightText: 2020-2026 Dimitrij Kotrev
 #
 # SPDX-License-Identifier: CC0-1.0
 
