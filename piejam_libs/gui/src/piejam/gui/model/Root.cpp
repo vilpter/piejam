@@ -7,6 +7,7 @@
 #include <piejam/gui/model/AudioDeviceSettings.h>
 #include <piejam/gui/model/AudioInputOutputSettings.h>
 #include <piejam/gui/model/DisplaySettings.h>
+#include <piejam/gui/model/FileBrowser.h>
 #include <piejam/gui/model/FxBrowser.h>
 #include <piejam/gui/model/FxModuleView.h>
 #include <piejam/gui/model/Info.h>
@@ -23,6 +24,8 @@ namespace piejam::gui::model
 
 Root::Root(
     runtime::state_access const& state_access,
+    std::string const& recordings_path,
+    std::string const& db_path,
     std::shared_ptr<network_manager::network_controller> netCtrl,
     std::shared_ptr<network_manager::wifi_manager> wifiMgr,
     std::shared_ptr<network_manager::nfs_server> nfsSrv,
@@ -47,6 +50,10 @@ Root::Root(
                     std::move(wifiMgr),
                     std::move(nfsSrv),
                     std::move(nfsCli))
+              : nullptr}
+    , m_fileBrowser{
+          (!recordings_path.empty() && !db_path.empty())
+              ? &addQObject<FileBrowser>(recordings_path, db_path)
               : nullptr}
 {
 }

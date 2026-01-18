@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 PieJam Fork Contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+module PieJam.FileBrowser
+FileBrowserView 1.0 FileBrowserView.qml
+RecordingCard 1.0 RecordingCard.qml
+MetadataPanel 1.0 MetadataPanel.qml
+FileActionsMenu 1.0 FileActionsMenu.qml
+TagEditor 1.0 TagEditor.qml

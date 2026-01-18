@@ -147,6 +147,7 @@ SubscribableItem {
                         midiInputModel: root.model.midiInputSettings
                         displayModel: root.model.displaySettings
                         networkModel: root.model.networkSettings
+                        fileBrowserModel: root.model.fileBrowser
                     }
                     asynchronous: true
                 }

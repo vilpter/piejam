@@ -8,6 +8,7 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
+import PieJam.FileBrowser 1.0 as FileBrowser
 import PieJam.NetworkControls 1.0 as NetworkControls
 import PieJam.SettingsControls 1.0
 
@@ -20,6 +21,7 @@ Pane {
     property alias midiInputModel: midiSettings.model
     property alias displayModel: displaySettings.model
     property alias networkModel: networkSettings.model
+    property alias fileBrowserModel: fileBrowser.model
 
     padding: 0
 
@@ -37,7 +39,7 @@ Pane {
             spacing: 0
             interactive: false
 
-            model: ["Audio", "MIDI", "Display", "Network"]
+            model: ["Audio", "MIDI", "Display", "Network", "Files"]
 
             delegate: Button {
                 width: 96
@@ -89,6 +91,10 @@ Pane {
 
             NetworkControls.NetworkSettings {
                 id: networkSettings
+            }
+
+            FileBrowser.FileBrowserView {
+                id: fileBrowser
             }
         }
     }

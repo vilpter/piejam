@@ -260,8 +260,14 @@ main(int argc, char* argv[]) -> int
     store.dispatch(runtime::actions::load_app_config(config_file_path(locs)));
     store.dispatch(runtime::actions::load_session(session_file));
 
+    // File browser paths
+    auto recordings_path = locs.rec_dir.string();
+    auto db_path = (std::filesystem::path(locs.config_dir) / "recordings_metadata.json").string();
+
     gui::model::Root rootModel(
         runtime::state_access{store, state_change_subscriber},
+        recordings_path,
+        db_path,
         network_ctrl,
         wifi_mgr,
         nfs_srv,

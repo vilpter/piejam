@@ -40,6 +40,12 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/FxChainControls/StereoChannelSelector.qml</file>
         <file>PieJam/FxChainControls/StreamSourceSettings.qml</file>
         <file>PieJam/FxChainControls/qmldir</file>
+        <file>PieJam/FileBrowser/FileBrowserView.qml</file>
+        <file>PieJam/FileBrowser/RecordingCard.qml</file>
+        <file>PieJam/FileBrowser/MetadataPanel.qml</file>
+        <file>PieJam/FileBrowser/FileActionsMenu.qml</file>
+        <file>PieJam/FileBrowser/TagEditor.qml</file>
+        <file>PieJam/FileBrowser/qmldir</file>
         <file>PieJam/NetworkControls/NetworkSettings.qml</file>
         <file>PieJam/NetworkControls/WiFiConnectionDialog.qml</file>
         <file>PieJam/NetworkControls/WiFiNetworkDelegate.qml</file>

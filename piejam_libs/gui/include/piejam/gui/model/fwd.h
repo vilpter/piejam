@@ -81,6 +81,8 @@ class DisplaySettings;
 
 class NetworkSettings;
 
+class FileBrowser;
+
 class MidiAssignable;
 
 class RootView;

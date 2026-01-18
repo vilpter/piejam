@@ -48,6 +48,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/EnumListModel.h
     include/piejam/gui/model/EnumParameter.h
     include/piejam/gui/model/ExternalAudioDeviceConfig.h
+    include/piejam/gui/model/FileBrowser.h
     include/piejam/gui/model/FloatParameter.h
     include/piejam/gui/model/FxBrowser.h
     include/piejam/gui/model/FxBrowserEntry.h
@@ -119,6 +120,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/DisplaySettings.cpp
     src/piejam/gui/model/EnumParameter.cpp
     src/piejam/gui/model/ExternalAudioDeviceConfig.cpp
+    src/piejam/gui/model/FileBrowser.cpp
     src/piejam/gui/model/FloatParameter.cpp
     src/piejam/gui/model/FxBrowser.cpp
     src/piejam/gui/model/FxBrowserEntryInternal.cpp
@@ -165,6 +167,7 @@ target_link_libraries(piejam_gui
     piejam_range
     piejam_algorithm
     piejam_log
+    piejam_file_manager
     piejam_network_manager
     piejam_numeric
     piejam_runtime
