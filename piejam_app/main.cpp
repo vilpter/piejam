@@ -40,6 +40,11 @@
 #include <piejam/runtime/recorder_middleware.h>
 #include <piejam/runtime/state.h>
 #include <piejam/runtime/store.h>
+#include <piejam/network_manager/network_controller.h>
+#include <piejam/network_manager/network_middleware.h>
+#include <piejam/network_manager/nfs_client.h>
+#include <piejam/network_manager/nfs_server.h>
+#include <piejam/network_manager/wifi_manager.h>
 #include <piejam/runtime/subscriber.h>
 #include <piejam/runtime/ui/action.h>
 #include <piejam/runtime/ui/thunk_action.h>
@@ -170,6 +175,29 @@ main(int argc, char* argv[]) -> int
     store.apply_middleware(
         middleware_factory::make<runtime::persistence_middleware>());
 
+    // Network controller for WiFi enable/disable during recording
+    auto network_ctrl = std::make_shared<network_manager::network_controller>();
+    auto wifi_mgr = std::make_shared<network_manager::wifi_manager>();
+
+    // NFS server exports recordings directory, client for mounting remote shares
+    auto nfs_srv = std::make_shared<network_manager::nfs_server>(
+        (locs.rec_dir).string());
+    auto nfs_cli = std::make_shared<network_manager::nfs_client>(
+        (locs.config_dir / "nfs_mounts.json").string());
+
+    // Network middleware intercepts recording actions to auto-disable network
+    // Must be placed BEFORE recorder_middleware
+    store.apply_middleware(
+        middleware_factory::make<
+            network_manager::network_middleware<runtime::state, runtime::action>>(
+            network_ctrl,
+            [](runtime::action const& a) {
+                return dynamic_cast<runtime::actions::start_recording const*>(&a) != nullptr;
+            },
+            [](runtime::action const& a) {
+                return dynamic_cast<runtime::actions::stop_recording const*>(&a) != nullptr;
+            }));
+
     store.apply_middleware(
         middleware_factory::make<runtime::recorder_middleware>(locs.rec_dir));
 
@@ -233,7 +261,14 @@ main(int argc, char* argv[]) -> int
     store.dispatch(runtime::actions::load_session(session_file));
 
     gui::model::Root rootModel(
-        runtime::state_access{store, state_change_subscriber});
+        runtime::state_access{store, state_change_subscriber},
+        network_ctrl,
+        wifi_mgr,
+        nfs_srv,
+        nfs_cli);
+
+    // Mount any auto-mount NFS shares
+    nfs_cli->mount_auto_mounts();
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");

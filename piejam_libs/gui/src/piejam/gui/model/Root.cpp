@@ -13,6 +13,7 @@
 #include <piejam/gui/model/Log.h>
 #include <piejam/gui/model/MidiInputSettings.h>
 #include <piejam/gui/model/Mixer.h>
+#include <piejam/gui/model/NetworkSettings.h>
 
 #include <piejam/runtime/actions/root_view_actions.h>
 #include <piejam/runtime/selectors.h>
@@ -20,7 +21,12 @@
 namespace piejam::gui::model
 {
 
-Root::Root(runtime::state_access const& state_access)
+Root::Root(
+    runtime::state_access const& state_access,
+    std::shared_ptr<network_manager::network_controller> netCtrl,
+    std::shared_ptr<network_manager::wifi_manager> wifiMgr,
+    std::shared_ptr<network_manager::nfs_server> nfsSrv,
+    std::shared_ptr<network_manager::nfs_client> nfsCli)
     : CompositeSubscribableModel{state_access}
     , m_audioDeviceSettings{&addModel<AudioDeviceSettings>()}
     , m_audioInputSettings{&addModel<AudioInputOutputSettings>(
@@ -34,6 +40,14 @@ Root::Root(runtime::state_access const& state_access)
     , m_log{&addModel<Log>()}
     , m_fxBrowser{&addModel<FxBrowser>()}
     , m_fxModule{&addModel<FxModuleView>()}
+    , m_networkSettings{
+          (netCtrl || wifiMgr || nfsSrv || nfsCli)
+              ? &addQObject<NetworkSettings>(
+                    std::move(netCtrl),
+                    std::move(wifiMgr),
+                    std::move(nfsSrv),
+                    std::move(nfsCli))
+              : nullptr}
 {
 }
 

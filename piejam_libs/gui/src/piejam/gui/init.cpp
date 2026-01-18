@@ -43,6 +43,7 @@
 #include <piejam/gui/model/MixerChannelModels.h>
 #include <piejam/gui/model/MixerChannelPerform.h>
 #include <piejam/gui/model/MixerDbScales.h>
+#include <piejam/gui/model/NetworkSettings.h>
 #include <piejam/gui/model/Parameter.h>
 #include <piejam/gui/model/Root.h>
 #include <piejam/gui/model/ScopeSlot.h>
@@ -122,6 +123,7 @@ runRegistration()
     PIEJAM_GUI_MODEL(model::MixerChannelFx, "MixerChannelFx");
     PIEJAM_GUI_MODEL(model::MixerChannelModels, "MixerChannelModels");
     PIEJAM_GUI_MODEL(model::MixerChannelPerform, "MixerChannelPerform");
+    PIEJAM_GUI_MODEL(model::NetworkSettings, "NetworkSettings");
     PIEJAM_GUI_MODEL(model::Parameter, "Parameter");
     PIEJAM_GUI_MODEL(model::Root, "Root");
     PIEJAM_GUI_MODEL(model::ScopeSlot, "ScopeSlot");

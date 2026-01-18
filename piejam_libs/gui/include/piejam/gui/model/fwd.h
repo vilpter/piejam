@@ -79,6 +79,8 @@ class MidiInputSettings;
 
 class DisplaySettings;
 
+class NetworkSettings;
+
 class MidiAssignable;
 
 class RootView;

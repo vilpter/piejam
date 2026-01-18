@@ -76,6 +76,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/MixerChannelModels.h
     include/piejam/gui/model/MixerChannelPerform.h
     include/piejam/gui/model/MixerDbScales.h
+    include/piejam/gui/model/NetworkSettings.h
     include/piejam/gui/model/ObjectListModel.h
     include/piejam/gui/model/Parameter.h
     include/piejam/gui/model/PitchGenerator.h
@@ -142,6 +143,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/MixerChannelModels.cpp
     src/piejam/gui/model/MixerChannelPerform.cpp
     src/piejam/gui/model/MixerDbScales.cpp
+    src/piejam/gui/model/NetworkSettings.cpp
     src/piejam/gui/model/Parameter.cpp
     src/piejam/gui/model/PitchGenerator.cpp
     src/piejam/gui/model/Root.cpp
@@ -163,6 +165,7 @@ target_link_libraries(piejam_gui
     piejam_range
     piejam_algorithm
     piejam_log
+    piejam_network_manager
     piejam_numeric
     piejam_runtime
 

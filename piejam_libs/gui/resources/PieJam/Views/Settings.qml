@@ -8,6 +8,7 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
 import PieJam.Controls 1.0
+import PieJam.NetworkControls 1.0 as NetworkControls
 import PieJam.SettingsControls 1.0
 
 Pane {
@@ -18,6 +19,7 @@ Pane {
     property alias audioOutputModel: audioSettings.outputModel
     property alias midiInputModel: midiSettings.model
     property alias displayModel: displaySettings.model
+    property alias networkModel: networkSettings.model
 
     padding: 0
 
@@ -35,7 +37,7 @@ Pane {
             spacing: 0
             interactive: false
 
-            model: ["Audio", "MIDI", "Display"]
+            model: ["Audio", "MIDI", "Display", "Network"]
 
             delegate: Button {
                 width: 96
@@ -83,6 +85,10 @@ Pane {
 
             DisplaySettings {
                 id: displaySettings
+            }
+
+            NetworkControls.NetworkSettings {
+                id: networkSettings
             }
         }
     }
