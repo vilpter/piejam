@@ -111,9 +111,6 @@ FileBrowserController::~FileBrowserController()
     m_impl->database->save();
 }
 
-FileBrowserController::FileBrowserController(FileBrowserController&&) noexcept = default;
-FileBrowserController& FileBrowserController::operator=(FileBrowserController&&) noexcept = default;
-
 RecordingListModel*
 FileBrowserController::recordings() const
 {

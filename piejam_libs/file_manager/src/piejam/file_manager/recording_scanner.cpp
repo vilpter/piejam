@@ -43,9 +43,6 @@ recording_scanner::recording_scanner(QObject* parent)
 
 recording_scanner::~recording_scanner() = default;
 
-recording_scanner::recording_scanner(recording_scanner&&) noexcept = default;
-recording_scanner& recording_scanner::operator=(recording_scanner&&) noexcept = default;
-
 void
 recording_scanner::add_scan_directory(std::string const& path)
 {

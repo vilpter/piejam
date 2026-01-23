@@ -8,6 +8,7 @@
 #include <piejam/file_manager/recording.h>
 
 #include <QObject>
+#include <QVariant>
 
 #include <memory>
 
@@ -37,8 +38,8 @@ public:
 
     FileBrowserController(FileBrowserController const&) = delete;
     FileBrowserController& operator=(FileBrowserController const&) = delete;
-    FileBrowserController(FileBrowserController&&) noexcept;
-    FileBrowserController& operator=(FileBrowserController&&) noexcept;
+    FileBrowserController(FileBrowserController&&) = delete;
+    FileBrowserController& operator=(FileBrowserController&&) = delete;
 
     /// Get recordings list model for QML
     RecordingListModel* recordings() const;
@@ -133,6 +134,9 @@ signals:
     void newRecordingDetected(QString const& filename);
 
 private:
+    void applyFilters();
+    void updateStorageInfo();
+
     struct impl;
     std::unique_ptr<impl> m_impl;
 };

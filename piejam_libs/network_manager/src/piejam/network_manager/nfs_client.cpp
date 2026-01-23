@@ -109,7 +109,7 @@ nfs_client::add_mount_config(nfs_mount_config config) -> std::string
     }
 
     m_impl->configs[config.id] = config;
-    m_impl->states[config.id] = nfs_mount_state{config.id};
+    m_impl->states[config.id] = nfs_mount_state{config.id, nfs_mount_status::unmounted, {}, 0, 0, -1};
 
     save_config();
 
@@ -173,7 +173,7 @@ nfs_client::get_mount_state(std::string const& id) const -> nfs_mount_state
     {
         return it->second;
     }
-    return nfs_mount_state{id};
+    return nfs_mount_state{id, nfs_mount_status::unmounted, {}, 0, 0, -1};
 }
 
 auto
@@ -506,7 +506,7 @@ nfs_client::load_config()
         if (!config.id.empty())
         {
             m_impl->configs[config.id] = config;
-            m_impl->states[config.id] = nfs_mount_state{config.id};
+            m_impl->states[config.id] = nfs_mount_state{config.id, nfs_mount_status::unmounted, {}, 0, 0, -1};
         }
     }
 }

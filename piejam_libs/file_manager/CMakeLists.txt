@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt5 REQUIRED COMPONENTS Core Concurrent)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SNDFILE REQUIRED sndfile)
 
@@ -29,6 +29,7 @@ target_include_directories(piejam_file_manager PRIVATE ${SNDFILE_INCLUDE_DIRS})
 target_link_libraries(piejam_file_manager
     PUBLIC
     Qt5::Core
+    Qt5::Concurrent
     PRIVATE
     piejam_compiler_warnings
     piejam_log

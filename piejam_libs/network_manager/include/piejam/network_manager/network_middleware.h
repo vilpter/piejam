@@ -6,6 +6,7 @@
 
 #include <piejam/network_manager/fwd.h>
 #include <piejam/network_manager/network_controller.h>
+#include <piejam/redux/middleware_functors.h>
 
 #include <functional>
 #include <memory>
@@ -52,11 +53,8 @@ public:
     {
     }
 
-    template <class GetState, class Dispatch, class Next>
     void operator()(
-        GetState const& /*get_state*/,
-        Dispatch const& /*dispatch*/,
-        Next const& next,
+        redux::middleware_functors<State, Action> const& mf,
         Action const& action)
     {
         // Check if this is a recording-related action
@@ -72,7 +70,7 @@ public:
         }
 
         // Always pass the action through
-        next(action);
+        mf.next(action);
     }
 
     /// Access the network controller for configuration

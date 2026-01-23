@@ -32,8 +32,8 @@ public:
 
     recording_scanner(recording_scanner const&) = delete;
     recording_scanner& operator=(recording_scanner const&) = delete;
-    recording_scanner(recording_scanner&&) noexcept;
-    recording_scanner& operator=(recording_scanner&&) noexcept;
+    recording_scanner(recording_scanner&&) = delete;
+    recording_scanner& operator=(recording_scanner&&) = delete;
 
     /// Add a directory to scan
     void add_scan_directory(std::string const& path);

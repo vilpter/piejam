@@ -11,7 +11,10 @@
 #include <QJsonObject>
 
 #include <algorithm>
+#include <iomanip>
 #include <map>
+#include <set>
+#include <sstream>
 
 namespace piejam::file_manager
 {
@@ -67,8 +70,8 @@ json_to_recording_metadata(QJsonObject const& obj) -> recording_metadata
     m.file_path = obj["file_path"].toString().toStdString();
     m.filename = obj["filename"].toString().toStdString();
     m.file_hash = obj["file_hash"].toString().toStdString();
-    m.file_size = static_cast<uint64_t>(obj["file_size"].toInteger());
-    m.duration_ms = static_cast<uint64_t>(obj["duration_ms"].toInteger());
+    m.file_size = static_cast<uint64_t>(obj["file_size"].toVariant().toLongLong());
+    m.duration_ms = static_cast<uint64_t>(obj["duration_ms"].toVariant().toLongLong());
     m.sample_rate = static_cast<uint32_t>(obj["sample_rate"].toInt());
     m.bit_depth = static_cast<uint16_t>(obj["bit_depth"].toInt());
     m.channels = static_cast<uint16_t>(obj["channels"].toInt());

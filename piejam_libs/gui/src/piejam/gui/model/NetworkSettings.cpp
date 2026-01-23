@@ -292,29 +292,13 @@ NetworkSettings::connectToNetwork(
         password.toStdString(),
         remember);
 
-    if (result != network_manager::wifi_connection_result::success)
+    if (!result.success)
     {
         setIsConnecting(false);
 
-        QString error;
-        switch (result)
-        {
-        case network_manager::wifi_connection_result::network_not_found:
-            error = tr("Network not found");
-            break;
-        case network_manager::wifi_connection_result::authentication_failed:
-            error = tr("Authentication failed");
-            break;
-        case network_manager::wifi_connection_result::timeout:
-            error = tr("Connection timed out");
-            break;
-        case network_manager::wifi_connection_result::interface_unavailable:
-            error = tr("WiFi interface not available");
-            break;
-        default:
-            error = tr("Connection failed");
-            break;
-        }
+        QString error = result.error_message.empty()
+            ? tr("Connection failed")
+            : QString::fromStdString(result.error_message);
 
         emit connectionFailed(ssid, error);
     }

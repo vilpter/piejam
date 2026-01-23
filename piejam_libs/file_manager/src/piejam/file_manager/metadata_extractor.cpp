@@ -7,6 +7,7 @@
 #include <sndfile.h>
 
 #include <QCryptographicHash>
+#include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
 
@@ -225,7 +226,7 @@ metadata_extractor::analyze_levels(std::string const& file_path,
                 peak_level = sample;
             }
 
-            sum_squares += static_cast<double>(sample) * sample;
+            sum_squares += static_cast<double>(sample) * static_cast<double>(sample);
 
             if (sample >= clip_threshold)
             {
