@@ -26,8 +26,8 @@ Item {
 
         property PJModels.FileDialog model: null
 
-        implicitWidth: 720
-        implicitHeight: 400
+        implicitWidth: 800
+        implicitHeight: 480
 
         parent: Overlay.overlay
         anchors.centerIn: Overlay.overlay
@@ -35,6 +35,8 @@ Item {
         modal: true
 
         title: qsTr("Select")
+
+        bottomPadding: 0
 
         ColumnLayout {
             anchors.fill: parent
@@ -177,7 +179,6 @@ Item {
                 anchors.leftMargin: 24
                 anchors.rightMargin: 24
                 anchors.bottomMargin: 24
-                anchors.topMargin: 0
 
                 Button {
                     text: qsTr("Cancel")
