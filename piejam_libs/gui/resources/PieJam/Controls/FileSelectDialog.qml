@@ -166,6 +166,8 @@ Item {
                 Layout.fillWidth: true
 
                 enabled: root.allowFileNameEditing && root.model
+
+                placeholderText: qsTr("<File name>")
             }
         }
 
