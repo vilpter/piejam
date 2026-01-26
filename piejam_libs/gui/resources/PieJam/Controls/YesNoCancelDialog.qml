@@ -30,8 +30,6 @@ Dialog {
     footer: Item {
         implicitHeight: 64
 
-        Material.foreground: Material.accentColor
-
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 24
