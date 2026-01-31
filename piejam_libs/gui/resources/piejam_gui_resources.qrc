@@ -20,9 +20,7 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/Controls/MidiAssignArea.qml</file>
         <file>PieJam/Controls/MidiLearn.qml</file>
         <file>PieJam/Controls/ModelSubscription.qml</file>
-        <file>PieJam/Controls/OpenFileDialog.qml</file>
         <file>PieJam/Controls/QuickSpinBox.qml</file>
-        <file>PieJam/Controls/SaveFileDialog.qml</file>
         <file>PieJam/Controls/StringTextField.qml</file>
         <file>PieJam/Controls/SubscribableItem.qml</file>
         <file>PieJam/Controls/SymmetricBipolarSlider.qml</file>
@@ -30,6 +28,11 @@ SPDX-License-Identifier: CC0-1.0
         <file>PieJam/Controls/ValueIndicatorBar.qml</file>
         <file>PieJam/Controls/XYPad.qml</file>
         <file>PieJam/Controls/qmldir</file>
+        <file>PieJam/Dialogs/FileSelectDialog.qml</file>
+        <file>PieJam/Dialogs/OpenFileDialog.qml</file>
+        <file>PieJam/Dialogs/SaveFileDialog.qml</file>
+        <file>PieJam/Dialogs/YesNoCancelDialog.qml</file>
+        <file>PieJam/Dialogs/qmldir</file>
         <file>PieJam/FxChainControls/EnumButtonGroup.qml</file>
         <file>PieJam/FxChainControls/GenericFxModuleView.qml</file>
         <file>PieJam/FxChainControls/IntSlider.qml</file>
@@ -112,7 +115,5 @@ SPDX-License-Identifier: CC0-1.0
         <file>images/icons/power.svg</file>
         <file>images/icons/tune-vertical.svg</file>
         <file>qtquickcontrols2.conf</file>
-        <file>PieJam/Controls/YesNoCancelDialog.qml</file>
-        <file>PieJam/Controls/FileSelectDialog.qml</file>
     </qresource>
 </RCC>

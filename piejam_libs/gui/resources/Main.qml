@@ -9,6 +9,7 @@ import QtQuick.Window 2.15
 
 import QtQml 2.15
 
+import PieJam.Dialogs 1.0
 import PieJam.Models 1.0 as PJModels
 import PieJam.Views 1.0
 
