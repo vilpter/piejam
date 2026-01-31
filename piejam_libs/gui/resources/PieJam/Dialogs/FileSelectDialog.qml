@@ -26,8 +26,8 @@ Item {
 
         property PJModels.FileDialog model: null
 
-        implicitWidth: 800
-        implicitHeight: 480
+        width: Overlay.overlay.width
+        height: Overlay.overlay.height
 
         parent: Overlay.overlay
         anchors.centerIn: Overlay.overlay
