@@ -39,7 +39,7 @@ internal_id() -> runtime::fx::internal_id
                 "Observe waveform of an audio signal.",
             .fx_module_content_factory =
                 &piejam::gui::model::makeFxModule<gui::FxScope>,
-            .viewSource = "/PieJam.FxModules/ScopeView.qml"});
+            .viewSource = "/PieJam/FxModules/ScopeView.qml"});
 
     return s_id;
 }

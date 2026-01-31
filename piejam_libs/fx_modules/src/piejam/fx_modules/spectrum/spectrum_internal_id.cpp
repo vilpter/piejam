@@ -39,7 +39,7 @@ internal_id() -> runtime::fx::internal_id
                 "Analyze frequency content of an audio signal.",
             .fx_module_content_factory =
                 &piejam::gui::model::makeFxModule<gui::FxSpectrum>,
-            .viewSource = "/PieJam.FxModules/SpectrumView.qml"});
+            .viewSource = "/PieJam/FxModules/SpectrumView.qml"});
     return id;
 }
 

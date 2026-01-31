@@ -38,7 +38,7 @@ internal_id() -> runtime::fx::internal_id
             .fx_browser_entry_description = "Filter an audio signal.",
             .fx_module_content_factory =
                 &piejam::gui::model::makeFxModule<gui::FxFilter>,
-            .viewSource = "/PieJam.FxModules/FilterView.qml"});
+            .viewSource = "/PieJam/FxModules/FilterView.qml"});
     return id;
 }
 

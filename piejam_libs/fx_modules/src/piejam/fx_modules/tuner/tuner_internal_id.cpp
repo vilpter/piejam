@@ -38,7 +38,7 @@ internal_id() -> runtime::fx::internal_id
             .fx_browser_entry_description = "Detect pitch of an audio signal.",
             .fx_module_content_factory =
                 &piejam::gui::model::makeFxModule<gui::FxTuner>,
-            .viewSource = "/PieJam.FxModules/TunerView.qml"});
+            .viewSource = "/PieJam/FxModules/TunerView.qml"});
     return id;
 }
 
