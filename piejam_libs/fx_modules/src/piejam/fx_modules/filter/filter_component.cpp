@@ -15,15 +15,13 @@
 #include <piejam/audio/engine/identity_processor.h>
 #include <piejam/audio/engine/named_processor.h>
 #include <piejam/audio/engine/single_event_input_processor.h>
-#include <piejam/audio/engine/stream_processor.h>
 #include <piejam/audio/sample_rate.h>
 #include <piejam/audio/slice_algorithms.h>
-#include <piejam/runtime/components/stream.h>
+#include <piejam/runtime/components/in_out_stream.h>
 #include <piejam/runtime/fx/module.h>
 #include <piejam/runtime/internal_fx_component_factory.h>
 #include <piejam/runtime/parameter/map.h>
 #include <piejam/runtime/parameter_processor_factory.h>
-#include <piejam/runtime/processors/stream_processor_factory.h>
 
 namespace piejam::fx_modules::filter
 {
@@ -220,21 +218,6 @@ filter_channel_name(std::size_t ch)
     }
 }
 
-auto
-make_in_out_stream(
-    audio::bus_type bus_type,
-    runtime::audio_stream_id stream_id,
-    runtime::processors::stream_processor_factory& stream_proc_factory,
-    std::size_t const buffer_capacity_per_channel)
-{
-    return runtime::components::make_stream(
-        stream_id,
-        stream_proc_factory,
-        num_channels(bus_type) * 2,
-        buffer_capacity_per_channel,
-        "filter_in_out");
-}
-
 template <std::size_t... Channel>
 class component final : public audio::engine::component
 {
@@ -252,13 +235,6 @@ public:
               args.fx_mod.parameters->at(parameter_key::resonance),
               "res"))
         , m_coeffs_proc(make_coefficent_converter_processor(args.sample_rate))
-        , m_in_out_stream(make_in_out_stream(
-              args.fx_mod.bus_type,
-              args.fx_mod.streams->at(
-                  std::to_underlying(fx_modules::filter::stream_key::in_out)),
-              args.stream_procs,
-              args.sample_rate.samples_for_duration(
-                  std::chrono::milliseconds(120))))
     {
     }
 
@@ -285,8 +261,6 @@ public:
     void connect(audio::engine::graph& g) const override
     {
         using namespace audio::engine::endpoint_ports;
-
-        m_in_out_stream->connect(g);
 
         audio::engine::connect_event(
             g,
@@ -340,22 +314,6 @@ public:
              *m_filter2_procs[Channel],
              to<0>),
          ...);
-
-        (audio::engine::connect(
-             g,
-             *m_input_procs[Channel],
-             from<0>,
-             *m_in_out_stream,
-             to<Channel>),
-         ...);
-
-        (audio::engine::connect(
-             g,
-             *m_filter2_procs[Channel],
-             from<0>,
-             *m_in_out_stream,
-             to<Channel + num_channels>),
-         ...);
     }
 
 private:
@@ -376,7 +334,6 @@ private:
             ((void)Channel,
              std::make_unique<processor>(
                  filter_channel_name<num_channels>(Channel)))...};
-    std::shared_ptr<audio::engine::component> m_in_out_stream;
     std::array<audio::engine::graph_endpoint, num_channels> m_inputs{
         audio::engine::graph_endpoint{
             .proc = *m_input_procs[Channel],
@@ -400,7 +357,13 @@ make_component(
     std::index_sequence<Channel...>)
     -> std::unique_ptr<audio::engine::component>
 {
-    return std::make_unique<component<Channel...>>(args);
+    return runtime::components::wrap_with_in_out_stream(
+        std::make_unique<component<Channel...>>(args),
+        "filter_in_out",
+        args.fx_mod.streams->at(
+            std::to_underlying(fx_modules::filter::stream_key::in_out)),
+        args.stream_procs,
+        args.sample_rate.samples_for_duration(std::chrono::milliseconds(120)));
 }
 
 } // namespace

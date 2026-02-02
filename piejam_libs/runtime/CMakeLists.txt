@@ -179,6 +179,8 @@ add_library(piejam_runtime STATIC
     src/piejam/runtime/state.cpp
     src/piejam/runtime/state_access.cpp
     src/piejam/runtime/thunk_action.cpp
+    include/piejam/runtime/components/in_out_stream.h
+    src/piejam/runtime/components/in_out_stream.cpp
 )
 
 find_package(nlohmann_json REQUIRED)
