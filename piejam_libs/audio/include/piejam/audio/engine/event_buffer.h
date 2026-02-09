@@ -82,6 +82,13 @@ public:
         return m_event_container.end();
     }
 
+    [[nodiscard]]
+    auto front() const -> event<T> const&
+    {
+        BOOST_ASSERT(!m_event_container.empty());
+        return *m_event_container.begin();
+    }
+
     template <std::convertible_to<T> V>
     void insert(std::size_t const offset, V&& value)
     {
