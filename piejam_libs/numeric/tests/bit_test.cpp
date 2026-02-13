@@ -4,6 +4,7 @@
 
 #include <piejam/numeric/bit.h>
 #include <piejam/numeric/intx.h>
+#include <piejam/numeric/type_traits.h>
 
 #include <gtest/gtest.h>
 
@@ -41,8 +42,10 @@ TYPED_TEST(bit_toggle, toggle)
         [this]<std::size_t B>(std::integral_constant<std::size_t, B>) {
             static_assert(B < sizeof(type) * CHAR_BIT);
 
+            using utype = make_unsigned_t<type>;
+
             auto const zero = type{0};
-            auto const toggled = type{static_cast<type>(1ul << B)};
+            auto const toggled = type{static_cast<type>(utype{1} << B)};
             EXPECT_EQ(toggled, toggle(zero, B));
             EXPECT_EQ(zero, toggle(toggled, B));
             EXPECT_EQ(toggled, toggle<B>(zero));
