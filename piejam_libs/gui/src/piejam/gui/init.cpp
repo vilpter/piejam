@@ -39,6 +39,7 @@
 #include <piejam/gui/model/MidiDeviceConfig.h>
 #include <piejam/gui/model/MidiInputSettings.h>
 #include <piejam/gui/model/Mixer.h>
+#include <piejam/gui/model/NetworkSettings.h>
 #include <piejam/gui/model/MixerChannel.h>
 #include <piejam/gui/model/MixerChannelAdd.h>
 #include <piejam/gui/model/MixerChannelAuxSend.h>
@@ -129,6 +130,7 @@ runRegistration()
     PIEJAM_GUI_MODEL(model::MixerChannelFx, "MixerChannelFx");
     PIEJAM_GUI_MODEL(model::MixerChannelModels, "MixerChannelModels");
     PIEJAM_GUI_MODEL(model::MixerChannelPerform, "MixerChannelPerform");
+    PIEJAM_GUI_MODEL(model::NetworkSettings, "NetworkSettings");
     PIEJAM_GUI_MODEL(model::Parameter, "Parameter");
     PIEJAM_GUI_MODEL(model::SessionSettings, "SessionSettings");
     PIEJAM_GUI_MODEL(model::Root, "Root");

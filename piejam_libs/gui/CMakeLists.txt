@@ -71,6 +71,7 @@ add_library(piejam_gui STATIC
     include/piejam/gui/model/MidiDeviceConfig.h
     include/piejam/gui/model/MidiInputSettings.h
     include/piejam/gui/model/Mixer.h
+    include/piejam/gui/model/NetworkSettings.h
     include/piejam/gui/model/MixerChannel.h
     include/piejam/gui/model/MixerChannelAdd.h
     include/piejam/gui/model/MixerChannelAuxSend.h
@@ -139,6 +140,7 @@ add_library(piejam_gui STATIC
     src/piejam/gui/model/MidiDeviceConfig.cpp
     src/piejam/gui/model/MidiInputSettings.cpp
     src/piejam/gui/model/Mixer.cpp
+    src/piejam/gui/model/NetworkSettings.cpp
     src/piejam/gui/model/MixerChannel.cpp
     src/piejam/gui/model/MixerChannelAdd.cpp
     src/piejam/gui/model/MixerChannelAuxSend.cpp
@@ -173,6 +175,7 @@ target_link_libraries(piejam_gui
     piejam_log
     piejam_numeric
     piejam_runtime
+    piejam_network_manager
 
     PRIVATE
     piejam_compiler_warnings

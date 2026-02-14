@@ -7,8 +7,10 @@
 #include <piejam/gui/PropertyMacros.h>
 #include <piejam/gui/model/SubscribableModel.h>
 #include <piejam/gui/model/fwd.h>
+#include <piejam/network_manager/fwd.h>
 
 #include <filesystem>
+#include <memory>
 
 namespace piejam::gui::model
 {
@@ -43,6 +45,10 @@ class Root final : public CompositeSubscribableModel
         piejam::gui::model::SessionSettings*,
         sessionSettings)
 
+    PIEJAM_GUI_CONSTANT_PROPERTY(
+        piejam::gui::model::NetworkSettings*,
+        networkSettings)
+
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Mixer*, mixer)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Info*, info)
     PIEJAM_GUI_CONSTANT_PROPERTY(piejam::gui::model::Log*, log)
@@ -69,7 +75,11 @@ private:
 public:
     explicit Root(
         runtime::state_access const&,
-        std::filesystem::path sessions_dir);
+        std::filesystem::path sessions_dir,
+        std::shared_ptr<network_manager::network_controller> = nullptr,
+        std::shared_ptr<network_manager::wifi_manager> = nullptr,
+        std::shared_ptr<network_manager::nfs_server> = nullptr,
+        std::shared_ptr<network_manager::nfs_client> = nullptr);
 
     Q_INVOKABLE void showMixer();
     Q_INVOKABLE void showFxModule();
