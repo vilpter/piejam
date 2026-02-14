@@ -15,6 +15,11 @@
 #include <piejam/midi/device_manager.h>
 #include <piejam/midi/device_update.h>
 #include <piejam/midi/input_event_handler.h>
+#include <piejam/network_manager/network_controller.h>
+#include <piejam/network_manager/network_middleware.h>
+#include <piejam/network_manager/nfs_client.h>
+#include <piejam/network_manager/nfs_server.h>
+#include <piejam/network_manager/wifi_manager.h>
 #include <piejam/range/iota.h>
 #include <piejam/redux/middleware_factory.h>
 #include <piejam/redux/queueing_middleware.h>
@@ -196,6 +201,29 @@ main(int argc, char* argv[]) -> int
         middleware_factory::make<runtime::recorder_middleware>(
             locs.recordings_dir));
 
+    auto network_ctrl =
+        std::make_shared<network_manager::network_controller>();
+    auto wifi_mgr = std::make_shared<network_manager::wifi_manager>();
+    auto nfs_srv = std::make_shared<network_manager::nfs_server>();
+    auto nfs_cli = std::make_shared<network_manager::nfs_client>(
+        locs.config_dir + "/nfs_mounts.json");
+
+    store.apply_middleware(
+        middleware_factory::make<network_manager::network_middleware<
+            runtime::state,
+            runtime::action>>(
+            network_ctrl,
+            [](runtime::action const& a) {
+                return dynamic_cast<
+                           runtime::actions::start_recording const*>(
+                           &a) != nullptr;
+            },
+            [](runtime::action const& a) {
+                return dynamic_cast<
+                           runtime::actions::stop_recording const*>(
+                           &a) != nullptr;
+            }));
+
     auto audio_workers = piejam::algorithm::transform_to_vector(
         piejam::range::iota(hw_threads - 1),
         [=](std::size_t const i) {
@@ -259,7 +287,11 @@ main(int argc, char* argv[]) -> int
 
     gui::model::Root rootModel(
         runtime::state_access{store, state_change_subscriber},
-        locs.sessions_dir);
+        locs.sessions_dir,
+        network_ctrl,
+        wifi_mgr,
+        nfs_srv,
+        nfs_cli);
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");

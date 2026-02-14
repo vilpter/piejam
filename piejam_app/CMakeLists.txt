@@ -11,6 +11,7 @@ target_link_libraries(piejam_app
     piejam_algorithm
     piejam_log
     piejam_gui
+    piejam_network_manager
     piejam_fx_modules
     m
 )
