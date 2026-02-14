@@ -15,6 +15,7 @@ add_subdirectory(ladspa)
 add_subdirectory(redux)
 add_subdirectory(thread)
 add_subdirectory(runtime)
+add_subdirectory(network_manager)
 add_subdirectory(gui)
 add_subdirectory(fx_modules)
 
