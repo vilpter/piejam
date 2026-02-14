@@ -206,7 +206,7 @@ main(int argc, char* argv[]) -> int
     auto wifi_mgr = std::make_shared<network_manager::wifi_manager>();
     auto nfs_srv = std::make_shared<network_manager::nfs_server>();
     auto nfs_cli = std::make_shared<network_manager::nfs_client>(
-        locs.config_dir + "/nfs_mounts.json");
+        locs.config_dir / "nfs_mounts.json");
 
     store.apply_middleware(
         middleware_factory::make<network_manager::network_middleware<
