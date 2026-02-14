@@ -1132,4 +1132,16 @@ selector<bool> const select_session_modified([](state const& st) {
     return st.session_modified;
 });
 
+selector<bool> const select_wifi_enabled([](state const& st) {
+    return st.wifi_enabled;
+});
+
+selector<bool> const select_wifi_auto_disable_on_record([](state const& st) {
+    return st.wifi_auto_disable_on_record;
+});
+
+selector<bool> const select_nfs_server_enabled([](state const& st) {
+    return st.nfs_server_enabled;
+});
+
 } // namespace piejam::runtime::selectors

@@ -93,6 +93,11 @@ struct state
     runtime::startup_session startup_session{runtime::startup_session::last};
     box<std::filesystem::path> current_session;
     bool session_modified{false};
+
+    // Network state
+    bool wifi_enabled{false};
+    bool wifi_auto_disable_on_record{true};
+    bool nfs_server_enabled{false};
 };
 
 auto make_initial_state() -> state;
