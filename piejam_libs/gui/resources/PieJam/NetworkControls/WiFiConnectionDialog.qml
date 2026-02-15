@@ -16,10 +16,11 @@ Dialog {
     property alias rememberNetwork: rememberCheckBox.checked
 
     parent: Overlay.overlay
-    anchors.centerIn: parent
+    anchors.horizontalCenter: parent.horizontalCenter
+    y: 8
     width: 400
 
-    title: qsTr("Connect to Network")
+    title: qsTr("Connect to ") + root.ssid
 
     modal: true
     focus: true
@@ -42,22 +43,6 @@ Dialog {
     ColumnLayout {
         anchors.fill: parent
         spacing: 16
-
-        // Network name display
-        RowLayout {
-            Layout.fillWidth: true
-
-            Label {
-                text: qsTr("Network:")
-                font.bold: true
-            }
-
-            Label {
-                text: root.ssid
-                Layout.fillWidth: true
-                elide: Text.ElideRight
-            }
-        }
 
         // Security type display
         RowLayout {

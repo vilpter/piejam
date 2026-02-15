@@ -63,6 +63,15 @@ NetworkSettings::onSubscribe()
         runtime::selectors::select_wifi_enabled,
         [this](bool enabled) {
             setNetworkEnabled(enabled);
+            if (!enabled)
+            {
+                setWifiConnected(false);
+                setCurrentSsid(QString());
+                setIpAddress(QString());
+                setSignalStrength(0);
+                setIsConnecting(false);
+                setIsScanning(false);
+            }
         });
 
     observe(
