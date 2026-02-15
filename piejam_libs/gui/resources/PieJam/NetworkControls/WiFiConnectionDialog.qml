@@ -16,8 +16,7 @@ Dialog {
     property alias rememberNetwork: rememberCheckBox.checked
 
     parent: Overlay.overlay
-    anchors.horizontalCenter: parent.horizontalCenter
-    y: 8
+    anchors.centerIn: parent
     width: 400
 
     title: qsTr("Connect to ") + root.ssid
