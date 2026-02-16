@@ -19,8 +19,8 @@ Dialog {
     x: Math.round((parent.width - width) / 2)
     y: 8
     width: 550
-
-    title: qsTr("Connect to ") + root.ssid
+    topPadding: 4
+    bottomPadding: 4
 
     modal: true
     focus: true
@@ -40,73 +40,78 @@ Dialog {
         passwordField.text = ""
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 4
+    // Title row with Remember checkbox inline
+    header: RowLayout {
+        spacing: 8
 
-        // Top row: Remember checkbox (right-aligned)
-        RowLayout {
-            Layout.fillWidth: true
-
-            Item { Layout.fillWidth: true }
-
-            CheckBox {
-                id: rememberCheckBox
-
-                text: qsTr("Remember")
-                checked: true
-                font.pixelSize: 12
-            }
-        }
-
-        // Password row: Security label + password field (hidden for open networks)
-        RowLayout {
-            Layout.fillWidth: true
-            visible: root.securityType !== "Open"
-            spacing: 8
-
-            Label {
-                text: root.securityType
-                font.pixelSize: 12
-                opacity: 0.7
-                visible: root.securityType !== "" && root.securityType !== "Open"
-            }
-
-            TextField {
-                id: passwordField
-
-                Layout.fillWidth: true
-
-                placeholderText: qsTr("Enter password")
-                echoMode: showPasswordButton.checked ? TextInput.Normal : TextInput.Password
-                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-
-                Keys.onReturnPressed: root.accept()
-                Keys.onEnterPressed: root.accept()
-
-                Button {
-                    id: showPasswordButton
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: 4
-
-                    flat: true
-                    checkable: true
-                    text: checked ? qsTr("Hide") : qsTr("Show")
-                    font.pixelSize: 12
-                }
-            }
-        }
-
-        // Info text for open networks
         Label {
             Layout.fillWidth: true
-            visible: root.securityType === "Open"
-            text: qsTr("This is an open network. No password required.")
-            font.italic: true
-            opacity: 0.7
-            wrapMode: Text.WordWrap
+            Layout.leftMargin: 16
+            Layout.topMargin: 8
+            Layout.bottomMargin: 4
+            text: qsTr("Connect to ") + root.ssid
+            font.pixelSize: 16
+            font.bold: true
+            elide: Text.ElideRight
         }
+
+        CheckBox {
+            id: rememberCheckBox
+
+            Layout.rightMargin: 8
+            text: qsTr("Remember")
+            checked: true
+            font.pixelSize: 12
+        }
+    }
+
+    // Password row: Security label + password field
+    RowLayout {
+        anchors.fill: parent
+        visible: root.securityType !== "Open"
+        spacing: 8
+
+        Label {
+            text: root.securityType
+            font.pixelSize: 12
+            opacity: 0.7
+            visible: root.securityType !== "" && root.securityType !== "Open"
+        }
+
+        TextField {
+            id: passwordField
+
+            Layout.fillWidth: true
+
+            placeholderText: qsTr("Enter password")
+            echoMode: showPasswordButton.checked ? TextInput.Normal : TextInput.Password
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+
+            Keys.onReturnPressed: root.accept()
+            Keys.onEnterPressed: root.accept()
+
+            Button {
+                id: showPasswordButton
+
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.rightMargin: 4
+
+                flat: true
+                checkable: true
+                text: checked ? qsTr("Hide") : qsTr("Show")
+                font.pixelSize: 12
+            }
+        }
+    }
+
+    // Info text for open networks (replaces password row)
+    Label {
+        anchors.fill: parent
+        visible: root.securityType === "Open"
+        text: qsTr("This is an open network. No password required.")
+        font.italic: true
+        opacity: 0.7
+        wrapMode: Text.WordWrap
     }
 }
