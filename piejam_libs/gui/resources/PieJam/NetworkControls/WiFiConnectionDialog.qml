@@ -18,7 +18,7 @@ Dialog {
     parent: Overlay.overlay
     x: Math.round((parent.width - width) / 2)
     y: 8
-    width: 400
+    width: 550
 
     title: qsTr("Connect to ") + root.ssid
 
@@ -42,38 +42,40 @@ Dialog {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 16
+        spacing: 4
 
-        // Security type display
+        // Top row: Remember checkbox (right-aligned)
         RowLayout {
             Layout.fillWidth: true
-            visible: root.securityType !== "" && root.securityType !== "Open"
 
-            Label {
-                text: qsTr("Security:")
-                font.bold: true
-            }
+            Item { Layout.fillWidth: true }
 
-            Label {
-                text: root.securityType
+            CheckBox {
+                id: rememberCheckBox
+
+                text: qsTr("Remember")
+                checked: true
+                font.pixelSize: 12
             }
         }
 
-        // Password field (hidden for open networks)
-        ColumnLayout {
+        // Password row: Security label + password field (hidden for open networks)
+        RowLayout {
             Layout.fillWidth: true
             visible: root.securityType !== "Open"
-            spacing: 4
+            spacing: 8
 
             Label {
-                text: qsTr("Password")
+                text: root.securityType
+                font.pixelSize: 12
+                opacity: 0.7
+                visible: root.securityType !== "" && root.securityType !== "Open"
             }
 
             TextField {
                 id: passwordField
 
                 Layout.fillWidth: true
-                Layout.preferredWidth: 300
 
                 placeholderText: qsTr("Enter password")
                 echoMode: showPasswordButton.checked ? TextInput.Normal : TextInput.Password
@@ -95,14 +97,6 @@ Dialog {
                     font.pixelSize: 12
                 }
             }
-        }
-
-        // Remember network checkbox
-        CheckBox {
-            id: rememberCheckBox
-
-            text: qsTr("Remember this network")
-            checked: true
         }
 
         // Info text for open networks
