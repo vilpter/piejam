@@ -207,6 +207,6 @@ SubscribableItem {
     Binding {
         target: VirtualKeyboardSettings
         property: "fullScreenMode"
-        value: Qt.inputMethod.visible
+        value: false
     }
 }
