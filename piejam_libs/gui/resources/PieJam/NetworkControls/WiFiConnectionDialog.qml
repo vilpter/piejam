@@ -65,54 +65,45 @@ Dialog {
         }
     }
 
-    // Password row: Security label + password field
-    RowLayout {
-        anchors.fill: parent
-        implicitHeight: 48
-        visible: root.securityType !== "Open"
-        spacing: 8
+    ColumnLayout {
+        width: parent.width
+        spacing: 0
 
-        Label {
-            text: root.securityType
-            font.pixelSize: 12
-            opacity: 0.7
-            visible: root.securityType !== "" && root.securityType !== "Open"
-        }
-
-        TextField {
-            id: passwordField
-
+        // Password row: Security label + password field
+        RowLayout {
             Layout.fillWidth: true
+            visible: root.securityType !== "Open"
+            spacing: 8
 
-            placeholderText: qsTr("Enter password")
-            echoMode: showPasswordButton.checked ? TextInput.Normal : TextInput.Password
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-
-            Keys.onReturnPressed: root.accept()
-            Keys.onEnterPressed: root.accept()
-
-            Button {
-                id: showPasswordButton
-
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.rightMargin: 4
-
-                flat: true
-                checkable: true
-                text: checked ? qsTr("Hide") : qsTr("Show")
+            Label {
+                text: root.securityType
                 font.pixelSize: 12
+                opacity: 0.7
+                visible: root.securityType !== "" && root.securityType !== "Open"
+            }
+
+            TextField {
+                id: passwordField
+
+                Layout.fillWidth: true
+
+                placeholderText: qsTr("Enter password")
+                echoMode: TextInput.Normal
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+
+                Keys.onReturnPressed: root.accept()
+                Keys.onEnterPressed: root.accept()
             }
         }
-    }
 
-    // Info text for open networks (replaces password row)
-    Label {
-        anchors.fill: parent
-        visible: root.securityType === "Open"
-        text: qsTr("This is an open network. No password required.")
-        font.italic: true
-        opacity: 0.7
-        wrapMode: Text.WordWrap
+        // Info text for open networks
+        Label {
+            Layout.fillWidth: true
+            visible: root.securityType === "Open"
+            text: qsTr("This is an open network. No password required.")
+            font.italic: true
+            opacity: 0.7
+            wrapMode: Text.WordWrap
+        }
     }
 }
