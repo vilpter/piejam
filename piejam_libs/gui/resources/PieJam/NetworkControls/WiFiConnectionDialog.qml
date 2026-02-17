@@ -68,6 +68,7 @@ Dialog {
     // Password row: Security label + password field
     RowLayout {
         anchors.fill: parent
+        implicitHeight: 48
         visible: root.securityType !== "Open"
         spacing: 8
 
