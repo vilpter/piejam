@@ -18,7 +18,7 @@ Dialog {
     parent: Overlay.overlay
     x: Math.round((parent.width - width) / 2)
     y: 8
-    width: 550
+    width: Math.min(550, parent.width - 16)
     topPadding: 4
     bottomPadding: 4
 
@@ -76,7 +76,7 @@ Dialog {
             spacing: 8
 
             Label {
-                text: root.securityType
+                text: root.securityType + " Password"
                 font.pixelSize: 12
                 opacity: 0.7
                 visible: root.securityType !== "" && root.securityType !== "Open"

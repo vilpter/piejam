@@ -328,7 +328,12 @@ NetworkSettings::connectToNetwork(
         password.toStdString(),
         remember);
 
-    if (!result.success)
+    if (result.success)
+    {
+        auto saved = m_impl->wifiManager->saved_networks();
+        m_impl->savedNetworksModel->setNetworks(std::move(saved));
+    }
+    else
     {
         setIsConnecting(false);
 
