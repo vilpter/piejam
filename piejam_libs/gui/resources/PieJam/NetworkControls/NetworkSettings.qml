@@ -72,7 +72,7 @@ Item {
             Button {
                 text: qsTr("Scan")
                 flat: true
-                enabled: root.model && !root.model.isScanning
+                enabled: root.model && root.model.networkEnabled && !root.model.isScanning
                 onClicked: {
                     if (root.model) {
                         root.model.scanNetworks()
@@ -104,6 +104,7 @@ Item {
             Button {
                 text: qsTr("Saved Networks")
                 flat: true
+                enabled: root.model && root.model.networkEnabled
                 onClicked: savedNetworksPopup.open()
             }
 
@@ -222,6 +223,17 @@ Item {
                         Label {
                             text: model.security
                             opacity: 0.6
+                        }
+
+                        ToolButton {
+                            text: qsTr("Connect")
+                            font.pixelSize: 12
+                            onClicked: {
+                                if (root.model) {
+                                    savedNetworksPopup.close()
+                                    root.model.connectToNetwork(model.ssid, "", false)
+                                }
+                            }
                         }
 
                         ToolButton {
