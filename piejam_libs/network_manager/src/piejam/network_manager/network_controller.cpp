@@ -221,17 +221,13 @@ unmount_all_nfs()
 
 struct network_controller::impl
 {
-    bool enabled{true};
+    bool enabled{false};
     bool auto_disable_on_record{false};
     state_change_callback on_state_change;
 
     impl()
     {
-        // Initialize state from actual system state
-        enabled = is_wifi_interface_up();
-        spdlog::info(
-            "Network controller initialized, WiFi {}",
-            enabled ? "enabled" : "disabled");
+        spdlog::info("Network controller initialized, WiFi disabled (user must enable)");
     }
 };
 
