@@ -50,16 +50,6 @@ execute_command_with_output(char const* cmd)
     return result;
 }
 
-/// Check if WiFi interface is up
-bool
-is_wifi_interface_up()
-{
-    // Check if wlan0 is up using ip command
-    std::string output =
-        execute_command_with_output("ip link show wlan0 2>/dev/null | grep 'state UP'");
-    return !output.empty();
-}
-
 /// Start wpa_supplicant if not already running
 bool
 ensure_wpa_supplicant_running()
