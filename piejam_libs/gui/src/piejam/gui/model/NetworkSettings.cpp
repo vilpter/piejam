@@ -299,6 +299,8 @@ NetworkSettings::toggleNetwork()
         {
             m_impl->networkController->enable();
         }
+
+        setNetworkEnabled(m_impl->networkController->is_enabled());
     }
 }
 
