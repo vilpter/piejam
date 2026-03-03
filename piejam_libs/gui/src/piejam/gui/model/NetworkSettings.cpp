@@ -371,13 +371,13 @@ NetworkSettings::forgetNetwork(QString const& ssid)
 QObject*
 NetworkSettings::availableNetworks() const
 {
-    return m_impl->availableNetworksModel.get();
+    return m_impl->availableNetworksModel;
 }
 
 QObject*
 NetworkSettings::savedNetworks() const
 {
-    return m_impl->savedNetworksModel.get();
+    return m_impl->savedNetworksModel;
 }
 
 void
@@ -439,7 +439,7 @@ NetworkSettings::testNfsServer()
 QObject*
 NetworkSettings::nfsMounts() const
 {
-    return m_impl->nfsMountModel.get();
+    return m_impl->nfsMountModel;
 }
 
 void
