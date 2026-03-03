@@ -16,7 +16,7 @@
 namespace piejam::gui::model
 {
 
-class NetworkSettings final : public SubscribableModel
+class NetworkSettings final : public CompositeSubscribableModel
 {
     Q_OBJECT
 

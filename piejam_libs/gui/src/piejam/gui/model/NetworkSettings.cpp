@@ -25,9 +25,9 @@ struct NetworkSettings::impl
     std::shared_ptr<network_manager::nfs_server> nfsServer;
     std::shared_ptr<network_manager::nfs_client> nfsClient;
 
-    std::unique_ptr<network_manager::WiFiNetworkModel> availableNetworksModel;
-    std::unique_ptr<network_manager::WiFiSavedNetworkModel> savedNetworksModel;
-    std::unique_ptr<network_manager::NFSMountModel> nfsMountModel;
+    network_manager::WiFiNetworkModel* availableNetworksModel{};
+    network_manager::WiFiSavedNetworkModel* savedNetworksModel{};
+    network_manager::NFSMountModel* nfsMountModel{};
 };
 
 NetworkSettings::NetworkSettings(
@@ -36,7 +36,7 @@ NetworkSettings::NetworkSettings(
     std::shared_ptr<network_manager::wifi_manager> wifiMgr,
     std::shared_ptr<network_manager::nfs_server> nfsSrv,
     std::shared_ptr<network_manager::nfs_client> nfsCli)
-    : SubscribableModel{state_access}
+    : CompositeSubscribableModel{state_access}
     , m_impl(std::make_unique<impl>())
 {
     m_impl->networkController = std::move(netCtrl);
@@ -45,11 +45,11 @@ NetworkSettings::NetworkSettings(
     m_impl->nfsClient = std::move(nfsCli);
 
     m_impl->availableNetworksModel =
-        std::make_unique<network_manager::WiFiNetworkModel>(this);
+        &addQObject<network_manager::WiFiNetworkModel>();
     m_impl->savedNetworksModel =
-        std::make_unique<network_manager::WiFiSavedNetworkModel>(this);
+        &addQObject<network_manager::WiFiSavedNetworkModel>();
     m_impl->nfsMountModel =
-        std::make_unique<network_manager::NFSMountModel>(this);
+        &addQObject<network_manager::NFSMountModel>();
 
     setupCallbacks();
 }
