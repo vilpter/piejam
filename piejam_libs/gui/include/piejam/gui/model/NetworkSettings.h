@@ -22,7 +22,6 @@ class NetworkSettings final : public CompositeSubscribableModel
 
     // Redux-backed properties (observed via selectors)
     PIEJAM_GUI_PROPERTY(bool, networkEnabled, setNetworkEnabled)
-    PIEJAM_GUI_PROPERTY(bool, autoDisableOnRecord, setAutoDisableOnRecord)
     PIEJAM_GUI_PROPERTY(bool, nfsServerEnabled, setNfsServerEnabled)
 
     // Backend-backed properties (updated via callbacks)

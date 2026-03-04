@@ -20,9 +20,6 @@ enum class wifi_security;
 enum class wifi_band;
 enum class wifi_connection_status;
 
-template <class State, class Action>
-class network_middleware;
-
 // NFS types
 class nfs_server;
 class nfs_client;

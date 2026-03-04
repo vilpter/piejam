@@ -17,15 +17,6 @@ struct set_wifi_enabled final
     void reduce(state&) const override;
 };
 
-struct set_wifi_auto_disable_on_record final
-    : ui::cloneable_action<
-          set_wifi_auto_disable_on_record,
-          reducible_action>
-{
-    bool enabled{};
-    void reduce(state&) const override;
-};
-
 struct set_nfs_server_enabled final
     : ui::cloneable_action<set_nfs_server_enabled, reducible_action>
 {

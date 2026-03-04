@@ -212,7 +212,6 @@ unmount_all_nfs()
 struct network_controller::impl
 {
     bool enabled{false};
-    bool auto_disable_on_record{false};
     state_change_callback on_state_change;
 
     impl()
@@ -236,12 +235,6 @@ bool
 network_controller::is_enabled() const noexcept
 {
     return m_impl->enabled;
-}
-
-bool
-network_controller::auto_disable_on_record() const noexcept
-{
-    return m_impl->auto_disable_on_record;
 }
 
 bool
@@ -297,39 +290,6 @@ network_controller::disable()
     }
 
     return true;
-}
-
-void
-network_controller::set_auto_disable_on_record(bool enabled)
-{
-    m_impl->auto_disable_on_record = enabled;
-    spdlog::info(
-        "Auto-disable network on recording: {}",
-        enabled ? "enabled" : "disabled");
-}
-
-bool
-network_controller::on_recording_start()
-{
-    bool was_enabled = m_impl->enabled;
-
-    if (m_impl->auto_disable_on_record && m_impl->enabled)
-    {
-        spdlog::info("Auto-disabling network for recording");
-        disable();
-    }
-
-    return was_enabled;
-}
-
-void
-network_controller::on_recording_stop(bool restore_to_enabled)
-{
-    if (m_impl->auto_disable_on_record && restore_to_enabled && !m_impl->enabled)
-    {
-        spdlog::info("Restoring network after recording");
-        enable();
-    }
 }
 
 void

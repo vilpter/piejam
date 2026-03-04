@@ -16,7 +16,6 @@
 #include <piejam/midi/device_update.h>
 #include <piejam/midi/input_event_handler.h>
 #include <piejam/network_manager/network_controller.h>
-#include <piejam/network_manager/network_middleware.h>
 #include <piejam/network_manager/nfs_client.h>
 #include <piejam/network_manager/nfs_server.h>
 #include <piejam/network_manager/wifi_manager.h>
@@ -207,22 +206,6 @@ main(int argc, char* argv[]) -> int
     auto nfs_srv = std::make_shared<network_manager::nfs_server>();
     auto nfs_cli = std::make_shared<network_manager::nfs_client>(
         locs.config_dir / "nfs_mounts.json");
-
-    store.apply_middleware(
-        middleware_factory::make<network_manager::network_middleware<
-            runtime::state,
-            runtime::action>>(
-            network_ctrl,
-            [](runtime::action const& a) {
-                return dynamic_cast<
-                           runtime::actions::start_recording const*>(
-                           &a) != nullptr;
-            },
-            [](runtime::action const& a) {
-                return dynamic_cast<
-                           runtime::actions::stop_recording const*>(
-                           &a) != nullptr;
-            }));
 
     auto audio_workers = piejam::algorithm::transform_to_vector(
         piejam::range::iota(hw_threads - 1),

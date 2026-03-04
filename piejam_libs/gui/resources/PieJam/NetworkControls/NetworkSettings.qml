@@ -43,16 +43,28 @@ SubscribableItem {
 
             Item { Layout.fillWidth: true }
 
-            // Connection status
+            // Connection status - show IP when connected
             Label {
-                text: root.model && root.model.wifiConnected
-                      ? root.model.currentSsid + "  " + root.model.ipAddress
-                      : (root.model && root.model.isConnecting
-                         ? qsTr("Connecting...")
-                         : qsTr("Disconnected"))
-                color: root.model && root.model.wifiConnected
-                       ? Material.color(Material.Green)
-                       : Material.foreground
+                text: {
+                    if (!root.model)
+                        return ""
+                    if (root.model.wifiConnected && root.model.ipAddress !== "")
+                        return root.model.ipAddress
+                    if (root.model.networkEnabled && !root.model.wifiConnected)
+                        return root.model.isConnecting
+                               ? qsTr("Connecting...")
+                               : qsTr("NO WIFI CONNECTION")
+                    return qsTr("Disconnected")
+                }
+                color: {
+                    if (root.model && root.model.wifiConnected
+                            && root.model.ipAddress !== "")
+                        return Material.color(Material.Green)
+                    if (root.model && root.model.networkEnabled
+                            && !root.model.wifiConnected)
+                        return Material.color(Material.Red)
+                    return Material.foreground
+                }
             }
 
             // Signal strength (compact)
@@ -112,17 +124,28 @@ SubscribableItem {
             Item { Layout.fillWidth: true }
 
             Switch {
-                id: autoDisableSwitch
-                checked: root.model ? root.model.autoDisableOnRecord : false
+                id: nfsSwitch
+                checked: root.model ? root.model.nfsServerActive : false
+                enabled: root.model && root.model.wifiConnected
                 onToggled: {
-                    // TODO: Need to add setter for autoDisableOnRecord
+                    if (root.model) root.model.toggleNfsServer()
                 }
             }
 
             Label {
-                text: qsTr("Auto-disable on rec")
+                text: qsTr("NFS Server")
                 font.pixelSize: 12
                 opacity: 0.7
+            }
+
+            Label {
+                visible: root.model && root.model.nfsServerActive
+                text: root.model
+                      ? "NFS: " + root.model.ipAddress + ":"
+                        + root.model.nfsExportPath
+                      : ""
+                font.pixelSize: 12
+                color: Material.color(Material.Green)
             }
         }
 

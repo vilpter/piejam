@@ -9,7 +9,6 @@ set(CMAKE_AUTOMOC ON)
 add_library(piejam_network_manager STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/network_manager/fwd.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/network_manager/network_controller.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/network_manager/network_middleware.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/network_manager/wifi_network.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/network_manager/wifi_manager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/piejam/network_manager/wifi_network_model.h

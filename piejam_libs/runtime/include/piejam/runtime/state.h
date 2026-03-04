@@ -96,7 +96,6 @@ struct state
 
     // Network state
     bool wifi_enabled{false};
-    bool wifi_auto_disable_on_record{true};
     bool nfs_server_enabled{false};
 };
 

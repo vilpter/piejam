@@ -16,12 +16,6 @@ set_wifi_enabled::reduce(state& st) const
 }
 
 void
-set_wifi_auto_disable_on_record::reduce(state& st) const
-{
-    st.wifi_auto_disable_on_record = enabled;
-}
-
-void
 set_nfs_server_enabled::reduce(state& st) const
 {
     st.nfs_server_enabled = enabled;

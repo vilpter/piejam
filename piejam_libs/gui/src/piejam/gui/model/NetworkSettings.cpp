@@ -71,13 +71,13 @@ NetworkSettings::onSubscribe()
                 setSignalStrength(0);
                 setIsConnecting(false);
                 setIsScanning(false);
-            }
-        });
 
-    observe(
-        runtime::selectors::select_wifi_auto_disable_on_record,
-        [this](bool enabled) {
-            setAutoDisableOnRecord(enabled);
+                if (m_impl->nfsServer && m_impl->nfsServer->is_active())
+                {
+                    m_impl->nfsServer->disable();
+                    setNfsServerActive(false);
+                }
+            }
         });
 
     observe(
@@ -140,6 +140,13 @@ NetworkSettings::setupCallbacks()
                     setSignalStrength(0);
                     m_impl->availableNetworksModel->setConnectedNetwork(
                         QString());
+
+                    if (m_impl->nfsServer &&
+                        m_impl->nfsServer->is_active())
+                    {
+                        m_impl->nfsServer->disable();
+                        setNfsServerActive(false);
+                    }
                 }
 
                 setIpAddress(QString::fromStdString(
@@ -411,6 +418,8 @@ NetworkSettings::toggleNfsServer()
         {
             m_impl->nfsServer->enable();
         }
+
+        updateNfsServerStatus();
     }
 }
 
