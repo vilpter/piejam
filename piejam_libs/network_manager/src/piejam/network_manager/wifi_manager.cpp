@@ -12,6 +12,7 @@
 #include <fstream>
 #include <regex>
 #include <sstream>
+#include <unordered_set>
 
 namespace piejam::network_manager
 {
@@ -125,13 +126,15 @@ parse_scan_results(std::string const& output)
         });
 
     // Remove duplicates (same SSID, keep strongest signal)
-    auto unique_end = std::unique(
+    // std::unique only works on adjacent elements, so use a set
+    std::unordered_set<std::string> seen;
+    auto it = std::remove_if(
         networks.begin(),
         networks.end(),
-        [](wifi_network const& a, wifi_network const& b) {
-            return a.ssid == b.ssid;
+        [&seen](wifi_network const& net) {
+            return !seen.insert(net.ssid).second;
         });
-    networks.erase(unique_end, networks.end());
+    networks.erase(it, networks.end());
 
     return networks;
 }
@@ -366,7 +369,19 @@ struct wifi_manager::impl
 
         if (new_status != connection_status)
         {
+            auto prev_status = connection_status;
             connection_status = new_status;
+
+            // Start DHCP when transitioning to connected
+            if (new_status == wifi_connection_status::connected &&
+                prev_status != wifi_connection_status::connected)
+            {
+                std::string dhcp_cmd =
+                    "udhcpc -i " + interface +
+                    " -b -t 5 -T 2 -S 2>/dev/null";
+                execute_command(dhcp_cmd.c_str());
+            }
+
             if (on_connection_changed)
             {
                 on_connection_changed(
@@ -537,8 +552,25 @@ wifi_manager::connect(
 
         if (m_impl->connection_status == wifi_connection_status::connected)
         {
+            // DHCP client started by update_connection_status()
+            // Wait for DHCP to assign IP (up to 10 seconds)
+            for (int j = 0; j < 10; ++j)
+            {
+                result.ip_address = ip_address();
+                if (!result.ip_address.empty())
+                    break;
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+
             result.success = true;
-            result.ip_address = ip_address();
+
+            // Re-fire callback now that IP is available
+            if (m_impl->on_connection_changed)
+            {
+                m_impl->on_connection_changed(
+                    m_impl->connection_status,
+                    &m_impl->current_network);
+            }
 
             if (remember)
             {
@@ -573,6 +605,7 @@ void
 wifi_manager::disconnect()
 {
     spdlog::info("Disconnecting from WiFi");
+    execute_command("killall -q udhcpc 2>/dev/null");
     wpa_cli(m_impl->interface, "disconnect");
     m_impl->update_connection_status();
 }

@@ -186,7 +186,8 @@ disable_wifi_interface()
 {
     spdlog::info("Disabling WiFi interface");
 
-    // Stop wpa_supplicant first
+    // Stop DHCP client and wpa_supplicant
+    execute_command("killall -q udhcpc 2>/dev/null");
     execute_command("killall wpa_supplicant 2>/dev/null");
 
     // Bring down the interface (no sudo needed, running as root)

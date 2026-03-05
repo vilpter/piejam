@@ -50,10 +50,12 @@ SubscribableItem {
                         return ""
                     if (root.model.wifiConnected && root.model.ipAddress !== "")
                         return root.model.ipAddress
+                    if (root.model.isConnecting
+                            || (root.model.wifiConnected
+                                && root.model.ipAddress === ""))
+                        return qsTr("Connecting...")
                     if (root.model.networkEnabled && !root.model.wifiConnected)
-                        return root.model.isConnecting
-                               ? qsTr("Connecting...")
-                               : qsTr("NO WIFI CONNECTION")
+                        return qsTr("NO WIFI CONNECTION")
                     return qsTr("Disconnected")
                 }
                 color: {
