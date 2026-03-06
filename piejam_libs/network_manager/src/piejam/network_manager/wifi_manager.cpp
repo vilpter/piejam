@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <regex>
 #include <sstream>
@@ -372,14 +373,21 @@ struct wifi_manager::impl
             auto prev_status = connection_status;
             connection_status = new_status;
 
-            // Start DHCP when transitioning to connected
+            // Start DHCP when transitioning to connected.
+            // Must use std::system with & to avoid blocking:
+            // execute_command (popen) blocks until the child closes
+            // stdout, but udhcpc runs as a long-lived daemon and
+            // never exits, so popen would block forever.
             if (new_status == wifi_connection_status::connected &&
                 prev_status != wifi_connection_status::connected)
             {
+                spdlog::info("Starting udhcpc on {}", interface);
                 std::string dhcp_cmd =
                     "udhcpc -i " + interface +
-                    " -b -t 5 -T 2 -S 2>/dev/null";
-                execute_command(dhcp_cmd.c_str());
+                    " -p /var/run/udhcpc." + interface + ".pid"
+                    " -t 5 -T 2 -S"
+                    " >/dev/null 2>&1 &";
+                std::system(dhcp_cmd.c_str());
             }
 
             if (on_connection_changed)
@@ -552,32 +560,18 @@ wifi_manager::connect(
 
         if (m_impl->connection_status == wifi_connection_status::connected)
         {
-            // DHCP client started by update_connection_status()
-            // Wait for DHCP to assign IP (up to 10 seconds)
-            for (int j = 0; j < 10; ++j)
-            {
-                result.ip_address = ip_address();
-                if (!result.ip_address.empty())
-                    break;
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-            }
-
+            // udhcpc started by update_connection_status() in background.
+            // IP polling is handled by the caller (NetworkSettings QTimer).
             result.success = true;
-
-            // Re-fire callback now that IP is available
-            if (m_impl->on_connection_changed)
-            {
-                m_impl->on_connection_changed(
-                    m_impl->connection_status,
-                    &m_impl->current_network);
-            }
+            result.ip_address = ip_address(); // may be empty if DHCP pending
 
             if (remember)
             {
                 wpa_cli(m_impl->interface, "save_config");
             }
 
-            spdlog::info("Connected to {} with IP {}", ssid, result.ip_address);
+            spdlog::info("Connected to {} (IP: {})", ssid,
+                result.ip_address.empty() ? "pending" : result.ip_address);
             return result;
         }
     }
@@ -605,7 +599,7 @@ void
 wifi_manager::disconnect()
 {
     spdlog::info("Disconnecting from WiFi");
-    execute_command("killall -q udhcpc 2>/dev/null");
+    std::system("killall -q udhcpc 2>/dev/null");
     wpa_cli(m_impl->interface, "disconnect");
     m_impl->update_connection_status();
 }

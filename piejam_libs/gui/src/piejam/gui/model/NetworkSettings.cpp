@@ -15,6 +15,12 @@
 #include <piejam/runtime/actions/network_actions.h>
 #include <piejam/runtime/selectors.h>
 
+#include <spdlog/spdlog.h>
+
+#include <QTimer>
+
+#include <thread>
+
 namespace piejam::gui::model
 {
 
@@ -332,26 +338,60 @@ NetworkSettings::connectToNetwork(
 
     setIsConnecting(true);
 
-    auto result = m_impl->wifiManager->connect(
-        ssid.toStdString(),
-        password.toStdString(),
-        remember);
+    // Run blocking connect on a background thread to avoid
+    // freezing the Qt event loop (connect polls wpa_supplicant
+    // for up to 25 seconds).
+    auto wifiMgr = m_impl->wifiManager;
+    auto ssidStd = ssid.toStdString();
+    auto passwordStd = password.toStdString();
 
-    if (result.success)
-    {
-        auto saved = m_impl->wifiManager->saved_networks();
-        m_impl->savedNetworksModel->setNetworks(std::move(saved));
-    }
-    else
-    {
-        setIsConnecting(false);
+    std::thread([this, wifiMgr, ssidStd, passwordStd, remember]() {
+        auto result = wifiMgr->connect(ssidStd, passwordStd, remember);
 
-        QString error = result.error_message.empty()
-            ? tr("Connection failed")
-            : QString::fromStdString(result.error_message);
+        // Marshal result back to the Qt main thread
+        QMetaObject::invokeMethod(this, [this, result, wifiMgr]() {
+            if (result.success)
+            {
+                auto saved = wifiMgr->saved_networks();
+                m_impl->savedNetworksModel->setNetworks(std::move(saved));
 
-        emit connectionFailed(ssid, error);
-    }
+                // Poll for IP address (udhcpc runs async)
+                auto* timer = new QTimer(this);
+                int* attempts = new int(0);
+                connect(timer, &QTimer::timeout, this,
+                    [this, timer, attempts]() {
+                        auto ip = QString::fromStdString(
+                            m_impl->wifiManager->ip_address());
+                        if (!ip.isEmpty())
+                        {
+                            setIpAddress(ip);
+                            timer->stop();
+                            timer->deleteLater();
+                            delete attempts;
+                        }
+                        else if (++(*attempts) >= 15)
+                        {
+                            spdlog::warn("DHCP timeout: no IP after 15s");
+                            timer->stop();
+                            timer->deleteLater();
+                            delete attempts;
+                        }
+                    });
+                timer->start(1000);
+            }
+            else
+            {
+                setIsConnecting(false);
+
+                QString error = result.error_message.empty()
+                    ? tr("Connection failed")
+                    : QString::fromStdString(result.error_message);
+
+                emit connectionFailed(
+                    QString::fromStdString(result.ssid), error);
+            }
+        });
+    }).detach();
 }
 
 void

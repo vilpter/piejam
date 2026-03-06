@@ -164,6 +164,9 @@ main(int argc, char* argv[]) -> int
             locs.log_file,
             true));
 
+    // Flush log every 5 seconds so logs survive unexpected power loss
+    spdlog::flush_every(std::chrono::seconds(5));
+
     QGuiApplication app(argc, argv);
 
     QQuickStyle::setStyle("Material");
