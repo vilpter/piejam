@@ -387,7 +387,7 @@ struct wifi_manager::impl
                     " -p /var/run/udhcpc." + interface + ".pid"
                     " -t 5 -T 2 -S"
                     " >/dev/null 2>&1 &";
-                static_cast<void>(std::system(dhcp_cmd.c_str()));
+                [[maybe_unused]] auto rc = std::system(dhcp_cmd.c_str());
             }
 
             if (on_connection_changed)
@@ -599,7 +599,7 @@ void
 wifi_manager::disconnect()
 {
     spdlog::info("Disconnecting from WiFi");
-    static_cast<void>(std::system("killall -q udhcpc 2>/dev/null"));
+    [[maybe_unused]] auto rc = std::system("killall -q udhcpc 2>/dev/null");
     wpa_cli(m_impl->interface, "disconnect");
     m_impl->update_connection_status();
 }
