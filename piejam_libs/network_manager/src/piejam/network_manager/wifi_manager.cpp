@@ -8,12 +8,18 @@
 
 #include <algorithm>
 #include <array>
-#include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <regex>
 #include <sstream>
 #include <unordered_set>
+
+#include <fcntl.h>
+#include <spawn.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+extern char** environ;
 
 namespace piejam::network_manager
 {
@@ -21,25 +27,51 @@ namespace piejam::network_manager
 namespace
 {
 
-/// Execute a shell command and return output
+/// Execute a shell command and return output.
+/// Uses posix_spawn instead of popen (fork) to be safe
+/// in multi-threaded programs — glibc's fork() can deadlock
+/// when another thread holds an internal mutex.
 std::string
 execute_command(char const* cmd)
 {
-    std::array<char, 256> buffer;
-    std::string result;
+    int pipe_fds[2];
+    if (::pipe(pipe_fds) != 0)
+        return {};
 
-    auto pipe_deleter = [](FILE* f) { if (f) pclose(f); };
-    std::unique_ptr<FILE, decltype(pipe_deleter)> pipe(popen(cmd, "r"), pipe_deleter);
-    if (!pipe)
+    posix_spawn_file_actions_t actions;
+    posix_spawn_file_actions_init(&actions);
+    posix_spawn_file_actions_adddup2(&actions, pipe_fds[1], STDOUT_FILENO);
+    posix_spawn_file_actions_addopen(&actions, STDERR_FILENO, "/dev/null", O_WRONLY, 0);
+    posix_spawn_file_actions_addclose(&actions, pipe_fds[0]);
+    posix_spawn_file_actions_addclose(&actions, pipe_fds[1]);
+
+    char const* argv[] = {"/bin/sh", "-c", cmd, nullptr};
+    pid_t pid = -1;
+    int err = posix_spawn(
+        &pid,
+        "/bin/sh",
+        &actions,
+        nullptr,
+        const_cast<char**>(argv),
+        environ);
+
+    posix_spawn_file_actions_destroy(&actions);
+    ::close(pipe_fds[1]);
+
+    std::string result;
+    if (err != 0)
     {
+        ::close(pipe_fds[0]);
         return result;
     }
 
-    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) !=
-           nullptr)
-    {
-        result += buffer.data();
-    }
+    std::array<char, 256> buffer;
+    ssize_t n;
+    while ((n = ::read(pipe_fds[0], buffer.data(), buffer.size())) > 0)
+        result.append(buffer.data(), static_cast<size_t>(n));
+
+    ::close(pipe_fds[0]);
+    ::waitpid(pid, nullptr, 0);
 
     return result;
 }
