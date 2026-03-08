@@ -15,6 +15,8 @@
 #include <unordered_set>
 
 #include <fcntl.h>
+#include <poll.h>
+#include <signal.h>
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -31,6 +33,9 @@ namespace
 /// Uses posix_spawn instead of popen (fork) to be safe
 /// in multi-threaded programs — glibc's fork() can deadlock
 /// when another thread holds an internal mutex.
+/// Times out after timeout_sec seconds to prevent hangs.
+constexpr int execute_command_timeout_sec = 15;
+
 std::string
 execute_command(char const* cmd)
 {
@@ -41,7 +46,8 @@ execute_command(char const* cmd)
     posix_spawn_file_actions_t actions;
     posix_spawn_file_actions_init(&actions);
     posix_spawn_file_actions_adddup2(&actions, pipe_fds[1], STDOUT_FILENO);
-    posix_spawn_file_actions_addopen(&actions, STDERR_FILENO, "/dev/null", O_WRONLY, 0);
+    posix_spawn_file_actions_addopen(
+        &actions, STDERR_FILENO, "/dev/null", O_WRONLY, 0);
     posix_spawn_file_actions_addclose(&actions, pipe_fds[0]);
     posix_spawn_file_actions_addclose(&actions, pipe_fds[1]);
 
@@ -61,16 +67,59 @@ execute_command(char const* cmd)
     std::string result;
     if (err != 0)
     {
+        spdlog::error("posix_spawn failed for: {} (err={})", cmd, err);
         ::close(pipe_fds[0]);
         return result;
     }
 
+    spdlog::debug("spawned pid {} for: {}", pid, cmd);
+
+    // Use poll() with timeout to prevent indefinite hangs
+    struct pollfd pfd;
+    pfd.fd = pipe_fds[0];
+    pfd.events = POLLIN;
+
     std::array<char, 256> buffer;
-    ssize_t n;
-    while ((n = ::read(pipe_fds[0], buffer.data(), buffer.size())) > 0)
+    bool timed_out = false;
+
+    for (;;)
+    {
+        int poll_ret = ::poll(
+            &pfd,
+            1,
+            execute_command_timeout_sec * 1000);
+
+        if (poll_ret < 0 && errno == EINTR)
+            continue;
+
+        if (poll_ret == 0)
+        {
+            spdlog::warn(
+                "execute_command timed out ({}s) for: {}",
+                execute_command_timeout_sec,
+                cmd);
+            timed_out = true;
+            break;
+        }
+
+        if (poll_ret < 0)
+            break;
+
+        ssize_t n =
+            ::read(pipe_fds[0], buffer.data(), buffer.size());
+        if (n <= 0)
+            break;
         result.append(buffer.data(), static_cast<size_t>(n));
+    }
 
     ::close(pipe_fds[0]);
+
+    if (timed_out)
+    {
+        ::kill(pid, SIGKILL);
+        spdlog::info("killed hung child pid {}", pid);
+    }
+
     ::waitpid(pid, nullptr, 0);
 
     return result;
