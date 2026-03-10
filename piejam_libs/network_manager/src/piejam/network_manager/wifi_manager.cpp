@@ -17,11 +17,8 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
-#include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
-extern char** environ;
 
 namespace piejam::network_manager
 {
@@ -30,10 +27,12 @@ namespace
 {
 
 /// Execute a shell command and return output.
-/// Uses posix_spawn instead of popen (fork) to be safe
-/// in multi-threaded programs — glibc's fork() can deadlock
-/// when another thread holds an internal mutex.
-/// Times out after timeout_sec seconds to prevent hangs.
+/// Uses fork()+exec() instead of posix_spawn because glibc's
+/// posix_spawn uses CLONE_VFORK which suspends the calling thread
+/// until the child calls exec() — if the child deadlocks before
+/// exec(), the parent hangs forever and our timeout never fires.
+/// With plain fork(), the parent returns immediately regardless
+/// of child state, so the poll() timeout always works.
 constexpr int execute_command_timeout_sec = 15;
 
 std::string
@@ -43,36 +42,38 @@ execute_command(char const* cmd)
     if (::pipe(pipe_fds) != 0)
         return {};
 
-    posix_spawn_file_actions_t actions;
-    posix_spawn_file_actions_init(&actions);
-    posix_spawn_file_actions_adddup2(&actions, pipe_fds[1], STDOUT_FILENO);
-    posix_spawn_file_actions_addopen(
-        &actions, STDERR_FILENO, "/dev/null", O_WRONLY, 0);
-    posix_spawn_file_actions_addclose(&actions, pipe_fds[0]);
-    posix_spawn_file_actions_addclose(&actions, pipe_fds[1]);
+    pid_t pid = ::fork();
 
-    char const* argv[] = {"/bin/sh", "-c", cmd, nullptr};
-    pid_t pid = -1;
-    int err = posix_spawn(
-        &pid,
-        "/bin/sh",
-        &actions,
-        nullptr,
-        const_cast<char**>(argv),
-        environ);
+    if (pid < 0)
+    {
+        spdlog::error("fork failed for: {} (errno={})", cmd, errno);
+        ::close(pipe_fds[0]);
+        ::close(pipe_fds[1]);
+        return {};
+    }
 
-    posix_spawn_file_actions_destroy(&actions);
+    if (pid == 0)
+    {
+        // Child process — only async-signal-safe calls between fork and exec
+        ::dup2(pipe_fds[1], STDOUT_FILENO);
+        int devnull = ::open("/dev/null", O_WRONLY);
+        if (devnull >= 0)
+        {
+            ::dup2(devnull, STDERR_FILENO);
+            ::close(devnull);
+        }
+        ::close(pipe_fds[0]);
+        ::close(pipe_fds[1]);
+
+        ::execl("/bin/sh", "/bin/sh", "-c", cmd, nullptr);
+        ::_exit(127);
+    }
+
+    // Parent — returns here immediately (unlike posix_spawn/CLONE_VFORK)
     ::close(pipe_fds[1]);
 
     std::string result;
-    if (err != 0)
-    {
-        spdlog::error("posix_spawn failed for: {} (err={})", cmd, err);
-        ::close(pipe_fds[0]);
-        return result;
-    }
-
-    spdlog::debug("spawned pid {} for: {}", pid, cmd);
+    spdlog::debug("forked pid {} for: {}", pid, cmd);
 
     // Use poll() with timeout to prevent indefinite hangs
     struct pollfd pfd;
