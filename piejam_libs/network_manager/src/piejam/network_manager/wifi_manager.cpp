@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <regex>
@@ -26,26 +27,58 @@ namespace piejam::network_manager
 namespace
 {
 
-/// Execute a shell command and return output.
-/// Uses fork()+exec() instead of posix_spawn because glibc's
-/// posix_spawn uses CLONE_VFORK which suspends the calling thread
-/// until the child calls exec() — if the child deadlocks before
-/// exec(), the parent hangs forever and our timeout never fires.
-/// With plain fork(), the parent returns immediately regardless
-/// of child state, so the poll() timeout always works.
+/// Raw diagnostic log — bypasses spdlog entirely to detect
+/// whether spdlog itself is blocked. Uses POSIX write() which
+/// is async-signal-safe and never deadlocks.
+void
+diag_log(char const* msg)
+{
+    int fd = ::open(
+        "/piejam/diag.log",
+        O_WRONLY | O_CREAT | O_APPEND,
+        0644);
+    if (fd >= 0)
+    {
+        ::dprintf(fd, "%s\n", msg);
+        ::close(fd);
+    }
+}
+
+void
+diag_log_cmd(char const* prefix, char const* cmd)
+{
+    int fd = ::open(
+        "/piejam/diag.log",
+        O_WRONLY | O_CREAT | O_APPEND,
+        0644);
+    if (fd >= 0)
+    {
+        ::dprintf(fd, "%s: %s\n", prefix, cmd);
+        ::close(fd);
+    }
+}
+
 constexpr int execute_command_timeout_sec = 15;
 
 std::string
 execute_command(char const* cmd)
 {
+    diag_log_cmd("enter execute_command", cmd);
+
     int pipe_fds[2];
     if (::pipe(pipe_fds) != 0)
+    {
+        diag_log("pipe() failed");
         return {};
+    }
 
+    diag_log_cmd("before fork", cmd);
     pid_t pid = ::fork();
+    diag_log_cmd("after fork", cmd);
 
     if (pid < 0)
     {
+        diag_log("fork() failed");
         spdlog::error("fork failed for: {} (errno={})", cmd, errno);
         ::close(pipe_fds[0]);
         ::close(pipe_fds[1]);
@@ -69,13 +102,13 @@ execute_command(char const* cmd)
         ::_exit(127);
     }
 
-    // Parent — returns here immediately (unlike posix_spawn/CLONE_VFORK)
+    // Parent — returns here immediately
     ::close(pipe_fds[1]);
 
     std::string result;
+    diag_log_cmd("parent continues, entering poll loop", cmd);
     spdlog::debug("forked pid {} for: {}", pid, cmd);
 
-    // Use poll() with timeout to prevent indefinite hangs
     struct pollfd pfd;
     pfd.fd = pipe_fds[0];
     pfd.events = POLLIN;
@@ -95,6 +128,7 @@ execute_command(char const* cmd)
 
         if (poll_ret == 0)
         {
+            diag_log_cmd("poll TIMEOUT", cmd);
             spdlog::warn(
                 "execute_command timed out ({}s) for: {}",
                 execute_command_timeout_sec,
@@ -104,12 +138,18 @@ execute_command(char const* cmd)
         }
 
         if (poll_ret < 0)
+        {
+            diag_log_cmd("poll ERROR", cmd);
             break;
+        }
 
         ssize_t n =
             ::read(pipe_fds[0], buffer.data(), buffer.size());
         if (n <= 0)
+        {
+            diag_log_cmd("read EOF/error", cmd);
             break;
+        }
         result.append(buffer.data(), static_cast<size_t>(n));
     }
 
@@ -118,10 +158,13 @@ execute_command(char const* cmd)
     if (timed_out)
     {
         ::kill(pid, SIGKILL);
+        diag_log_cmd("killed hung child", cmd);
         spdlog::info("killed hung child pid {}", pid);
     }
 
+    diag_log_cmd("before waitpid", cmd);
     ::waitpid(pid, nullptr, 0);
+    diag_log_cmd("after waitpid, returning", cmd);
 
     return result;
 }

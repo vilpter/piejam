@@ -123,7 +123,6 @@ NetworkSettings::setupCallbacks()
                     [this, nets = std::move(nets)]() {
                         m_impl->availableNetworksModel->setNetworks(
                             nets);
-                        setIsScanning(false);
                         emit scanCompleted();
                     });
             });
@@ -363,8 +362,20 @@ NetworkSettings::scanNetworks()
     {
         setIsScanning(true);
         auto wifiMgr = m_impl->wifiManager;
-        std::thread([wifiMgr]() {
+        QPointer<NetworkSettings> guard(this);
+        std::thread([guard, wifiMgr]() {
             wifiMgr->scan_networks();
+            // Always reset isScanning when scan_networks returns,
+            // regardless of success or failure
+            if (!guard.isNull())
+            {
+                QMetaObject::invokeMethod(
+                    guard,
+                    [guard]() {
+                        if (!guard.isNull())
+                            guard->setIsScanning(false);
+                    });
+            }
         }).detach();
     }
 }
