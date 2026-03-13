@@ -8,8 +8,10 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <regex>
 #include <sstream>
@@ -17,7 +19,10 @@
 
 #include <fcntl.h>
 #include <poll.h>
+#include <pthread.h>
 #include <signal.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -169,12 +174,125 @@ execute_command(char const* cmd)
     return result;
 }
 
-/// Execute wpa_cli command
+/// Communicate with wpa_supplicant directly via its control socket.
+/// This avoids fork/exec entirely — pure socket I/O that works from
+/// any thread without deadlock risk.
 std::string
 wpa_cli(std::string const& interface, std::string const& cmd)
 {
-    std::string full_cmd = "wpa_cli -i " + interface + " " + cmd + " 2>/dev/null";
-    return execute_command(full_cmd.c_str());
+    diag_log_cmd("wpa_cli enter (socket)", cmd.c_str());
+
+    // wpa_supplicant control protocol uses uppercase command names
+    // (e.g., SCAN not scan). Convert the first word to uppercase.
+    std::string upper_cmd = cmd;
+    auto space_pos = upper_cmd.find(' ');
+    auto cmd_end = (space_pos != std::string::npos)
+        ? space_pos : upper_cmd.size();
+    std::transform(
+        upper_cmd.begin(),
+        upper_cmd.begin() + static_cast<std::ptrdiff_t>(cmd_end),
+        upper_cmd.begin(),
+        [](unsigned char c) { return std::toupper(c); });
+
+    // wpa_supplicant control socket path
+    std::string ctrl_path =
+        "/var/run/wpa_supplicant/" + interface;
+
+    // Local socket path (unique per call using thread id + timestamp)
+    auto tid = ::pthread_self();
+    struct timespec ts;
+    ::clock_gettime(CLOCK_MONOTONIC, &ts);
+    std::string local_path =
+        "/tmp/wpa_ctrl_" + std::to_string(tid) + "_" +
+        std::to_string(ts.tv_nsec);
+
+    int sock = ::socket(AF_UNIX, SOCK_DGRAM, 0);
+    if (sock < 0)
+    {
+        diag_log("wpa_cli: socket() failed");
+        return {};
+    }
+
+    // Bind local end
+    struct sockaddr_un local_addr{};
+    local_addr.sun_family = AF_UNIX;
+    ::strncpy(
+        local_addr.sun_path,
+        local_path.c_str(),
+        sizeof(local_addr.sun_path) - 1);
+
+    if (::bind(
+            sock,
+            reinterpret_cast<struct sockaddr*>(&local_addr),
+            sizeof(local_addr)) < 0)
+    {
+        diag_log("wpa_cli: bind() failed");
+        ::close(sock);
+        ::unlink(local_path.c_str());
+        return {};
+    }
+
+    // Connect to wpa_supplicant
+    struct sockaddr_un dest_addr{};
+    dest_addr.sun_family = AF_UNIX;
+    ::strncpy(
+        dest_addr.sun_path,
+        ctrl_path.c_str(),
+        sizeof(dest_addr.sun_path) - 1);
+
+    if (::connect(
+            sock,
+            reinterpret_cast<struct sockaddr*>(&dest_addr),
+            sizeof(dest_addr)) < 0)
+    {
+        diag_log_cmd("wpa_cli: connect() failed to", ctrl_path.c_str());
+        ::close(sock);
+        ::unlink(local_path.c_str());
+        return {};
+    }
+
+    diag_log_cmd("wpa_cli: sending command", upper_cmd.c_str());
+
+    // Send command
+    if (::send(sock, upper_cmd.c_str(), upper_cmd.size(), 0) < 0)
+    {
+        diag_log("wpa_cli: send() failed");
+        ::close(sock);
+        ::unlink(local_path.c_str());
+        return {};
+    }
+
+    // Wait for response with timeout
+    struct pollfd pfd;
+    pfd.fd = sock;
+    pfd.events = POLLIN;
+
+    std::string result;
+    int poll_ret = ::poll(&pfd, 1, 10000); // 10 second timeout
+    if (poll_ret > 0)
+    {
+        std::array<char, 4096> buf;
+        ssize_t n = ::recv(sock, buf.data(), buf.size() - 1, 0);
+        if (n > 0)
+        {
+            buf[static_cast<size_t>(n)] = '\0';
+            result = buf.data();
+        }
+        diag_log_cmd("wpa_cli: got response", result.c_str());
+    }
+    else if (poll_ret == 0)
+    {
+        diag_log_cmd("wpa_cli: timeout waiting for response", cmd.c_str());
+    }
+    else
+    {
+        diag_log("wpa_cli: poll() error");
+    }
+
+    ::close(sock);
+    ::unlink(local_path.c_str());
+
+    return result;
 }
 
 /// Parse security flags from wpa_cli scan results
@@ -414,7 +532,7 @@ add_network_to_wpa(
     std::string id_str = std::to_string(network_id);
 
     // Set SSID
-    wpa_cli(interface, "set_network " + id_str + " ssid '\"" + ssid + "\"'");
+    wpa_cli(interface, "set_network " + id_str + " ssid \"" + ssid + "\"");
 
     // Set security
     if (security == wifi_security::open || password.empty())
@@ -423,7 +541,7 @@ add_network_to_wpa(
     }
     else
     {
-        wpa_cli(interface, "set_network " + id_str + " psk '\"" + password + "\"'");
+        wpa_cli(interface, "set_network " + id_str + " psk \"" + password + "\"");
     }
 
     // Enable network
@@ -575,6 +693,7 @@ void
 wifi_manager::scan_networks()
 {
     spdlog::debug("Starting WiFi scan on {}", m_impl->interface);
+    diag_log("scan_networks: after spdlog::debug, before wpa_cli");
 
     // Trigger scan
     std::string result = wpa_cli(m_impl->interface, "scan");
