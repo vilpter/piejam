@@ -159,6 +159,11 @@ main(int argc, char* argv[]) -> int
 
     create_directories_if_missing(locs);
 
+    // Replace the default stdout sink with a file-only sink.
+    // On EGLFS, stdout goes to /dev/console which shares a kernel
+    // lock with the DRM subsystem — writing to it from a background
+    // thread while Qt is rendering causes a deadlock.
+    spdlog::default_logger()->sinks().clear();
     spdlog::default_logger()->sinks().push_back(
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
             locs.log_file,
