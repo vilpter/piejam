@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -15,13 +16,181 @@
 #include <sstream>
 #include <unordered_set>
 
+#include <poll.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <unistd.h>
+
 namespace piejam::network_manager
 {
 
 namespace
 {
 
-/// Execute a shell command and return output
+/// Send a command to wpa_supplicant via its Unix control socket and
+/// return the response. This avoids fork()/popen() entirely, making
+/// it safe to call from any thread without deadlock risk.
+///
+/// Protocol:
+///   - wpa_supplicant listens on /var/run/wpa_supplicant/<iface>
+///   - Client binds a unique local socket path and sends datagram
+///   - Response arrives as one or more datagrams
+///   - Unsolicited events are prefixed with '<N>' (N=0..4); skip them
+///   - Timeout via poll() — never blocks indefinitely
+///
+/// Returns empty string on error or timeout.
+class WpaSocket
+{
+public:
+    explicit WpaSocket(std::string const& interface)
+    {
+        // Build local socket path — must be unique per instance
+        // Use pid + pointer to ensure uniqueness across concurrent calls
+        char local_path[108];
+        ::snprintf(
+            local_path,
+            sizeof(local_path),
+            "/tmp/wpa_ctrl_%d_%p",
+            static_cast<int>(::getpid()),
+            static_cast<void*>(this));
+
+        m_local_path = local_path;
+
+        m_fd = ::socket(AF_UNIX, SOCK_DGRAM, 0);
+        if (m_fd < 0)
+        {
+            spdlog::error("wpa_socket: socket() failed (errno={})", errno);
+            return;
+        }
+
+        // Bind local socket so wpa_supplicant can send responses back
+        struct sockaddr_un local_addr{};
+        local_addr.sun_family = AF_UNIX;
+        ::strncpy(
+            local_addr.sun_path,
+            m_local_path.c_str(),
+            sizeof(local_addr.sun_path) - 1);
+
+        if (::bind(m_fd, reinterpret_cast<struct sockaddr*>(&local_addr),
+                   sizeof(local_addr)) != 0)
+        {
+            spdlog::error(
+                "wpa_socket: bind({}) failed (errno={})",
+                m_local_path,
+                errno);
+            ::close(m_fd);
+            m_fd = -1;
+            return;
+        }
+
+        // Connect to wpa_supplicant's control socket
+        std::string ctrl_path = "/var/run/wpa_supplicant/" + interface;
+        struct sockaddr_un remote_addr{};
+        remote_addr.sun_family = AF_UNIX;
+        ::strncpy(
+            remote_addr.sun_path,
+            ctrl_path.c_str(),
+            sizeof(remote_addr.sun_path) - 1);
+
+        if (::connect(
+                m_fd,
+                reinterpret_cast<struct sockaddr*>(&remote_addr),
+                sizeof(remote_addr)) != 0)
+        {
+            spdlog::error(
+                "wpa_socket: connect({}) failed (errno={})",
+                ctrl_path,
+                errno);
+            ::close(m_fd);
+            m_fd = -1;
+            ::unlink(m_local_path.c_str());
+            m_local_path.clear();
+            return;
+        }
+    }
+
+    ~WpaSocket()
+    {
+        if (m_fd >= 0)
+            ::close(m_fd);
+        if (!m_local_path.empty())
+            ::unlink(m_local_path.c_str());
+    }
+
+    // Non-copyable, non-movable — owns fd and path
+    WpaSocket(WpaSocket const&) = delete;
+    WpaSocket& operator=(WpaSocket const&) = delete;
+
+    bool is_open() const { return m_fd >= 0; }
+
+    /// Send command and return response. Skips unsolicited event
+    /// messages (prefixed with '<N>'). Times out after timeout_ms.
+    std::string
+    send_cmd(std::string const& cmd, int timeout_ms = 5000)
+    {
+        if (m_fd < 0)
+            return {};
+
+        if (::send(m_fd, cmd.c_str(), cmd.size(), 0) < 0)
+        {
+            spdlog::error(
+                "wpa_socket: send({}) failed (errno={})", cmd, errno);
+            return {};
+        }
+
+        // Read response, skipping unsolicited event datagrams
+        std::array<char, 4096> buf;
+        struct pollfd pfd{m_fd, POLLIN, 0};
+
+        for (;;)
+        {
+            int ret = ::poll(&pfd, 1, timeout_ms);
+            if (ret <= 0)
+            {
+                if (ret == 0)
+                    spdlog::warn(
+                        "wpa_socket: timeout waiting for response to: {}",
+                        cmd);
+                return {};
+            }
+
+            ssize_t n = ::recv(m_fd, buf.data(), buf.size() - 1, 0);
+            if (n <= 0)
+                return {};
+
+            buf[static_cast<size_t>(n)] = '\0';
+
+            // Skip unsolicited event messages — they start with '<N>'
+            // where N is a single digit priority level (0-4)
+            if (n >= 3 && buf[0] == '<' && buf[2] == '>')
+                continue;
+
+            return std::string(buf.data(), static_cast<size_t>(n));
+        }
+    }
+
+private:
+    int m_fd{-1};
+    std::string m_local_path;
+};
+
+/// Send a wpa_supplicant control command via Unix socket.
+/// Safe to call from any thread — no fork/popen involved.
+std::string
+wpa_ctrl(std::string const& interface, std::string const& cmd)
+{
+    WpaSocket sock(interface);
+    if (!sock.is_open())
+    {
+        spdlog::warn("wpa_ctrl: socket not available for: {}", cmd);
+        return {};
+    }
+    return sock.send_cmd(cmd);
+}
+
+/// Execute a shell command and return output.
+/// NOTE: Uses popen/fork — only call from the Qt main thread.
+/// For wpa_supplicant commands use wpa_ctrl() instead.
 std::string
 execute_command(char const* cmd)
 {
@@ -29,27 +198,26 @@ execute_command(char const* cmd)
     std::string result;
 
     auto pipe_deleter = [](FILE* f) { if (f) pclose(f); };
-    std::unique_ptr<FILE, decltype(pipe_deleter)> pipe(popen(cmd, "r"), pipe_deleter);
+    std::unique_ptr<FILE, decltype(pipe_deleter)> pipe(
+        popen(cmd, "r"), pipe_deleter);
     if (!pipe)
-    {
         return result;
-    }
 
-    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) !=
-           nullptr)
-    {
+    while (fgets(
+               buffer.data(),
+               static_cast<int>(buffer.size()),
+               pipe.get()) != nullptr)
         result += buffer.data();
-    }
 
     return result;
 }
 
-/// Execute wpa_cli command
+/// Thin wrapper — kept for call sites that use the old wpa_cli()
+/// name but now routes through the socket-based wpa_ctrl().
 std::string
 wpa_cli(std::string const& interface, std::string const& cmd)
 {
-    std::string full_cmd = "wpa_cli -i " + interface + " " + cmd + " 2>/dev/null";
-    return execute_command(full_cmd.c_str());
+    return wpa_ctrl(interface, cmd);
 }
 
 /// Parse security flags from wpa_cli scan results
@@ -288,8 +456,9 @@ add_network_to_wpa(
 
     std::string id_str = std::to_string(network_id);
 
-    // Set SSID
-    wpa_cli(interface, "set_network " + id_str + " ssid '\"" + ssid + "\"'");
+    // Set SSID — wpa_supplicant control socket protocol uses
+    // double-quoted strings directly (no shell quoting needed)
+    wpa_cli(interface, "set_network " + id_str + " ssid \"" + ssid + "\"");
 
     // Set security
     if (security == wifi_security::open || password.empty())
@@ -298,7 +467,7 @@ add_network_to_wpa(
     }
     else
     {
-        wpa_cli(interface, "set_network " + id_str + " psk '\"" + password + "\"'");
+        wpa_cli(interface, "set_network " + id_str + " psk \"" + password + "\"");
     }
 
     // Enable network

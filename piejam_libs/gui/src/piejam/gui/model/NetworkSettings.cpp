@@ -113,55 +113,86 @@ NetworkSettings::setupCallbacks()
         m_impl->wifiManager->set_scan_complete_callback(
             [this](std::vector<network_manager::wifi_network> const&
                        networks) {
-                m_impl->availableNetworksModel->setNetworks(networks);
-                setIsScanning(false);
-                emit scanCompleted();
+                // Callback may fire from any thread — marshal to Qt thread
+                auto nets = networks;
+                QMetaObject::invokeMethod(
+                    this,
+                    [this, nets = std::move(nets)]() {
+                        m_impl->availableNetworksModel->setNetworks(nets);
+                        setIsScanning(false);
+                        emit scanCompleted();
+                    });
             });
 
         m_impl->wifiManager->set_connection_changed_callback(
             [this](
                 network_manager::wifi_connection_status status,
                 network_manager::wifi_network const* network) {
+                // Callback fires from background thread during connect().
+                // Copy all data before marshaling — the network pointer
+                // and wifiManager pointer are valid on the calling thread.
                 bool connected =
                     (status ==
                      network_manager::wifi_connection_status::connected);
-                setWifiConnected(connected);
-                setIsConnecting(
-                    status ==
-                    network_manager::wifi_connection_status::connecting);
-
+                std::string ssid;
+                int signal_percent = 0;
                 if (connected && network)
                 {
-                    setCurrentSsid(
-                        QString::fromStdString(network->ssid));
-                    setSignalStrength(network->signal_percent);
-                    m_impl->availableNetworksModel->setConnectedNetwork(
-                        QString::fromStdString(network->ssid));
-                    emit connectionSucceeded(
-                        QString::fromStdString(network->ssid));
+                    ssid = network->ssid;
+                    signal_percent = network->signal_percent;
                 }
-                else if (!connected)
-                {
-                    setCurrentSsid(QString());
-                    setSignalStrength(0);
-                    m_impl->availableNetworksModel->setConnectedNetwork(
-                        QString());
+                // ip_address() uses popen — call here on background thread,
+                // NOT on Qt thread (where it could deadlock with DRM lock)
+                std::string ip = connected
+                    ? m_impl->wifiManager->ip_address()
+                    : std::string{};
 
-                    if (m_impl->nfsServer &&
-                        m_impl->nfsServer->is_active())
-                    {
-                        m_impl->nfsServer->disable();
-                        setNfsServerActive(false);
-                    }
-                }
+                QMetaObject::invokeMethod(
+                    this,
+                    [this, status, connected, ssid, signal_percent, ip]() {
+                        setWifiConnected(connected);
+                        setIsConnecting(
+                            status == network_manager::wifi_connection_status::
+                                          connecting);
 
-                setIpAddress(QString::fromStdString(
-                    m_impl->wifiManager->ip_address()));
+                        if (connected && !ssid.empty())
+                        {
+                            setCurrentSsid(QString::fromStdString(ssid));
+                            setSignalStrength(signal_percent);
+                            m_impl->availableNetworksModel
+                                ->setConnectedNetwork(
+                                    QString::fromStdString(ssid));
+                            emit connectionSucceeded(
+                                QString::fromStdString(ssid));
+                        }
+                        else if (!connected)
+                        {
+                            setCurrentSsid(QString());
+                            setSignalStrength(0);
+                            m_impl->availableNetworksModel
+                                ->setConnectedNetwork(QString());
+
+                            if (m_impl->nfsServer &&
+                                m_impl->nfsServer->is_active())
+                            {
+                                m_impl->nfsServer->disable();
+                                setNfsServerActive(false);
+                            }
+                        }
+
+                        setIpAddress(QString::fromStdString(ip));
+                    });
             });
 
         m_impl->wifiManager->set_error_callback(
             [this](std::string const& error) {
-                emit networkError(QString::fromStdString(error));
+                // Marshal signal emission to Qt thread
+                auto err = error;
+                QMetaObject::invokeMethod(
+                    this,
+                    [this, err = std::move(err)]() {
+                        emit networkError(QString::fromStdString(err));
+                    });
             });
     }
 
