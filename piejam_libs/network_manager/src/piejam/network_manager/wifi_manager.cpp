@@ -145,12 +145,19 @@ public:
         for (;;)
         {
             int ret = ::poll(&pfd, 1, timeout_ms);
-            if (ret <= 0)
+            if (ret < 0)
             {
-                if (ret == 0)
-                    spdlog::warn(
-                        "wpa_socket: timeout waiting for response to: {}",
-                        cmd);
+                if (errno == EINTR)
+                    continue; // signal interrupted poll — retry
+                spdlog::error(
+                    "wpa_socket: poll() failed (errno={})", errno);
+                return {};
+            }
+            if (ret == 0)
+            {
+                spdlog::warn(
+                    "wpa_socket: timeout waiting for response to: {}",
+                    cmd);
                 return {};
             }
 
@@ -620,11 +627,28 @@ wifi_manager::scan_networks()
 {
     spdlog::debug("Starting WiFi scan on {}", m_impl->interface);
 
-    // Trigger scan
-    std::string result = wpa_cli(m_impl->interface, "scan");
+    // Trigger scan — retry on FAIL-BUSY (wpa_supplicant may be
+    // in its initial auto-scan right after startup)
+    std::string result;
+    constexpr int scan_retries = 3;
+    for (int attempt = 0; attempt < scan_retries; ++attempt)
+    {
+        result = wpa_cli(m_impl->interface, "scan");
+        spdlog::debug("SCAN attempt {}: response='{}'", attempt + 1, result);
+
+        if (result.find("OK") != std::string::npos)
+            break;
+
+        if (attempt + 1 < scan_retries)
+        {
+            spdlog::info("SCAN returned '{}', retrying in 1.5s...", result);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        }
+    }
+
     if (result.find("OK") == std::string::npos)
     {
-        spdlog::warn("Failed to initiate WiFi scan");
+        spdlog::warn("Failed to initiate WiFi scan after {} attempts", scan_retries);
         if (m_impl->on_error)
             m_impl->on_error("Failed to initiate WiFi scan");
         return;
