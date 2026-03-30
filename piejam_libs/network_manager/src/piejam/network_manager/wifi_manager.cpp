@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
@@ -186,13 +187,22 @@ private:
 std::string
 wpa_ctrl(std::string const& interface, std::string const& cmd)
 {
+    // wpa_supplicant control socket requires uppercase command verbs.
+    // Uppercase only the first word (the command); arguments (SSIDs,
+    // passwords, network IDs) must remain as-is.
+    std::string upper_cmd = cmd;
+    auto first_space = upper_cmd.find(' ');
+    auto verb_end = (first_space == std::string::npos) ? upper_cmd.size() : first_space;
+    for (std::size_t i = 0; i < verb_end; ++i)
+        upper_cmd[i] = static_cast<char>(std::toupper(static_cast<unsigned char>(upper_cmd[i])));
+
     WpaSocket sock(interface);
     if (!sock.is_open())
     {
         spdlog::warn("wpa_ctrl: socket not available for: {}", cmd);
         return {};
     }
-    return sock.send_cmd(cmd);
+    return sock.send_cmd(upper_cmd);
 }
 
 /// Execute a shell command and return output.
