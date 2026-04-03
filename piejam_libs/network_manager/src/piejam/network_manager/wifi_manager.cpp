@@ -196,13 +196,17 @@ wpa_ctrl(std::string const& interface, std::string const& cmd)
     for (std::size_t i = 0; i < verb_end; ++i)
         upper_cmd[i] = static_cast<char>(std::toupper(static_cast<unsigned char>(upper_cmd[i])));
 
+    spdlog::debug("wpa_ctrl: sending '{}'", upper_cmd);
+
     WpaSocket sock(interface);
     if (!sock.is_open())
     {
         spdlog::warn("wpa_ctrl: socket not available for: {}", cmd);
         return {};
     }
-    return sock.send_cmd(upper_cmd);
+    auto response = sock.send_cmd(upper_cmd);
+    spdlog::debug("wpa_ctrl: '{}' -> '{}'", upper_cmd, response);
+    return response;
 }
 
 /// Execute a shell command and return output.
@@ -460,35 +464,43 @@ add_network_to_wpa(
     wifi_security security)
 {
     // Add new network
+    spdlog::info("add_network_to_wpa: ssid='{}' security={}", ssid, static_cast<int>(security));
     std::string result = wpa_cli(interface, "add_network");
+    spdlog::info("add_network_to_wpa: ADD_NETWORK result='{}'", result);
     int network_id = -1;
     try
     {
         network_id = std::stoi(result);
     }
-    catch (...)
+    catch (std::exception const& e)
     {
+        spdlog::error("add_network_to_wpa: stoi failed on '{}': {}", result, e.what());
         return -1;
     }
 
     std::string id_str = std::to_string(network_id);
+    spdlog::info("add_network_to_wpa: network_id={}", network_id);
 
     // Set SSID — wpa_supplicant control socket protocol uses
     // double-quoted strings directly (no shell quoting needed)
-    wpa_cli(interface, "set_network " + id_str + " ssid \"" + ssid + "\"");
+    auto ssid_result = wpa_cli(interface, "set_network " + id_str + " ssid \"" + ssid + "\"");
+    spdlog::info("add_network_to_wpa: SET_NETWORK ssid -> '{}'", ssid_result);
 
     // Set security
     if (security == wifi_security::open || password.empty())
     {
-        wpa_cli(interface, "set_network " + id_str + " key_mgmt NONE");
+        auto km_result = wpa_cli(interface, "set_network " + id_str + " key_mgmt NONE");
+        spdlog::info("add_network_to_wpa: SET_NETWORK key_mgmt -> '{}'", km_result);
     }
     else
     {
-        wpa_cli(interface, "set_network " + id_str + " psk \"" + password + "\"");
+        auto psk_result = wpa_cli(interface, "set_network " + id_str + " psk \"" + password + "\"");
+        spdlog::info("add_network_to_wpa: SET_NETWORK psk -> '{}'", psk_result);
     }
 
     // Enable network
-    wpa_cli(interface, "enable_network " + id_str);
+    auto en_result = wpa_cli(interface, "enable_network " + id_str);
+    spdlog::info("add_network_to_wpa: ENABLE_NETWORK -> '{}'", en_result);
 
     return network_id;
 }
@@ -531,6 +543,8 @@ struct wifi_manager::impl
     void update_connection_status()
     {
         auto info = get_connection_info(interface);
+        spdlog::debug("update_status: wpa_state='{}' ssid='{}' bssid='{}'",
+            info.wpa_state, info.ssid, info.bssid);
         wifi_connection_status new_status;
 
         if (info.wpa_state == "COMPLETED")
@@ -708,16 +722,19 @@ wifi_manager::connect(
 
     // Check if network is already saved
     auto saved = saved_networks();
+    spdlog::info("connect: {} saved networks found", saved.size());
     int network_id = -1;
 
     for (size_t i = 0; i < saved.size(); ++i)
     {
+        spdlog::debug("connect: saved[{}] ssid='{}'", i, saved[i].ssid);
         if (saved[i].ssid == ssid)
         {
             network_id = static_cast<int>(i);
             break;
         }
     }
+    spdlog::info("connect: existing network_id={}", network_id);
 
     // Find network in scan results to get security type
     wifi_security security = wifi_security::wpa2; // Default assumption
@@ -726,6 +743,7 @@ wifi_manager::connect(
         if (net.ssid == ssid)
         {
             security = net.security;
+            spdlog::info("connect: security type={}", static_cast<int>(security));
             break;
         }
     }
@@ -733,6 +751,7 @@ wifi_manager::connect(
     // Add network if not saved, or if we want to remember with new password
     if (network_id < 0 || remember)
     {
+        spdlog::info("connect: adding network (id={}, remember={})", network_id, remember);
         network_id = add_network_to_wpa(m_impl->interface, ssid, password, security);
         if (network_id < 0)
         {
@@ -746,7 +765,9 @@ wifi_manager::connect(
 
     // Select and connect to network
     std::string id_str = std::to_string(network_id);
-    wpa_cli(m_impl->interface, "select_network " + id_str);
+    spdlog::info("connect: SELECT_NETWORK {}", id_str);
+    auto sel_result = wpa_cli(m_impl->interface, "select_network " + id_str);
+    spdlog::info("connect: SELECT_NETWORK -> '{}'", sel_result);
 
     // Wait for connection (with timeout)
     m_impl->connection_status = wifi_connection_status::connecting;
@@ -759,7 +780,10 @@ wifi_manager::connect(
     for (int i = 0; i < max_attempts; ++i)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
+        spdlog::debug("connect poll {}/{}: checking status...", i + 1, max_attempts);
         m_impl->update_connection_status();
+        spdlog::debug("connect poll {}/{}: status={}", i + 1, max_attempts,
+            static_cast<int>(m_impl->connection_status));
 
         if (m_impl->connection_status == wifi_connection_status::connected)
         {
