@@ -19,7 +19,6 @@
 
 #include <QTimer>
 
-#include <thread>
 
 namespace piejam::gui::model
 {
@@ -128,60 +127,48 @@ NetworkSettings::setupCallbacks()
             [this](
                 network_manager::wifi_connection_status status,
                 network_manager::wifi_network const* network) {
-                // Callback fires from background thread during connect().
-                // Copy all data before marshaling — the network pointer
-                // and wifiManager pointer are valid on the calling thread.
+                // This callback now fires from the Qt main thread
+                // (via poll_connection / update_connection_status).
                 bool connected =
                     (status ==
                      network_manager::wifi_connection_status::connected);
-                std::string ssid;
-                int signal_percent = 0;
+
+                setWifiConnected(connected);
+                setIsConnecting(
+                    status == network_manager::wifi_connection_status::
+                                  connecting);
+
                 if (connected && network)
                 {
-                    ssid = network->ssid;
-                    signal_percent = network->signal_percent;
+                    setCurrentSsid(
+                        QString::fromStdString(network->ssid));
+                    setSignalStrength(network->signal_percent);
+                    m_impl->availableNetworksModel
+                        ->setConnectedNetwork(
+                            QString::fromStdString(network->ssid));
+                    emit connectionSucceeded(
+                        QString::fromStdString(network->ssid));
+
+                    auto ip = QString::fromStdString(
+                        m_impl->wifiManager->ip_address());
+                    setIpAddress(ip);
                 }
-                // ip_address() uses popen — call here on background thread,
-                // NOT on Qt thread (where it could deadlock with DRM lock)
-                std::string ip = connected
-                    ? m_impl->wifiManager->ip_address()
-                    : std::string{};
+                else if (!connected)
+                {
+                    setCurrentSsid(QString());
+                    setSignalStrength(0);
+                    m_impl->availableNetworksModel
+                        ->setConnectedNetwork(QString());
 
-                QMetaObject::invokeMethod(
-                    this,
-                    [this, status, connected, ssid, signal_percent, ip]() {
-                        setWifiConnected(connected);
-                        setIsConnecting(
-                            status == network_manager::wifi_connection_status::
-                                          connecting);
+                    if (m_impl->nfsServer &&
+                        m_impl->nfsServer->is_active())
+                    {
+                        m_impl->nfsServer->disable();
+                        setNfsServerActive(false);
+                    }
 
-                        if (connected && !ssid.empty())
-                        {
-                            setCurrentSsid(QString::fromStdString(ssid));
-                            setSignalStrength(signal_percent);
-                            m_impl->availableNetworksModel
-                                ->setConnectedNetwork(
-                                    QString::fromStdString(ssid));
-                            emit connectionSucceeded(
-                                QString::fromStdString(ssid));
-                        }
-                        else if (!connected)
-                        {
-                            setCurrentSsid(QString());
-                            setSignalStrength(0);
-                            m_impl->availableNetworksModel
-                                ->setConnectedNetwork(QString());
-
-                            if (m_impl->nfsServer &&
-                                m_impl->nfsServer->is_active())
-                            {
-                                m_impl->nfsServer->disable();
-                                setNfsServerActive(false);
-                            }
-                        }
-
-                        setIpAddress(QString::fromStdString(ip));
-                    });
+                    setIpAddress(QString());
+                }
             });
 
         m_impl->wifiManager->set_error_callback(
@@ -369,60 +356,79 @@ NetworkSettings::connectToNetwork(
 
     setIsConnecting(true);
 
-    // Run blocking connect on a background thread to avoid
-    // freezing the Qt event loop (connect polls wpa_supplicant
-    // for up to 25 seconds).
-    auto wifiMgr = m_impl->wifiManager;
     auto ssidStd = ssid.toStdString();
     auto passwordStd = password.toStdString();
 
-    std::thread([this, wifiMgr, ssidStd, passwordStd, remember]() {
-        auto result = wifiMgr->connect(ssidStd, passwordStd, remember);
+    // Non-blocking: configure wpa_supplicant and issue SELECT_NETWORK
+    // on the Qt main thread (all wpa commands use Unix socket, no fork).
+    int network_id = m_impl->wifiManager->connect_start(
+        ssidStd, passwordStd, remember);
 
-        // Marshal result back to the Qt main thread
-        QMetaObject::invokeMethod(this, [this, result, wifiMgr]() {
-            if (result.success)
+    if (network_id < 0)
+    {
+        setIsConnecting(false);
+        emit connectionFailed(ssid, tr("Failed to configure network"));
+        return;
+    }
+
+    // Poll wpa_supplicant STATUS every second from the main thread
+    auto* timer = new QTimer(this);
+    int* attempts = new int(0);
+    auto ssidCopy = ssid;
+
+    connect(timer, &QTimer::timeout, this,
+        [this, timer, attempts, ssidCopy, remember, network_id]() {
+            auto status = m_impl->wifiManager->poll_connection();
+
+            if (status ==
+                piejam::network_manager::wifi_connection_status::connected)
             {
-                auto saved = wifiMgr->saved_networks();
+                timer->stop();
+                timer->deleteLater();
+                delete attempts;
+
+                spdlog::info("Connected to {}", ssidCopy.toStdString());
+
+                auto saved = m_impl->wifiManager->saved_networks();
                 m_impl->savedNetworksModel->setNetworks(std::move(saved));
 
-                // Poll for IP address (udhcpc runs async)
-                auto* timer = new QTimer(this);
-                int* attempts = new int(0);
-                connect(timer, &QTimer::timeout, this,
-                    [this, timer, attempts]() {
+                // Start IP address polling (udhcpc runs async)
+                auto* ipTimer = new QTimer(this);
+                int* ipAttempts = new int(0);
+                connect(ipTimer, &QTimer::timeout, this,
+                    [this, ipTimer, ipAttempts]() {
                         auto ip = QString::fromStdString(
                             m_impl->wifiManager->ip_address());
                         if (!ip.isEmpty())
                         {
                             setIpAddress(ip);
-                            timer->stop();
-                            timer->deleteLater();
-                            delete attempts;
+                            ipTimer->stop();
+                            ipTimer->deleteLater();
+                            delete ipAttempts;
                         }
-                        else if (++(*attempts) >= 15)
+                        else if (++(*ipAttempts) >= 15)
                         {
                             spdlog::warn("DHCP timeout: no IP after 15s");
-                            timer->stop();
-                            timer->deleteLater();
-                            delete attempts;
+                            ipTimer->stop();
+                            ipTimer->deleteLater();
+                            delete ipAttempts;
                         }
                     });
-                timer->start(1000);
+                ipTimer->start(1000);
             }
-            else
+            else if (++(*attempts) >= 20)
             {
+                timer->stop();
+                timer->deleteLater();
+                delete attempts;
+
+                spdlog::warn("Connection timeout for {}",
+                    ssidCopy.toStdString());
                 setIsConnecting(false);
-
-                QString error = result.error_message.empty()
-                    ? tr("Connection failed")
-                    : QString::fromStdString(result.error_message);
-
-                emit connectionFailed(
-                    QString::fromStdString(result.ssid), error);
+                emit connectionFailed(ssidCopy, tr("Connection timeout"));
             }
         });
-    }).detach();
+    timer->start(1000);
 }
 
 void

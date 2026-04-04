@@ -709,41 +709,38 @@ wifi_manager::available_networks() const
     return m_impl->cached_networks;
 }
 
-wifi_connection_result
-wifi_manager::connect(
+int
+wifi_manager::connect_start(
     std::string const& ssid,
     std::string const& password,
     bool remember)
 {
-    wifi_connection_result result;
-    result.ssid = ssid;
-
-    spdlog::info("Connecting to WiFi network: {}", ssid);
+    spdlog::info("connect_start: ssid='{}' remember={}", ssid, remember);
 
     // Check if network is already saved
     auto saved = saved_networks();
-    spdlog::info("connect: {} saved networks found", saved.size());
+    spdlog::info("connect_start: {} saved networks found", saved.size());
     int network_id = -1;
 
     for (size_t i = 0; i < saved.size(); ++i)
     {
-        spdlog::debug("connect: saved[{}] ssid='{}'", i, saved[i].ssid);
+        spdlog::debug("connect_start: saved[{}] ssid='{}'", i, saved[i].ssid);
         if (saved[i].ssid == ssid)
         {
             network_id = static_cast<int>(i);
             break;
         }
     }
-    spdlog::info("connect: existing network_id={}", network_id);
+    spdlog::info("connect_start: existing network_id={}", network_id);
 
     // Find network in scan results to get security type
-    wifi_security security = wifi_security::wpa2; // Default assumption
+    wifi_security security = wifi_security::wpa2;
     for (auto const& net : m_impl->cached_networks)
     {
         if (net.ssid == ssid)
         {
             security = net.security;
-            spdlog::info("connect: security type={}", static_cast<int>(security));
+            spdlog::info("connect_start: security type={}", static_cast<int>(security));
             break;
         }
     }
@@ -751,75 +748,41 @@ wifi_manager::connect(
     // Add network if not saved, or if we want to remember with new password
     if (network_id < 0 || remember)
     {
-        spdlog::info("connect: adding network (id={}, remember={})", network_id, remember);
+        spdlog::info("connect_start: adding network...");
         network_id = add_network_to_wpa(m_impl->interface, ssid, password, security);
         if (network_id < 0)
         {
-            result.error_message = "Failed to add network to wpa_supplicant";
-            spdlog::error("{}", result.error_message);
+            spdlog::error("connect_start: add_network_to_wpa failed");
             if (m_impl->on_error)
-                m_impl->on_error(result.error_message);
-            return result;
+                m_impl->on_error("Failed to add network to wpa_supplicant");
+            return -1;
         }
     }
 
     // Select and connect to network
     std::string id_str = std::to_string(network_id);
-    spdlog::info("connect: SELECT_NETWORK {}", id_str);
+    spdlog::info("connect_start: SELECT_NETWORK {}", id_str);
     auto sel_result = wpa_cli(m_impl->interface, "select_network " + id_str);
-    spdlog::info("connect: SELECT_NETWORK -> '{}'", sel_result);
+    spdlog::info("connect_start: SELECT_NETWORK -> '{}'", sel_result);
 
-    // Wait for connection (with timeout)
     m_impl->connection_status = wifi_connection_status::connecting;
     if (m_impl->on_connection_changed)
     {
         m_impl->on_connection_changed(m_impl->connection_status, nullptr);
     }
 
-    constexpr int max_attempts = 15;
-    for (int i = 0; i < max_attempts; ++i)
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        spdlog::debug("connect poll {}/{}: checking status...", i + 1, max_attempts);
-        m_impl->update_connection_status();
-        spdlog::debug("connect poll {}/{}: status={}", i + 1, max_attempts,
-            static_cast<int>(m_impl->connection_status));
+    spdlog::info("connect_start: done, network_id={}", network_id);
+    return network_id;
+}
 
-        if (m_impl->connection_status == wifi_connection_status::connected)
-        {
-            // udhcpc started by update_connection_status() in background.
-            // IP polling is handled by the caller (NetworkSettings QTimer).
-            result.success = true;
-            result.ip_address = ip_address(); // may be empty if DHCP pending
-
-            if (remember)
-            {
-                wpa_cli(m_impl->interface, "save_config");
-            }
-
-            spdlog::info("Connected to {} (IP: {})", ssid,
-                result.ip_address.empty() ? "pending" : result.ip_address);
-            return result;
-        }
-    }
-
-    // Connection failed
-    m_impl->connection_status = wifi_connection_status::failed;
-    result.error_message = "Connection timeout";
-    spdlog::warn("Failed to connect to {}: {}", ssid, result.error_message);
-
-    if (m_impl->on_connection_changed)
-    {
-        m_impl->on_connection_changed(m_impl->connection_status, nullptr);
-    }
-
-    if (!remember)
-    {
-        // Remove network if we don't want to remember it
-        wpa_cli(m_impl->interface, "remove_network " + id_str);
-    }
-
-    return result;
+wifi_connection_status
+wifi_manager::poll_connection()
+{
+    m_impl->update_connection_status();
+    spdlog::debug("poll_connection: status={} ssid='{}'",
+        static_cast<int>(m_impl->connection_status),
+        m_impl->current_network.ssid);
+    return m_impl->connection_status;
 }
 
 void

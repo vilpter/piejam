@@ -24,15 +24,6 @@ enum class wifi_connection_status
     failed          ///< Connection attempt failed
 };
 
-/// Result of a connection attempt
-struct wifi_connection_result
-{
-    bool success{false};
-    std::string error_message;
-    std::string ssid;
-    std::string ip_address;
-};
-
 /// Manages WiFi connections via wpa_supplicant.
 ///
 /// This class provides:
@@ -90,13 +81,18 @@ public:
 
     // --- Connection Management ---
 
-    /// Connect to a network
-    /// @param ssid Network name
-    /// @param password Password (empty for open networks)
-    /// @param remember Save to wpa_supplicant.conf for auto-connect
-    /// @return Result of connection attempt
-    wifi_connection_result
-    connect(std::string const& ssid, std::string const& password, bool remember);
+    /// Start connecting to a network (non-blocking).
+    /// Configures wpa_supplicant and issues SELECT_NETWORK, then returns
+    /// immediately. Caller should poll with poll_connection().
+    /// @return network_id on success, -1 on setup failure
+    int connect_start(
+        std::string const& ssid,
+        std::string const& password,
+        bool remember);
+
+    /// Poll connection status once after connect_start().
+    /// @return current status (connected / connecting / disconnected / failed)
+    wifi_connection_status poll_connection();
 
     /// Disconnect from current network
     void disconnect();

@@ -14,8 +14,6 @@ class WiFiSavedNetworkModel;
 
 struct wifi_network;
 struct wifi_saved_network;
-struct wifi_connection_result;
-
 enum class wifi_security;
 enum class wifi_band;
 enum class wifi_connection_status;
