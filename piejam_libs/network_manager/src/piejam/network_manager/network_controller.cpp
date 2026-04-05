@@ -102,41 +102,14 @@ enable_wifi_interface()
 {
     spdlog::info("Enabling WiFi interface");
 
-    // List all network interfaces for diagnostics
-    std::string all_ifaces = execute_command_with_output("ls /sys/class/net/ 2>/dev/null");
-    spdlog::info("Available network interfaces: {}", all_ifaces);
-
     // Check if brcmfmac driver is loaded (built-in or module)
     std::string brcm_check = execute_command_with_output(
         "ls /sys/module/brcmfmac 2>/dev/null && echo loaded || echo not_loaded");
-    spdlog::info("brcmfmac driver: {}", brcm_check);
 
     // Try loading as module in case it's not built-in
     if (brcm_check.find("not_loaded") != std::string::npos)
     {
-        spdlog::info("Attempting modprobe brcmfmac");
-        int mod_result = std::system("modprobe brcmfmac 2>&1");
-        spdlog::info("modprobe brcmfmac result: {}", mod_result);
-    }
-
-    // Check for firmware files
-    std::string fw_check = execute_command_with_output(
-        "ls /lib/firmware/brcm/brcmfmac* 2>/dev/null | head -5");
-    if (fw_check.empty())
-    {
-        spdlog::warn("No brcmfmac firmware files found in /lib/firmware/brcm/");
-    }
-    else
-    {
-        spdlog::info("Firmware files found: {}", fw_check);
-    }
-
-    // Check kernel log for WiFi-related messages
-    std::string dmesg = execute_command_with_output(
-        "dmesg 2>/dev/null | grep -i -E 'brcm|wlan|wifi|80211|firmware' | tail -10");
-    if (!dmesg.empty())
-    {
-        spdlog::info("Kernel WiFi messages:\n{}", dmesg);
+        std::system("modprobe brcmfmac 2>&1");
     }
 
     // Wait for interface to appear

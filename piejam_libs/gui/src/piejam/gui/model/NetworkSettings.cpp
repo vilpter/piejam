@@ -387,6 +387,7 @@ NetworkSettings::connectToNetwork(
                 timer->deleteLater();
                 delete attempts;
 
+                setIsConnecting(false);
                 spdlog::info("Connected to {}", ssidCopy.toStdString());
 
                 auto saved = m_impl->wifiManager->saved_networks();
