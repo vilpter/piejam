@@ -109,7 +109,7 @@ enable_wifi_interface()
     // Try loading as module in case it's not built-in
     if (brcm_check.find("not_loaded") != std::string::npos)
     {
-        std::system("modprobe brcmfmac 2>&1");
+        [[maybe_unused]] auto rc = std::system("modprobe brcmfmac 2>&1");
     }
 
     // Wait for interface to appear
