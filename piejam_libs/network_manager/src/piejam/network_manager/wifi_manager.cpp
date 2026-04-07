@@ -383,7 +383,7 @@ std::string
 get_ip_address(std::string const& interface)
 {
     std::string cmd = "ip -4 addr show " + interface +
-                      " | grep -oP '(?<=inet\\s)\\d+(\\.\\d+){3}' 2>/dev/null";
+                      " | awk '/inet /{split($2,a,\"/\"); print a[1]}'";
     std::string result = execute_command(cmd.c_str());
     // Remove trailing newline
     while (!result.empty() && (result.back() == '\n' || result.back() == '\r'))
@@ -700,6 +700,27 @@ wifi_manager::connect_start(
     bool remember)
 {
     spdlog::info("Connecting to WiFi network: {}", ssid);
+
+    // Clean up orphaned networks (empty SSID from crashed ADD_NETWORK
+    // or stale config). These can interfere with SELECT_NETWORK.
+    {
+        std::string list = wpa_cli(m_impl->interface, "list_networks");
+        std::istringstream stream(list);
+        std::string line;
+        std::getline(stream, line); // skip header
+        while (std::getline(stream, line))
+        {
+            if (line.empty())
+                continue;
+            std::istringstream ls(line);
+            std::string id, net_ssid;
+            ls >> id >> net_ssid;
+            if (net_ssid.empty() || net_ssid == "any")
+            {
+                wpa_cli(m_impl->interface, "remove_network " + id);
+            }
+        }
+    }
 
     // Check if network is already saved
     auto saved = saved_networks();

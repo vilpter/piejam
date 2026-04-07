@@ -62,11 +62,13 @@ ensure_wpa_supplicant_running()
         return true;
     }
 
-    // Try common config file locations
+    // Try common config file locations — prefer subdirectory
+    // (overlay provides /etc/wpa_supplicant/wpa_supplicant.conf
+    // with update_config=1 and country code)
     char const* config_paths[] = {
-        "/etc/wpa_supplicant.conf",
         "/etc/wpa_supplicant/wpa_supplicant.conf",
         "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf",
+        "/etc/wpa_supplicant.conf",
     };
 
     for (auto const* config_path : config_paths)
