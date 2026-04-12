@@ -390,6 +390,9 @@ NetworkSettings::connectToNetwork(
                 setIsConnecting(false);
                 spdlog::info("Connected to {}", ssidCopy.toStdString());
 
+                if (remember)
+                    m_impl->wifiManager->save_config();
+
                 auto saved = m_impl->wifiManager->saved_networks();
                 m_impl->savedNetworksModel->setNetworks(std::move(saved));
 

@@ -118,6 +118,10 @@ public:
     /// Enable/disable auto-connect for a saved network
     void set_network_auto_connect(std::string const& ssid, bool enabled);
 
+    /// Persist current network configuration to wpa_supplicant.conf
+    /// Requires update_config=1 in the config file.
+    void save_config();
+
     // --- Auto-reconnect ---
 
     /// Enable automatic reconnection when connection drops

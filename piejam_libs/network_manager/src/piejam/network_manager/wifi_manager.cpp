@@ -780,6 +780,12 @@ wifi_manager::poll_connection()
 }
 
 void
+wifi_manager::save_config()
+{
+    wpa_cli(m_impl->interface, "save_config");
+}
+
+void
 wifi_manager::disconnect()
 {
     spdlog::info("Disconnecting from WiFi");
